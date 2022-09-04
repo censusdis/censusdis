@@ -1,6 +1,6 @@
 import censusdata
 import pandas as pd
-from typing import Iterable, List, Optional
+from typing import Iterable, List, Optional, Tuple
 import requests
 
 
@@ -64,13 +64,58 @@ def census_data(
     if not isinstance(census_fields, list):
         census_fields = list(census_fields)
 
+    geo, county, cousub, tract, block_group, block = _normalize_geography(
+        resolution,
+        state=state,
+        county=county,
+        cousub=cousub,
+        tract=tract,
+        block_group=block_group,
+        block=block,
+    )
+
+    df = censusdata.download(
+        source,
+        year,
+        geo,
+        census_fields,
+    )
+
+    df = _augment_geography(
+        df,
+        census_fields=census_fields,
+        county=county,
+        cousub=cousub,
+        tract=tract,
+        block_group=block_group,
+        block=block,
+    )
+
+    return df
+
+
+def _normalize_geography(
+    resolution: str,
+    state: str,
+    county: str,
+    cousub: Optional[str],
+    tract: Optional[str],
+    block_group: Optional[str],
+    block: Optional[str],
+) -> Tuple[
+    censusdata.censusgeo,
+    str,
+    Optional[str],
+    Optional[str],
+    Optional[str],
+    Optional[str],
+]:
+
     geo = [
         ("state", state),
     ]
-
     # If we don't have a filter at the resolution level,
     # make it a wildcard.
-
     if resolution == "county" and county is None:
         county = "*"
     if resolution == "county subdivision" and cousub is None:
@@ -81,13 +126,10 @@ def census_data(
         block_group = "*"
     if resolution == "block" and block is None:
         block = "*"
-
     # Below county resolution we always need a "*" for county.
     if county is None:
         county = "*"
-
     # Put all of our filters into the geo.
-
     if county is not None:
         geo.append(("county", county))
     if cousub is not None:
@@ -99,32 +141,17 @@ def census_data(
     if block is not None:
         geo.append(("block", block))
 
-    df = censusdata.download(
-        source,
-        year,
-        censusdata.censusgeo(geo),
-        census_fields,
-    )
+    geo = censusdata.censusgeo(geo)
 
-    df = _augment_geography(
-        df,
-        census_fields=census_fields,
-        county=county,
-        tract=tract,
-        cousub=cousub,
-        block_group=block_group,
-        block=block,
-    )
-
-    return df
+    return geo, county, cousub, tract, block_group, block
 
 
 def _augment_geography(
     df: pd.DataFrame,
     census_fields: List[str],
     county: str,
-    tract: Optional[str],
     cousub: Optional[str],
+    tract: Optional[str],
     block_group: Optional[str],
     block: Optional[str],
 ) -> pd.DataFrame:

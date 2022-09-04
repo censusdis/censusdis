@@ -3,10 +3,81 @@ import unittest
 import pandas as pd
 from censusdata import censusgeo
 
-from censusdis.censusdata import _augment_geography
+from censusdis.censusdata import _augment_geography, _normalize_geography
 
 
-class AugmentGeographyDataTestCase(unittest.TestCase):
+class NormalizeGeographyTestCase(unittest.TestCase):
+    def test_normalize_block(self):
+
+        expected_geo = censusgeo([("state", "34"), ("county", "*"), ("block", "*")])
+
+        for block_in in [None, "*"]:
+            geo, county, cousub, tract, block_group, block = _normalize_geography(
+                resolution="block",
+                state="34",
+                county="*",
+                cousub=None,
+                tract=None,
+                block_group=None,
+                block=block_in,
+            )
+
+            self.assertEqual(expected_geo, geo)
+
+    def test_normalize_block_group(self):
+        expected_geo = censusgeo(
+            [("state", "34"), ("county", "013"), ("block group", "*")]
+        )
+
+        for block_group_in in [None, "*"]:
+            geo, county, cousub, tract, block_group, block = _normalize_geography(
+                resolution="block group",
+                state="34",
+                county="013",
+                cousub=None,
+                tract=None,
+                block_group=block_group_in,
+                block=None,
+            )
+
+            self.assertEqual(expected_geo, geo)
+
+    def test_normalize_tract(self):
+        expected_geo = censusgeo([("state", "34"), ("county", "013"), ("tract", "*")])
+
+        for tract_in in [None, "*"]:
+            geo, county, cousub, tract, block_group, block = _normalize_geography(
+                resolution="tract",
+                state="34",
+                county="013",
+                cousub=None,
+                tract=tract_in,
+                block_group=None,
+                block=None,
+            )
+
+            self.assertEqual(expected_geo, geo)
+
+    def test_normalize_cousub(self):
+        expected_geo = censusgeo(
+            [("state", "34"), ("county", "013"), ("county subdivision", "*")]
+        )
+
+        for cousub_in in [None, "*"]:
+            geo, county, cousub, tract, block_group, block = _normalize_geography(
+                resolution="county subdivision",
+                state="34",
+                county="013",
+                cousub=cousub_in,
+                tract=None,
+                block_group=None,
+                block=None,
+            )
+
+            self.assertEqual(expected_geo, geo)
+
+
+class AugmentGeographyTestCase(unittest.TestCase):
     def test_augment_block(self):
         df = pd.DataFrame(
             [
