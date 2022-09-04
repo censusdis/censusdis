@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "censusdis"
+version = "0.1.0"
+description = ""
+authors = ["vengroff <vengroff@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+divintseg = "^0.1.1"
+CensusData = "^1.15.post1"
+geopandas = "^0.11.1"
+Rtree = "^1.0.0"
+matplotlib = "^3.5.3"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
