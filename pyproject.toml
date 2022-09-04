@@ -31,6 +31,9 @@ flake8 = "^5.0.4"
 black = "^22.8.0"
 isort = "^5.10.1"
 
+[tool.poetry.group.dist.dependencies]
+genbadge = {extras = ["all"], version = "^1.1.0"}
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
