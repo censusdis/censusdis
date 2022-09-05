@@ -58,7 +58,7 @@ def _gf2s(filter: GeoFilterType) -> Optional[str]:
     """
     if filter is None or isinstance(filter, str):
         return filter
-    return ','.join(filter)
+    return ",".join(filter)
 
 
 def census_data(

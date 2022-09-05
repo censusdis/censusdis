@@ -8,6 +8,7 @@ from censusdis.censusdata import _augment_geography, _normalize_geography, _gf2s
 
 class TestFilters(unittest.TestCase):
     """Test that we can properly convert geo filters to strings."""
+
     def test_filter_none(self):
         self.assertIsNone(_gf2s(None))
 
