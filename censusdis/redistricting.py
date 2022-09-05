@@ -138,7 +138,7 @@ def data(
     *,
     county: GeoFilterType = None,
     tract: GeoFilterType = None,
-    cousub: GeoFilterType= None,
+    cousub: GeoFilterType = None,
     block_group: GeoFilterType = None,
     block: GeoFilterType = None,
     key: Optional[str] = None,
