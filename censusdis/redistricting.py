@@ -3,7 +3,7 @@ from typing import Iterable, Optional
 import pandas as pd
 import requests
 
-from .censusdata import census_data
+from .censusdata import census_data, GeoFilterType
 
 
 # Different group names were used in 2000.
@@ -136,12 +136,15 @@ def data(
     resolution: str,
     census_fields: Iterable[str],
     *,
-    county: Optional[str] = None,
-    tract: Optional[str] = None,
-    cousub: Optional[str] = None,
-    block_group: Optional[str] = None,
-    block: Optional[str] = None,
+    county: GeoFilterType = None,
+    tract: GeoFilterType = None,
+    cousub: GeoFilterType = None,
+    block_group: GeoFilterType = None,
+    block: GeoFilterType = None,
+    key: Optional[str] = None,
 ) -> pd.DataFrame:
+    # See https://api.census.gov/data/2020/dec/pl.html
+    # Examples at https://api.census.gov/data/2020/dec/pl/examples.html
     source = "dec/pl"
 
     return census_data(
@@ -155,4 +158,5 @@ def data(
         cousub=cousub,
         block_group=block_group,
         block=block,
+        key=key,
     )
