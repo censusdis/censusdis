@@ -20,6 +20,12 @@ CensusData = "^1.15.post1"
 geopandas = "^0.11.1"
 Rtree = "^1.0.0"
 matplotlib = "^3.5.3"
+Sphinx = { version = "^5.1.1", optional = true }
+sphinx-rtd-theme = { version = "1.0.0", optional = true }
+sphinxcontrib-napoleon = { version = "0.7", optional = true }
+
+[tool.poetry.extras]
+docs = ["Sphinx", "sphinx-rtd-theme", "sphinxcontrib-napoleon"]
 
 [tool.poetry.group.test.dependencies]
 pytest = "^7.1.3"

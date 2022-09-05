@@ -1,3 +1,50 @@
+# Copyright (c) 2022 Darren Erik Vengroff
+
+"""
+State identifiers.
+
+The first set of identifiers are the numeric strings
+used by the US Census to identify states. Each one
+has a name of the form `STATE_XX` where `XX` is the two
+letter abbreviation for the state. For example, NJ
+is the two letter abbreviation for New Jersey, and the
+Census state identifier for New Jersey is 34, so::
+
+    import censusdis.states as cds
+
+    state = cds.STATE_NJ
+
+would set the value of `state` to the string `"34"`.
+We can use these values in any of the APIs in
+`censusdis` that take a state.
+
+The second set of identifiers use these state IDs as
+keys in a dictionary whose values are strings naming
+the states. These are stored in a dictionary that
+we can use for printing state names. For example::
+
+    import censusdis.states as cds
+
+    state = cds.STATE_CA
+
+    print(
+        f"The name of the state with ID {state} "
+        f"is {cds.STATE_NAMES_FROM_IDS[state]."
+    )
+
+Finally, there is a list of all states. It is often useful
+if we want to perform an operation on all states. For
+example::
+
+    import censusdis.states as cds
+
+    for state in cds.ALL_STATES:
+        do_something_with_a_state(state)
+
+There is also a list that includes all states and the
+District of Columbig. It is called `cds.ALL_STATES_AND_DC`.
+"""
+
 # State and county IDs we are interested in:
 STATE_AL = "01"
 STATE_AK = "02"
@@ -59,6 +106,7 @@ STATE_NAMES_FROM_IDS = {
     STATE_CA: "California",
     STATE_CO: "Colorado",
     STATE_CT: "Connecticut",
+    STATE_DC: "District of Columbia",
     STATE_DE: "Delaware",
     STATE_FL: "Florida",
     STATE_GA: "Georgia",
@@ -104,4 +152,6 @@ STATE_NAMES_FROM_IDS = {
     STATE_WY: "Wyoming",
 }
 
-ALL_STATES = list(STATE_NAMES_FROM_IDS.keys())
+ALL_STATES = [state for state in STATE_NAMES_FROM_IDS.keys() if state != STATE_DC]
+
+ALL_STATES_AND_DC = [state for state in STATE_NAMES_FROM_IDS.keys()]

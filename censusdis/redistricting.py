@@ -1,4 +1,4 @@
-from typing import Iterable, Optional
+from typing import Dict, Iterable, List, Optional, Tuple
 
 import pandas as pd
 import requests
@@ -13,7 +13,33 @@ _2000_GROUP_NAMES = {
 }
 
 
-def metadata(year: int, group: str = "P2"):
+def metadata(
+    year: int, group: str = "P2"
+) -> Tuple[Dict[str, str], str, Dict[str, List[str]]]:
+    """
+    Get metadata about the fields available in a given
+    redistricting data group in a given year.
+
+    Parameters
+    ----------
+    year
+        Must be 2000, 2010, or 2020.
+    group
+        The group, e.g. 'P1', 'P2', .... See
+        https://www.census.gov/programs-surveys/decennial-census/about/rdo/summary-files.html
+        for more details.
+    Returns
+    -------
+        field_names
+            A dictionary of field names and their descriptions. This does not include
+            the total population field. So when data is queried the sum of all these fields
+            should be the same as the totla field.
+         total_field
+            The name of the field containing total population.
+         fields_by_race
+            Fields grouped by the race that members are, or are in combination
+            with other races.
+    """
     # Unfortunately 'dec/pl' is not accepted by
     # censusdata.censustable, so we have to do things
     # a little more manually.
@@ -143,6 +169,64 @@ def data(
     block: GeoFilterType = None,
     key: Optional[str] = None,
 ) -> pd.DataFrame:
+    """
+    Get redistricting data.
+
+    The filter parameter allow the caller to specify that they want to filter
+    the geographic regions for which data is returned down to one or more
+    specific values. For example, using the county and tract filters with::
+
+        import censusdis.redistricting as crd
+        from censusdis.states import STATE_NJ
+
+        df_soma = crd.data(
+            STATE_NJ,
+            2020,
+            "block",
+            field_names,
+            county='013',
+            tract=['0019000', '0019100'],
+            key=CENSUS_API_KEY,
+        )
+
+    would load data for every block in two particular census tracts in Essex
+    County, NJ (whose id is `"013"`).
+
+    Parameters
+    ----------
+    state
+        What state do we want data for?
+    year
+        What year? 2000, 2010, or 2020
+    resolution
+        The lowest resolution data we want. The return value
+        will have a row for each unique value of this, and
+        the outer geographies that contain it. Accepted values
+        are `"block"`, `"block group"`, `"tract"`, `"county subdivision"`,
+        and `"county"`.
+    census_fields
+        What fields do we want. Typically these are fields returned by
+        :py:func:`~metadata`.
+    county
+        A county filter.
+    tract
+        A census tract filter.
+    cousub
+        A county subdivision filter.
+    block_group
+        A block group filter.
+    block
+        A block filter.
+    key
+        A Census API key to be used when calling the US Census API. See
+        https://api.census.gov/data/key_signup.html to request one if you
+        don't have one.
+
+    Returns
+    -------
+        Counts of the membership of each field filtered as specified by
+        the various parameters.
+    """
     # See https://api.census.gov/data/2020/dec/pl.html
     # Examples at https://api.census.gov/data/2020/dec/pl/examples.html
     source = "dec/pl"

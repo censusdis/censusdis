@@ -1,7 +1,6 @@
 import censusdata
 import pandas as pd
 from typing import Iterable, List, Optional, Tuple, Union
-import requests
 
 
 def geo_state(geo):
@@ -38,6 +37,15 @@ _VALID_RESOLUTIONS = ("block", "block group", "tract", "county subdivision", "co
 
 
 def resolutions() -> Iterable[str]:
+    """
+    Return a list of valid resolutions for the `resolution`
+    argument of :py:func:`~censusdis.redistricting.data`
+    and similar.
+
+    Returns
+    -------
+        The valid resolulions.
+    """
     return _VALID_RESOLUTIONS
 
 
@@ -75,7 +83,49 @@ def census_data(
     block: GeoFilterType = None,
     key: Optional[str] = None,
 ) -> pd.DataFrame:
+    """
+    Fetch census data from the remote API. Normally this is not
+    called directly, but rather via higher-level APIs like
+    :py:func:`~censusdis.redistricting.data`.
 
+    Parameters
+    ----------
+    state
+        The state to get data for.
+    source
+        The census data source to use, for example, `"dec/pl"` for
+        redistricting date.
+    year
+        What year? 2000, 2010, or 2020
+    resolution
+        The lowest resolution data we want. The return value
+        will have a row for each unique value of this, and
+        the outer geographies that contain it. Accepted values
+        are `"block"`, `"block group"`, `"tract"`, `"county subdivision"`,
+        and `"county"`.
+    census_fields
+        What fields do we want. Typically these are fields returned by
+        :py:func:`~metadata`.
+    county
+        A county filter.
+    tract
+        A census tract filter.
+    cousub
+        A county subdivision filter.
+    block_group
+        A block group filter.
+    block
+        A block filter.
+    key
+        A Census API key to be used when calling the US Census API. See
+        https://api.census.gov/data/key_signup.html to request one if you
+        don't have one.
+
+    Returns
+    -------
+        Counts of the membership of each field filtered as specified by
+        the various parameters.
+    """
     if resolution not in _VALID_RESOLUTIONS:
         raise ValueError(
             "resolution {resolution} is not valid. "
@@ -132,6 +182,12 @@ def _normalize_geography(
     Optional[str],
     Optional[str],
 ]:
+    """
+    A helper function for normalizing geography.
+
+    Broken out mainly so it can be tested without making
+    any brittle remote calls to the US Census API.
+    """
     county = _gf2s(county)
     cousub = _gf2s(cousub)
     tract = _gf2s(tract)
@@ -182,6 +238,12 @@ def _augment_geography(
     block_group: Optional[str],
     block: Optional[str],
 ) -> pd.DataFrame:
+    """
+    A helper function for augmenting geography.
+
+    Broken out mainly so it can be tested without making
+    any brittle remote calls to the US Census API.
+    """
 
     # There is a little magic here as far as rules go
     # for what geographic hierarchies nest. The two
@@ -237,61 +299,5 @@ def _augment_geography(
     # Put the columns in a nice order.
 
     df = df[cols + census_fields]
-
-    return df
-
-
-def census_voting_field_metadata(census_field: str, year: int):
-    baseurl = "https://api.census.gov/data"
-
-    url = f"{baseurl}/{year}/cps/voting/nov/variables/{census_field}.json"
-
-    r = requests.get(url)
-
-    if r.status_code != 200:
-        raise ValueError(
-            f"{r.url} returned status code {r.status_code} and body:\n{r.text}"
-        )
-
-    metadata = r.json()
-
-    return metadata
-
-
-def census_voting_data(
-    states: str, year: int, census_fields: List[str], weight_field: str = "PWSSWGT"
-):
-    baseurl = "https://api.census.gov/data"
-
-    url = (
-        f"{baseurl}/{year}/cps/voting/nov?tabulate=weight({weight_field})&row+for&row+"
-        f"{'&row+'.join(census_fields)}&for=state:{states}"
-    )
-
-    r = requests.get(url)
-
-    if r.status_code != 200:
-        raise ValueError(
-            f"{r.url} returned status code {r.status_code} and body:\n{r.text}"
-        )
-
-    data = r.json()
-
-    field_values = {}
-
-    for field in census_fields:
-        metadata = census_voting_field_metadata(field, year)
-        field_values[field] = metadata["values"]["item"]
-
-    columns = data[0]
-    values = [
-        [
-            field_values.get(column, {}).get(val, val)
-            for column, val in zip(columns, row)
-        ]
-        for row in data[1:]
-    ]
-
-    df = pd.DataFrame(values, columns=columns)
 
     return df
