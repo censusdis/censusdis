@@ -1,6 +1,6 @@
 import censusdata
 import pandas as pd
-from typing import Iterable, List, Optional, Tuple
+from typing import Iterable, List, Optional, Tuple, Union
 import requests
 
 
@@ -41,6 +41,26 @@ def resolutions() -> Iterable[str]:
     return _VALID_RESOLUTIONS
 
 
+# This is the type we can accept for geographic
+# filters. When provided, these filters are either
+# single values as a string, or, if multivalued,
+# then an iterable containing all the values allowed
+# by the filter.
+GeoFilterType = Optional[Union[str, Iterable[str]]]
+
+
+def _gf2s(filter: GeoFilterType) -> Optional[str]:
+    """
+    Utility to convert a filter to a string.
+
+    For the Census API, multiple values are encoded
+    in a single comma separated string.
+    """
+    if filter is None or isinstance(filter, str):
+        return filter
+    return ','.join(filter)
+
+
 def census_data(
     source: str,
     state: str,
@@ -48,11 +68,12 @@ def census_data(
     resolution: str,
     census_fields: Iterable[str],
     *,
-    county: Optional[str] = None,
-    tract: Optional[str] = None,
-    cousub: Optional[str] = None,
-    block_group: Optional[str] = None,
-    block: Optional[str] = None,
+    county: GeoFilterType = None,
+    tract: GeoFilterType = None,
+    cousub: GeoFilterType = None,
+    block_group: GeoFilterType = None,
+    block: GeoFilterType = None,
+    key: Optional[str] = None,
 ) -> pd.DataFrame:
 
     if resolution not in _VALID_RESOLUTIONS:
@@ -79,6 +100,7 @@ def census_data(
         year,
         geo,
         census_fields,
+        key=key,
     )
 
     df = _augment_geography(
@@ -110,6 +132,11 @@ def _normalize_geography(
     Optional[str],
     Optional[str],
 ]:
+    county = _gf2s(county)
+    cousub = _gf2s(cousub)
+    tract = _gf2s(tract)
+    block_group = _gf2s(block_group)
+    block = _gf2s(block)
 
     geo = [
         ("state", state),

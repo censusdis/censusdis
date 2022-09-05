@@ -3,7 +3,21 @@ import unittest
 import pandas as pd
 from censusdata import censusgeo
 
-from censusdis.censusdata import _augment_geography, _normalize_geography
+from censusdis.censusdata import _augment_geography, _normalize_geography, _gf2s
+
+
+class TestFilters(unittest.TestCase):
+    """Test that we can properly convert geo filters to strings."""
+    def test_filter_none(self):
+        self.assertIsNone(_gf2s(None))
+
+    def test_filter_str(self):
+        self.assertEqual("013", _gf2s("013"))
+
+    def test_filter_list(self):
+        self.assertEqual("013", _gf2s(["013"]))
+        self.assertEqual("013,014", _gf2s(["013", "014"]))
+        self.assertEqual("013,014,015", _gf2s(["013", "014", "015"]))
 
 
 class NormalizeGeographyTestCase(unittest.TestCase):
