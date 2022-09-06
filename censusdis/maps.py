@@ -89,7 +89,7 @@ class ShapeReader:
         fifty_states_only: bool = True,
         include_dc: bool = True,
         resolution: str = "500k",
-        crs=None
+        crs=None,
     ):
         """
         Read the bounds of all the states. This is useful for plotting
@@ -136,11 +136,7 @@ class ShapeReader:
 
         return gdf
 
-    def read_county_bounds_shapefile(
-        self,
-        resolution: str = "500k",
-        crs=None
-    ):
+    def read_county_bounds_shapefile(self, resolution: str = "500k", crs=None):
         """
         Read a shapefile containing the bounds of all the counties in the
         United States.
@@ -385,9 +381,13 @@ def clip_to_states(gdf, gdf_state_bounds):
         The input geometries where each is clipped to the bounds
         of the state to which it belongs.
     """
-    return gdf.groupby(gdf.STATEFP).apply(
-        lambda s: gpd.clip(s, gdf_state_bounds[gdf_state_bounds.STATEFP == s.name])
-    ).droplevel('STATEFP')
+    return (
+        gdf.groupby(gdf.STATEFP)
+        .apply(
+            lambda s: gpd.clip(s, gdf_state_bounds[gdf_state_bounds.STATEFP == s.name])
+        )
+        .droplevel("STATEFP")
+    )
 
 
 def _wrap_poly(poly):

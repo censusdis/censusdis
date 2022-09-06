@@ -1,4 +1,4 @@
-from typing import Dict, Iterable, List, Optional, Tuple
+from typing import Dict, Iterable, List, Optional, Tuple, Union
 
 import pandas as pd
 import requests
@@ -157,7 +157,7 @@ def metadata(
 
 
 def data(
-    state: str,
+    state: Union[str, Iterable[str]],
     year: int,
     resolution: str,
     census_fields: Iterable[str],
