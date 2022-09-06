@@ -71,7 +71,7 @@ def _gf2s(filter: GeoFilterType) -> Optional[str]:
 
 def census_data(
     source: str,
-    state: str,
+    state: Union[str, Iterable[str]],
     year: int,
     resolution: str,
     census_fields: Iterable[str],
@@ -168,7 +168,7 @@ def census_data(
 
 def _normalize_geography(
     resolution: str,
-    state: str,
+    state: Union[str, Iterable[str]],
     county: str,
     cousub: Optional[str],
     tract: Optional[str],
@@ -195,7 +195,7 @@ def _normalize_geography(
     block = _gf2s(block)
 
     geo = [
-        ("state", state),
+        ("state", _gf2s(state)),
     ]
     # If we don't have a filter at the resolution level,
     # make it a wildcard.
