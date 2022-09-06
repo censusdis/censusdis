@@ -85,16 +85,20 @@ class ShapeReader:
         return self._read_shapefile(path, crs)
 
     def read_state_bounds_shapefile(
-        self, fifty_states_only=True, include_dc=True, twenty_m=False, crs=None
+        self,
+        fifty_states_only: bool = True,
+        include_dc: bool = True,
+        resolution: str = "500k",
+        crs=None
     ):
         """
-        Read the bounds of all of the states. This is useful for plotting
+        Read the bounds of all the states. This is useful for plotting
         the entire country and also for clipping other polygons to state
         boundaries using, for example, the
         :py:meth:`~ShapeReader.clip_to_state` method.
 
         The original source for these files is
-        https://www.census.gov/geographies/mapping-files/2020/geo/carto-boundary-file.html
+        https://www.census.gov/geographies/mapping-files/time-series/geo/cartographic-boundary.2020.html
         and similar for other years.
 
         Parameters
@@ -107,9 +111,10 @@ class ShapeReader:
         include_dc
             If `True` include the geometry for the District of Columbia
             as well as the states.
-        twenty_m
-            if `True` return the 1:20,000,000 scale shapes, otherwise,
-            1:50,000, which provides more detail but has larger polygons.
+        resolution:
+            What resolution shapes should we use. Permitted options are
+            '500k', '5m', and '20m' for 1:500,000, 1:5,000,000, and
+            1:20,000,000 resolution respectively.
         crs
             The crs to make the file to. If `None`, use the default
             crs of the shapefile. Setting this is useful if we plan
@@ -120,9 +125,7 @@ class ShapeReader:
         -------
             A `gpd.GeoDataFrame` containing the outlines of the states.
         """
-        suffix = "_us_state_20m" if twenty_m else "_us_state_500k"
-
-        path = self._shapefile_full_path("cb_" + str(self._year) + suffix)
+        path = self._shapefile_full_path(f"cb_{self._year}_us_state_{resolution}")
         gdf = self._read_shapefile(path, crs)
 
         if fifty_states_only:
@@ -133,7 +136,11 @@ class ShapeReader:
 
         return gdf
 
-    def read_county_bounds_shapefile(self, crs=None):
+    def read_county_bounds_shapefile(
+        self,
+        resolution: str = "500k",
+        crs=None
+    ):
         """
         Read a shapefile containing the bounds of all the counties in the
         United States.
@@ -141,11 +148,15 @@ class ShapeReader:
         The resolution is 1:500,000.
 
         The original source of the files is
-        https://www.census.gov/geographies/mapping-files/2020/geo/carto-boundary-file.html
+        https://www.census.gov/geographies/mapping-files/time-series/geo/cartographic-boundary.2020.html
         or similar for other years.
 
         Parameters
         ----------
+        resolution:
+            What resolution shapes should we use. Permitted options are
+            '500k', '5m', and '20m' for 1:500,000, 1:5,000,000, and
+            1:20,000,000 resolution respectively.
         crs
             The crs to make the file to. If `None`, use the default
             crs of the shapefile. Setting this is useful if we plan
@@ -156,7 +167,7 @@ class ShapeReader:
         -------
             A `gpd.GeoDataFrame` containing the boundaries of the counties.
         """
-        path = self._shapefile_full_path("cb_" + str(self._year) + "_us_county_500k")
+        path = self._shapefile_full_path(f"cb_{self._year}_us_county_{resolution}")
         return self._read_shapefile(path, crs)
 
     def read_cousub_500k_shapefile(self, state, crs=None):
@@ -167,7 +178,7 @@ class ShapeReader:
         The resolution is 1:500,000.
 
         The original source of the files is
-        https://www.census.gov/geographies/mapping-files/2020/geo/carto-boundary-file.html
+        https://www.census.gov/geographies/mapping-files/time-series/geo/cartographic-boundary.2020.html
         or similar for other years.
 
         Parameters
@@ -376,7 +387,7 @@ def clip_to_states(gdf, gdf_state_bounds):
     """
     return gdf.groupby(gdf.STATEFP).apply(
         lambda s: gpd.clip(s, gdf_state_bounds[gdf_state_bounds.STATEFP == s.name])
-    )
+    ).droplevel('STATEFP')
 
 
 def _wrap_poly(poly):
