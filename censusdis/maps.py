@@ -36,10 +36,10 @@ class ShapeReader:
     """
 
     def __init__(
-            self,
-            shapefile_root: str,
-            year: int = 2020,
-            auto_fetch: bool = True,
+        self,
+        shapefile_root: str,
+        year: int = 2020,
+        auto_fetch: bool = True,
     ):
 
         self._shapefile_root = shapefile_root
@@ -369,14 +369,24 @@ class ShapeReader:
 
         return gdf
 
-    def _auto_fetch_file(
-        self,
-        name: str
-    ):
+    def _auto_fetch_file(self, name: str):
         if not self._auto_fetch:
             return
 
         self._fetch_file(name)
+
+    def _url_for_file(self, name: str) -> str:
+        if name.startswith("cb_"):
+            return f"https://www2.census.gov/geo/tiger/GENZ{self._year}/shp/{name}.zip"
+
+        if name.startswith("tl_"):
+            suffix = name.split("_")[-1]
+
+            return f"https://www2.census.gov/geo/tiger/TIGER{self._year}/{suffix.upper()}/{name}.zip"
+
+        # This will not work, but it's the main download page where we
+        # can start to look for what we want.
+        return "https://www.census.gov/cgi-bin/geo/shapefiles/index.php"
 
     def _fetch_file(
         self,
@@ -405,12 +415,12 @@ class ShapeReader:
         zip_path = os.path.join(dir_path, f"{name}.zip")
 
         # Construct the URL to get the zip file.
-        url = f"https://www2.census.gov/geo/tiger/GENZ{self._year}/shp/{name}.zip"
+        url = self._url_for_file(name)
 
         # Fetch the zip file and write it.
         response = requests.get(url)
 
-        with open(zip_path, 'wb') as f:
+        with open(zip_path, "wb") as f:
             f.write(response.content)
 
         # Unzip the file and extract all contents.
