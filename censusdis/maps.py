@@ -4,6 +4,9 @@ import pandas as pd
 
 import geopandas as gpd
 import os
+import requests
+import shutil
+from zipfile import ZipFile
 
 from shapely import affinity
 from shapely.geometry import MultiPolygon, Polygon
@@ -28,15 +31,28 @@ class ShapeReader:
         The location in the filesystem where shapefiles are stored.
     year
         The year we want shapefiles for,
+    auto_fetch
+        If `True` then fetch remote shape files as needed.
     """
 
-    def __init__(self, shapefile_root, year=2020):
+    def __init__(
+            self,
+            shapefile_root: str,
+            year: int = 2020,
+            auto_fetch: bool = True,
+    ):
+
         self._shapefile_root = shapefile_root
         self._year = year
+        self._auto_fetch = auto_fetch
 
-    @staticmethod
-    def _read_shapefile(path, crs):
+    def _read_shapefile(self, basename, crs):
         """Helper function to read a shapefile."""
+
+        self._auto_fetch_file(basename)
+
+        path = self._shapefile_full_path(basename)
+
         gdf = gpd.read_file(path)
         if crs is not None:
             gdf.to_crs(crs, inplace=True)
@@ -74,15 +90,13 @@ class ShapeReader:
         -------
             A `gpd.GeoDataFrame` containing the contents of the shapefile.
         """
-        path = self._shapefile_full_path(basename)
-        return self._read_shapefile(path, crs)
+        return self._read_shapefile(basename, crs)
 
     def _read_state_shapefile(self, state, prefix, suffix, crs):
         """Helper function to read a single state shapefile."""
         basename = "_".join([prefix, str(self._year), state, suffix])
 
-        path = self._shapefile_full_path(basename)
-        return self._read_shapefile(path, crs)
+        return self._read_shapefile(basename, crs)
 
     def read_state_bounds_shapefile(
         self,
@@ -125,8 +139,8 @@ class ShapeReader:
         -------
             A `gpd.GeoDataFrame` containing the outlines of the states.
         """
-        path = self._shapefile_full_path(f"cb_{self._year}_us_state_{resolution}")
-        gdf = self._read_shapefile(path, crs)
+        basename = f"cb_{self._year}_us_state_{resolution}"
+        gdf = self._read_shapefile(basename, crs)
 
         if fifty_states_only:
             if not include_dc:
@@ -163,8 +177,8 @@ class ShapeReader:
         -------
             A `gpd.GeoDataFrame` containing the boundaries of the counties.
         """
-        path = self._shapefile_full_path(f"cb_{self._year}_us_county_{resolution}")
-        return self._read_shapefile(path, crs)
+        basename = f"cb_{self._year}_us_county_{resolution}"
+        return self._read_shapefile(basename, crs)
 
     def read_cousub_500k_shapefile(self, state, crs=None):
         """
@@ -354,6 +368,57 @@ class ShapeReader:
         ).pipe(gpd.GeoDataFrame)
 
         return gdf
+
+    def _auto_fetch_file(
+        self,
+        name: str
+    ):
+        if not self._auto_fetch:
+            return
+
+        self._fetch_file(name)
+
+    def _fetch_file(
+        self,
+        name: str,
+    ) -> None:
+        dir_path = os.path.join(self._shapefile_root, name)
+
+        if os.path.isdir(dir_path):
+            # Does it have the .shp file? If not maybe something
+            # random went wrong in the previous attempt, or someone
+            # deleted some stuff by mistake. So delete it and
+            # reload.
+            shp_path = os.path.join(dir_path, f"{name}.shp")
+            if os.path.isfile(shp_path):
+                # Looks like the shapefile is there.
+                return
+
+            # No shapefile so remove the whole directory and
+            # hope for the best when we recreate it.
+            shutil.rmtree(dir_path)
+
+        # Make the directory
+        os.mkdir(dir_path)
+
+        # We will put the zip file in the dir we just created.
+        zip_path = os.path.join(dir_path, f"{name}.zip")
+
+        # Construct the URL to get the zip file.
+        url = f"https://www2.census.gov/geo/tiger/GENZ{self._year}/shp/{name}.zip"
+
+        # Fetch the zip file and write it.
+        response = requests.get(url)
+
+        with open(zip_path, 'wb') as f:
+            f.write(response.content)
+
+        # Unzip the file and extract all contents.
+        with ZipFile(zip_path) as zf:
+            zf.extractall(dir_path)
+
+        # We don't need the zipfile any more.
+        # os.remove(zip_path)
 
 
 def clip_to_states(gdf, gdf_state_bounds):
