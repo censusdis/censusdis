@@ -157,19 +157,20 @@ python-versions = ">=3.6"
 name = "defusedxml"
 version = "0.7.1"
 description = "XML bomb protection for Python stdlib modules"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 
 [[package]]
 name = "divintseg"
-version = "0.1.1"
-description = "Tools for computing Diversity, Integration and Segregation Metrics"
+version = "0.1.3"
+description = "Tools for computing diversity, integration and segregation metrics"
 category = "main"
 optional = false
 python-versions = ">=3.9,<4.0"
 
 [package.dependencies]
+genbadge = {version = ">=1.1.0,<2.0.0", extras = ["all"]}
 numpy = ">=1.23.2,<2.0.0"
 pandas = ">=1.4.4,<2.0.0"
 
@@ -209,7 +210,7 @@ test = ["boto3 (>=1.2.4)", "mock", "pytest (>=3)", "pytest-cov"]
 name = "flake8"
 version = "5.0.4"
 description = "the modular source code checker: pep8 pyflakes and co"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.6.1"
 
@@ -222,7 +223,7 @@ pyflakes = ">=2.5.0,<2.6.0"
 name = "flake8-html"
 version = "0.4.2"
 description = "Generate HTML reports of flake8 violations"
-category = "dev"
+category = "main"
 optional = false
 python-versions = "*"
 
@@ -257,7 +258,7 @@ woff = ["brotli (>=1.0.1)", "brotlicffi (>=0.8.0)", "zopfli (>=0.1.4)"]
 name = "genbadge"
 version = "1.1.0"
 description = "Generate badges for tools that do not provide one."
-category = "dev"
+category = "main"
 optional = false
 python-versions = "*"
 
@@ -396,7 +397,7 @@ setuptools_scm = ">=4,<7"
 name = "mccabe"
 version = "0.7.0"
 description = "McCabe checker, plugin for flake8"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.6"
 
@@ -530,7 +531,7 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 name = "pycodestyle"
 version = "2.9.1"
 description = "Python style guide checker"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.6"
 
@@ -538,7 +539,7 @@ python-versions = ">=3.6"
 name = "pyflakes"
 version = "2.5.0"
 description = "passive checker of Python programs"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.6"
 
@@ -891,7 +892,7 @@ docs = ["Sphinx", "sphinx-rtd-theme", "sphinxcontrib-napoleon"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "cdc7246a20d3177d8152893acded003c4b6015b55f8af3bf91b15d853f273164"
+content-hash = "ed2f01fd13fcb04206ddc22a9bf4a84ec0e859f879f73f0fa9caaa99288b224f"
 
 [metadata.files]
 alabaster = [
@@ -1019,8 +1020,8 @@ defusedxml = [
     {file = "defusedxml-0.7.1.tar.gz", hash = "sha256:1bb3032db185915b62d7c6209c5a8792be6a32ab2fedacc84e01b52c51aa3e69"},
 ]
 divintseg = [
-    {file = "divintseg-0.1.1-py3-none-any.whl", hash = "sha256:caa4d32ab86a06c2495dd77b83e3961b9cbac5c86beb6e7da04abe998415df63"},
-    {file = "divintseg-0.1.1.tar.gz", hash = "sha256:38a68d0cef09dc27c6e1fc1f7c528d9159f4c6e1f6dc44a4d50f71b636c611dd"},
+    {file = "divintseg-0.1.3-py3-none-any.whl", hash = "sha256:fb560c7099726cd19bc16df4d992692aed60f861d1ed670ddb3a34c7e02c148c"},
+    {file = "divintseg-0.1.3.tar.gz", hash = "sha256:3f2e14f68af5e6046683cadd3ed97ffc04f296b72d59080f10c57db4942c2077"},
 ]
 docutils = [
     {file = "docutils-0.17.1-py2.py3-none-any.whl", hash = "sha256:cf316c8370a737a022b72b56874f6602acf974a37a9fba42ec2876387549fc61"},
