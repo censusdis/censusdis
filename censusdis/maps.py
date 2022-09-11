@@ -1,17 +1,13 @@
 # Copyright (c) 2022 Darren Erik Vengroff
 
-import pandas as pd
-
-import geopandas as gpd
 import os
-import requests
 import shutil
 from zipfile import ZipFile
 
+import geopandas as gpd
+import requests
 from shapely import affinity
 from shapely.geometry import MultiPolygon, Polygon
-
-import censusdis.states
 
 from censusdis.states import STATE_AK, STATE_HI
 
@@ -62,144 +58,6 @@ class ShapeReader:
         """Helper function to construct the full path to a shapefile."""
         path = os.path.join(self._shapefile_root, basename, basename + ".shp")
         return path
-
-    def _x_read_state_bounds_shapefile(
-        self,
-        fifty_states_only: bool = True,
-        include_dc: bool = True,
-        resolution: str = "500k",
-        crs=None,
-    ):
-        """
-        Read the bounds of all the states. This is useful for plotting
-        the entire country and also for clipping other polygons to state
-        boundaries using, for example, the
-        :py:meth:`~ShapeReader.clip_to_state` method.
-
-        The original source for these files is
-        https://www.census.gov/geographies/mapping-files/time-series/geo/cartographic-boundary.2020.html
-        and similar for other years.
-
-        Parameters
-        ----------
-        fifty_states_only
-            If `True`, drop the portion of the map that covers territories
-            outside the fifty states. This is useful since the default
-            Census maps include these and we aren't always interested in
-            plotting them on maps.
-        include_dc
-            If `True` include the geometry for the District of Columbia
-            as well as the states.
-        resolution:
-            What resolution shapes should we use. Permitted options are
-            '500k', '5m', and '20m' for 1:500,000, 1:5,000,000, and
-            1:20,000,000 resolution respectively.
-        crs
-            The crs to make the file to. If `None`, use the default
-            crs of the shapefile. Setting this is useful if we plan
-            to merge the resulting `GeoDataFrame` with another so we
-            can make sure they use the same crs.
-
-        Returns
-        -------
-            A `gpd.GeoDataFrame` containing the outlines of the states.
-        """
-        base_name = f"cb_{self._year}_us_state_{resolution}"
-        base_url = f"https://www2.census.gov/geo/tiger/GENZ{self._year}/shp"
-
-        gdf = self._read_shapefile(base_name, base_url, crs)
-
-        if fifty_states_only:
-            if not include_dc:
-                gdf = gdf[gdf.STATEFP.isin(censusdis.states.ALL_STATES)]
-            else:
-                gdf = gdf[gdf.STATEFP.isin(censusdis.states.ALL_STATES_AND_DC)]
-
-        return gdf
-
-    def _x_read_county_bounds_for_state_shapefile(
-        self, state: str, resolution: str = "500k", crs=None
-    ):
-        """
-        Read a shapefile containing the bounds of all the counties in a given state.
-
-        Parameters
-        ----------
-        resolution
-        state
-        crs
-
-        Returns
-        -------
-
-        """
-        # The census serves these files differently for different years. On or
-        # before 2010, there is a single file per state per year. From 2011 on,
-        # there is a single file for the country.
-
-        if self._year <= 2010:
-            basename = f"gz_{self._year}_{state}_140_00_{resolution}"
-            base_url = f"https://www2.census.gov/geo/tiger/GENZ{self._year}"
-
-            return self._read_shapefile(basename, base_url, crs)
-        else:
-            # Just filter down to the state we want.
-            gdf_us = self.read_county_bounds_shapefile(resolution, crs)
-            return gdf_us[gdf_us["STATE"] == state]
-
-    def _x_read_county_bounds_shapefile(
-        self, resolution: str = "500k", crs=None, *, states=None
-    ):
-        """
-        Read a shapefile containing the bounds of all the counties in the
-        United States.
-
-        For 2010 and earlier, the US Census servers only have this data state-by-state,
-        so the first time you run it may take a while to load and cache all the state-level
-        data.
-
-        The original source of the files is
-        https://www.census.gov/geographies/mapping-files/time-series/geo/cartographic-boundary.2020.html
-        or similar for other years.
-
-        Parameters
-        ----------
-        resolution:
-            What resolution shapes should we use. Permitted options are
-            '500k', '5m', and '20m' for 1:500,000, 1:5,000,000, and
-            1:20,000,000 resolution respectively.
-        crs
-            The crs to make the file to. If `None`, use the default
-            crs of the shapefile. Setting this is useful if we plan
-            to merge the resulting `GeoDataFrame` with another so we
-            can make sure they use the same crs.
-
-        Returns
-        -------
-            A `gpd.GeoDataFrame` containing the boundaries of the counties.
-        """
-
-        if self._year <= 2010:
-            if states is None:
-                states = censusdis.states.ALL_STATES_AND_DC
-            # Load them all and concatenate.
-            gdf = pd.concat(
-                [
-                    self.read_county_bounds_for_state_shapefile(state, resolution, crs)
-                    for state in states
-                ]
-            ).pipe(gpd.GeoDataFrame)
-            return gdf
-        else:
-            basename = f"cb_{self._year}_us_county_{resolution}"
-            base_url = f"https://www2.census.gov/geo/tiger/GENZ{self._year}/shp"
-
-            gdf = self._read_shapefile(basename, base_url, crs)
-
-            if states is not None:
-                gdf = gdf[gdf["STATEFP"].isin(states)]
-
-            return gdf
 
     def _through_2010_tiger(self, prefix, state, suffix):
         # Curiously, the server side puts the 2000 files under
@@ -298,162 +156,125 @@ class ShapeReader:
 
         return gdf
 
-    def read_shapefile(self, state: str, geography: str, crs=None):
+    def read_shapefile(
+            self,
+            state: str,
+            geography: str,
+            crs=None
+    ):
+        """
+        Read the geometries of geographies.
+
+        This reads the highest resolution available, which makes it suitable
+        for use with geometric joins and queries of various types. If you are
+        only interested in plotting maps, the lower resolution method
+        :py:meth:`~ShapeReader.read_cb_shapefile` may be more suitable.
+
+        The files are read from the US Census servers and cached locally.
+        They are in most cases the same files you can download manually from
+        https://www.census.gov/cgi-bin/geo/shapefiles/index.php.
+
+        Individual files the API may download follow a naming convention
+        that has evolved a bit over time. So for example a 2010 block group file
+        for New Jersey would be found at
+        https://www2.census.gov/geo/tiger/TIGER2010/BG/2010/tl_2010_34_bg10.zip
+        whereas a similar file for 2020 would be at
+        https://www2.census.gov/geo/tiger/TIGER2020/BG/tl_2020_34_bg.zip.
+
+        This method knows many of the subtle changes that have occurred over the years,
+        so you should mostly not have to worry about them. It is unlikely it knows
+        them all, so please submit an
+        issue at https://github.com/vengroff/censusdis/issues if you find
+        otherwise.
+
+        Once read, the files are cached locally so that when we reuse the same
+        files we do not have to go back to the server.
+
+        Parameters
+        ----------
+        state
+             The state, e.g. `STATE_NJ`.
+        geography
+            The geography we want to download bounds for. Supported
+            geometries are `"state'`, `"county"`, `"cousub"` (county subdivision),
+            `"tract"`, and `"bg"` (block group). Other geometries as defined
+            by the US Census may work, but have not been thoroughly tested.
+        crs
+            The crs to make the file to. If `None`, use the default
+            crs of the shapefile. Setting this is useful if we plan
+            to merge the resulting `GeoDataFrame` with another so we
+            can make sure they use the same crs.
+
+        Returns
+        -------
+            A `gpd.GeoDataFrame` containing the requested
+            geometries.
+        """
         return self._tiger(state, geography, crs)
 
     def read_cb_shapefile(
-        self, state: str, geography: str, resolution: str = "500k", crs=None
+        self,
+        state: str,
+        geography: str,
+        resolution: str = "500k",
+        crs=None
     ):
+        """
+        Read the cartographic boundaries of a given geography.
+
+        These are smaller
+        files suited for plotting maps, as compared to those returned by
+        :py:meth:`~ShapeReader.read_shapefile", which returns higher
+        resolution geometries.
+
+        The files are read from the US Census servers and cached locally.
+        They are in most cases the same files you can download manually from
+        https://www.census.gov/geographies/mapping-files/time-series/geo/cartographic-boundary.2020.html
+        or similar URLs for other years.
+
+        Individual files the API may download follow a naming convention
+        that has evolved a bit over time. So for example a 2010 census tract
+        cartographic bounds file
+        for New Jersey at 500,000:1 resolution would be found at
+        https://www2.census.gov/geo/tiger/GENZ2010/gz_2010_34_140_00_500k.zip
+        whereas a similar file for 2020 would be at
+        https://www2.census.gov/geo/tiger/GENZ2020/shp/cb_2020_34_tract_500k.zip
+
+        This method knows many of the subtle changes that have occurred over the years,
+        so you should mostly not have to worry about them. It is unlikely it knows
+        them all, so please submit an
+        issue at https://github.com/vengroff/censusdis/issues if you find
+        otherwise.
+
+        Once read, the files are cached locally so that when we reuse the same
+        files we do not have to go back to the server.
+
+        Parameters
+        ----------
+        state
+            The state, e.g. `STATE_NJ`. For cases where files are available
+            for the entire country, the string `"us"` can be used.
+        geography
+            The geography we want to download bounds for. Supported
+            geometries are `"state'`, `"county"`, `"cousub"` (county subdivision),
+            `"tract"`, and `"bg"` (block group)
+        resolution
+            What resolution shapes should we use. Permitted options are
+            `"500k"`, `"5m"`, and `"20m"` for 1:500,000, 1:5,000,000, and
+            1:20,000,000 resolution respectively. Availability varies, but for
+            most geographies `"500k"` is available even if others are not.
+        crs
+            The crs to make the file to. If `None`, use the default
+            crs of the shapefile. Setting this is useful if we plan
+            to merge the resulting `GeoDataFrame` with another so we
+            can make sure they use the same crs.
+
+        Returns
+        -------
+            A `gpd.GeoDataFrame` containing the boundaries of the requested
+            geometries.
+        """
         return self._cartographic_bound(state, geography, resolution, crs)
-
-    def _x_read_cousub_shapefile(self, state, crs=None):
-        """
-        Read a shapefile containing the bounds of all the county subdivisions in a
-        given state.
-
-        The original source of the files is
-        https://www.census.gov/geographies/mapping-files/2020/geo/carto-boundary-file.html
-        or similar for other years.
-
-        Parameters
-        ----------
-        state
-            The state, e.g. `STATE_NJ`.
-        crs
-            The crs to make the file to. If `None`, use the default
-            crs of the shapefile. Setting this is useful if we plan
-            to merge the resulting `GeoDataFrame` with another so we
-            can make sure they use the same crs.
-
-        Returns
-        -------
-            A `gpd.GeoDataFrame` containing the boundaries of the county subdivisions
-            in the state.
-        """
-        prefix, suffix = ("tl", "cousub")
-
-        gdf = self._tiger(crs, prefix, state, suffix)
-
-        # There are some filler areas around coastal regions that
-        # are entirely water and have no land area. Filter these out.
-        gdf = gpd.GeoDataFrame(gdf[~((gdf.FUNCSTAT == "F") & (gdf.ALAND == 0))])
-
-        return gdf
-
-    def _x_read_tract_shapefile(self, state: str, crs=None):
-        """
-        Read a shapefile containing the bounds of all the census tracts in a
-        given state.
-
-        The original source of the files is
-        https://www.census.gov/geographies/mapping-files/2020/geo/carto-boundary-file.html
-        or similar for 2011 and later. The full url to download will look something like
-        https://www2.census.gov/geo/tiger/TIGER2010/TRACT/2010/tl_2010_34_tract10.zip
-        up to 2010 and
-        https://www2.census.gov/geo/tiger/GENZ2020/shp/cb_2020_34_tract_500k.zip for 2011 and
-        later.
-
-        Parameters
-        ----------
-        state
-            The state, e.g. `STATE_NJ`.
-        crs
-            The crs to make the file to. If `None`, use the default
-            crs of the shapefile. Setting this is useful if we plan
-            to merge the resulting `GeoDataFrame` with another so we
-            can make sure they use the same crs.
-
-        Returns
-        -------
-            A `gpd.GeoDataFrame` containing the boundaries of the census tracts
-            in the state.
-        """
-        prefix, suffix = ("tl", "tract")
-
-        return self._tiger(crs, prefix, state, suffix)
-
-    def _x_read_block_group_shapefile(self, state, crs=None):
-        """
-        Read a shapefile containing the bounds of all the block groups in a
-        given state.
-
-        The original source of the files is
-        https://www.census.gov/geographies/mapping-files/2020/geo/carto-boundary-file.html
-        or similar for other years.
-
-        Parameters
-        ----------
-        state
-            The state, e.g. `STATE_NJ`.
-        crs
-            The crs to make the file to. If `None`, use the default
-            crs of the shapefile. Setting this is useful if we plan
-            to merge the resulting `GeoDataFrame` with another so we
-            can make sure they use the same crs.
-
-        Returns
-        -------
-            A `gpd.GeoDataFrame` containing the boundaries of the block groups
-            in the state.
-        """
-        prefix, suffix = ("tl", "bg")
-
-        return self._tiger(crs, prefix, state, suffix)
-
-    def _x_read_block_shapefile(self, state, crs=None):
-        """
-        Read a shapefile containing the bounds of all the blocks in a
-        given state.
-
-        The original source of the files is
-        https://www.census.gov/geographies/mapping-files/2020/geo/carto-boundary-file.html
-        or similar for other years.
-
-        Parameters
-        ----------
-        state
-            The state, e.g. `STATE_NJ`.
-        crs
-            The crs to make the file to. If `None`, use the default
-            crs of the shapefile. Setting this is useful if we plan
-            to merge the resulting `GeoDataFrame` with another so we
-            can make sure they use the same crs.
-
-        Returns
-        -------
-            A `gpd.GeoDataFrame` containing the boundaries of the blocks
-            in the state.
-        """
-        prefix, suffix = ("tl", "tabblock")
-
-        return self._tiger(crs, prefix, state, suffix)
-
-    def _x_read_cousub_shapefiles(self, states, crs=None):
-        """
-        This is like :py:meth:`~ShapeReader.read_cousub_shapefile` but
-        it reads from several states and puts the results all into one
-        large `GeoDataFrame`.
-
-        Parameters
-        ----------
-        states
-            The states, e.g. `[STATE_NY, STATE_NJ, STATE_CT]`.
-        crs
-            The crs to make the file to. If `None`, use the default
-            crs of the shapefile. Setting this is useful if we plan
-            to merge the resulting `GeoDataFrame` with another so we
-            can make sure they use the same crs.
-
-        Returns
-        -------
-            A `gpd.GeoDataFrame` containing the boundaries of the county subdivisions
-            in all the specified states.
-        """
-        gdf = pd.concat(
-            [self.read_cousub_shapefile(state, crs) for state in states]
-        ).pipe(gpd.GeoDataFrame)
-
-        return gdf
 
     def _auto_fetch_file(self, name: str, base_url: str):
         if not self._auto_fetch:
@@ -469,9 +290,15 @@ class ShapeReader:
             suffix = name.split("_")[-1]
 
             if self._year <= 2010:
-                return f"https://www2.census.gov/geo/tiger/TIGER{self._year}/{suffix.upper()[:-2]}/{self._year}/{name}.zip"
+                return (
+                    f"https://www2.census.gov/geo/tiger/TIGER{self._year}/"
+                    f"{suffix.upper()[:-2]}/{self._year}/{name}.zip"
+                )
             else:
-                return f"https://www2.census.gov/geo/tiger/TIGER{self._year}/{suffix.upper()}/{name}.zip"
+                return (
+                    f"https://www2.census.gov/geo/tiger/TIGER{self._year}/"
+                    f"{suffix.upper()}/{name}.zip"
+                )
 
         # This will not work, but it's the main download page where we
         # can start to look for what we want.
