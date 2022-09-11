@@ -23,7 +23,12 @@ def metadata(
         if v["label"].endswith(":") and not v["label"].endswith("!!Total:")
     ]
 
-    return {f: v["label"] for f, v in fields.items()}, total_field, subtotal_fields, leaf_fields
+    return (
+        {f: v["label"] for f, v in fields.items()},
+        total_field,
+        subtotal_fields,
+        leaf_fields,
+    )
 
 
 def data(

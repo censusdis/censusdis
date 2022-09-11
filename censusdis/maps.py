@@ -117,7 +117,9 @@ class ShapeReader:
 
         return gdf
 
-    def _x_read_county_bounds_for_state_shapefile(self, state: str, resolution: str = "500k", crs=None):
+    def _x_read_county_bounds_for_state_shapefile(
+        self, state: str, resolution: str = "500k", crs=None
+    ):
         """
         Read a shapefile containing the bounds of all the counties in a given state.
 
@@ -145,7 +147,9 @@ class ShapeReader:
             gdf_us = self.read_county_bounds_shapefile(resolution, crs)
             return gdf_us[gdf_us["STATE"] == state]
 
-    def _x_read_county_bounds_shapefile(self, resolution: str = "500k", crs=None, *, states=None):
+    def _x_read_county_bounds_shapefile(
+        self, resolution: str = "500k", crs=None, *, states=None
+    ):
         """
         Read a shapefile containing the bounds of all the counties in the
         United States.
@@ -193,7 +197,7 @@ class ShapeReader:
             gdf = self._read_shapefile(basename, base_url, crs)
 
             if states is not None:
-                gdf = gdf[gdf['STATEFP'].isin(states)]
+                gdf = gdf[gdf["STATEFP"].isin(states)]
 
             return gdf
 
@@ -205,9 +209,7 @@ class ShapeReader:
         if path_year < 2010:
             path_year = 2010
 
-        base_url = (
-            f"https://www2.census.gov/geo/tiger/TIGER{path_year}/{suffix.upper()}/{self._year}"
-        )
+        base_url = f"https://www2.census.gov/geo/tiger/TIGER{path_year}/{suffix.upper()}/{self._year}"
         name = f"{prefix}_{path_year}_{state}_{suffix}{str(self._year)[-2:]}"
         return base_url, name
 
@@ -216,8 +218,8 @@ class ShapeReader:
             f"https://www2.census.gov/geo/tiger/TIGER{self._year}/{suffix.upper()}"
         )
         # Special case for whatever reason the US Census decided.
-        if self._year == 2020 and suffix == 'tabblock':
-            suffix = 'tabblock10'
+        if self._year == 2020 and suffix == "tabblock":
+            suffix = "tabblock10"
 
         name = f"{prefix}_{self._year}_{state}_{suffix}"
         return base_url, name
@@ -235,11 +237,13 @@ class ShapeReader:
         # Pull off the extra two digits of year that get tacked
         # on for the older data.
         if self._year <= 2010:
+
             def mapper(col: str) -> str:
                 col_suffix = str(self._year)[-2:]
                 if col.endswith(col_suffix):
                     return col[:-2]
                 return col
+
             gdf.rename(mapper, axis="columns", inplace=True)
 
         if "STATEFP" not in gdf.columns:
@@ -251,11 +255,11 @@ class ShapeReader:
     # support.
     # See https://www2.census.gov/geo/tiger/GENZ2010/ReadMe.pdf
     _CB_SUMMARY_LEVEL_BY_GEOGRAPHY_THROUGH_2010 = {
-        'state': "040",
-        'county': "050",
-        'cousub': '060',
-        'tract': '140',
-        'bg': '150'
+        "state": "040",
+        "county": "050",
+        "cousub": "060",
+        "tract": "140",
+        "bg": "150",
     }
 
     def _through_2010_cb(self, state: str, geography: str, resolution: str):
@@ -285,29 +289,20 @@ class ShapeReader:
         # leave the 'FP' suffix of column names.
         gdf.rename(
             {
-                'STATE': 'STATEFP',
-                'COUNTY': 'COUNTYFP',
+                "STATE": "STATEFP",
+                "COUNTY": "COUNTYFP",
             },
-            axis='columns',
-            inplace=True
+            axis="columns",
+            inplace=True,
         )
 
         return gdf
 
-    def read_shapefile(
-        self,
-        state: str,
-        geography: str,
-        crs=None
-    ):
+    def read_shapefile(self, state: str, geography: str, crs=None):
         return self._tiger(state, geography, crs)
 
     def read_cb_shapefile(
-        self,
-        state: str,
-        geography: str,
-        resolution: str = "500k",
-        crs=None
+        self, state: str, geography: str, resolution: str = "500k", crs=None
     ):
         return self._cartographic_bound(state, geography, resolution, crs)
 
@@ -460,11 +455,7 @@ class ShapeReader:
 
         return gdf
 
-    def _auto_fetch_file(
-        self,
-        name: str,
-        base_url: str
-    ):
+    def _auto_fetch_file(self, name: str, base_url: str):
         if not self._auto_fetch:
             return
 
@@ -478,13 +469,9 @@ class ShapeReader:
             suffix = name.split("_")[-1]
 
             if self._year <= 2010:
-                return (
-                    f"https://www2.census.gov/geo/tiger/TIGER{self._year}/{suffix.upper()[:-2]}/{self._year}/{name}.zip"
-                )
+                return f"https://www2.census.gov/geo/tiger/TIGER{self._year}/{suffix.upper()[:-2]}/{self._year}/{name}.zip"
             else:
-                return (
-                    f"https://www2.census.gov/geo/tiger/TIGER{self._year}/{suffix.upper()}/{name}.zip"
-                )
+                return f"https://www2.census.gov/geo/tiger/TIGER{self._year}/{suffix.upper()}/{name}.zip"
 
         # This will not work, but it's the main download page where we
         # can start to look for what we want.
