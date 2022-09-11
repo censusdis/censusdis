@@ -15,7 +15,6 @@ def metadata(
 ):
     fields = censusdata.censustable(f"acs{survey_years}", year, group)
 
-    field_names = [f for f in fields.keys()]
     total_field = [f for f, v in fields.items() if v["label"].endswith("!!Total:")][0]
     leaf_fields = [f for f, v in fields.items() if not v["label"].endswith(":")]
     subtotal_fields = [
@@ -24,7 +23,7 @@ def metadata(
         if v["label"].endswith(":") and not v["label"].endswith("!!Total:")
     ]
 
-    return field_names, total_field, subtotal_fields, leaf_fields
+    return {f: v["label"] for f, v in fields.items()}, total_field, subtotal_fields, leaf_fields
 
 
 def data(
