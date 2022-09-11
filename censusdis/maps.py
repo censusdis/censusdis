@@ -156,12 +156,7 @@ class ShapeReader:
 
         return gdf
 
-    def read_shapefile(
-            self,
-            state: str,
-            geography: str,
-            crs=None
-    ):
+    def read_shapefile(self, state: str, geography: str, crs=None):
         """
         Read the geometries of geographies.
 
@@ -213,11 +208,7 @@ class ShapeReader:
         return self._tiger(state, geography, crs)
 
     def read_cb_shapefile(
-        self,
-        state: str,
-        geography: str,
-        resolution: str = "500k",
-        crs=None
+        self, state: str, geography: str, resolution: str = "500k", crs=None
     ):
         """
         Read the cartographic boundaries of a given geography.
