@@ -1,5 +1,6 @@
 import censusdata
 import pandas as pd
+import requests
 from typing import Iterable, List, Optional, Tuple, Union
 
 
@@ -301,3 +302,12 @@ def _augment_geography(
     df = df[cols + census_fields]
 
     return df
+
+
+def download_from_url(url: str):
+
+    request = requests.get(url)
+
+    parsed_json = request.json()
+
+    return pd.DataFrame(parsed_json[1:], columns=parsed_json[0])
