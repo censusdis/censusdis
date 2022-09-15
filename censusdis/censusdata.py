@@ -1,7 +1,8 @@
 import censusdata
 import pandas as pd
 import requests
-from typing import Iterable, List, Optional, Tuple, Union
+from typing import Iterable, List, Mapping, Optional, Tuple, Union
+import censusdis.geography as cgeo
 
 
 def geo_state(geo):
@@ -304,10 +305,48 @@ def _augment_geography(
     return df
 
 
-def download_from_url(url: str):
+class CensusApiException(Exception):
+    pass
 
-    request = requests.get(url)
 
-    parsed_json = request.json()
+def download_from_url(url: str, params: Optional[Mapping[str, str]] = None) -> pd.DataFrame:
+    request = requests.get(url, params=params)
 
-    return pd.DataFrame(parsed_json[1:], columns=parsed_json[0])
+    if request.status_code == 200:
+        parsed_json = request.json()
+        return pd.DataFrame(parsed_json[1:], columns=(c.upper().replace(' ', '_') for c in parsed_json[0]))
+
+    # Do our best to tell the user something informative.
+    raise CensusApiException(
+        f"Census API request to {request.url} failed with status {request.status_code}. {request.text}"
+    )
+
+
+def download_detail(
+        source: str,
+        year: int,
+        fields: Iterable[str],
+        **kwargs: cgeo.InSpecType
+) -> pd.DataFrame:
+    url, params = census_detail_table_url(source, year, fields, **kwargs)
+    return download_from_url(url, params)
+
+
+def census_detail_table_url(
+    source: str,
+    year: int,
+    fields: Iterable[str],
+    **kwargs: cgeo.InSpecType
+) -> Tuple[str, Mapping[str, str]]:
+    bound_path = cgeo.PathSpec.partial_prefix_match(**kwargs)
+
+    query_spec = cgeo.CensusGeographyQuerySpec(
+        source,
+        year,
+        list(fields),
+        bound_path
+    )
+
+    url, params = query_spec.detail_table_url()
+
+    return url, params
