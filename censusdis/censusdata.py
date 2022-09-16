@@ -1,6 +1,10 @@
+from abc import ABC, abstractmethod
 import censusdata
+from collections import defaultdict
 import pandas as pd
-from typing import Iterable, List, Optional, Tuple, Union
+import requests
+from typing import Any, Iterable, List, Mapping, Optional, Tuple, Union
+import censusdis.geography as cgeo
 
 
 def geo_state(geo):
@@ -301,3 +305,176 @@ def _augment_geography(
     df = df[cols + census_fields]
 
     return df
+
+
+class CensusApiException(Exception):
+    pass
+
+
+def data_from_url(url: str, params: Optional[Mapping[str, str]] = None) -> pd.DataFrame:
+    parsed_json = json_from_url(url, params)
+    if (
+        isinstance(parsed_json, list)
+        and len(parsed_json) >= 1
+        and isinstance(parsed_json[0], list)
+    ):
+        return pd.DataFrame(
+            parsed_json[1:],
+            columns=(c.upper().replace(" ", "_") for c in parsed_json[0]),
+        )
+
+    raise CensusApiException(
+        f"Expected json data to be a list of lists, not a {type(parsed_json)}"
+    )
+
+
+def json_from_url(url: str, params: Optional[Mapping[str, str]] = None) -> Any:
+    request = requests.get(url, params=params)
+
+    if request.status_code == 200:
+        parsed_json = request.json()
+        return parsed_json
+
+    # Do our best to tell the user something informative.
+    raise CensusApiException(
+        f"Census API request to {request.url} failed with status {request.status_code}. {request.text}"
+    )
+
+
+def download_detail(
+    source: str,
+    year: int,
+    fields: Iterable[str],
+    census_variables: Optional["Variables"] = None,
+    **kwargs: cgeo.InSpecType,
+) -> pd.DataFrame:
+    if census_variables is None:
+        census_variables = variables
+
+    # Prefetch all the types before we load the data.
+    # That way we fail fast if a field is not known.
+    for field in fields:
+        census_variables.get(source, year, field)
+
+    url, params = census_detail_table_url(source, year, fields, **kwargs)
+    df = data_from_url(url, params)
+
+    for field in fields:
+        field_type = census_variables.get(source, year, field)["predicateType"]
+
+        if field_type == "int":
+            df[field] = df[field].astype(int)
+        elif field_type == "float":
+            df[field] = df[field].astype(float)
+        elif field_type == "string":
+            pass
+        else:
+            # Leave it as an object?
+            pass
+
+    return df
+
+
+def census_detail_table_url(
+    source: str, year: int, fields: Iterable[str], **kwargs: cgeo.InSpecType
+) -> Tuple[str, Mapping[str, str]]:
+    bound_path = cgeo.PathSpec.partial_prefix_match(**kwargs)
+
+    query_spec = cgeo.CensusGeographyQuerySpec(source, year, list(fields), bound_path)
+
+    url, params = query_spec.detail_table_url()
+
+    return url, params
+
+
+class VariablesOrGroups(ABC):
+    def __init__(self):
+        self._data = defaultdict(lambda: defaultdict(dict))
+
+    @abstractmethod
+    def url(
+        self,
+        source: str,
+        year: int,
+        name: str,
+    ) -> str:
+        raise NotImplementedError(f"{type(self)} is abstract.")
+
+    def get(
+        self,
+        source: str,
+        year: int,
+        name: str,
+    ) -> List:
+        cached_value = self._data[source][year].get(name, None)
+
+        if cached_value is not None:
+            return cached_value
+
+        url = self.url(source, year, name)
+        value = json_from_url(url)
+
+        self._data[source][year][name] = value
+
+        return value
+
+    def __contains__(self, item: Tuple[str, int, str]) -> bool:
+        source, year, name = item
+
+        return name in self._data[source, year]
+
+    def __getitem__(self, item: Tuple[str, int, str]):
+        return self.get(*item)
+
+    def __len__(self):
+        return sum(
+            len(names) for years in self._data.values() for names in years.values()
+        )
+
+    def keys(self) -> Iterable[Tuple[str, int, str]]:
+        for k, _ in self.items():
+            yield k
+
+    def values(self) -> Iterable[dict]:
+        for _, v in self.items():
+            yield v
+
+    def items(self) -> Iterable[Tuple[Tuple[str, int, str], dict]]:
+        for source in self._data.keys():
+            for year in source.keys():
+                for name, value in year.items():
+                    yield (source, year, name), value
+
+    def invalidate(self, source: str, year: int, name: str):
+        if self._data[source][year].pop(name, None):
+            if len(self._data[source][year]) == 0:
+                self._data[source].pop(year)
+                if len(self._data[source]) == 0:
+                    self._data.pop(source)
+
+    def clear(self):
+        self._data = defaultdict(lambda: defaultdict(dict))
+
+
+class Groups(VariablesOrGroups):
+    def url(
+        self,
+        source: str,
+        year: int,
+        name: str,
+    ) -> str:
+        return f"https://api.census.gov/data/{year}/{source}/groups/{name}.json"
+
+
+class Variables(VariablesOrGroups):
+    def url(
+        self,
+        source: str,
+        year: int,
+        name: str,
+    ) -> str:
+        return f"https://api.census.gov/data/{year}/{source}/variables/{name}.json"
+
+
+groups = Groups()
+variables = Variables()
