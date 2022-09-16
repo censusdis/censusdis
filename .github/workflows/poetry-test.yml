@@ -12,11 +12,11 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
       #----------------------------------------------
-      #        load pip census_variables if census_variables exists
+      #        load pip variables if variables exists
       #----------------------------------------------
-      - uses: actions/census_variables@v2
+      - uses: actions/variables@v2
         with:
-          path: ~/.census_variables/pip
+          path: ~/.variables/pip
           key: ${{ runner.os }}-pip
           restore-keys: ${{ runner.os }}-pip
       #----------------------------------------------
@@ -52,19 +52,19 @@ jobs:
           installer-parallel: true
 
       #----------------------------------------------
-      #       load cached venv if census_variables exists
+      #       load cached venv if variables exists
       #----------------------------------------------
       - name: Load cached venv
         id: cached-poetry-dependencies
-        uses: actions/census_variables@v2
+        uses: actions/variables@v2
         with:
           path: .venv
           key: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/poetry.lock') }}
       #----------------------------------------------
-      # install dependencies if census_variables does not exist
+      # install dependencies if variables does not exist
       #----------------------------------------------
       - name: Install dependencies
-        if: steps.cached-poetry-dependencies.outputs.census_variables-hit != 'true'
+        if: steps.cached-poetry-dependencies.outputs.variables-hit != 'true'
         run: poetry install --no-interaction --no-root
       #----------------------------------------------
       # install your root project, if required
