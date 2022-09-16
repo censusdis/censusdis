@@ -1,3 +1,4 @@
+from abc import ABC, abstractmethod
 import censusdata
 from collections import defaultdict
 import pandas as pd
@@ -344,22 +345,22 @@ def download_detail(
     source: str,
     year: int,
     fields: Iterable[str],
-    cache: Optional["VariableCache"] = None,
+    census_variables: Optional["Variables"] = None,
     **kwargs: cgeo.InSpecType,
 ) -> pd.DataFrame:
-    if cache is None:
-        cache = variable_cache
+    if census_variables is None:
+        census_variables = variables
 
     # Prefetch all the types before we load the data.
     # That way we fail fast if a field is not known.
     for field in fields:
-        cache.get(source, year, field)
+        census_variables.get(source, year, field)
 
     url, params = census_detail_table_url(source, year, fields, **kwargs)
     df = data_from_url(url, params)
 
     for field in fields:
-        field_type = cache.get(source, year, field)["predicateType"]
+        field_type = census_variables.get(source, year, field)["predicateType"]
 
         if field_type == "int":
             df[field] = df[field].astype(int)
@@ -386,58 +387,66 @@ def census_detail_table_url(
     return url, params
 
 
-class VariableCache:
+class VariablesOrGroups(ABC):
     def __init__(self):
         self._data = defaultdict(lambda: defaultdict(dict))
+
+    @abstractmethod
+    def url(
+        self,
+        source: str,
+        year: int,
+        name: str,
+    ) -> str:
+        raise NotImplementedError(f"{type(self)} is abstract.")
 
     def get(
         self,
         source: str,
         year: int,
-        field: str,
-    ):
-        cached_value = self._data[source][year].get(field, None)
+        name: str,
+    ) -> List:
+        cached_value = self._data[source][year].get(name, None)
 
         if cached_value is not None:
             return cached_value
 
-        url = f"https://api.census.gov/data/{year}/{source}/variables/{field}.json"
+        url = self.url(source, year, name)
         value = json_from_url(url)
 
-        self._data[source][year][field] = value
+        self._data[source][year][name] = value
 
         return value
 
-    def __contains__(self, item: Tuple[str, int, str]):
-        source, year, field = item
+    def __contains__(self, item: Tuple[str, int, str]) -> bool:
+        source, year, name = item
 
-        return field in self._data[source, year]
+        return name in self._data[source, year]
+
+    def __getitem__(self, item: Tuple[str, int, str]):
+        return self.get(*item)
 
     def __len__(self):
         return sum(
-            len(fields) for years in self._data.values() for fields in years.values()
+            len(names) for years in self._data.values() for names in years.values()
         )
 
-    def keys(self):
+    def keys(self) -> Iterable[Tuple[str, int, str]]:
+        for k, _ in self.items():
+            yield k
+
+    def values(self) -> Iterable[dict]:
+        for _, v in self.items():
+            yield v
+
+    def items(self) -> Iterable[Tuple[Tuple[str, int, str], dict]]:
         for source in self._data.keys():
             for year in source.keys():
-                for field in year.keys():
-                    yield source, year, field
+                for name, value in year.items():
+                    yield (source, year, name), value
 
-    def values(self):
-        for source in self._data.keys():
-            for year in source.keys():
-                for value in year.keys():
-                    yield value
-
-    def items(self):
-        for source in self._data.keys():
-            for year in source.keys():
-                for field, value in year.items():
-                    yield (source, year, field), value
-
-    def invalidate(self, source: str, year: int, field):
-        if self._data[source][year].pop(field, None):
+    def invalidate(self, source: str, year: int, name: str):
+        if self._data[source][year].pop(name, None):
             if len(self._data[source][year]) == 0:
                 self._data[source].pop(year)
                 if len(self._data[source]) == 0:
@@ -447,4 +456,25 @@ class VariableCache:
         self._data = defaultdict(lambda: defaultdict(dict))
 
 
-variable_cache = VariableCache()
+class Groups(VariablesOrGroups):
+    def url(
+        self,
+        source: str,
+        year: int,
+        name: str,
+    ) -> str:
+        return f"https://api.census.gov/data/{year}/{source}/groups/{name}.json"
+
+
+class Variables(VariablesOrGroups):
+    def url(
+        self,
+        source: str,
+        year: int,
+        name: str,
+    ) -> str:
+        return f"https://api.census.gov/data/{year}/{source}/variables/{name}.json"
+
+
+groups = Groups()
+variables = Variables()
