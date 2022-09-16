@@ -27,7 +27,9 @@ class CanonicalGeometryTestCase(unittest.TestCase):
         self.assertFalse(path_spec._partial_match(unknown="*"))
         self.assertFalse(path_spec._partial_match(state="034", unknown="*"))
         self.assertFalse(path_spec._partial_match(is_prefix=False, unknown="*"))
-        self.assertFalse(path_spec._partial_match(is_prefix=False, state="034", unknown="*"))
+        self.assertFalse(
+            path_spec._partial_match(is_prefix=False, state="034", unknown="*")
+        )
 
     def test_partial_match_underscore(self):
         # 150 is state:county:tract:block group,
@@ -72,9 +74,7 @@ class CanonicalGeometryTestCase(unittest.TestCase):
         self.assertEqual("040", num)
         self.assertIs(PathSpec.by_number("040"), path_spec)
 
-        num, path_spec = PathSpec.full_match(
-            state="34", county="013", tract="019013"
-        )
+        num, path_spec = PathSpec.full_match(state="34", county="013", tract="019013")
         self.assertEqual("140", num)
         self.assertIs(PathSpec.by_number("140"), path_spec)
 
@@ -107,13 +107,15 @@ class CanonicalGeometryTestCase(unittest.TestCase):
         filled_in = path_spec.fill_in(state="34", county="013", block_group="*")
 
         self.assertEqual(
-            {"state": "34", "county": "013", "tract": "*", "block group": "*"}, filled_in
+            {"state": "34", "county": "013", "tract": "*", "block group": "*"},
+            filled_in,
         )
 
         filled_in = path_spec.fill_in(**filled_in)
 
         self.assertEqual(
-            {"state": "34", "county": "013", "tract": "*", "block group": "*"}, filled_in
+            {"state": "34", "county": "013", "tract": "*", "block group": "*"},
+            filled_in,
         )
 
         filled_in = path_spec.fill_in(
@@ -121,7 +123,8 @@ class CanonicalGeometryTestCase(unittest.TestCase):
         )
 
         self.assertEqual(
-            {"state": "34", "county": "013", "tract": "012345", "block group": "3"}, filled_in
+            {"state": "34", "county": "013", "tract": "012345", "block group": "3"},
+            filled_in,
         )
 
     def test_fill_partial_prefix_match(self):
@@ -143,19 +146,17 @@ class CensusGeographyQuerySpecTestCase(unittest.TestCase):
         self.assertEqual("040", bound_path.num)
         self.assertEqual(dict(state="*"), bound_path.bindings)
 
-        query_spec = CensusGeographyQuerySpec(
-            "acs/acs5",
-            2020,
-            ["NAME"],
-            bound_path
-        )
+        query_spec = CensusGeographyQuerySpec("acs/acs5", 2020, ["NAME"], bound_path)
 
         self.assertEqual("state", query_spec.for_component)
         self.assertFalse(query_spec.in_components)
 
         self.assertEqual(
-            ("https://api.census.gov/data/2020/acs/acs5", {'for': 'state', 'get': 'NAME'}),
-            query_spec.detail_table_url()
+            (
+                "https://api.census.gov/data/2020/acs/acs5",
+                {"for": "state", "get": "NAME"},
+            ),
+            query_spec.detail_table_url(),
         )
 
     def test_for_bound(self):
@@ -164,19 +165,17 @@ class CensusGeographyQuerySpecTestCase(unittest.TestCase):
         self.assertEqual("040", bound_path.num)
         self.assertEqual(dict(state="36"), bound_path.bindings)
 
-        query_spec = CensusGeographyQuerySpec(
-            "acs/acs5",
-            2020,
-            ["NAME"],
-            bound_path
-        )
+        query_spec = CensusGeographyQuerySpec("acs/acs5", 2020, ["NAME"], bound_path)
 
         self.assertEqual("state:36", query_spec.for_component)
         self.assertFalse(query_spec.in_components)
 
         self.assertEqual(
-            ('https://api.census.gov/data/2020/acs/acs5', {'for': 'state:36', 'get': 'NAME'}),
-            query_spec.detail_table_url()
+            (
+                "https://api.census.gov/data/2020/acs/acs5",
+                {"for": "state:36", "get": "NAME"},
+            ),
+            query_spec.detail_table_url(),
         )
 
     def test_for_in(self):
@@ -185,70 +184,66 @@ class CensusGeographyQuerySpecTestCase(unittest.TestCase):
         self.assertEqual("140", bound_path.num)
         self.assertEqual(dict(state="36", county="001", tract="*"), bound_path.bindings)
 
-        query_spec = CensusGeographyQuerySpec(
-            "acs/acs5",
-            2020,
-            ["NAME"],
-            bound_path
-        )
+        query_spec = CensusGeographyQuerySpec("acs/acs5", 2020, ["NAME"], bound_path)
 
         self.assertEqual("tract", query_spec.for_component)
         self.assertEqual("state:36 county:001", query_spec.in_components)
 
         self.assertEqual(
             (
-                'https://api.census.gov/data/2020/acs/acs5',
-                {'for': 'tract', 'get': 'NAME', 'in': 'state:36 county:001'}
+                "https://api.census.gov/data/2020/acs/acs5",
+                {"for": "tract", "get": "NAME", "in": "state:36 county:001"},
             ),
-            query_spec.detail_table_url()
+            query_spec.detail_table_url(),
         )
 
     def test_for_in_skip_components(self):
         bound_path = PathSpec.partial_prefix_match(state="36", block_group="*")
 
         self.assertEqual("150", bound_path.num)
-        self.assertEqual({"state": "36", "county": "*", "tract": "*", "block group": "*"}, bound_path.bindings)
-
-        query_spec = CensusGeographyQuerySpec(
-            "acs/acs5",
-            2020,
-            ["NAME"],
-            bound_path
+        self.assertEqual(
+            {"state": "36", "county": "*", "tract": "*", "block group": "*"},
+            bound_path.bindings,
         )
+
+        query_spec = CensusGeographyQuerySpec("acs/acs5", 2020, ["NAME"], bound_path)
 
         self.assertEqual("block group", query_spec.for_component)
         self.assertEqual("state:36 county:* tract:*", query_spec.in_components)
 
         self.assertEqual(
             (
-                'https://api.census.gov/data/2020/acs/acs5',
-                {'for': 'block group', 'get': 'NAME', 'in': 'state:36 county:* tract:*'}
+                "https://api.census.gov/data/2020/acs/acs5",
+                {
+                    "for": "block group",
+                    "get": "NAME",
+                    "in": "state:36 county:* tract:*",
+                },
             ),
-            query_spec.detail_table_url()
+            query_spec.detail_table_url(),
         )
 
     def test_for_in_bound(self):
-        bound_path = PathSpec.partial_prefix_match(state="36", county="001", tract="001802")
+        bound_path = PathSpec.partial_prefix_match(
+            state="36", county="001", tract="001802"
+        )
 
         self.assertEqual("140", bound_path.num)
-        self.assertEqual(dict(state="36", county="001", tract="001802"), bound_path.bindings)
-
-        query_spec = CensusGeographyQuerySpec(
-            "acs/acs5",
-            2020,
-            ["NAME"],
-            bound_path
+        self.assertEqual(
+            dict(state="36", county="001", tract="001802"), bound_path.bindings
         )
+
+        query_spec = CensusGeographyQuerySpec("acs/acs5", 2020, ["NAME"], bound_path)
 
         self.assertEqual("tract:001802", query_spec.for_component)
         self.assertEqual("state:36 county:001", query_spec.in_components)
 
         self.assertEqual(
             (
-                'https://api.census.gov/data/2020/acs/acs5',
-                {'for': 'tract:001802', 'get': 'NAME', 'in': 'state:36 county:001'}
+                "https://api.census.gov/data/2020/acs/acs5",
+                {"for": "tract:001802", "get": "NAME", "in": "state:36 county:001"},
             ),
-            query_spec.detail_table_url()
+            query_spec.detail_table_url(),
         )
 
 

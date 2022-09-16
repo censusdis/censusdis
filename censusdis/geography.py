@@ -56,10 +56,7 @@ class PathSpec:
     def _full_match(self, **kwargs):
         return self._partial_match(**kwargs) and len(kwargs) == len(self._path)
 
-    def fill_in(
-            self,
-            **kwargs: InSpecType
-    ) -> InSpecType:
+    def fill_in(self, **kwargs: InSpecType) -> InSpecType:
         if not self._partial_match(is_prefix=False, **kwargs):
             raise ValueError("Must be at least a partial match to fill in.")
         reversed_result = {}
@@ -80,9 +77,7 @@ class PathSpec:
 
     @classmethod
     def partial_matches(
-        cls,
-        is_prefix=True,
-        **kwargs: InSpecType
+        cls, is_prefix=True, **kwargs: InSpecType
     ) -> List["BoundGeographyPath"]:
         kwargs = PathSpec._u2s(**kwargs)
 
@@ -93,10 +88,7 @@ class PathSpec:
         ]
 
     @classmethod
-    def partial_prefix_match(
-        cls,
-        **kwargs: InSpecType
-    ) -> "BoundGeographyPath":
+    def partial_prefix_match(cls, **kwargs: InSpecType) -> "BoundGeographyPath":
         matches = cls.partial_matches(is_prefix=True, **kwargs)
 
         min_num, min_bgp = None, None
@@ -108,12 +100,11 @@ class PathSpec:
         return min_bgp
 
     @classmethod
-    def full_match(
-        cls,
-        **kwargs: InSpecType
-    ):
+    def full_match(cls, **kwargs: InSpecType):
         full_matches = [
-            (num, path_spec) for num, path_spec in cls.ALL.items() if path_spec._full_match(**kwargs)
+            (num, path_spec)
+            for num, path_spec in cls.ALL.items()
+            if path_spec._full_match(**kwargs)
         ]
         if not full_matches:
             return None, None
@@ -153,12 +144,8 @@ class PathSpec:
             "155": PathSpec(["state", "place", "county (or part)"], key),
             "160": PathSpec(["state", "place"], key),
             "170": PathSpec(["state", "consolidated city"], key),
-            "172": PathSpec(
-                ["state", "consolidated city", "place (or part)"], key
-            ),
-            "230": PathSpec(
-                ["state", "alaska native regional corporation"], key
-            ),
+            "172": PathSpec(["state", "consolidated city", "place (or part)"], key),
+            "230": PathSpec(["state", "alaska native regional corporation"], key),
             "250": PathSpec(
                 ["american indian area/alaska native area/hawaiian home land"], key
             ),
@@ -365,9 +352,7 @@ class PathSpec:
                 key,
             ),
             "335": PathSpec(["combined new england city and town area"], key),
-            "336": PathSpec(
-                ["combined new england city and town area", "state"], key
-            ),
+            "336": PathSpec(["combined new england city and town area", "state"], key),
             "337": PathSpec(
                 [
                     "combined new england city and town area",
@@ -383,9 +368,7 @@ class PathSpec:
                 ],
                 key,
             ),
-            "340": PathSpec(
-                ["state", "combined statistical area (or part)"], key
-            ),
+            "340": PathSpec(["state", "combined statistical area (or part)"], key),
             "341": PathSpec(
                 [
                     "state",
@@ -410,18 +393,12 @@ class PathSpec:
             "352": PathSpec(
                 ["new england city and town area", "state", "principal city"], key
             ),
-            "355": PathSpec(
-                ["new england city and town area", "necta division"], key
-            ),
+            "355": PathSpec(["new england city and town area", "necta division"], key),
             "356": PathSpec(
                 ["new england city and town area", "necta division", "state"], key
             ),
-            "360": PathSpec(
-                ["state", "new england city and town area (or part)"], key
-            ),
-            "361": PathSpec(
-                ["state", "new england city and town area", "place"], key
-            ),
+            "360": PathSpec(["state", "new england city and town area (or part)"], key),
+            "361": PathSpec(["state", "new england city and town area", "place"], key),
             "362": PathSpec(
                 ["state", "new england city and town area", "county (or part)"], key
             ),
@@ -461,18 +438,14 @@ class PathSpec:
             "410": PathSpec(["urban area", "state"], key),
             "430": PathSpec(["urban area", "state", "county"], key),
             "500": PathSpec(["state", "congressional district"], key),
-            "510": PathSpec(
-                ["state", "congressional district", "county"], key
-            ),
+            "510": PathSpec(["state", "congressional district", "county"], key),
             "511": PathSpec(
                 ["state", "congressional district", "county", "tract"], key
             ),
             "521": PathSpec(
                 ["state", "congressional district", "county", "county subdivision"], key
             ),
-            "531": PathSpec(
-                ["state", "congressional district", "place"], key
-            ),
+            "531": PathSpec(["state", "congressional district", "place"], key),
             "550": PathSpec(
                 [
                     "state",
@@ -508,9 +481,7 @@ class PathSpec:
             ),
             "795": PathSpec(["state", "public use microdata area"], key),
             "860": PathSpec(["zip code tabulation area"], key),
-            "871": PathSpec(
-                ["state", "zip code tabulation area (or part)"], key
-            ),
+            "871": PathSpec(["state", "zip code tabulation area (or part)"], key),
             "950": PathSpec(["state", "school district (elementary)"], key),
             "960": PathSpec(["state", "school district (secondary)"], key),
             "970": PathSpec(["state", "school district (unified)"], key),
@@ -522,13 +493,7 @@ PathSpec.ALL = PathSpec._create_all()
 
 
 class BoundGeographyPath:
-
-    def __init__(
-        self,
-        num: str,
-        path_spec: PathSpec,
-        **kwargs: InSpecType
-    ):
+    def __init__(self, num: str, path_spec: PathSpec, **kwargs: InSpecType):
         self._num = num
         self._path_spec = path_spec
         self._bindings = path_spec.fill_in(**kwargs)
@@ -574,18 +539,18 @@ class CensusGeographyQuerySpec:
         return None
 
     def detail_table_url(self) -> Tuple[str, Mapping[str, str]]:
-        url = '/'.join([self._BASE_URL, f"{self.year:04}", self.source])
+        url = "/".join([self._BASE_URL, f"{self.year:04}", self.source])
 
         params = {
-            'get': ','.join(self.fields),
-            'for': self.for_component,
+            "get": ",".join(self.fields),
+            "for": self.for_component,
         }
 
         in_components = self.in_components
         if in_components is not None:
-            params['in'] = in_components
+            params["in"] = in_components
 
         if self.api_key is not None:
-            params['key'] = self.api_key
+            params["key"] = self.api_key
 
         return url, params
