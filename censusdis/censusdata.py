@@ -341,22 +341,89 @@ def json_from_url(url: str, params: Optional[Mapping[str, str]] = None) -> Any:
     )
 
 
+_MAX_FIELDS_PER_DOWNLOAD = 50
+
+
+def _download_concat_detail(
+    source: str,
+    year: int,
+    fields: List[str],
+    key: Optional[str],
+    census_variables: "VariableCache",
+    **kwargs: cgeo.InSpecType,
+) -> pd.DataFrame:
+
+    # Divide the fields into groups.
+    field_groups = [
+        # black and flake8 disagree about the whitespace before ':' here...
+        fields[start : start + _MAX_FIELDS_PER_DOWNLOAD]  # noqa: 203
+        for start in range(0, len(fields), _MAX_FIELDS_PER_DOWNLOAD)
+    ]
+
+    # Get the data for each chunk.
+    dfs = [
+        download_detail(
+            source,
+            year,
+            field_group,
+            api_key=key,
+            census_variables=census_variables,
+            **kwargs,
+        )
+        for field_group in field_groups
+    ]
+
+    # What fields came back in the first df but were not
+    # requested? These are the ones that will be duplicated
+    # in the later dfs.
+    extra_fields = [f for f in dfs[0].columns if f not in set(field_groups[0])]
+
+    df = dfs[0]
+
+    for df_right in dfs[1:]:
+        df = df.merge(df_right, on=extra_fields)
+
+    return df
+
+
 def download_detail(
     source: str,
     year: int,
     fields: Iterable[str],
+    *,
+    api_key: Optional[str] = None,
     census_variables: Optional["VariableCache"] = None,
     **kwargs: cgeo.InSpecType,
 ) -> pd.DataFrame:
     if census_variables is None:
         census_variables = variables
 
+    if not isinstance(fields, list):
+        fields = list(fields)
+
+    # Special case if we are trying to get too many fields.
+    if len(fields) > _MAX_FIELDS_PER_DOWNLOAD:
+        return _download_concat_detail(
+            source,
+            year,
+            fields,
+            key=api_key,
+            census_variables=census_variables,
+            **kwargs,
+        )
+
     # Prefetch all the types before we load the data.
     # That way we fail fast if a field is not known.
     for field in fields:
         census_variables.get(source, year, field)
 
-    url, params = census_detail_table_url(source, year, fields, **kwargs)
+    # If we were given a list, join it together into
+    # a comma-separated liat.
+    kwargs = {k: (v if isinstance(v, str) else ",".join(v)) for k, v in kwargs.items()}
+
+    url, params = census_detail_table_url(
+        source, year, fields, api_key=api_key, **kwargs
+    )
     df = data_from_url(url, params)
 
     for field in fields:
@@ -376,11 +443,18 @@ def download_detail(
 
 
 def census_detail_table_url(
-    source: str, year: int, fields: Iterable[str], **kwargs: cgeo.InSpecType
+    source: str,
+    year: int,
+    fields: Iterable[str],
+    *,
+    api_key: Optional[str] = None,
+    **kwargs: cgeo.InSpecType,
 ) -> Tuple[str, Mapping[str, str]]:
     bound_path = cgeo.PathSpec.partial_prefix_match(**kwargs)
 
-    query_spec = cgeo.CensusGeographyQuerySpec(source, year, list(fields), bound_path)
+    query_spec = cgeo.CensusGeographyQuerySpec(
+        source, year, list(fields), bound_path, api_key=api_key
+    )
 
     url, params = query_spec.detail_table_url()
 
@@ -536,7 +610,8 @@ class CensusApiVariableSource(VariableSource):
 
         # Put the name into the nested dictionaries, so it looks the same is if
         # we had gotten it via the variable API even though that API leaves it out.
-        value = {k: v + {"name": k} for k, v in value.items()}
+        for k, v in value["variables"].items():
+            v["name"] = k
 
         return value
 
@@ -651,10 +726,7 @@ class VariableCache:
         }
 
     def group_leaves(
-        self,
-        source: str,
-        year: int,
-        name: str,
+        self, source: str, year: int, name: str, *, skip_annotations: bool = True
     ) -> List[str]:
         """
         Find the leaves of a given group.
@@ -667,6 +739,10 @@ class VariableCache:
             The year
         name
             The name of the group.
+        skip_annotations
+            If `True` try to filter out variables that are
+            annotations rather than actual values, by skipping
+            those with labels that begin with `Annotation`.
 
         Returns
         -------
@@ -692,7 +768,7 @@ class VariableCache:
         variables_by_length = defaultdict(list)
 
         for variable_name, variable_details in group.items():
-            length = variable_name.count("!!") + 1
+            length = variable_details["label"].count("!!") + 1
             variables_by_length[length].append(variable_name)
 
         # See which ones have no prefix.
@@ -701,11 +777,20 @@ class VariableCache:
             for variable_name in group.keys()
             if not any(
                 group[other_name]["label"].startswith(group[variable_name]["label"])
-                for other_name in variables_by_length[variable_name.count("!!") + 2]
+                for other_name in variables_by_length[
+                    group[variable_name]["label"].count("!!") + 2
+                ]
             )
         ]
 
-        return leaves
+        if skip_annotations:
+            leaves = [
+                leaf
+                for leaf in leaves
+                if not group[leaf]["label"].startswith("Annotation")
+            ]
+
+        return sorted(leaves)
 
     def __contains__(self, item: Tuple[str, int, str]) -> bool:
         """Magic method behind the `in` operator."""
