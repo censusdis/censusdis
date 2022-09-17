@@ -16,7 +16,6 @@ classifiers = [
 [tool.poetry.dependencies]
 python = "^3.9"
 divintseg = "^0.1.3"
-CensusData = "^1.15.post1"
 geopandas = "^0.11.1"
 Rtree = "^1.0.0"
 matplotlib = "^3.5.3"
