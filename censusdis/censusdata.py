@@ -742,7 +742,8 @@ class VariableCache:
         skip_annotations
             If `True` try to filter out variables that are
             annotations rather than actual values, by skipping
-            those with labels that begin with `Annotation`.
+            those with labels that begin with `Annotation` or
+            'Margin of Error`.
 
         Returns
         -------
@@ -787,7 +788,8 @@ class VariableCache:
             leaves = [
                 leaf
                 for leaf in leaves
-                if not group[leaf]["label"].startswith("Annotation")
+                if (not group[leaf]["label"].startswith("Annotation"))
+                and (not group[leaf]["label"].startswith("Margin of Error"))
             ]
 
         return sorted(leaves)
