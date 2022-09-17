@@ -3,7 +3,7 @@ import censusdata
 from collections import defaultdict
 import pandas as pd
 import requests
-from typing import Any, Iterable, List, Mapping, Optional, Tuple, Union
+from typing import Any, Dict, Iterable, List, Mapping, Optional, Tuple, Union
 import censusdis.geography as cgeo
 
 
@@ -387,18 +387,26 @@ def census_detail_table_url(
     return url, params
 
 
-class VariablesOrGroups(ABC):
+class Variables:
     def __init__(self):
-        self._data = defaultdict(lambda: defaultdict(dict))
+        self._variable_cache = defaultdict(lambda: defaultdict(dict))
+        self._group_cache = defaultdict(lambda: defaultdict(dict))
 
-    @abstractmethod
+    @staticmethod
     def url(
-        self,
         source: str,
         year: int,
         name: str,
     ) -> str:
-        raise NotImplementedError(f"{type(self)} is abstract.")
+        return f"https://api.census.gov/data/{year}/{source}/variables/{name}.json"
+
+    @staticmethod
+    def group_url(
+        source: str,
+        year: int,
+        name: str,
+    ) -> str:
+        return f"https://api.census.gov/data/{year}/{source}/groups/{name}.json"
 
     def get(
         self,
@@ -406,7 +414,7 @@ class VariablesOrGroups(ABC):
         year: int,
         name: str,
     ) -> List:
-        cached_value = self._data[source][year].get(name, None)
+        cached_value = self._variable_cache[source][year].get(name, None)
 
         if cached_value is not None:
             return cached_value
@@ -414,21 +422,79 @@ class VariablesOrGroups(ABC):
         url = self.url(source, year, name)
         value = json_from_url(url)
 
-        self._data[source][year][name] = value
+        self._variable_cache[source][year][name] = value
 
         return value
+
+    def get_group(
+        self,
+        source: str,
+        year: int,
+        name: str,
+    ) -> Dict[str, Dict]:
+        group_variable_names = self._group_cache[source][year].get(name, None)
+
+        if group_variable_names is None:
+            # Missed in the cache, so go fetch it.
+            url = self.group_url(source, year, name)
+            value = json_from_url(url)
+
+            # Cache all the variables in the group.
+            group_variables = value['variables']
+
+            for variable_name, variable_details in group_variables.items():
+                self._variable_cache[source][year][variable_name] = variable_details
+
+            # Cache the names of the variables in the group.
+            group_variable_names = [
+                variable_name for variable_name in group_variables.keys()
+            ]
+            self._group_cache[source][year][name] = group_variable_names
+
+        # Reformat what we return so it includes the full
+        # details on each variable.
+        return {
+            group_variable_name: self.get(source, year, group_variable_name)
+            for group_variable_name in group_variable_names
+        }
+
+    def group_leaves(
+        self,
+        source: str,
+        year: int,
+        name: str,
+    ):
+        group = self.get_group(source, year, name)
+
+        # Group them by number of components.
+        variables_by_length = defaultdict(list)
+
+        for variable_name, variable_details in group.items():
+            length = variable_name.count('!!') + 1
+            variables_by_length[length].append(variable_name)
+
+        # See which ones have no prefix.
+        leaves = [
+            variable_name for variable_name in group.keys()
+            if not any(
+                group[other_name]['label'].startswith(group[variable_name]['label'])
+                for other_name in variables_by_length[variable_name.count('!!') + 2]
+            )
+        ]
+
+        return leaves
 
     def __contains__(self, item: Tuple[str, int, str]) -> bool:
         source, year, name = item
 
-        return name in self._data[source, year]
+        return name in self._variable_cache[source, year]
 
     def __getitem__(self, item: Tuple[str, int, str]):
         return self.get(*item)
 
     def __len__(self):
         return sum(
-            len(names) for years in self._data.values() for names in years.values()
+            len(names) for years in self._variable_cache.values() for names in years.values()
         )
 
     def keys(self) -> Iterable[Tuple[str, int, str]]:
@@ -440,41 +506,45 @@ class VariablesOrGroups(ABC):
             yield v
 
     def items(self) -> Iterable[Tuple[Tuple[str, int, str], dict]]:
-        for source in self._data.keys():
+        for source in self._variable_cache.keys():
             for year in source.keys():
                 for name, value in year.items():
                     yield (source, year, name), value
 
     def invalidate(self, source: str, year: int, name: str):
-        if self._data[source][year].pop(name, None):
-            if len(self._data[source][year]) == 0:
-                self._data[source].pop(year)
-                if len(self._data[source]) == 0:
-                    self._data.pop(source)
+        if self._variable_cache[source][year].pop(name, None):
+            if len(self._variable_cache[source][year]) == 0:
+                self._variable_cache[source].pop(year)
+                if len(self._variable_cache[source]) == 0:
+                    self._variable_cache.pop(source)
 
     def clear(self):
-        self._data = defaultdict(lambda: defaultdict(dict))
+        self._variable_cache = defaultdict(lambda: defaultdict(dict))
 
 
-class Groups(VariablesOrGroups):
-    def url(
-        self,
-        source: str,
-        year: int,
-        name: str,
-    ) -> str:
-        return f"https://api.census.gov/data/{year}/{source}/groups/{name}.json"
-
-
-class Variables(VariablesOrGroups):
-    def url(
-        self,
-        source: str,
-        year: int,
-        name: str,
-    ) -> str:
-        return f"https://api.census.gov/data/{year}/{source}/variables/{name}.json"
-
-
-groups = Groups()
 variables = Variables()
+
+
+def classify_variables(
+    group_variables: Dict,
+    year: int
+):
+    # Is this really always what we want?
+    group_variables = {k: v for k, v in group_variables.items() if k.endswith('E')}
+
+    total_pattern = "!!Total:" if year >= 2019 else "!!Total"
+
+    total_field = [f for f, v in group_variables.items() if v["label"].endswith("!!Total:")][0]
+    leaf_fields = [f for f, v in group_variables.items() if not v["label"].endswith(":")]
+    subtotal_fields = [
+        f
+        for f, v in group_variables.items()
+        if v["label"].endswith(":") and not v["label"].endswith("!!Total:")
+    ]
+
+    return (
+        {f: v["label"] for f, v in group_variables.items()},
+        total_field,
+        subtotal_fields,
+        leaf_fields,
+    )
