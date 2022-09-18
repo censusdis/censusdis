@@ -54,18 +54,6 @@ jupyter = ["ipython (>=7.8.0)", "tokenize-rt (>=3.2.0)"]
 uvloop = ["uvloop (>=0.15.2)"]
 
 [[package]]
-name = "CensusData"
-version = "1.15.post1"
-description = "Download data from U.S. Census API"
-category = "main"
-optional = false
-python-versions = ">=2.7"
-
-[package.dependencies]
-pandas = "*"
-requests = "*"
-
-[[package]]
 name = "certifi"
 version = "2022.9.14"
 description = "Python package for providing Mozilla's CA Bundle."
@@ -912,7 +900,7 @@ docs = ["Sphinx", "sphinx-rtd-theme", "sphinxcontrib-napoleon"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "ed2f01fd13fcb04206ddc22a9bf4a84ec0e859f879f73f0fa9caaa99288b224f"
+content-hash = "a921f8280f4a2e415d3ed2408e53516314dbeffb5e5d0f4e52eb8964d5c70af9"
 
 [metadata.files]
 alabaster = [
@@ -951,9 +939,6 @@ black = [
     {file = "black-22.8.0-cp39-cp39-win_amd64.whl", hash = "sha256:bc4d4123830a2d190e9cc42a2e43570f82ace35c3aeb26a512a2102bce5af7ec"},
     {file = "black-22.8.0-py3-none-any.whl", hash = "sha256:d2c21d439b2baf7aa80d6dd4e3659259be64c6f49dfd0f32091063db0e006db4"},
     {file = "black-22.8.0.tar.gz", hash = "sha256:792f7eb540ba9a17e8656538701d3eb1afcb134e3b45b71f20b25c77a8db7e6e"},
-]
-CensusData = [
-    {file = "CensusData-1.15.post1.tar.gz", hash = "sha256:408410b2942e0d2885a18a5b1cff85c283564fe0ae6c8bd65ddccee7e234d4fb"},
 ]
 certifi = [
     {file = "certifi-2022.9.14-py3-none-any.whl", hash = "sha256:e232343de1ab72c2aa521b625c80f699e356830fd0e2c620b465b304b17b0516"},
