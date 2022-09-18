@@ -8,52 +8,6 @@ import requests
 import censusdis.geography as cgeo
 
 
-def geo_state(geo):
-    d = dict(geo.params())
-    return d["state"]
-
-
-def geo_county(geo):
-    d = dict(geo.params())
-    return d["county"]
-
-
-def geo_cousub(geo):
-    d = dict(geo.params())
-    return d["county subdivision"]
-
-
-def geo_tract(geo):
-    d = dict(geo.params())
-    return d["tract"]
-
-
-def geo_block_group(geo):
-    d = dict(geo.params())
-    return d["block group"]
-
-
-def geo_block(geo):
-    d = dict(geo.params())
-    return d["block"]
-
-
-_VALID_RESOLUTIONS = ("block", "block group", "tract", "county subdivision", "county")
-
-
-def resolutions() -> Iterable[str]:
-    """
-    Return a list of valid resolutions for the `resolution`
-    argument of :py:func:`~censusdis.redistricting.data`
-    and similar.
-
-    Returns
-    -------
-        The valid resolulions.
-    """
-    return _VALID_RESOLUTIONS
-
-
 # This is the type we can accept for geographic
 # filters. When provided, these filters are either
 # single values as a string, or, if multivalued,
@@ -62,16 +16,16 @@ def resolutions() -> Iterable[str]:
 GeoFilterType = Optional[Union[str, Iterable[str]]]
 
 
-def _gf2s(filter: GeoFilterType) -> Optional[str]:
+def _gf2s(geo_filter: GeoFilterType) -> Optional[str]:
     """
     Utility to convert a filter to a string.
 
     For the Census API, multiple values are encoded
     in a single comma separated string.
     """
-    if filter is None or isinstance(filter, str):
-        return filter
-    return ",".join(filter)
+    if geo_filter is None or isinstance(geo_filter, str):
+        return geo_filter
+    return ",".join(geo_filter)
 
 
 class CensusApiException(Exception):
@@ -186,7 +140,7 @@ def download_detail(
 
     # If we were given a list, join it together into
     # a comma-separated liat.
-    kwargs = {k: (v if isinstance(v, str) else ",".join(v)) for k, v in kwargs.items()}
+    kwargs = {k: _gf2s(v) for k, v in kwargs.items()}
 
     url, params = census_detail_table_url(
         source, year, fields, api_key=api_key, **kwargs
