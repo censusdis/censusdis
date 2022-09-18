@@ -1,7 +1,7 @@
 import unittest
 from typing import Any, Dict
 
-from censusdis.censusdata import (
+from censusdis.data import (
     _gf2s,
     VariableSource,
     VariableCache,
