@@ -7,7 +7,6 @@ import requests
 
 import censusdis.geography as cgeo
 
-
 # This is the type we can accept for geographic
 # filters. When provided, these filters are either
 # single values as a string, or, if multivalued,
@@ -99,12 +98,12 @@ def _download_concat_detail(
     # in the later dfs.
     extra_fields = [f for f in dfs[0].columns if f not in set(field_groups[0])]
 
-    df = dfs[0]
+    df_data = dfs[0]
 
     for df_right in dfs[1:]:
-        df = df.merge(df_right, on=extra_fields)
+        df_data = df_data.merge(df_right, on=extra_fields)
 
-    return df
+    return df_data
 
 
 def download_detail(
@@ -145,15 +144,15 @@ def download_detail(
     url, params = census_detail_table_url(
         dataset, year, fields, api_key=api_key, **kwargs
     )
-    df = data_from_url(url, params)
+    df_data = data_from_url(url, params)
 
     for field in fields:
         field_type = census_variables.get(dataset, year, field)["predicateType"]
 
         if field_type == "int":
-            df[field] = df[field].astype(int)
+            df_data[field] = df_data[field].astype(int)
         elif field_type == "float":
-            df[field] = df[field].astype(float)
+            df_data[field] = df_data[field].astype(float)
         elif field_type == "string":
             pass
         else:
@@ -161,9 +160,9 @@ def download_detail(
             pass
 
     # Put the geo fields that came back up front.
-    df = df[[col for col in df.columns if col not in fields] + fields]
+    df_data = df_data[[col for col in df_data.columns if col not in fields] + fields]
 
-    return df
+    return df_data
 
 
 def census_detail_table_url(
@@ -430,6 +429,8 @@ class VariableCache:
             # Missed in the cache, so go fetch it.
             value = self._variable_source.get_group(dataset, year, name)
 
+            print("VVV", value.keys())
+
             # Cache all the variables in the group.
             group_variables = value["variables"]
 
@@ -437,9 +438,9 @@ class VariableCache:
                 self._variable_cache[dataset][year][variable_name] = variable_details
 
             # Cache the names of the variables in the group.
-            group_variable_names = [
-                variable_name for variable_name in group_variables.keys()
-            ]
+            group_variable_names = list(
+                variable_name for variable_name in group_variables
+            )
             self._group_cache[dataset][year][name] = group_variable_names
 
         # Reformat what we return so it includes the full
@@ -624,13 +625,16 @@ class VariableCache:
 
     def keys(self) -> Iterable[Tuple[str, int, str]]:
         """Keys, i.e. the names of variables, in the cache."""
-        for k, _ in self.items():
-            yield k
+        for key, _ in self.items():
+            yield key
+
+    def __iter__(self) -> Iterable[Tuple[str, int, str]]:
+        return self.keys()
 
     def values(self) -> Iterable[dict]:
         """Values, i.e. the descriptions of variables, in the cache."""
-        for _, v in self.items():
-            yield v
+        for _, value in self.items():
+            yield value
 
     def items(self) -> Iterable[Tuple[Tuple[str, int, str], dict]]:
         """Items in the mapping from variable name to descpription."""

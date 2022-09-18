@@ -1,10 +1,21 @@
-from typing import ClassVar, Iterable, List, Mapping, Optional, Tuple, Union
+# Copyright (c) 2022 Darren Erik Vengroff
+"""
+Utilities for managing hierarchies of geographies.
+"""
+
 from dataclasses import dataclass
+from typing import ClassVar, Iterable, List, Mapping, Optional, Tuple, Union
 
 InSpecType = Union[str, Iterable[str]]
 
 
 class PathSpec:
+    """
+    A path specification.
+
+    This class is used to represent a path of allowable geographies,
+    such as state, county, census tract.
+    """
 
     # We hide this object inside the class to make __init__
     # effectively private. If you don't have access to this
@@ -41,8 +52,8 @@ class PathSpec:
         **kwargs: InSpecType,
     ) -> bool:
         kwargs = self._u2s(**kwargs)
-        path_elements_in_kwargs = [k for k in self._path if k in kwargs]
-        keys_from_kwargs = [k for k in kwargs.keys()]
+        path_elements_in_kwargs = [key for key in self._path if key in kwargs]
+        keys_from_kwargs = list(kwargs)
 
         match = path_elements_in_kwargs and (
             path_elements_in_kwargs == keys_from_kwargs
@@ -514,9 +525,9 @@ class BoundGeographyPath:
 @dataclass(frozen=True)
 class CensusGeographyQuerySpec:
 
-    source: str
+    dataset: str
     year: int
-    fields: List[str]
+    variables: List[str]
     bound_path: BoundGeographyPath
     api_key: Optional[str] = None
 
@@ -524,10 +535,10 @@ class CensusGeographyQuerySpec:
 
     @property
     def for_component(self) -> str:
-        *_, (k, v) = self.bound_path.bindings.items()
-        if v == "*":
-            return f"{k}"
-        return f"{k}:{v}"
+        *_, (key, value) = self.bound_path.bindings.items()
+        if value == "*":
+            return f"{key}"
+        return f"{key}:{value}"
 
     @property
     def in_components(self) -> str:
@@ -539,10 +550,10 @@ class CensusGeographyQuerySpec:
         return None
 
     def detail_table_url(self) -> Tuple[str, Mapping[str, str]]:
-        url = "/".join([self._BASE_URL, f"{self.year:04}", self.source])
+        url = "/".join([self._BASE_URL, f"{self.year:04}", self.dataset])
 
         params = {
-            "get": ",".join(self.fields),
+            "get": ",".join(self.variables),
             "for": self.for_component,
         }
 

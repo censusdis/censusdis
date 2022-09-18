@@ -36,6 +36,7 @@ pytest-cov = "^3.0.0"
 flake8 = "^5.0.4"
 black = "^22.8.0"
 isort = "^5.10.1"
+pylint = "^2.15.2"
 
 [tool.poetry.group.dist.dependencies]
 genbadge = {extras = ["all"], version = "^1.1.0"}

@@ -1,4 +1,10 @@
 # Copyright (c) 2022 Darren Erik Vengroff
+"""
+Utilities for loading and rendering maps.
+
+This module relies on shapefiles from the US Census,
+which is downloads as needed and caches locally.
+"""
 
 import os
 import shutil
@@ -7,7 +13,7 @@ from zipfile import ZipFile
 import geopandas as gpd
 import requests
 from shapely import affinity
-from shapely.geometry import MultiPolygon, Polygon
+from shapely.geometry import MultiPolygon
 
 from censusdis.states import STATE_AK, STATE_HI
 
@@ -64,8 +70,7 @@ class ShapeReader:
         # the TIGER2010 directory early in the path and early
         # in the file name.
         path_year = self._year
-        if path_year < 2010:
-            path_year = 2010
+        path_year = max(path_year, 2010)
 
         base_url = f"https://www2.census.gov/geo/tiger/TIGER{path_year}/{suffix.upper()}/{self._year}"
         name = f"{prefix}_{path_year}_{state}_{suffix}{str(self._year)[-2:]}"
@@ -285,11 +290,11 @@ class ShapeReader:
                     f"https://www2.census.gov/geo/tiger/TIGER{self._year}/"
                     f"{suffix.upper()[:-2]}/{self._year}/{name}.zip"
                 )
-            else:
-                return (
-                    f"https://www2.census.gov/geo/tiger/TIGER{self._year}/"
-                    f"{suffix.upper()}/{name}.zip"
-                )
+
+            return (
+                f"https://www2.census.gov/geo/tiger/TIGER{self._year}/"
+                f"{suffix.upper()}/{name}.zip"
+            )
 
         # This will not work, but it's the main download page where we
         # can start to look for what we want.
@@ -329,12 +334,12 @@ class ShapeReader:
         # Fetch the zip file and write it.
         response = requests.get(zip_url)
 
-        with open(zip_path, "wb") as f:
-            f.write(response.content)
+        with open(zip_path, "wb") as file:
+            file.write(response.content)
 
         # Unzip the file and extract all contents.
-        with ZipFile(zip_path) as zf:
-            zf.extractall(dir_path)
+        with ZipFile(zip_path) as zip_file:
+            zip_file.extractall(dir_path)
 
         # We don't need the zipfile anymore.
         os.remove(zip_path)
@@ -380,8 +385,8 @@ def _wrap_poly(poly):
 
     Used in shifting AK and HI geometries.
     """
-    x, _ = poly.exterior.coords.xy
-    if x[0] > 0:
+    x_coord, _ = poly.exterior.coords.xy
+    if x_coord[0] > 0:
         poly = affinity.translate(poly, xoff=-360.0, yoff=0.0)
     return poly
 
@@ -393,7 +398,7 @@ def _wrap_polys(polys):
     Used in shifting AK and HI geometries.
     """
     # Just in case it's not a MultiPolygon
-    if type(polys) == Polygon:
+    if not isinstance(polys, MultiPolygon):
         return _wrap_poly(polys)
     wrapped_polys = [_wrap_poly(p) for p in polys.geoms]
     return MultiPolygon(wrapped_polys)
