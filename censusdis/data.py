@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from collections import defaultdict
-from typing import Any, Dict, Iterable, List, Mapping, Optional, Tuple, Union
+from typing import Any, Dict, Generator, Iterable, List, Mapping, Optional, Tuple, Union
 
 import pandas as pd
 import requests
@@ -66,7 +66,7 @@ _MAX_FIELDS_PER_DOWNLOAD = 50
 
 
 def _download_concat_detail(
-    source: str,
+    dataset: str,
     year: int,
     fields: List[str],
     key: Optional[str],
@@ -84,7 +84,7 @@ def _download_concat_detail(
     # Get the data for each chunk.
     dfs = [
         download_detail(
-            source,
+            dataset,
             year,
             field_group,
             api_key=key,
@@ -108,7 +108,7 @@ def _download_concat_detail(
 
 
 def download_detail(
-    source: str,
+    dataset: str,
     year: int,
     fields: Iterable[str],
     *,
@@ -125,7 +125,7 @@ def download_detail(
     # Special case if we are trying to get too many fields.
     if len(fields) > _MAX_FIELDS_PER_DOWNLOAD:
         return _download_concat_detail(
-            source,
+            dataset,
             year,
             fields,
             key=api_key,
@@ -136,19 +136,19 @@ def download_detail(
     # Prefetch all the types before we load the data.
     # That way we fail fast if a field is not known.
     for field in fields:
-        census_variables.get(source, year, field)
+        census_variables.get(dataset, year, field)
 
     # If we were given a list, join it together into
     # a comma-separated liat.
     kwargs = {k: _gf2s(v) for k, v in kwargs.items()}
 
     url, params = census_detail_table_url(
-        source, year, fields, api_key=api_key, **kwargs
+        dataset, year, fields, api_key=api_key, **kwargs
     )
     df = data_from_url(url, params)
 
     for field in fields:
-        field_type = census_variables.get(source, year, field)["predicateType"]
+        field_type = census_variables.get(dataset, year, field)["predicateType"]
 
         if field_type == "int":
             df[field] = df[field].astype(int)
@@ -160,11 +160,14 @@ def download_detail(
             # Leave it as an object?
             pass
 
+    # Put the geo fields that came back up front.
+    df = df[[col for col in df.columns if col not in fields] + fields]
+
     return df
 
 
 def census_detail_table_url(
-    source: str,
+    dataset: str,
     year: int,
     fields: Iterable[str],
     *,
@@ -174,7 +177,7 @@ def census_detail_table_url(
     bound_path = cgeo.PathSpec.partial_prefix_match(**kwargs)
 
     query_spec = cgeo.CensusGeographyQuerySpec(
-        source, year, list(fields), bound_path, api_key=api_key
+        dataset, year, list(fields), bound_path, api_key=api_key
     )
 
     url, params = query_spec.detail_table_url()
@@ -196,12 +199,12 @@ class VariableSource(ABC):
     @abstractmethod
     def get(
         self,
-        source: str,
+        dataset: str,
         year: int,
         name: str,
     ) -> Dict[str, Any]:
         """
-        Get information on a variable for a given data source in a given year.
+        Get information on a variable for a given dataset in a given year.
 
         The return value is a dictionary with the following fields:
 
@@ -231,8 +234,8 @@ class VariableSource(ABC):
 
         Parameters
         ----------
-        source
-            The census data source, for example `dec/acs5` for ACS5 data
+        dataset
+            The census dataset, for example `dec/acs5` for ACS5 data
             (https://www.census.gov/data/developers/data-sets/acs-5year.html and
             https://api.census.gov/data/2020/acs/acs5.html)
             or `dec/pl` for redistricting data
@@ -253,12 +256,12 @@ class VariableSource(ABC):
     @abstractmethod
     def get_group(
         self,
-        source: str,
+        dataset: str,
         year: int,
         name: str,
     ) -> Dict[str, Dict]:
         """
-        Get information on a group of variables for a given data source in a given year.
+        Get information on a group of variables for a given dataset in a given year.
 
         The return value is a dictionary that is very much like the JSON returned
         from US Census API URLs like
@@ -268,8 +271,8 @@ class VariableSource(ABC):
 
         Parameters
         ----------
-        source
-            The census data source, for example `dec/acs5` for ACS5 data
+        dataset
+            The census dataset, for example `dec/acs5` for ACS5 data
             (https://www.census.gov/data/developers/data-sets/acs-5year.html and
             https://api.census.gov/data/2020/acs/acs5.html)
             or `dec/pl` for redistricting data
@@ -305,28 +308,28 @@ class CensusApiVariableSource(VariableSource):
 
     @staticmethod
     def url(
-        source: str,
+        dataset: str,
         year: int,
         name: str,
     ) -> str:
-        return f"https://api.census.gov/data/{year}/{source}/variables/{name}.json"
+        return f"https://api.census.gov/data/{year}/{dataset}/variables/{name}.json"
 
     @staticmethod
     def group_url(
-        source: str,
+        dataset: str,
         year: int,
         name: str,
     ) -> str:
-        return f"https://api.census.gov/data/{year}/{source}/groups/{name}.json"
+        return f"https://api.census.gov/data/{year}/{dataset}/groups/{name}.json"
 
-    def get(self, source: str, year: int, name: str) -> Dict[str, Any]:
-        url = self.url(source, year, name)
+    def get(self, dataset: str, year: int, name: str) -> Dict[str, Any]:
+        url = self.url(dataset, year, name)
         value = json_from_url(url)
 
         return value
 
-    def get_group(self, source: str, year: int, name: str) -> Dict[str, Dict]:
-        url = self.group_url(source, year, name)
+    def get_group(self, dataset: str, year: int, name: str) -> Dict[str, Dict]:
+        url = self.group_url(dataset, year, name)
         value = json_from_url(url)
 
         # Put the name into the nested dictionaries, so it looks the same is if
@@ -359,7 +362,7 @@ class VariableCache:
 
     def get(
         self,
-        source: str,
+        dataset: str,
         year: int,
         name: str,
     ) -> List:
@@ -373,8 +376,8 @@ class VariableCache:
 
         Parameters
         ----------
-        source
-            The census data source.
+        dataset
+            The census dataset.
         year
             The year
         name
@@ -384,20 +387,20 @@ class VariableCache:
         -------
             The details of the variable.
         """
-        cached_value = self._variable_cache[source][year].get(name, None)
+        cached_value = self._variable_cache[dataset][year].get(name, None)
 
         if cached_value is not None:
             return cached_value
 
-        value = self._variable_source.get(source, year, name)
+        value = self._variable_source.get(dataset, year, name)
 
-        self._variable_cache[source][year][name] = value
+        self._variable_cache[dataset][year][name] = value
 
         return value
 
     def get_group(
         self,
-        source: str,
+        dataset: str,
         year: int,
         name: str,
     ) -> Dict[str, Dict]:
@@ -406,8 +409,8 @@ class VariableCache:
 
         Parameters
         ----------
-        source
-            The census data source.
+        dataset
+            The census dataset.
         year
             The year
         name
@@ -421,41 +424,142 @@ class VariableCache:
             the documentation for
             :py:meth:`VariableSource.get`.
         """
-        group_variable_names = self._group_cache[source][year].get(name, None)
+        group_variable_names = self._group_cache[dataset][year].get(name, None)
 
         if group_variable_names is None:
             # Missed in the cache, so go fetch it.
-            value = self._variable_source.get_group(source, year, name)
+            value = self._variable_source.get_group(dataset, year, name)
 
             # Cache all the variables in the group.
             group_variables = value["variables"]
 
             for variable_name, variable_details in group_variables.items():
-                self._variable_cache[source][year][variable_name] = variable_details
+                self._variable_cache[dataset][year][variable_name] = variable_details
 
             # Cache the names of the variables in the group.
             group_variable_names = [
                 variable_name for variable_name in group_variables.keys()
             ]
-            self._group_cache[source][year][name] = group_variable_names
+            self._group_cache[dataset][year][name] = group_variable_names
 
         # Reformat what we return so it includes the full
         # details on each variable.
         return {
-            group_variable_name: self.get(source, year, group_variable_name)
+            group_variable_name: self.get(dataset, year, group_variable_name)
             for group_variable_name in group_variable_names
         }
 
+    class GroupTreeNode:
+        def __init__(self, name: Optional[str] = None):
+            self._name = name
+
+            self._children = {}
+
+        @property
+        def name(self):
+            return self._name
+
+        @name.setter
+        def name(self, name: Optional[str]):
+            self._name = name
+
+        def add_child(self, path_component: str, child: "VariableCache.GroupTreeNode"):
+            self._children[path_component] = child
+
+        def is_leaf(self) -> bool:
+            return len(self._children) == 0
+
+        def __len__(self):
+            return len(self._children)
+
+        def __contains__(self, component: str):
+            return component in self._children
+
+        def __getitem__(self, component: str):
+            return self._children[component]
+
+        def get(
+            self, component, default: Optional["VariableCache.GroupTreeNode"] = None
+        ):
+            return self._children.get(component, default)
+
+        def leaves(self) -> Generator["VariableCache.GroupTreeNode", None, None]:
+            if self.is_leaf():
+                yield self
+            for child in self._children.values():
+                yield from child.leaves()
+
+        def leaf_variables(self) -> Generator[str, None, None]:
+            yield from (leaf.name for leaf in self.leaves())
+
+        def _min_leaf_name(self) -> str:
+            return min(self.leaf_variables())
+
+        def _node_str(self, level: int, component: str, indent_prefix: str) -> str:
+            line = indent_prefix * level
+            if len(self._children) > 0 or self._name is not None:
+                line = f"{line}+ {component}"
+            if self.name is not None:
+                line = f"{line} ({self.name})"
+
+            return line
+
+        def _subtree_str(self, level: int, component: str, indent_prefix: str) -> str:
+            rep = self._node_str(level, component, indent_prefix)
+            for path_component, child in sorted(
+                self._children.items(), key=lambda t: t[1]._min_leaf_name()
+            ):
+                rep = (
+                    rep
+                    + "\n"
+                    + child._subtree_str(level + 1, path_component, indent_prefix)
+                )
+            return rep
+
+        def __str__(self) -> str:
+            return "\n".join(
+                child._subtree_str(0, path_component, indent_prefix="    ")
+                for path_component, child in sorted(
+                    self._children.items(), key=lambda t: t[1]._min_leaf_name()
+                )
+            )
+
+    def group_tree(
+        self, dataset: str, year: int, group_name: str, *, skip_annotations: bool = True
+    ) -> "VariableCache.GroupTreeNode":
+        group = self.get_group(dataset, year, group_name)
+
+        root = VariableCache.GroupTreeNode()
+
+        for variable_name, details in group.items():
+            path = details["label"].split("!!")
+
+            node = root
+
+            # Construct a nested path of nodes down to the
+            # leaf.
+            for component in path:
+                child = node.get(component, None)
+                if child is None:
+                    child = VariableCache.GroupTreeNode()
+                    node.add_child(component, child)
+                node = child
+
+            # Put the variable name at the lead.
+            node.name = variable_name
+
+        return root
+
     def group_leaves(
-        self, source: str, year: int, name: str, *, skip_annotations: bool = True
+        self, dataset: str, year: int, name: str, *, skip_annotations: bool = True
     ) -> List[str]:
         """
         Find the leaves of a given group.
 
         Parameters
         ----------
-        source
-            The census data source.
+        dataset
+            The census dataset.
         year
             The year
         name
@@ -484,34 +588,19 @@ class VariableCache:
             to the total. We can use these directly in diversity and integration
             calculations using the `divintseg` package.`
         """
-        group = self.get_group(source, year, name)
-
-        # Group them by number of components.
-        variables_by_length = defaultdict(list)
-
-        for variable_name, variable_details in group.items():
-            length = variable_details["label"].count("!!") + 1
-            variables_by_length[length].append(variable_name)
-
-        # See which ones have no prefix.
-        leaves = [
-            variable_name
-            for variable_name in group.keys()
-            if not any(
-                group[other_name]["label"].startswith(group[variable_name]["label"])
-                for other_name in variables_by_length[
-                    group[variable_name]["label"].count("!!") + 2
-                ]
-            )
-        ]
+        tree = self.group_tree(dataset, year, name)
+        leaves = tree.leaf_variables()
 
         if skip_annotations:
+            group = self.get_group(dataset, year, name)
             leaves = [
                 leaf
                 for leaf in leaves
                 if (not group[leaf]["label"].startswith("Annotation"))
                 and (not group[leaf]["label"].startswith("Margin of Error"))
             ]
+        else:
+            leaves = list(leaves)
 
         return sorted(leaves)
 
@@ -550,13 +639,13 @@ class VariableCache:
                 for name, value in year.items():
                     yield (source, year, name), value
 
-    def invalidate(self, source: str, year: int, name: str):
+    def invalidate(self, dataset: str, year: int, name: str):
         """Remove an item from the cache."""
-        if self._variable_cache[source][year].pop(name, None):
-            if len(self._variable_cache[source][year]) == 0:
-                self._variable_cache[source].pop(year)
-                if len(self._variable_cache[source]) == 0:
-                    self._variable_cache.pop(source)
+        if self._variable_cache[dataset][year].pop(name, None):
+            if len(self._variable_cache[dataset][year]) == 0:
+                self._variable_cache[dataset].pop(year)
+                if len(self._variable_cache[dataset]) == 0:
+                    self._variable_cache.pop(dataset)
 
     def clear(self):
         """
