@@ -211,6 +211,57 @@ class VariableCacheTestCase(unittest.TestCase):
         # We had all the variables in the cache.
         self.assertEqual(0, self.mock_source.gets)
 
+    def test_group_leaves(self):
+        leaves = self.variables.group_leaves(self.source, self.year, "X02002")
+
+        self.assertEqual(["X02002_003E", "X02002_004E"], leaves)
+
+    def test_group_tree(self):
+        tree = self.variables.group_tree(self.source, self.year, "X02002")
+
+        self.assertEqual(
+            """+ Estimate
+    + Total:
+        + Not Hispanic or Latino: (X02002_002E)
+            + White alone (X02002_003E)
+            + Black or African American alone (X02002_004E)""",
+            str(tree),
+        )
+
+        self.assertEqual(1, len(tree))
+        self.assertFalse(tree.is_leaf())
+
+        t1 = tree["Estimate"]
+        self.assertIsNone(t1.name)
+        self.assertEqual(1, len(t1))
+        self.assertFalse(t1.is_leaf())
+
+        t11 = t1["Total:"]
+        self.assertIsNone(t11.name)
+        self.assertEqual(1, len(t11))
+        self.assertFalse(t11.is_leaf())
+
+        t111 = t11["Not Hispanic or Latino:"]
+        self.assertEqual("X02002_002E", t111.name)
+        self.assertEqual(2, len(t111))
+        self.assertFalse(t111.is_leaf())
+
+        t1111 = t111["White alone"]
+        self.assertEqual("X02002_003E", t1111.name)
+        self.assertEqual(0, len(t1111))
+        self.assertTrue(t1111.is_leaf())
+
+        t1112 = t111["Black or African American alone"]
+        self.assertEqual("X02002_004E", t1112.name)
+        self.assertEqual(0, len(t1112))
+        self.assertTrue(t1112.is_leaf())
+
+        leaves = list(tree.leaves())
+        self.assertEqual(2, len(leaves))
+        leaf_names = [leaf.name for leaf in leaves]
+        self.assertIn("X02002_003E", leaf_names)
+        self.assertIn("X02002_004E", leaf_names)
+
 
 if __name__ == "__main__":
     unittest.main()
