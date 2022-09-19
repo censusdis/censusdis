@@ -444,8 +444,6 @@ class VariableCache:
             # Missed in the cache, so go fetch it.
             value = self._variable_source.get_group(dataset, year, name)
 
-            print("VVV", value.keys())
-
             # Cache all the variables in the group.
             group_variables = value["variables"]
 
