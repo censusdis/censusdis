@@ -152,6 +152,6 @@ STATE_NAMES_FROM_IDS = {
     STATE_WY: "Wyoming",
 }
 
-ALL_STATES = [state for state in STATE_NAMES_FROM_IDS.keys() if state != STATE_DC]
+ALL_STATES = [state for state in STATE_NAMES_FROM_IDS if state != STATE_DC]
 
-ALL_STATES_AND_DC = [state for state in STATE_NAMES_FROM_IDS.keys()]
+ALL_STATES_AND_DC = list(STATE_NAMES_FROM_IDS.keys())

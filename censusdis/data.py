@@ -1,12 +1,22 @@
 from abc import ABC, abstractmethod
 from collections import defaultdict
-from typing import Any, Dict, Generator, Iterable, List, Mapping, Optional, Tuple, Union
+from typing import (
+    Any,
+    DefaultDict,
+    Dict,
+    Generator,
+    Iterable,
+    List,
+    Mapping,
+    Optional,
+    Tuple,
+    Union,
+)
 
 import pandas as pd
 import requests
 
 import censusdis.geography as cgeo
-
 
 # This is the type we can accept for geographic
 # filters. When provided, these filters are either
@@ -99,12 +109,12 @@ def _download_concat_detail(
     # in the later dfs.
     extra_fields = [f for f in dfs[0].columns if f not in set(field_groups[0])]
 
-    df = dfs[0]
+    df_data = dfs[0]
 
     for df_right in dfs[1:]:
-        df = df.merge(df_right, on=extra_fields)
+        df_data = df_data.merge(df_right, on=extra_fields)
 
-    return df
+    return df_data
 
 
 def download_detail(
@@ -139,21 +149,21 @@ def download_detail(
         census_variables.get(dataset, year, field)
 
     # If we were given a list, join it together into
-    # a comma-separated liat.
-    kwargs = {k: _gf2s(v) for k, v in kwargs.items()}
+    # a comma-separated string.
+    string_kwargs = {k: _gf2s(v) for k, v in kwargs.items()}
 
     url, params = census_detail_table_url(
-        dataset, year, fields, api_key=api_key, **kwargs
+        dataset, year, fields, api_key=api_key, **string_kwargs
     )
-    df = data_from_url(url, params)
+    df_data = data_from_url(url, params)
 
     for field in fields:
         field_type = census_variables.get(dataset, year, field)["predicateType"]
 
         if field_type == "int":
-            df[field] = df[field].astype(int)
+            df_data[field] = df_data[field].astype(int)
         elif field_type == "float":
-            df[field] = df[field].astype(float)
+            df_data[field] = df_data[field].astype(float)
         elif field_type == "string":
             pass
         else:
@@ -161,9 +171,9 @@ def download_detail(
             pass
 
     # Put the geo fields that came back up front.
-    df = df[[col for col in df.columns if col not in fields] + fields]
+    df_data = df_data[[col for col in df_data.columns if col not in fields] + fields]
 
-    return df
+    return df_data
 
 
 def census_detail_table_url(
@@ -357,15 +367,19 @@ class VariableCache:
             variable_source = CensusApiVariableSource()
 
         self._variable_source = variable_source
-        self._variable_cache = defaultdict(lambda: defaultdict(dict))
-        self._group_cache = defaultdict(lambda: defaultdict(dict))
+        self._variable_cache: DefaultDict[
+            str, DefaultDict[int, Dict[str, Any]]
+        ] = defaultdict(lambda: defaultdict(dict))
+        self._group_cache: DefaultDict[
+            str, DefaultDict[int, Dict[str, Any]]
+        ] = defaultdict(lambda: defaultdict(dict))
 
     def get(
         self,
         dataset: str,
         year: int,
         name: str,
-    ) -> List:
+    ) -> Dict[str, Dict]:
         """
         Get the description of a given variable.
 
@@ -430,6 +444,8 @@ class VariableCache:
             # Missed in the cache, so go fetch it.
             value = self._variable_source.get_group(dataset, year, name)
 
+            print("VVV", value.keys())
+
             # Cache all the variables in the group.
             group_variables = value["variables"]
 
@@ -437,9 +453,9 @@ class VariableCache:
                 self._variable_cache[dataset][year][variable_name] = variable_details
 
             # Cache the names of the variables in the group.
-            group_variable_names = [
-                variable_name for variable_name in group_variables.keys()
-            ]
+            group_variable_names = list(
+                variable_name for variable_name in group_variables
+            )
             self._group_cache[dataset][year][name] = group_variable_names
 
         # Reformat what we return so it includes the full
@@ -453,7 +469,7 @@ class VariableCache:
         def __init__(self, name: Optional[str] = None):
             self._name = name
 
-            self._children = {}
+            self._children: Dict[str, "VariableCache.GroupTreeNode"] = {}
 
         @property
         def name(self):
@@ -593,14 +609,12 @@ class VariableCache:
 
         if skip_annotations:
             group = self.get_group(dataset, year, name)
-            leaves = [
+            leaves = (
                 leaf
                 for leaf in leaves
                 if (not group[leaf]["label"].startswith("Annotation"))
                 and (not group[leaf]["label"].startswith("Margin of Error"))
-            ]
-        else:
-            leaves = list(leaves)
+            )
 
         return sorted(leaves)
 
@@ -624,19 +638,22 @@ class VariableCache:
 
     def keys(self) -> Iterable[Tuple[str, int, str]]:
         """Keys, i.e. the names of variables, in the cache."""
-        for k, _ in self.items():
-            yield k
+        for key, _ in self.items():
+            yield key
+
+    def __iter__(self) -> Iterable[Tuple[str, int, str]]:
+        return self.keys()
 
     def values(self) -> Iterable[dict]:
         """Values, i.e. the descriptions of variables, in the cache."""
-        for _, v in self.items():
-            yield v
+        for _, value in self.items():
+            yield value
 
     def items(self) -> Iterable[Tuple[Tuple[str, int, str], dict]]:
         """Items in the mapping from variable name to descpription."""
-        for source in self._variable_cache.keys():
-            for year in source.keys():
-                for name, value in year.items():
+        for source, values_for_source in self._variable_cache.items():
+            for year, values_for_year in values_for_source.items():
+                for name, value in values_for_year.items():
                     yield (source, year, name), value
 
     def invalidate(self, dataset: str, year: int, name: str):

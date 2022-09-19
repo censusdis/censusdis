@@ -1,6 +1,6 @@
 import unittest
 
-from censusdis.geography import PathSpec, CensusGeographyQuerySpec
+from censusdis.geography import CensusGeographyQuerySpec, PathSpec
 
 
 class CanonicalGeometryTestCase(unittest.TestCase):

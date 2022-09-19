@@ -1,17 +1,28 @@
-from typing import ClassVar, Iterable, List, Mapping, Optional, Tuple, Union
+# Copyright (c) 2022 Darren Erik Vengroff
+"""
+Utilities for managing hierarchies of geographies.
+"""
+
 from dataclasses import dataclass
+from typing import Any, ClassVar, Dict, Iterable, List, Mapping, Optional, Tuple, Union
 
 InSpecType = Union[str, Iterable[str]]
 
 
 class PathSpec:
+    """
+    A path specification.
+
+    This class is used to represent a path of allowable geographies,
+    such as state, county, census tract.
+    """
 
     # We hide this object inside the class to make __init__
     # effectively private. If you don't have access to this
     # key you can't successfully call __init___.
     __init_key = object()
 
-    def __init__(self, path: Iterable[str], init_key: Optional = None):
+    def __init__(self, path: Iterable[str], init_key: Optional[Any] = None):
         if init_key is not PathSpec.__init_key:
             raise ValueError(
                 "CanonicalGeographies cannot be created directly. "
@@ -41,10 +52,10 @@ class PathSpec:
         **kwargs: InSpecType,
     ) -> bool:
         kwargs = self._u2s(**kwargs)
-        path_elements_in_kwargs = [k for k in self._path if k in kwargs]
-        keys_from_kwargs = [k for k in kwargs.keys()]
+        path_elements_in_kwargs = [key for key in self._path if key in kwargs]
+        keys_from_kwargs = list(kwargs)
 
-        match = path_elements_in_kwargs and (
+        match = (len(path_elements_in_kwargs) > 0) and (
             path_elements_in_kwargs == keys_from_kwargs
         )
 
@@ -83,12 +94,14 @@ class PathSpec:
 
         return [
             BoundGeographyPath(num, path_spec, **kwargs)
-            for num, path_spec in cls.ALL.items()
+            for num, path_spec in PathSpec.ALL.items()
             if path_spec._partial_match(is_prefix, **kwargs)
         ]
 
     @classmethod
-    def partial_prefix_match(cls, **kwargs: InSpecType) -> "BoundGeographyPath":
+    def partial_prefix_match(
+        cls, **kwargs: InSpecType
+    ) -> Optional["BoundGeographyPath"]:
         matches = cls.partial_matches(is_prefix=True, **kwargs)
 
         min_num, min_bgp = None, None
@@ -103,7 +116,7 @@ class PathSpec:
     def full_match(cls, **kwargs: InSpecType):
         full_matches = [
             (num, path_spec)
-            for num, path_spec in cls.ALL.items()
+            for num, path_spec in PathSpec.ALL.items()
             if path_spec._full_match(**kwargs)
         ]
         if not full_matches:
@@ -117,7 +130,7 @@ class PathSpec:
         return cls.ALL.get(num, None)
 
     @staticmethod
-    def _create_all():
+    def _create_all() -> Dict[str, "PathSpec"]:
         key = PathSpec.__init_key
         all_path_specs = {
             "010": PathSpec(["us"], key),
@@ -488,6 +501,8 @@ class PathSpec:
         }
         return all_path_specs
 
+    ALL: Dict[str, "PathSpec"] = {}
+
 
 PathSpec.ALL = PathSpec._create_all()
 
@@ -514,9 +529,9 @@ class BoundGeographyPath:
 @dataclass(frozen=True)
 class CensusGeographyQuerySpec:
 
-    source: str
+    dataset: str
     year: int
-    fields: List[str]
+    variables: List[str]
     bound_path: BoundGeographyPath
     api_key: Optional[str] = None
 
@@ -524,13 +539,13 @@ class CensusGeographyQuerySpec:
 
     @property
     def for_component(self) -> str:
-        *_, (k, v) = self.bound_path.bindings.items()
-        if v == "*":
-            return f"{k}"
-        return f"{k}:{v}"
+        *_, (key, value) = self.bound_path.bindings.items()
+        if value == "*":
+            return f"{key}"
+        return f"{key}:{value}"
 
     @property
-    def in_components(self) -> str:
+    def in_components(self) -> Optional[str]:
         *components, _ = self.bound_path.bindings.items()
 
         if components:
@@ -539,10 +554,10 @@ class CensusGeographyQuerySpec:
         return None
 
     def detail_table_url(self) -> Tuple[str, Mapping[str, str]]:
-        url = "/".join([self._BASE_URL, f"{self.year:04}", self.source])
+        url = "/".join([self._BASE_URL, f"{self.year:04}", self.dataset])
 
         params = {
-            "get": ",".join(self.fields),
+            "get": ",".join(self.variables),
             "for": self.for_component,
         }
 
