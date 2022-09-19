@@ -1,6 +1,17 @@
 from abc import ABC, abstractmethod
 from collections import defaultdict
-from typing import Any, Dict, Generator, Iterable, List, Mapping, Optional, Tuple, Union
+from typing import (
+    Any,
+    DefaultDict,
+    Dict,
+    Generator,
+    Iterable,
+    List,
+    Mapping,
+    Optional,
+    Tuple,
+    Union,
+)
 
 import pandas as pd
 import requests
@@ -138,11 +149,11 @@ def download_detail(
         census_variables.get(dataset, year, field)
 
     # If we were given a list, join it together into
-    # a comma-separated liat.
-    kwargs = {k: _gf2s(v) for k, v in kwargs.items()}
+    # a comma-separated string.
+    string_kwargs = {k: _gf2s(v) for k, v in kwargs.items()}
 
     url, params = census_detail_table_url(
-        dataset, year, fields, api_key=api_key, **kwargs
+        dataset, year, fields, api_key=api_key, **string_kwargs
     )
     df_data = data_from_url(url, params)
 
@@ -356,15 +367,19 @@ class VariableCache:
             variable_source = CensusApiVariableSource()
 
         self._variable_source = variable_source
-        self._variable_cache = defaultdict(lambda: defaultdict(dict))
-        self._group_cache = defaultdict(lambda: defaultdict(dict))
+        self._variable_cache: DefaultDict[
+            str, DefaultDict[int, Dict[str, Any]]
+        ] = defaultdict(lambda: defaultdict(dict))
+        self._group_cache: DefaultDict[
+            str, DefaultDict[int, Dict[str, Any]]
+        ] = defaultdict(lambda: defaultdict(dict))
 
     def get(
         self,
         dataset: str,
         year: int,
         name: str,
-    ) -> List:
+    ) -> Dict[str, Dict]:
         """
         Get the description of a given variable.
 
@@ -454,7 +469,7 @@ class VariableCache:
         def __init__(self, name: Optional[str] = None):
             self._name = name
 
-            self._children = {}
+            self._children: Dict[str, "VariableCache.GroupTreeNode"] = {}
 
         @property
         def name(self):
@@ -594,14 +609,12 @@ class VariableCache:
 
         if skip_annotations:
             group = self.get_group(dataset, year, name)
-            leaves = [
+            leaves = (
                 leaf
                 for leaf in leaves
                 if (not group[leaf]["label"].startswith("Annotation"))
                 and (not group[leaf]["label"].startswith("Margin of Error"))
-            ]
-        else:
-            leaves = list(leaves)
+            )
 
         return sorted(leaves)
 
@@ -638,9 +651,9 @@ class VariableCache:
 
     def items(self) -> Iterable[Tuple[Tuple[str, int, str], dict]]:
         """Items in the mapping from variable name to descpription."""
-        for source in self._variable_cache.keys():
-            for year in source.keys():
-                for name, value in year.items():
+        for source, values_for_source in self._variable_cache.items():
+            for year, values_for_year in values_for_source.items():
+                for name, value in values_for_year.items():
                     yield (source, year, name), value
 
     def invalidate(self, dataset: str, year: int, name: str):

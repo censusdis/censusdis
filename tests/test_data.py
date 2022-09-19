@@ -1,11 +1,7 @@
 import unittest
 from typing import Any, Dict
 
-from censusdis.data import (
-    _gf2s,
-    VariableSource,
-    VariableCache,
-)
+from censusdis.data import VariableCache, VariableSource, _gf2s
 
 
 class TestFilters(unittest.TestCase):

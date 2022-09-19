@@ -4,7 +4,7 @@ Utilities for managing hierarchies of geographies.
 """
 
 from dataclasses import dataclass
-from typing import ClassVar, Iterable, List, Mapping, Optional, Tuple, Union
+from typing import Any, ClassVar, Dict, Iterable, List, Mapping, Optional, Tuple, Union
 
 InSpecType = Union[str, Iterable[str]]
 
@@ -22,7 +22,7 @@ class PathSpec:
     # key you can't successfully call __init___.
     __init_key = object()
 
-    def __init__(self, path: Iterable[str], init_key: Optional = None):
+    def __init__(self, path: Iterable[str], init_key: Optional[Any] = None):
         if init_key is not PathSpec.__init_key:
             raise ValueError(
                 "CanonicalGeographies cannot be created directly. "
@@ -55,7 +55,7 @@ class PathSpec:
         path_elements_in_kwargs = [key for key in self._path if key in kwargs]
         keys_from_kwargs = list(kwargs)
 
-        match = path_elements_in_kwargs and (
+        match = (len(path_elements_in_kwargs) > 0) and (
             path_elements_in_kwargs == keys_from_kwargs
         )
 
@@ -94,12 +94,14 @@ class PathSpec:
 
         return [
             BoundGeographyPath(num, path_spec, **kwargs)
-            for num, path_spec in cls.ALL.items()
+            for num, path_spec in PathSpec.ALL.items()
             if path_spec._partial_match(is_prefix, **kwargs)
         ]
 
     @classmethod
-    def partial_prefix_match(cls, **kwargs: InSpecType) -> "BoundGeographyPath":
+    def partial_prefix_match(
+        cls, **kwargs: InSpecType
+    ) -> Optional["BoundGeographyPath"]:
         matches = cls.partial_matches(is_prefix=True, **kwargs)
 
         min_num, min_bgp = None, None
@@ -114,7 +116,7 @@ class PathSpec:
     def full_match(cls, **kwargs: InSpecType):
         full_matches = [
             (num, path_spec)
-            for num, path_spec in cls.ALL.items()
+            for num, path_spec in PathSpec.ALL.items()
             if path_spec._full_match(**kwargs)
         ]
         if not full_matches:
@@ -128,7 +130,7 @@ class PathSpec:
         return cls.ALL.get(num, None)
 
     @staticmethod
-    def _create_all():
+    def _create_all() -> Dict[str, "PathSpec"]:
         key = PathSpec.__init_key
         all_path_specs = {
             "010": PathSpec(["us"], key),
@@ -499,6 +501,8 @@ class PathSpec:
         }
         return all_path_specs
 
+    ALL: Dict[str, "PathSpec"] = {}
+
 
 PathSpec.ALL = PathSpec._create_all()
 
@@ -541,7 +545,7 @@ class CensusGeographyQuerySpec:
         return f"{key}:{value}"
 
     @property
-    def in_components(self) -> str:
+    def in_components(self) -> Optional[str]:
         *components, _ = self.bound_path.bindings.items()
 
         if components:
