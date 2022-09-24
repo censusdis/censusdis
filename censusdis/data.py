@@ -51,7 +51,15 @@ def data_from_url(url: str, params: Optional[Mapping[str, str]] = None) -> pd.Da
     ):
         return pd.DataFrame(
             parsed_json[1:],
-            columns=(c.upper().replace(" ", "_") for c in parsed_json[0]),
+            columns=(
+                c.upper()
+                .replace(" ", "_")
+                .replace("-", "_")
+                .replace("/", "_")
+                .replace("(", "")
+                .replace(")", "")
+                for c in parsed_json[0]
+            ),
         )
 
     raise CensusApiException(
@@ -129,6 +137,12 @@ def download_detail(
     if census_variables is None:
         census_variables = variables
 
+    # In case they came to us in py format, as kwargs often do.
+    cgeo.geo_path_snake_specs(dataset, year)
+    kwargs = {
+        cgeo.path_component_from_snake(dataset, year, k): v for k, v in kwargs.items()
+    }
+
     if not isinstance(fields, list):
         fields = list(fields)
 
@@ -184,7 +198,17 @@ def census_detail_table_url(
     api_key: Optional[str] = None,
     **kwargs: cgeo.InSpecType,
 ) -> Tuple[str, Mapping[str, str]]:
-    bound_path = cgeo.PathSpec.partial_prefix_match(**kwargs)
+    bound_path = cgeo.PathSpec.partial_prefix_match(dataset, year, **kwargs)
+
+    if bound_path is None:
+        raise CensusApiException(
+            f"Unable to match the geography specification {kwargs}.\n"
+            f"Supported geographies fpr {dataset} in {year} are:\n"
+            + "\n".join(
+                f"{path_spec}"
+                for path_spec in cgeo.PathSpec.get_path_specs(dataset, year).values()
+            )
+        )
 
     query_spec = cgeo.CensusGeographyQuerySpec(
         dataset, year, list(fields), bound_path, api_key=api_key
