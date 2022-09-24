@@ -203,10 +203,10 @@ def census_detail_table_url(
     if bound_path is None:
         raise CensusApiException(
             f"Unable to match the geography specification {kwargs}.\n"
-            f"Supported geographies fpr {dataset} in {year} are:\n"
+            f"Supported geographies for dataset='{dataset}' in year={year} are:\n"
             + "\n".join(
                 f"{path_spec}"
-                for path_spec in cgeo.PathSpec.get_path_specs(dataset, year).values()
+                for path_spec in cgeo.geo_path_snake_specs(dataset, year).values()
             )
         )
 
