@@ -443,7 +443,7 @@ def relocate_ak_hi(gdf):
     -------
         a geo data frame with any geometry in AK or HI moved for plotting.
     """
-    gdf = gdf.groupby(gdf["STATEFP"]).apply(_relocate_ak_hi_group)
+    gdf = gdf.groupby(gdf["STATEFP"], group_keys=False).apply(_relocate_ak_hi_group)
 
     return gdf
 
