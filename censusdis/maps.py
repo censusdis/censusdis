@@ -165,10 +165,10 @@ class ShapeReader:
         """
         Read the geometries of geographies.
 
-        This reads the highest resolution available, which makes it suitable
+        This method reads maps suitable
         for use with geometric joins and queries of various types. If you are
-        only interested in plotting maps, the lower resolution method
-        :py:meth:`~ShapeReader.read_cb_shapefile` may be more suitable.
+        only interested in plotting maps, the
+        :py:meth:`~ShapeReader.read_cb_shapefile` method may be more suitable.
 
         The files are read from the US Census servers and cached locally.
         They are in most cases the same files you can download manually from
