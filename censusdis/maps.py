@@ -81,8 +81,8 @@ class ShapeReader:
             f"https://www2.census.gov/geo/tiger/TIGER{self._year}/{suffix.upper()}"
         )
         # Special case for whatever reason the US Census decided.
-        if self._year == 2020 and suffix == "tabblock":
-            suffix = "tabblock10"
+        if self._year == 2020 and suffix in ["puma", "tabblock"]:
+            suffix = f"{suffix}10"
 
         name = f"{prefix}_{self._year}_{state}_{suffix}"
         return base_url, name

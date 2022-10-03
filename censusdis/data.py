@@ -352,8 +352,11 @@ class CensusApiVariableSource(VariableSource):
     def group_url(
         dataset: str,
         year: int,
-        name: str,
+        name: Optional[str],
     ) -> str:
+        if name is None:
+            return f"https://api.census.gov/data/{year}/{dataset}/variables.json"
+
         return f"https://api.census.gov/data/{year}/{dataset}/groups/{name}.json"
 
     def get(self, dataset: str, year: int, name: str) -> Dict[str, Any]:
@@ -362,7 +365,9 @@ class CensusApiVariableSource(VariableSource):
 
         return value
 
-    def get_group(self, dataset: str, year: int, name: str) -> Dict[str, Dict]:
+    def get_group(
+        self, dataset: str, year: int, name: Optional[str]
+    ) -> Dict[str, Dict]:
         url = self.group_url(dataset, year, name)
         value = json_from_url(url)
 
@@ -440,10 +445,10 @@ class VariableCache:
         self,
         dataset: str,
         year: int,
-        name: str,
+        name: Optional[str],
     ) -> Dict[str, Dict]:
         """
-        Get inforation on the variables in a group.
+        Get information on the variables in a group.
 
         Parameters
         ----------
@@ -452,7 +457,8 @@ class VariableCache:
         year
             The year
         name
-            The name of the group.
+            The name of the group. Or None if this data set does not have
+            groups.
 
         Returns
         -------
@@ -562,8 +568,16 @@ class VariableCache:
                 )
             )
 
+        def __repr__(self) -> str:
+            return str(self)
+
     def group_tree(
-        self, dataset: str, year: int, group_name: str, *, skip_annotations: bool = True
+        self,
+        dataset: str,
+        year: int,
+        group_name: Optional[str],
+        *,
+        skip_annotations: bool = True,
     ) -> "VariableCache.GroupTreeNode":
         group = self.get_group(dataset, year, group_name)
 
