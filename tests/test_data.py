@@ -1,5 +1,5 @@
 import unittest
-from typing import Any, Dict
+from typing import Any, Dict, Iterable
 
 from censusdis.data import VariableCache, VariableSource, _gf2s
 
@@ -58,7 +58,7 @@ class VariableCacheTestCase(unittest.TestCase):
                 "attributes": f"{name}A,{name}M,{name}MA",
             }
 
-        def get_group(self, source: str, year: int, name: str) -> Dict[str, Dict]:
+        def get_group(self, source: str, year: int, group_name: str) -> Dict[str, Dict]:
             """
             Construct a mock group.
 
@@ -69,38 +69,45 @@ class VariableCacheTestCase(unittest.TestCase):
 
             return {
                 "variables": {
-                    f"{name}_002E": {
-                        "name": f"{name}_002E",
+                    f"{group_name}_002E": {
+                        "name": f"{group_name}_002E",
                         "label": "Estimate!!Total:!!Not Hispanic or Latino:",
                         "concept": "HISPANIC OR LATINO ORIGIN BY RACE",
                         "predicateType": "int",
-                        "group": f"{name}",
+                        "group": f"{group_name}",
                         "limit": 0,
                         "predicateOnly": True,
                         "universe": "TOTAL_POP",
                     },
-                    f"{name}_003E": {
-                        "name": f"{name}_003E",
+                    f"{group_name}_003E": {
+                        "name": f"{group_name}_003E",
                         "label": "Estimate!!Total:!!Not Hispanic or Latino:!!White alone",
                         "concept": "HISPANIC OR LATINO ORIGIN BY RACE",
                         "predicateType": "int",
-                        "group": f"{name}",
+                        "group": f"{group_name}",
                         "limit": 0,
                         "predicateOnly": True,
                         "universe": "TOTAL_POP",
                     },
-                    f"{name}_004E": {
-                        "name": f"{name}_004E",
+                    f"{group_name}_004E": {
+                        "name": f"{group_name}_004E",
                         "label": "Estimate!!Total:!!Not Hispanic or Latino:!!Black or African American alone",
                         "concept": "HISPANIC OR LATINO ORIGIN BY RACE",
                         "predicateType": "int",
-                        "group": f"{name}",
+                        "group": f"{group_name}",
                         "limit": 0,
                         "predicateOnly": True,
                         "universe": "TOTAL_POP",
                     },
                 }
             }
+
+        def group_variable_names(
+            self, source: str, year: int, group_name: str
+        ) -> Iterable[str]:
+            variables = self.get_group(source, year, group_name)["variables"]
+            for variable in variables.values():
+                yield variable["name"]
 
     def setUp(self) -> None:
         """Set up before each test."""
@@ -257,6 +264,73 @@ class VariableCacheTestCase(unittest.TestCase):
         leaf_names = [leaf.name for leaf in leaves]
         self.assertIn("X02002_003E", leaf_names)
         self.assertIn("X02002_004E", leaf_names)
+
+    def test_variables_iterables(self):
+        # Initially, there are no variables cached locally.
+        keys = frozenset(self.variables.keys())
+        values = list(self.variables.values())
+        items = list(self.variables.items())
+        self.assertEqual(0, len(keys))
+        self.assertEqual(0, len(values))
+        self.assertEqual(0, len(items))
+
+        # After we load a group, the variables in the group
+        # are in the cache.
+        group_name = "X02002"
+
+        tree = self.variables.group_tree(self.source, self.year, group_name)
+
+        # Check that all the dict-like iterables work.
+        keys = frozenset(self.variables.keys())
+        values = list(self.variables.values())
+        items = list(self.variables.items())
+
+        mock_variable_names = list(
+            self.mock_source.group_variable_names(self.source, self.year, group_name)
+        )
+
+        # We should have one variable for each mock variable name.
+        self.assertEqual(len(mock_variable_names), len(keys))
+
+        for mock_variable_name in mock_variable_names:
+            self.assertIn((self.source, self.year, mock_variable_name), keys)
+
+        # We should have a value for each variable name.
+        self.assertEqual(len(mock_variable_names), len(values))
+
+        # The items should contain what the keys and values contain.
+        self.assertEqual(len(keys), len(items))
+        self.assertEqual(len(values), len(items))
+
+        for item in items:
+            self.assertIn(item[0], keys)
+            self.assertIn(item[1], values)
+
+        # Now look in the root node, which is just for
+        # estimates. The mock paths look like
+        # "Estimate!!Total!!Description" so we should
+        # be able to find them.
+        for estimate_name, estimate_node in tree.items():
+            self.assertEqual("Estimate", estimate_name)
+
+            # From the root, we will iterate down through the levels
+            # we mocked out down to the leaves.
+            for total_name, total_node in estimate_node.items():
+                self.assertEqual("Total:", total_name)
+                self.assertFalse(total_node.is_leaf())
+
+                for ethnicity_name, ethnicity_node in total_node.items():
+                    self.assertEqual("Not Hispanic or Latino:", ethnicity_name)
+                    self.assertFalse(ethnicity_node.is_leaf())
+
+                    leaf_names = frozenset(ethnicity_node.keys())
+
+                    self.assertEqual(2, len(leaf_names))
+                    self.assertIn("White alone", leaf_names)
+                    self.assertIn("Black or African American alone", leaf_names)
+
+                    for leaf_node in ethnicity_node.values():
+                        self.assertTrue(leaf_node.is_leaf())
 
 
 if __name__ == "__main__":
