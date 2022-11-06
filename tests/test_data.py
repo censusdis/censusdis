@@ -102,10 +102,12 @@ class VariableCacheTestCase(unittest.TestCase):
                 }
             }
 
-        def group_variable_names(self, source: str, year: int, group_name: str) -> Iterable[str]:
+        def group_variable_names(
+            self, source: str, year: int, group_name: str
+        ) -> Iterable[str]:
             variables = self.get_group(source, year, group_name)["variables"]
             for variable in variables.values():
-                yield variable['name']
+                yield variable["name"]
 
     def setUp(self) -> None:
         """Set up before each test."""
@@ -283,7 +285,9 @@ class VariableCacheTestCase(unittest.TestCase):
         values = list(self.variables.values())
         items = list(self.variables.items())
 
-        mock_variable_names = list(self.mock_source.group_variable_names(self.source, self.year, group_name))
+        mock_variable_names = list(
+            self.mock_source.group_variable_names(self.source, self.year, group_name)
+        )
 
         # We should have one variable for each mock variable name.
         self.assertEqual(len(mock_variable_names), len(keys))
