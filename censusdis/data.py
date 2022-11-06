@@ -522,6 +522,17 @@ class VariableCache:
         def __getitem__(self, component: str):
             return self._children[component]
 
+        def keys(self) -> Iterable[str]:
+            for key, _ in self.items():
+                yield key
+
+        def values(self) -> Iterable["VariableCache.GroupTreeNode"]:
+            for _, value in self.items():
+                yield value
+
+        def items(self) -> Iterable[Tuple[str, "VariableCache.GroupTreeNode"]]:
+            return self._children.items()
+
         def get(
             self, component, default: Optional["VariableCache.GroupTreeNode"] = None
         ):
