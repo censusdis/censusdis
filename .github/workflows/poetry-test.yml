@@ -78,8 +78,8 @@ jobs:
         run: |
           source .venv/bin/activate
           coverage run -m pytest 
-          coverage report --omit="tests/*" 
-          coverage xml --omit="tests/*" -o ./reports/coverage/coverage.xml
-          coverage html --omit="tests/*" -d ./reports/coverage 
+          coverage report 
+          coverage xml -o ./reports/coverage/coverage.xml
+          coverage html -d ./reports/coverage 
           genbadge coverage -o ./reports/coverage/coverage-badge.svg
           # TODO - how to retain and serve this badge in README.md?
