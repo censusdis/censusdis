@@ -368,13 +368,6 @@ class CensusApiVariableSourceTestCase(unittest.TestCase):
 
 
 class ParseCensusJsonTestCase(unittest.TestCase):
-    def setUp(self) -> None:
-        self._variable_source = ced.CensusApiVariableSource()
-        self._dataset = "acs/acs5"
-        self._year = 2019
-        self._group_name = "B01001"
-        self._name = f"{self._group_name}_001E"
-
     def test_parse_json(self):
 
         # This is an example of what comes back in JSON

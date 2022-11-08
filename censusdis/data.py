@@ -147,6 +147,9 @@ def download_detail(
     if census_variables is None:
         census_variables = variables
 
+    # The side effect here is to prime the cache.
+    cgeo.geo_path_snake_specs(dataset, year)
+
     # In case they came to us in py format, as kwargs often do.
     kwargs = {
         cgeo.path_component_from_snake(dataset, year, k): v for k, v in kwargs.items()
