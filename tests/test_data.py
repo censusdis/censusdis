@@ -1,7 +1,10 @@
 import unittest
 from typing import Any, Dict, Iterable
 
-from censusdis.data import CensusApiVariableSource, VariableCache, VariableSource, _gf2s
+import pandas as pd
+
+import censusdis.data as ced
+from censusdis.data import _gf2s
 
 
 class TestFilters(unittest.TestCase):
@@ -20,7 +23,7 @@ class TestFilters(unittest.TestCase):
 
 
 class VariableCacheTestCase(unittest.TestCase):
-    class MockVariableSource(VariableSource):
+    class MockVariableSource(ced.VariableSource):
         """A mock variable source."""
 
         def __init__(self):
@@ -114,7 +117,7 @@ class VariableCacheTestCase(unittest.TestCase):
         self.source = "acs/acs5"
         self.year = 2020
         self.mock_source = self.MockVariableSource()
-        self.variables = VariableCache(variable_source=self.mock_source)
+        self.variables = ced.VariableCache(variable_source=self.mock_source)
 
     def test_operators(self):
         """Test basic operators."""
@@ -179,7 +182,7 @@ class VariableCacheTestCase(unittest.TestCase):
                 self.assertEqual(40 * n + 2 * ii + 2, self.mock_source.gets)
                 self.assertEqual(0, self.mock_source.group_gets)
 
-        # Now drop half of them, nust from one source.
+        # Now drop half of them, just from the last source.
         for ii in range(20):
             name = f"X01001_0{ii:02}E"
             self.variables.invalidate(source, self.year, name)
@@ -335,7 +338,7 @@ class VariableCacheTestCase(unittest.TestCase):
 
 class CensusApiVariableSourceTestCase(unittest.TestCase):
     def setUp(self) -> None:
-        self._variable_source = CensusApiVariableSource()
+        self._variable_source = ced.CensusApiVariableSource()
         self._dataset = "acs/acs5"
         self._year = 2020
         self._group_name = "B01001"
@@ -362,6 +365,45 @@ class CensusApiVariableSourceTestCase(unittest.TestCase):
         self.assertEqual(
             "https://api.census.gov/data/2020/acs/acs5/groups/B01001.json", url
         )
+
+
+class ParseCensusJsonTestCase(unittest.TestCase):
+    def setUp(self) -> None:
+        self._variable_source = ced.CensusApiVariableSource()
+        self._dataset = "acs/acs5"
+        self._year = 2019
+        self._group_name = "B01001"
+        self._name = f"{self._group_name}_001E"
+
+    def test_parse_json(self):
+
+        # This is an example of what comes back in JSON
+        # form from the census API.
+        parsed_json = [
+            ["B01001_001E", "state", "county", "tract"],
+            ["1959", "01", "001", "020200"],
+            ["2527", "01", "001", "021000"],
+        ]
+
+        # This is what we should turn that into. Note the
+        # use of the header row for column names and that we
+        # capitalize them.
+        expected_df = pd.DataFrame(
+            [
+                ["1959", "01", "001", "020200"],
+                ["2527", "01", "001", "021000"],
+            ],
+            columns=["B01001_001E", "STATE", "COUNTY", "TRACT"],
+        )
+
+        df = ced._df_from_census_json(parsed_json)
+
+        self.assertTrue((df == expected_df).all().all())
+
+    def test_parse_bad_json(self):
+
+        with self.assertRaises(ced.CensusApiException):
+            ced._df_from_census_json([])
 
 
 if __name__ == "__main__":

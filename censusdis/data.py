@@ -44,6 +44,16 @@ class CensusApiException(Exception):
 
 def data_from_url(url: str, params: Optional[Mapping[str, str]] = None) -> pd.DataFrame:
     parsed_json = json_from_url(url, params)
+
+    print()
+    print("JJJ")
+    print(f'"{parsed_json}"')
+
+    return _df_from_census_json(parsed_json)
+
+
+def _df_from_census_json(parsed_json):
+
     if (
         isinstance(parsed_json, list)
         and len(parsed_json) >= 1
@@ -138,7 +148,6 @@ def download_detail(
         census_variables = variables
 
     # In case they came to us in py format, as kwargs often do.
-    cgeo.geo_path_snake_specs(dataset, year)
     kwargs = {
         cgeo.path_component_from_snake(dataset, year, k): v for k, v in kwargs.items()
     }
