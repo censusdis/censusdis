@@ -44,6 +44,16 @@ class CensusApiException(Exception):
 
 def data_from_url(url: str, params: Optional[Mapping[str, str]] = None) -> pd.DataFrame:
     parsed_json = json_from_url(url, params)
+
+    print()
+    print("JJJ")
+    print(f'"{parsed_json}"')
+
+    return _df_from_census_json(parsed_json)
+
+
+def _df_from_census_json(parsed_json):
+
     if (
         isinstance(parsed_json, list)
         and len(parsed_json) >= 1
@@ -137,8 +147,10 @@ def download_detail(
     if census_variables is None:
         census_variables = variables
 
-    # In case they came to us in py format, as kwargs often do.
+    # The side effect here is to prime the cache.
     cgeo.geo_path_snake_specs(dataset, year)
+
+    # In case they came to us in py format, as kwargs often do.
     kwargs = {
         cgeo.path_component_from_snake(dataset, year, k): v for k, v in kwargs.items()
     }
@@ -346,18 +358,64 @@ class CensusApiVariableSource(VariableSource):
         year: int,
         name: str,
     ) -> str:
+        """
+        Construct the URL to fetch metadata about a variable.
+
+        This is where we fetch metadata that is then put into the
+        local cache.
+
+        Parameters
+        ----------
+        dataset
+            The census dataset.
+        year
+            The year
+        name
+            The name of the variable.
+
+        Returns
+        -------
+            The URL to fetch the metadata from.
+        """
         return f"https://api.census.gov/data/{year}/{dataset}/variables/{name}.json"
 
     @staticmethod
     def group_url(
         dataset: str,
         year: int,
-        name: Optional[str],
+        group_name: Optional[str] = None,
     ) -> str:
-        if name is None:
+        """
+        Get the URL to fetch metadata about a group of variables.
+
+        This can either be all the variables in a dataset, if a group
+        name is not specified, or just the variables in a particular
+        group if the data set has groups.
+
+        Some datasets, `dec/pl` dataset for example, do not have
+        groups, so a group name need not be passed. Others, like
+        `acs/acs5` have groups, so a group name such as `B01001`
+        will normally be passed in.
+
+        Parameters
+        ----------
+        dataset
+            The census dataset.
+        year
+            The year
+        group_name
+            The name of the group, or `None` if the dataset has no
+            groups.
+
+        Returns
+        -------
+            The URL to fetch the metadata from.
+        """
+
+        if group_name is None:
             return f"https://api.census.gov/data/{year}/{dataset}/variables.json"
 
-        return f"https://api.census.gov/data/{year}/{dataset}/groups/{name}.json"
+        return f"https://api.census.gov/data/{year}/{dataset}/groups/{group_name}.json"
 
     def get(self, dataset: str, year: int, name: str) -> Dict[str, Any]:
         url = self.url(dataset, year, name)

@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "censusdis"
-version = "0.6.0"
+version = "0.6.1"
 description = "US Census utilities for a variety of data loading and mapping purposes."
 license = "HL3-CL-ECO-EXTR-FFD-LAW-MIL-SV"
 authors = ["vengroff <vengroff@gmail.com>"]
@@ -30,7 +30,7 @@ docs = ["Sphinx", "sphinx-rtd-theme", "sphinxcontrib-napoleon"]
 
 [tool.poetry.group.test.dependencies]
 pytest = "^7.1.3"
-coverage = "^6.4.4"
+coverage = {extras = ["toml"], version = "^6.5.0"}
 pytest-cov = "^3.0.0"
 
 [tool.poetry.group.lint.dependencies]
@@ -43,6 +43,9 @@ types-requests = "^2.28.10"
 
 [tool.poetry.group.dist.dependencies]
 genbadge = {extras = ["all"], version = "^1.1.0"}
+
+[tool.coverage.report]
+omit = ["tests/*"]
 
 [build-system]
 requires = ["poetry-core"]
