@@ -45,10 +45,6 @@ class CensusApiException(Exception):
 def data_from_url(url: str, params: Optional[Mapping[str, str]] = None) -> pd.DataFrame:
     parsed_json = json_from_url(url, params)
 
-    print()
-    print("JJJ")
-    print(f'"{parsed_json}"')
-
     return _df_from_census_json(parsed_json)
 
 
