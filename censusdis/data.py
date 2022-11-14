@@ -1,3 +1,11 @@
+# Copyright (c) 2022 Darren Erik Vengroff
+"""
+Utilities for loading census dats.
+
+This module relies on the US Census API, which
+it wraps in a pythonic manner.
+"""
+
 from abc import ABC, abstractmethod
 from collections import defaultdict
 from typing import (
@@ -93,8 +101,10 @@ def _download_concat_detail(
     dataset: str,
     year: int,
     fields: List[str],
+    *,
     key: Optional[str],
     census_variables: "VariableCache",
+    with_geometry: bool = False,
     **kwargs: cgeo.InSpecType,
 ) -> pd.DataFrame:
 
@@ -113,15 +123,21 @@ def _download_concat_detail(
             field_group,
             api_key=key,
             census_variables=census_variables,
+            with_geometry=with_geometry and (ii == 0),
             **kwargs,
         )
-        for field_group in field_groups
+        for ii, field_group in enumerate(field_groups)
     ]
 
     # What fields came back in the first df but were not
     # requested? These are the ones that will be duplicated
     # in the later dfs.
     extra_fields = [f for f in dfs[0].columns if f not in set(field_groups[0])]
+
+    # If we put in the geometry column, it's not part of the merge
+    # key.
+    if with_geometry:
+        extra_fields = [f for f in extra_fields if f != 'geometry']
 
     df_data = dfs[0]
 
@@ -138,6 +154,7 @@ def download_detail(
     *,
     api_key: Optional[str] = None,
     census_variables: Optional["VariableCache"] = None,
+    with_geometry: bool = False,
     **kwargs: cgeo.InSpecType,
 ) -> pd.DataFrame:
     if census_variables is None:
@@ -162,6 +179,7 @@ def download_detail(
             fields,
             key=api_key,
             census_variables=census_variables,
+            with_geometry=with_geometry,
             **kwargs,
         )
 

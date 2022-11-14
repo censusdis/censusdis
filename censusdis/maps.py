@@ -3,7 +3,7 @@
 Utilities for loading and rendering maps.
 
 This module relies on shapefiles from the US Census,
-which is downloads as needed and caches locally.
+which it downloads as needed and caches locally.
 """
 
 import os
