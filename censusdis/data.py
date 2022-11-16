@@ -22,9 +22,13 @@ from typing import (
 )
 
 import pandas as pd
+import geopandas as gpd
 import requests
+import tempfile
 
 import censusdis.geography as cgeo
+import censusdis.maps as cmap
+
 
 # This is the type we can accept for geographic
 # filters. When provided, these filters are either
@@ -147,6 +151,70 @@ def _download_concat_detail(
     return df_data
 
 
+__shapefile_root : str = tempfile.mkdtemp(prefix="data_shapefiles")
+__shapefile_readers : Dict[int, cmap.ShapeReader] = {}
+
+
+def __shapefile_reader(year: int):
+    reader = __shapefile_readers.get(year, None)
+
+    if reader is None:
+        reader = cmap.ShapeReader(
+            __shapefile_root, year,
+        )
+
+        __shapefile_readers[year] = reader
+
+    return reader
+
+
+def _add_geometry(
+    df_data: pd.DataFrame,
+    year: int,
+    bound_path: cgeo.BoundGeographyPath
+) -> Union[pd.DataFrame, gpd.GeoDataFrame]:
+    """
+    Add geography to data.
+
+    Parameters
+    ----------
+    df_data
+    bound_path
+
+    Returns
+    -------
+
+    """
+
+    state = bound_path.bindings[bound_path.path_spec.path[0]]
+    geo_level = bound_path.path_spec.path[-1]
+
+    # Some higher levels have only a single national map.
+    if geo_level in ['county']:
+        state = "us"
+
+    gdf_shapefile = __shapefile_reader(year).read_cb_shapefile(
+        state, geo_level,
+    )
+
+    gdf_on = [f'{g.upper()}FP' for g in bound_path.bindings]
+    df_on = [f'{g.upper()}' for g in bound_path.bindings]
+
+    gdf_data = gdf_shapefile[gdf_on + ['geometry']].merge(
+        df_data,
+        how='right',
+        left_on=gdf_on,
+        right_on=df_on
+    ).drop(gdf_on, axis="columns")
+
+    # Rearrange columns so geometry is at the end.
+    gdf_data = gdf_data[
+        [col for col in gdf_data.columns if col != 'geometry'] + ['geometry']
+    ]
+
+    return gdf_data
+
+
 def download_detail(
     dataset: str,
     year: int,
@@ -156,7 +224,7 @@ def download_detail(
     census_variables: Optional["VariableCache"] = None,
     with_geometry: bool = False,
     **kwargs: cgeo.InSpecType,
-) -> pd.DataFrame:
+) -> Union[pd.DataFrame, gpd.GeoDataFrame]:
     if census_variables is None:
         census_variables = variables
 
@@ -192,7 +260,7 @@ def download_detail(
     # a comma-separated string.
     string_kwargs = {k: _gf2s(v) for k, v in kwargs.items()}
 
-    url, params = census_detail_table_url(
+    url, params, bound_path = census_detail_table_url(
         dataset, year, fields, api_key=api_key, **string_kwargs
     )
     df_data = data_from_url(url, params)
@@ -213,7 +281,13 @@ def download_detail(
     # Put the geo fields that came back up front.
     df_data = df_data[[col for col in df_data.columns if col not in fields] + fields]
 
+    if with_geometry:
+        # We need to get the geometry and merge it in.
+        gdf_data = _add_geometry(df_data, year, bound_path)
+        return gdf_data
+
     return df_data
+
 
 
 def census_detail_table_url(
@@ -223,7 +297,7 @@ def census_detail_table_url(
     *,
     api_key: Optional[str] = None,
     **kwargs: cgeo.InSpecType,
-) -> Tuple[str, Mapping[str, str]]:
+) -> Tuple[str, Mapping[str, str], cgeo.BoundGeographyPath]:
     bound_path = cgeo.PathSpec.partial_prefix_match(dataset, year, **kwargs)
 
     if bound_path is None:
@@ -242,7 +316,7 @@ def census_detail_table_url(
 
     url, params = query_spec.detail_table_url()
 
-    return url, params
+    return url, params, bound_path
 
 
 class VariableSource(ABC):

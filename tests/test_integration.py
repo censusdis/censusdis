@@ -8,6 +8,8 @@ immediately around those calls.
 
 import unittest
 
+import geopandas
+
 from censusdis import data as ced
 from censusdis.states import STATE_NJ
 
@@ -74,3 +76,18 @@ class DownloadDetailTestCase(unittest.TestCase):
         columns = set(df.columns)
         for variable in ["STATE", "COUNTY", "NAME"] + variables:
             self.assertIn(variable, columns)
+
+    def test_download_with_geometry(self):
+        """Download just a couple of variables."""
+
+        gdf = ced.download_detail(
+            self._dataset, self._year, ["NAME", self._name],
+            with_geometry=True,
+            state=STATE_NJ, county="*"
+        )
+
+        self.assertIsInstance(gdf, geopandas.GeoDataFrame)
+
+        self.assertEqual((21, 5), gdf.shape)
+
+        self.assertEqual(["STATE", "COUNTY", "NAME", "B19001_001E", 'geometry'], list(gdf.columns))

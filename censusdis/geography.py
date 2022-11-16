@@ -115,11 +115,11 @@ class PathSpec:
     ) -> Optional["BoundGeographyPath"]:
         matches = cls.partial_matches(dataset, year, is_prefix=True, **kwargs)
 
-        min_num, min_bgp = None, None
+        min_bgp = None
 
         for bgp in matches:
-            if min_num is None or len(bgp.path_spec) < min_num:
-                min_num, min_bgp = len(bgp.path_spec), bgp
+            if min_bgp is None or len(bgp.path_spec) < len(min_bgp.path_spec):
+                min_bgp = bgp
 
         return min_bgp
 
