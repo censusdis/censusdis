@@ -139,7 +139,9 @@ class ShapeReader:
 
         return base_url, name
 
-    def _cartographic_bound(self, state, geography, resolution, crs) -> gpd.GeoDataFrame:
+    def _cartographic_bound(
+        self, state, geography, resolution, crs
+    ) -> gpd.GeoDataFrame:
         if self._year <= 2010:
             base_url, name = self._through_2010_cb(state, geography, resolution)
         else:

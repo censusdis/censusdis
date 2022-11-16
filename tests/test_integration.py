@@ -5,7 +5,8 @@ Most of the functionality can be unit tested elsewhere or with mocks, but
 these tests actually call the census API itself to cover the bits of code
 immediately around those calls.
 """
-
+import os.path
+import tempfile
 import unittest
 
 import geopandas
@@ -27,12 +28,26 @@ class DownloadDetailTestCase(unittest.TestCase):
     concerned with the data that comes back.
     """
 
+    PATH_PREFIX = "test_data_shapefiles_"
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        """Set up our shapefile path once at class load time."""
+        ced.set_shapefile_path(tempfile.mkdtemp(prefix=cls.PATH_PREFIX))
+
     def setUp(self) -> None:
+        """Set up before each test."""
         self._variable_source = ced.CensusApiVariableSource()
         self._dataset = "acs/acs5"
         self._year = 2020
         self._group_name = "B19001"
         self._name = f"{self._group_name}_001E"
+
+    def test_path(self):
+        """Are we using the right cache path for shapefiles?"""
+        path = ced.get_shapefile_path()
+        filename = os.path.basename(path)
+        self.assertTrue(filename.startswith(self.PATH_PREFIX))
 
     def test_download(self):
         """Download just a couple of variables."""
@@ -54,15 +69,12 @@ class DownloadDetailTestCase(unittest.TestCase):
         """
 
         # A bunch of sex by age variables.
-        variables = [
-            f'B01001_{ii:03d}E' for ii in range(1, 50)
-        ] + [
-            f'B01001A_{ii:03d}E' for ii in range(1, 32)
-        ] + [
-            f'B01001B_{ii:03d}E' for ii in range(1, 32)
-        ] + [
-            f'B01001I_{ii:03d}E' for ii in range(1, 32)
-        ]
+        variables = (
+            [f"B01001_{ii:03d}E" for ii in range(1, 50)]
+            + [f"B01001A_{ii:03d}E" for ii in range(1, 32)]
+            + [f"B01001B_{ii:03d}E" for ii in range(1, 32)]
+            + [f"B01001I_{ii:03d}E" for ii in range(1, 32)]
+        )
 
         self.assertGreater(len(variables), ced._MAX_FIELDS_PER_DOWNLOAD)
 
@@ -77,17 +89,74 @@ class DownloadDetailTestCase(unittest.TestCase):
         for variable in ["STATE", "COUNTY", "NAME"] + variables:
             self.assertIn(variable, columns)
 
-    def test_download_with_geometry(self):
-        """Download just a couple of variables."""
+    def test_download_with_geometry_county(self):
+        """Download at the county level with geometry."""
 
         gdf = ced.download_detail(
-            self._dataset, self._year, ["NAME", self._name],
+            self._dataset,
+            self._year,
+            ["NAME", self._name],
             with_geometry=True,
-            state=STATE_NJ, county="*"
+            state=STATE_NJ,
+            county="*",
         )
 
         self.assertIsInstance(gdf, geopandas.GeoDataFrame)
 
         self.assertEqual((21, 5), gdf.shape)
 
-        self.assertEqual(["STATE", "COUNTY", "NAME", "B19001_001E", 'geometry'], list(gdf.columns))
+        self.assertEqual(
+            ["STATE", "COUNTY", "NAME", "B19001_001E", "geometry"], list(gdf.columns)
+        )
+
+    def test_download_with_geometry_tract(self):
+        """Download at the county level with geometry."""
+
+        gdf = ced.download_detail(
+            self._dataset,
+            self._year,
+            ["NAME", self._name],
+            with_geometry=True,
+            state=STATE_NJ,
+            county="001",
+            tract="*",
+        )
+
+        self.assertIsInstance(gdf, geopandas.GeoDataFrame)
+
+        self.assertEqual((74, 6), gdf.shape)
+
+        self.assertEqual(
+            ["STATE", "COUNTY", "TRACT", "NAME", "B19001_001E", "geometry"],
+            list(gdf.columns),
+        )
+
+    def test_download_with_geometry_block_group(self):
+        """Download at the county level with geometry."""
+
+        gdf = ced.download_detail(
+            self._dataset,
+            self._year,
+            ["NAME", self._name],
+            with_geometry=True,
+            state=STATE_NJ,
+            county="001",
+            block_group="*",
+        )
+
+        self.assertIsInstance(gdf, geopandas.GeoDataFrame)
+
+        self.assertEqual((194, 7), gdf.shape)
+
+        self.assertEqual(
+            [
+                "STATE",
+                "COUNTY",
+                "TRACT",
+                "BLOCK_GROUP",
+                "NAME",
+                "B19001_001E",
+                "geometry",
+            ],
+            list(gdf.columns),
+        )

@@ -6,29 +6,18 @@ This module relies on the US Census API, which
 it wraps in a pythonic manner.
 """
 
+import tempfile
 from abc import ABC, abstractmethod
 from collections import defaultdict
-from typing import (
-    Any,
-    DefaultDict,
-    Dict,
-    Generator,
-    Iterable,
-    List,
-    Mapping,
-    Optional,
-    Tuple,
-    Union,
-)
+from typing import (Any, DefaultDict, Dict, Generator, Iterable, List, Mapping,
+                    Optional, Tuple, Union)
 
-import pandas as pd
 import geopandas as gpd
+import pandas as pd
 import requests
-import tempfile
 
 import censusdis.geography as cgeo
 import censusdis.maps as cmap
-
 
 # This is the type we can accept for geographic
 # filters. When provided, these filters are either
@@ -141,7 +130,7 @@ def _download_concat_detail(
     # If we put in the geometry column, it's not part of the merge
     # key.
     if with_geometry:
-        extra_fields = [f for f in extra_fields if f != 'geometry']
+        extra_fields = [f for f in extra_fields if f != "geometry"]
 
     df_data = dfs[0]
 
@@ -151,8 +140,41 @@ def _download_concat_detail(
     return df_data
 
 
-__shapefile_root : str = tempfile.mkdtemp(prefix="data_shapefiles")
-__shapefile_readers : Dict[int, cmap.ShapeReader] = {}
+__shapefile_root: str = tempfile.mkdtemp(prefix="data_shapefiles_")
+__shapefile_readers: Dict[int, cmap.ShapeReader] = {}
+
+
+def set_shapefile_path(shapefile_path: str) -> None:
+    """
+    Set the path to the directory to cache shapefiles.
+
+    This is where we will cache shapefiles downloaded when
+    `with_geometry=True` is passed to :py:func:`~download_detail`.
+
+    Parameters
+    ----------
+    shapefile_path
+        The path to use for caching shapefiles.
+    """
+    global __shapefile_root
+
+    __shapefile_root = shapefile_path
+
+
+def get_shapefile_path() -> str:
+    """
+    Get the path to the directory to cache shapefiles.
+
+    This is where we will cache shapefiles downloaded when
+    `with_geometry=True` is passed to :py:func:`~download_detail`.
+
+    Returns
+    -------
+        The path to use for caching shapefiles.
+    """
+    global __shapefile_root
+
+    return __shapefile_root
 
 
 def __shapefile_reader(year: int):
@@ -160,7 +182,8 @@ def __shapefile_reader(year: int):
 
     if reader is None:
         reader = cmap.ShapeReader(
-            __shapefile_root, year,
+            __shapefile_root,
+            year,
         )
 
         __shapefile_readers[year] = reader
@@ -168,10 +191,20 @@ def __shapefile_reader(year: int):
     return reader
 
 
+# A map whose key is the geography level
+# we are getting data for and whose value
+# is the name of the corresponding column
+# in the shapefile gdf.
+_geometry_columns = {
+    "state": "STATEFP",
+    "county": "COUNTYFP",
+    "tract": "TRACTCE",
+    "block group": "BLKGRPCE",
+}
+
+
 def _add_geometry(
-    df_data: pd.DataFrame,
-    year: int,
-    bound_path: cgeo.BoundGeographyPath
+    df_data: pd.DataFrame, year: int, bound_path: cgeo.BoundGeographyPath
 ) -> Union[pd.DataFrame, gpd.GeoDataFrame]:
     """
     Add geography to data.
@@ -190,26 +223,38 @@ def _add_geometry(
     geo_level = bound_path.path_spec.path[-1]
 
     # Some higher levels have only a single national map.
-    if geo_level in ['county']:
+    if geo_level in ["county"]:
         state = "us"
+    elif geo_level == "block group":
+        geo_level = "bg"
+
+    print()
+    print("SSS", state)
+    print("LLL", geo_level)
 
     gdf_shapefile = __shapefile_reader(year).read_cb_shapefile(
-        state, geo_level,
+        state,
+        geo_level,
     )
 
-    gdf_on = [f'{g.upper()}FP' for g in bound_path.bindings]
-    df_on = [f'{g.upper()}' for g in bound_path.bindings]
+    gdf_on = [_geometry_columns[g_level] for g_level in bound_path.path_spec.path]
+    df_on = [
+        f"{g_level.upper().replace(' ', '_')}" for g_level in bound_path.path_spec.path
+    ]
 
-    gdf_data = gdf_shapefile[gdf_on + ['geometry']].merge(
-        df_data,
-        how='right',
-        left_on=gdf_on,
-        right_on=df_on
-    ).drop(gdf_on, axis="columns")
+    print("GGG", gdf_shapefile.columns)
+    print("GOO", gdf_on)
+    print("DOO", df_on)
+
+    gdf_data = (
+        gdf_shapefile[gdf_on + ["geometry"]]
+        .merge(df_data, how="right", left_on=gdf_on, right_on=df_on)
+        .drop(gdf_on, axis="columns")
+    )
 
     # Rearrange columns so geometry is at the end.
     gdf_data = gdf_data[
-        [col for col in gdf_data.columns if col != 'geometry'] + ['geometry']
+        [col for col in gdf_data.columns if col != "geometry"] + ["geometry"]
     ]
 
     return gdf_data
@@ -287,7 +332,6 @@ def download_detail(
         return gdf_data
 
     return df_data
-
 
 
 def census_detail_table_url(
