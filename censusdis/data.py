@@ -381,8 +381,9 @@ def download_detail(
 
     # Put the geo fields that came back up front.
     df_data = df_data[
-        [col for col in df_data.columns if col not in download_variables] + download_variables
-        ]
+        [col for col in df_data.columns if col not in download_variables]
+        + download_variables
+    ]
 
     if with_geometry:
         # We need to get the geometry and merge it in.
