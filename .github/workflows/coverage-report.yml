@@ -65,7 +65,7 @@ jobs:
           coverage report 
           coverage xml -o ./reports/coverage/coverage.xml
           coverage html -d ./reports/coverage 
-          genbadge coverage -o ./reports/coverage/coverage-badge.svg
+          genbadge coverage -n Coverage -o ./reports/coverage/coverage-badge.svg
       #----------------------------------------------
       #              commit coverage
       #----------------------------------------------
