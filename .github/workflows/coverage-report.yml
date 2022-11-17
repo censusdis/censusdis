@@ -62,6 +62,7 @@ jobs:
       - name: Generate coverage reports and badge
         run: |
           source .venv/bin/activate
+          pwd
           coverage report 
           coverage xml -o ./reports/coverage/coverage.xml
           coverage html -d ./reports/coverage 
@@ -71,11 +72,12 @@ jobs:
       #----------------------------------------------
       - name: Commit coverage reports and badge
         run: |
+          pwd
           /usr/bin/git config --local user.email "action@github.com"
           /usr/bin/git config --local user.name "GitHub Action"
           /usr/bin/git add ./reports/coverage/coverage-badge.svg
           ls ./reports/coverage
-          /usr/bin/git commit -m "Update coverage [github action]" ./reports/coverage/coverage-badge.svg
+          /usr/bin/git commit -m "Update coverage [github action]"
       - name: Query branch name
         run: |
           echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
