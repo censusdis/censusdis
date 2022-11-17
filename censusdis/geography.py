@@ -5,8 +5,7 @@ Utilities for managing hierarchies of geographies.
 
 from collections import defaultdict
 from dataclasses import dataclass
-from typing import (Any, ClassVar, Dict, Iterable, List, Mapping, Optional,
-                    Tuple, Union)
+from typing import Any, ClassVar, Dict, Iterable, List, Mapping, Optional, Tuple, Union
 
 import requests
 
