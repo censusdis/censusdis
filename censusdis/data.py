@@ -125,7 +125,7 @@ def _download_concat_detail(
             year,
             field_group,
             api_key=key,
-            census_variables=census_variables,
+            variable_cache=census_variables,
             with_geometry=with_geometry and (ii == 0),
             **kwargs,
         )
@@ -284,11 +284,11 @@ def _add_geometry(
 def download_detail(
     dataset: str,
     year: int,
-    variables: Iterable[str],
+    download_variables: Iterable[str],
     *,
     with_geometry: bool = False,
     api_key: Optional[str] = None,
-    census_variables: Optional["VariableCache"] = None,
+    variable_cache: Optional["VariableCache"] = None,
     **kwargs: cgeo.InSpecType,
 ) -> Union[pd.DataFrame, gpd.GeoDataFrame]:
     """
@@ -306,7 +306,7 @@ def download_detail(
         `dec/pl`.
     year
         The year to download data for.
-    variables
+    download_variables
         The census variables to download, for example `["NAME", "B01001_001E"]`.
     with_geometry
         If `True` a :py:class:`gpd.GeoDataFrame` will be returned and each row
@@ -317,7 +317,7 @@ def download_detail(
     api_key
         An optional API key. If you don't have or don't use a key, the number
         of calls you can make will be limited.
-    census_variables
+    variable_cache
         A cache of metadata about variables.
     kwargs
         A specification of the geometry that we want data for.
@@ -326,8 +326,8 @@ def download_detail(
     -------
         A :py:class:`~pd.DataFrame` containing the requested US Census data.
     """
-    if census_variables is None:
-        census_variables = _default_census_variables
+    if variable_cache is None:
+        variable_cache = variables
 
     # The side effect here is to prime the cache.
     cgeo.geo_path_snake_specs(dataset, year)
@@ -337,37 +337,37 @@ def download_detail(
         cgeo.path_component_from_snake(dataset, year, k): v for k, v in kwargs.items()
     }
 
-    if not isinstance(variables, list):
-        variables = list(variables)
+    if not isinstance(download_variables, list):
+        download_variables = list(download_variables)
 
     # Special case if we are trying to get too many fields.
-    if len(variables) > _MAX_FIELDS_PER_DOWNLOAD:
+    if len(download_variables) > _MAX_FIELDS_PER_DOWNLOAD:
         return _download_concat_detail(
             dataset,
             year,
-            variables,
+            download_variables,
             key=api_key,
-            census_variables=census_variables,
+            census_variables=variable_cache,
             with_geometry=with_geometry,
             **kwargs,
         )
 
     # Prefetch all the types before we load the data.
     # That way we fail fast if a field is not known.
-    for field in variables:
-        census_variables.get(dataset, year, field)
+    for field in download_variables:
+        variable_cache.get(dataset, year, field)
 
     # If we were given a list, join it together into
     # a comma-separated string.
     string_kwargs = {k: _gf2s(v) for k, v in kwargs.items()}
 
     url, params, bound_path = census_detail_table_url(
-        dataset, year, variables, api_key=api_key, **string_kwargs
+        dataset, year, download_variables, api_key=api_key, **string_kwargs
     )
     df_data = data_from_url(url, params)
 
-    for field in variables:
-        field_type = census_variables.get(dataset, year, field)["predicateType"]
+    for field in download_variables:
+        field_type = variable_cache.get(dataset, year, field)["predicateType"]
 
         if field_type == "int":
             df_data[field] = df_data[field].astype(int)
@@ -381,7 +381,8 @@ def download_detail(
 
     # Put the geo fields that came back up front.
     df_data = df_data[
-        [col for col in df_data.columns if col not in variables] + variables
+        [col for col in df_data.columns if col not in download_variables]
+        + download_variables
     ]
 
     if with_geometry:
@@ -969,4 +970,4 @@ class VariableCache:
         self._variable_cache = defaultdict(lambda: defaultdict(dict))
 
 
-_default_census_variables = VariableCache()
+variables = VariableCache()
