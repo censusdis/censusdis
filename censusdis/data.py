@@ -1,3 +1,12 @@
+# Copyright (c) 2022 Darren Erik Vengroff
+"""
+Utilities for loading census dats.
+
+This module relies on the US Census API, which
+it wraps in a pythonic manner.
+"""
+
+import tempfile
 from abc import ABC, abstractmethod
 from collections import defaultdict
 from typing import (
@@ -13,10 +22,12 @@ from typing import (
     Union,
 )
 
+import geopandas as gpd
 import pandas as pd
 import requests
 
 import censusdis.geography as cgeo
+import censusdis.maps as cmap
 
 # This is the type we can accept for geographic
 # filters. When provided, these filters are either
@@ -93,8 +104,10 @@ def _download_concat_detail(
     dataset: str,
     year: int,
     fields: List[str],
+    *,
     key: Optional[str],
     census_variables: "VariableCache",
+    with_geometry: bool = False,
     **kwargs: cgeo.InSpecType,
 ) -> pd.DataFrame:
 
@@ -113,15 +126,21 @@ def _download_concat_detail(
             field_group,
             api_key=key,
             census_variables=census_variables,
+            with_geometry=with_geometry and (ii == 0),
             **kwargs,
         )
-        for field_group in field_groups
+        for ii, field_group in enumerate(field_groups)
     ]
 
     # What fields came back in the first df but were not
     # requested? These are the ones that will be duplicated
     # in the later dfs.
     extra_fields = [f for f in dfs[0].columns if f not in set(field_groups[0])]
+
+    # If we put in the geometry column, it's not part of the merge
+    # key.
+    if with_geometry:
+        extra_fields = [f for f in extra_fields if f != "geometry"]
 
     df_data = dfs[0]
 
@@ -131,17 +150,184 @@ def _download_concat_detail(
     return df_data
 
 
+__shapefile_root: str = tempfile.mkdtemp(prefix="data_shapefiles_")
+__shapefile_readers: Dict[int, cmap.ShapeReader] = {}
+
+
+def set_shapefile_path(shapefile_path: str) -> None:
+    """
+    Set the path to the directory to cache shapefiles.
+
+    This is where we will cache shapefiles downloaded when
+    `with_geometry=True` is passed to :py:func:`~download_detail`.
+
+    Parameters
+    ----------
+    shapefile_path
+        The path to use for caching shapefiles.
+    """
+    global __shapefile_root
+
+    __shapefile_root = shapefile_path
+
+
+def get_shapefile_path() -> str:
+    """
+    Get the path to the directory to cache shapefiles.
+
+    This is where we will cache shapefiles downloaded when
+    `with_geometry=True` is passed to :py:func:`~download_detail`.
+
+    Returns
+    -------
+        The path to use for caching shapefiles.
+    """
+    global __shapefile_root
+
+    return __shapefile_root
+
+
+def __shapefile_reader(year: int):
+    reader = __shapefile_readers.get(year, None)
+
+    if reader is None:
+        reader = cmap.ShapeReader(
+            __shapefile_root,
+            year,
+        )
+
+        __shapefile_readers[year] = reader
+
+    return reader
+
+
+# A map whose key is the geography level
+# we are getting data for and whose value
+# is the name of the corresponding column
+# in the shapefile gdf.
+_geometry_columns = {
+    "state": "STATEFP",
+    "county": "COUNTYFP",
+    "tract": "TRACTCE",
+    "block group": "BLKGRPCE",
+}
+
+
+def _add_geometry(
+    df_data: pd.DataFrame, year: int, bound_path: cgeo.BoundGeographyPath
+) -> Union[pd.DataFrame, gpd.GeoDataFrame]:
+    """
+    Add geography to data.
+
+    Parameters
+    ----------
+    df_data
+        The data we downloaded from the census API
+    bound_path
+        The geographic path we used to query the data,
+        so we can figure out what shapefile to load
+        and merge.
+    Returns
+    -------
+        A GeoDataFrame with the original data and an
+        added geometry column for each row.
+    """
+
+    state = bound_path.bindings[bound_path.path_spec.path[0]]
+    geo_level = bound_path.path_spec.path[-1]
+
+    if geo_level not in _geometry_columns:
+        raise CensusApiException(
+            "The with_geometry=True flag is only allowed if the "
+            f"geometry for the data to be loaded is one of "
+            f"{[geo for geo in _geometry_columns.keys()]}."
+        )
+
+    # Some higher levels have only a single national map.
+    if geo_level in ["state", "county"]:
+        state = "us"
+    elif geo_level == "block group":
+        geo_level = "bg"
+
+    print()
+    print("SSS", state)
+    print("LLL", geo_level)
+
+    gdf_shapefile = __shapefile_reader(year).read_cb_shapefile(
+        state,
+        geo_level,
+    )
+
+    gdf_on = [_geometry_columns[g_level] for g_level in bound_path.path_spec.path]
+    df_on = [
+        f"{g_level.upper().replace(' ', '_')}" for g_level in bound_path.path_spec.path
+    ]
+
+    print("GGG", gdf_shapefile.columns)
+    print("GOO", gdf_on)
+    print("DOO", df_on)
+
+    gdf_data = (
+        gdf_shapefile[gdf_on + ["geometry"]]
+        .merge(df_data, how="right", left_on=gdf_on, right_on=df_on)
+        .drop(gdf_on, axis="columns")
+    )
+
+    # Rearrange columns so geometry is at the end.
+    gdf_data = gdf_data[
+        [col for col in gdf_data.columns if col != "geometry"] + ["geometry"]
+    ]
+
+    return gdf_data
+
+
 def download_detail(
     dataset: str,
     year: int,
-    fields: Iterable[str],
+    variables: Iterable[str],
     *,
+    with_geometry: bool = False,
     api_key: Optional[str] = None,
     census_variables: Optional["VariableCache"] = None,
     **kwargs: cgeo.InSpecType,
-) -> pd.DataFrame:
+) -> Union[pd.DataFrame, gpd.GeoDataFrame]:
+    """
+    Download data from the US Census API.
+
+    This is the main API for downloading US Census data with the
+    `censusdis` package. There are many examples of how to use
+    this in the demo notebooks provided with the package at
+    https://github.com/vengroff/censusdis/tree/main/notebooks.
+
+    Parameters
+    ----------
+    dataset
+        The dataset to download from. For example `acs/acs5` or
+        `dec/pl`.
+    year
+        The year to download data for.
+    variables
+        The census variables to download, for example `["NAME", "B01001_001E"]`.
+    with_geometry
+        If `True` a :py:class:`gpd.GeoDataFrame` will be returned and each row
+        will have a geometry that is a cartographic boundary suitable for platting
+        a map. See https://www.census.gov/geographies/mapping-files/time-series/geo/cartographic-boundary.2020.html
+        for details of the shapefiles that will be downloaded on your behalf to
+        generate these boundaries.
+    api_key
+        An optional API key. If you don't have or don't use a key, the number
+        of calls you can make will be limited.
+    census_variables
+        A cache of metadata about variables.
+    kwargs
+        A specification of the geometry that we want data for.
+
+    Returns
+    -------
+        A :py:class:`~pd.DataFrame` containing the requested US Census data.
+    """
     if census_variables is None:
-        census_variables = variables
+        census_variables = _default_census_variables
 
     # The side effect here is to prime the cache.
     cgeo.geo_path_snake_specs(dataset, year)
@@ -151,35 +337,36 @@ def download_detail(
         cgeo.path_component_from_snake(dataset, year, k): v for k, v in kwargs.items()
     }
 
-    if not isinstance(fields, list):
-        fields = list(fields)
+    if not isinstance(variables, list):
+        variables = list(variables)
 
     # Special case if we are trying to get too many fields.
-    if len(fields) > _MAX_FIELDS_PER_DOWNLOAD:
+    if len(variables) > _MAX_FIELDS_PER_DOWNLOAD:
         return _download_concat_detail(
             dataset,
             year,
-            fields,
+            variables,
             key=api_key,
             census_variables=census_variables,
+            with_geometry=with_geometry,
             **kwargs,
         )
 
     # Prefetch all the types before we load the data.
     # That way we fail fast if a field is not known.
-    for field in fields:
+    for field in variables:
         census_variables.get(dataset, year, field)
 
     # If we were given a list, join it together into
     # a comma-separated string.
     string_kwargs = {k: _gf2s(v) for k, v in kwargs.items()}
 
-    url, params = census_detail_table_url(
-        dataset, year, fields, api_key=api_key, **string_kwargs
+    url, params, bound_path = census_detail_table_url(
+        dataset, year, variables, api_key=api_key, **string_kwargs
     )
     df_data = data_from_url(url, params)
 
-    for field in fields:
+    for field in variables:
         field_type = census_variables.get(dataset, year, field)["predicateType"]
 
         if field_type == "int":
@@ -193,7 +380,14 @@ def download_detail(
             pass
 
     # Put the geo fields that came back up front.
-    df_data = df_data[[col for col in df_data.columns if col not in fields] + fields]
+    df_data = df_data[
+        [col for col in df_data.columns if col not in variables] + variables
+    ]
+
+    if with_geometry:
+        # We need to get the geometry and merge it in.
+        gdf_data = _add_geometry(df_data, year, bound_path)
+        return gdf_data
 
     return df_data
 
@@ -205,7 +399,7 @@ def census_detail_table_url(
     *,
     api_key: Optional[str] = None,
     **kwargs: cgeo.InSpecType,
-) -> Tuple[str, Mapping[str, str]]:
+) -> Tuple[str, Mapping[str, str], cgeo.BoundGeographyPath]:
     bound_path = cgeo.PathSpec.partial_prefix_match(dataset, year, **kwargs)
 
     if bound_path is None:
@@ -224,7 +418,7 @@ def census_detail_table_url(
 
     url, params = query_spec.detail_table_url()
 
-    return url, params
+    return url, params, bound_path
 
 
 class VariableSource(ABC):
@@ -775,4 +969,4 @@ class VariableCache:
         self._variable_cache = defaultdict(lambda: defaultdict(dict))
 
 
-variables = VariableCache()
+_default_census_variables = VariableCache()

@@ -3,7 +3,7 @@
 Utilities for loading and rendering maps.
 
 This module relies on shapefiles from the US Census,
-which is downloads as needed and caches locally.
+which it downloads as needed and caches locally.
 """
 
 import os
@@ -48,7 +48,7 @@ class ShapeReader:
         self._year = year
         self._auto_fetch = auto_fetch
 
-    def _read_shapefile(self, base_name: str, base_url: str, crs):
+    def _read_shapefile(self, base_name: str, base_url: str, crs) -> gpd.GeoDataFrame:
         """Helper function to read a shapefile."""
 
         self._auto_fetch_file(base_name, base_url)
@@ -139,7 +139,9 @@ class ShapeReader:
 
         return base_url, name
 
-    def _cartographic_bound(self, state, geography, resolution, crs):
+    def _cartographic_bound(
+        self, state, geography, resolution, crs
+    ) -> gpd.GeoDataFrame:
         if self._year <= 2010:
             base_url, name = self._through_2010_cb(state, geography, resolution)
         else:
@@ -214,7 +216,7 @@ class ShapeReader:
 
     def read_cb_shapefile(
         self, state: str, geography: str, resolution: str = "500k", crs=None
-    ):
+    ) -> gpd.GeoDataFrame:
         """
         Read the cartographic boundaries of a given geography.
 
