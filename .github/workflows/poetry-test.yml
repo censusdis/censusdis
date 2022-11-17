@@ -98,9 +98,9 @@ jobs:
           /usr/bin/git add ./reports/coverage
           /usr/bin/git commit -m "Update coverage"
       - name: Query branch name
-          run: |
-            echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
-          id: query_branch
+        run: |
+          echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+        id: query_branch
       - name: Push coverage commit
         uses: ad-m/github-push-action@master
         with:
