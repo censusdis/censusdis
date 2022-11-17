@@ -97,3 +97,8 @@ jobs:
           /usr/bin/git config --local user.name "GitHub Action"
           /usr/bin/git add ./reports/coverage
           /usr/bin/git commit -m "Update coverage"
+      - name: Push coverage commit
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ steps.extract_branch.outputs.branch }}
