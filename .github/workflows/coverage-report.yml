@@ -55,7 +55,7 @@ jobs:
       - name: Run tests and coverage
         run: |
           source .venv/bin/activate
-          coverage run -m pytest --junitxml=reports/tests/junit.xml
+          coverage run -m pytest --junitxml=reports/junit/junit.xml
       #----------------------------------------------
       #              generate coverage
       #----------------------------------------------
