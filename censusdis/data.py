@@ -284,11 +284,11 @@ def _add_geometry(
 def download_detail(
     dataset: str,
     year: int,
-    fields: Iterable[str],
+    variables: Iterable[str],
     *,
+    with_geometry: bool = False,
     api_key: Optional[str] = None,
     census_variables: Optional["VariableCache"] = None,
-    with_geometry: bool = False,
     **kwargs: cgeo.InSpecType,
 ) -> Union[pd.DataFrame, gpd.GeoDataFrame]:
     """
@@ -306,19 +306,19 @@ def download_detail(
         `dec/pl`.
     year
         The year to download data for.
-    fields
+    variables
         The census variables to download, for example `["NAME", "B01001_001E"]`.
-    api_key
-        An optional API key. If you don't have or don't use a key, the number
-        of calls you can make will be limited.
-    census_variables
-        A cache of metadata about variables.
     with_geometry
         If `True` a :py:class:`gpd.GeoDataFrame` will be returned and each row
         will have a geometry that is a cartographic boundary suitable for platting
         a map. See https://www.census.gov/geographies/mapping-files/time-series/geo/cartographic-boundary.2020.html
         for details of the shapefiles that will be downloaded on your behalf to
         generate these boundaries.
+    api_key
+        An optional API key. If you don't have or don't use a key, the number
+        of calls you can make will be limited.
+    census_variables
+        A cache of metadata about variables.
     kwargs
         A specification of the geometry that we want data for.
 
@@ -327,7 +327,7 @@ def download_detail(
         A :py:class:`~pd.DataFrame` containing the requested US Census data.
     """
     if census_variables is None:
-        census_variables = variables
+        census_variables = _default_census_variables
 
     # The side effect here is to prime the cache.
     cgeo.geo_path_snake_specs(dataset, year)
@@ -337,15 +337,15 @@ def download_detail(
         cgeo.path_component_from_snake(dataset, year, k): v for k, v in kwargs.items()
     }
 
-    if not isinstance(fields, list):
-        fields = list(fields)
+    if not isinstance(variables, list):
+        variables = list(variables)
 
     # Special case if we are trying to get too many fields.
-    if len(fields) > _MAX_FIELDS_PER_DOWNLOAD:
+    if len(variables) > _MAX_FIELDS_PER_DOWNLOAD:
         return _download_concat_detail(
             dataset,
             year,
-            fields,
+            variables,
             key=api_key,
             census_variables=census_variables,
             with_geometry=with_geometry,
@@ -354,7 +354,7 @@ def download_detail(
 
     # Prefetch all the types before we load the data.
     # That way we fail fast if a field is not known.
-    for field in fields:
+    for field in variables:
         census_variables.get(dataset, year, field)
 
     # If we were given a list, join it together into
@@ -362,11 +362,11 @@ def download_detail(
     string_kwargs = {k: _gf2s(v) for k, v in kwargs.items()}
 
     url, params, bound_path = census_detail_table_url(
-        dataset, year, fields, api_key=api_key, **string_kwargs
+        dataset, year, variables, api_key=api_key, **string_kwargs
     )
     df_data = data_from_url(url, params)
 
-    for field in fields:
+    for field in variables:
         field_type = census_variables.get(dataset, year, field)["predicateType"]
 
         if field_type == "int":
@@ -380,7 +380,7 @@ def download_detail(
             pass
 
     # Put the geo fields that came back up front.
-    df_data = df_data[[col for col in df_data.columns if col not in fields] + fields]
+    df_data = df_data[[col for col in df_data.columns if col not in variables] + variables]
 
     if with_geometry:
         # We need to get the geometry and merge it in.
@@ -967,4 +967,4 @@ class VariableCache:
         self._variable_cache = defaultdict(lambda: defaultdict(dict))
 
 
-variables = VariableCache()
+_default_census_variables = VariableCache()
