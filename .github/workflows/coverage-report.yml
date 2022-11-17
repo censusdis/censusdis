@@ -1,6 +1,9 @@
 name: coverage-report
 
-on: [push]
+on:
+  push:
+    branches-ignore:
+      - main
 
 jobs:
   test:
@@ -70,7 +73,7 @@ jobs:
         run: |
           /usr/bin/git config --local user.email "action@github.com"
           /usr/bin/git config --local user.name "GitHub Action"
-          /usr/bin/git add ./reports/coverage
+          /usr/bin/git add ./reports/coverage/coverage-badge.svg
           /usr/bin/git commit -m "Update coverage [github action]"
       - name: Query branch name
         run: |
