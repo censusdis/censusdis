@@ -9,18 +9,8 @@ it wraps in a pythonic manner.
 import tempfile
 from abc import ABC, abstractmethod
 from collections import defaultdict
-from typing import (
-    Any,
-    DefaultDict,
-    Dict,
-    Generator,
-    Iterable,
-    List,
-    Mapping,
-    Optional,
-    Tuple,
-    Union,
-)
+from typing import (Any, DefaultDict, Dict, Generator, Iterable, List, Mapping,
+                    Optional, Tuple, Union)
 
 import geopandas as gpd
 import pandas as pd

@@ -10,8 +10,8 @@ import tempfile
 import unittest
 
 import geopandas
-import pandas as pd
 import geopandas as gpd
+import pandas as pd
 
 from censusdis import data as ced
 from censusdis.states import STATE_NJ
