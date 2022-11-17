@@ -97,8 +97,12 @@ jobs:
           /usr/bin/git config --local user.name "GitHub Action"
           /usr/bin/git add ./reports/coverage
           /usr/bin/git commit -m "Update coverage"
+      - name: Query branch name
+          run: |
+            echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+          id: query_branch
       - name: Push coverage commit
         uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: ${{ steps.extract_branch.outputs.branch }}
+          branch: ${{ steps.query_branch.outputs.branch }}
