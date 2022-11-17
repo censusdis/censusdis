@@ -10,6 +10,8 @@ import tempfile
 import unittest
 
 import geopandas
+import pandas as pd
+import geopandas as gpd
 
 from censusdis import data as ced
 from censusdis.states import STATE_NJ
@@ -109,6 +111,25 @@ class DownloadDetailTestCase(unittest.TestCase):
             ["STATE", "COUNTY", "NAME", "B19001_001E", "geometry"], list(gdf.columns)
         )
 
+    def test_download_with_geometry_state(self):
+        """Download at the county level with geometry."""
+
+        gdf = ced.download_detail(
+            self._dataset,
+            self._year,
+            ["NAME", self._name],
+            with_geometry=True,
+            state="*",
+        )
+
+        self.assertIsInstance(gdf, geopandas.GeoDataFrame)
+
+        self.assertEqual((52, 4), gdf.shape)
+
+        self.assertEqual(
+            ["STATE", "NAME", "B19001_001E", "geometry"], list(gdf.columns)
+        )
+
     def test_download_with_geometry_tract(self):
         """Download at the county level with geometry."""
 
@@ -160,3 +181,38 @@ class DownloadDetailTestCase(unittest.TestCase):
             ],
             list(gdf.columns),
         )
+
+    def test_download_with_geometry_cousub(self):
+        """Download at the county level with geometry."""
+
+        with self.assertRaises(ced.CensusApiException) as assertion:
+            ced.download_detail(
+                self._dataset,
+                self._year,
+                ["NAME", self._name],
+                with_geometry=True,
+                state=STATE_NJ,
+                county_subdivision="*",
+            )
+
+        self.assertTrue(
+            str(assertion.exception).startswith(
+                "The with_geometry=True flag is only allowed if"
+            )
+        )
+
+        # But it is OK without geometry.
+
+        df = ced.download_detail(
+            self._dataset,
+            self._year,
+            ["NAME", self._name],
+            with_geometry=False,
+            state=STATE_NJ,
+            county_subdivision="*",
+        )
+
+        self.assertIsInstance(df, pd.DataFrame)
+        self.assertNotIsInstance(df, gpd.GeoDataFrame)
+
+        self.assertEqual((570, 5), df.shape)

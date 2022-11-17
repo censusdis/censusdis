@@ -9,8 +9,18 @@ it wraps in a pythonic manner.
 import tempfile
 from abc import ABC, abstractmethod
 from collections import defaultdict
-from typing import (Any, DefaultDict, Dict, Generator, Iterable, List, Mapping,
-                    Optional, Tuple, Union)
+from typing import (
+    Any,
+    DefaultDict,
+    Dict,
+    Generator,
+    Iterable,
+    List,
+    Mapping,
+    Optional,
+    Tuple,
+    Union,
+)
 
 import geopandas as gpd
 import pandas as pd
@@ -212,18 +222,29 @@ def _add_geometry(
     Parameters
     ----------
     df_data
+        The data we downloaded from the census API
     bound_path
-
+        The geographic path we used to query the data,
+        so we can figure out what shapefile to load
+        and merge.
     Returns
     -------
-
+        A GeoDataFrame with the original data and an
+        added geometry column for each row.
     """
 
     state = bound_path.bindings[bound_path.path_spec.path[0]]
     geo_level = bound_path.path_spec.path[-1]
 
+    if geo_level not in _geometry_columns:
+        raise CensusApiException(
+            "The with_geometry=True flag is only allowed if the "
+            f"geometry for the data to be loaded is one of "
+            f"{[geo for geo in _geometry_columns.keys()]}."
+        )
+
     # Some higher levels have only a single national map.
-    if geo_level in ["county"]:
+    if geo_level in ["state", "county"]:
         state = "us"
     elif geo_level == "block group":
         geo_level = "bg"
@@ -270,6 +291,41 @@ def download_detail(
     with_geometry: bool = False,
     **kwargs: cgeo.InSpecType,
 ) -> Union[pd.DataFrame, gpd.GeoDataFrame]:
+    """
+    Download data from the US Census API.
+
+    This is the main API for downloading US Census data with the
+    `censusdis` package. There are many examples of how to use
+    this in the demo notebooks provided with the package at
+    https://github.com/vengroff/censusdis/tree/main/notebooks.
+
+    Parameters
+    ----------
+    dataset
+        The dataset to download from. For example `acs/acs5` or
+        `dec/pl`.
+    year
+        The year to download data for.
+    fields
+        The census variables to download, for example `["NAME", "B01001_001E"]`.
+    api_key
+        An optional API key. If you don't have or don't use a key, the number
+        of calls you can make will be limited.
+    census_variables
+        A cache of metadata about variables.
+    with_geometry
+        If `True` a :py:class:`gpd.GeoDataFrame` will be returned and each row
+        will have a geometry that is a cartographic boundary suitable for platting
+        a map. See https://www.census.gov/geographies/mapping-files/time-series/geo/cartographic-boundary.2020.html
+        for details of the shapefiles that will be downloaded on your behalf to
+        generate these boundaries.
+    kwargs
+        A specification of the geometry that we want data for.
+
+    Returns
+    -------
+        A :py:class:`~pd.DataFrame` containing the requested US Census data.
+    """
     if census_variables is None:
         census_variables = variables
 
