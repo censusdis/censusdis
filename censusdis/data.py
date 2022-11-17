@@ -249,10 +249,6 @@ def _add_geometry(
     elif geo_level == "block group":
         geo_level = "bg"
 
-    print()
-    print("SSS", state)
-    print("LLL", geo_level)
-
     gdf_shapefile = __shapefile_reader(year).read_cb_shapefile(
         state,
         geo_level,
@@ -262,10 +258,6 @@ def _add_geometry(
     df_on = [
         f"{g_level.upper().replace(' ', '_')}" for g_level in bound_path.path_spec.path
     ]
-
-    print("GGG", gdf_shapefile.columns)
-    print("GOO", gdf_on)
-    print("DOO", df_on)
 
     gdf_data = (
         gdf_shapefile[gdf_on + ["geometry"]]
