@@ -445,7 +445,18 @@ def relocate_ak_hi(gdf):
     -------
         a geo data frame with any geometry in AK or HI moved for plotting.
     """
-    gdf = gdf.groupby(gdf["STATEFP"], group_keys=False).apply(_relocate_ak_hi_group)
+    if "STATEFP" in gdf.columns:
+        state_group_column = "STATEFP"
+    elif "STATE" in gdf.columns:
+        state_group_column = "STATE"
+    else:
+        raise ValueError(
+            "In order to relocate and plot, there must be either a 'STATEFP' or 'STATE' column in the data."
+        )
+
+    gdf = gdf.groupby(gdf[state_group_column], group_keys=False).apply(
+        _relocate_ak_hi_group
+    )
 
     return gdf
 
