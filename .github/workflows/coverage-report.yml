@@ -55,17 +55,18 @@ jobs:
       - name: Run tests and coverage
         run: |
           source .venv/bin/activate
-          coverage run -m pytest
+          coverage run -m pytest --junitxml=reports/junit/junit.xml
       #----------------------------------------------
       #              generate coverage
       #----------------------------------------------
-      - name: Generate coverage reports and badge
+      - name: Generate coverage reports and badges
         run: |
           source .venv/bin/activate
           coverage report 
           coverage xml -o ./reports/coverage/coverage.xml
           coverage html -d ./reports/coverage 
           genbadge coverage -n Coverage -o ./reports/coverage/coverage-badge.svg
+          genbadge tests --name Tests -i reports/junit/junit.xml -o ./reports/junit/tests-badge.svg
       #----------------------------------------------
       #              commit coverage
       #----------------------------------------------
@@ -74,7 +75,8 @@ jobs:
           /usr/bin/git config --local user.email "action@github.com"
           /usr/bin/git config --local user.name "GitHub Action"
           /usr/bin/git add ./reports/coverage/coverage-badge.svg
-          /usr/bin/git diff --staged --quiet || /usr/bin/git commit -m "Update coverage [github action]"
+          /usr/bin/git add ./reports/junit/tests-badge.svg
+          /usr/bin/git diff --staged --quiet || /usr/bin/git commit -m "Update badge(s) [github action]"
       - name: Query branch name
         run: |
           echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
