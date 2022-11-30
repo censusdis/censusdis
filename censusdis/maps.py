@@ -8,7 +8,7 @@ which it downloads as needed and caches locally.
 
 import os
 import shutil
-from zipfile import ZipFile
+from zipfile import ZipFile, BadZipFile
 
 import geopandas as gpd
 import requests
@@ -16,6 +16,10 @@ from shapely import affinity
 from shapely.geometry import MultiPolygon
 
 from censusdis.states import STATE_AK, STATE_HI
+
+
+class MapException(Exception):
+    pass
 
 
 class ShapeReader:
@@ -134,6 +138,10 @@ class ShapeReader:
         return base_url, name
 
     def _post_2010_cb(self, state: str, geography, resolution: str):
+        # May need to revise when 2020 PUMA is published.
+        if geography == "puma" and 2010 <= self._year < 2020:
+            geography = "puma10"
+
         name = f"cb_{self._year}_{state}_{geography}_{resolution}"
         base_url = f"https://www2.census.gov/geo/tiger/GENZ{self._year}/shp"
 
@@ -340,11 +348,14 @@ class ShapeReader:
             file.write(response.content)
 
         # Unzip the file and extract all contents.
-        with ZipFile(zip_path) as zip_file:
-            zip_file.extractall(dir_path)
-
-        # We don't need the zipfile anymore.
-        os.remove(zip_path)
+        try:
+            with ZipFile(zip_path) as zip_file:
+                zip_file.extractall(dir_path)
+        except BadZipFile as e:
+            raise MapException(f"Bad zip file retrieved from {zip_url}") from e
+        finally:
+            # We don't need the zipfile anymore.
+            os.remove(zip_path)
 
 
 def clip_to_states(gdf, gdf_state_bounds):
