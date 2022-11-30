@@ -14,6 +14,7 @@ import geopandas as gpd
 import pandas as pd
 
 from censusdis import data as ced
+from censusdis import maps as cmp
 from censusdis.states import STATE_NJ
 
 if __name__ == "__main__":
@@ -216,3 +217,32 @@ class DownloadDetailTestCase(unittest.TestCase):
         self.assertNotIsInstance(df, gpd.GeoDataFrame)
 
         self.assertEqual((570, 5), df.shape)
+
+
+class ShapefileTestCase(unittest.TestCase):
+
+    PATH_PREFIX = "test_data_shapefiles_"
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        """Set up our shapefile path once at class load time."""
+        cls.shapefile_path = tempfile.mkdtemp(prefix=cls.PATH_PREFIX)
+
+    def setUp(self) -> None:
+        """Set up before each test."""
+        self._year = 2019
+        self.reader = cmp.ShapeReader(self.shapefile_path, self._year)
+
+    def test_county_shapefile(self):
+        gdf_counties = self.reader.read_shapefile("us", "county")
+
+        self.assertIsInstance(gdf_counties, gpd.GeoDataFrame)
+
+        self.assertEqual((3233, 18), gdf_counties.shape)
+
+    def test_puma_shapefile(self):
+        gdf_puma = self.reader.read_cb_shapefile("us", "puma")
+
+        self.assertIsInstance(gdf_puma, gpd.GeoDataFrame)
+
+        self.assertEqual((2380, 9), gdf_puma.shape)
