@@ -346,8 +346,23 @@ def download_detail(
 
     # Prefetch all the types before we load the data.
     # That way we fail fast if a field is not known.
-    for field in download_variables:
-        variable_cache.get(dataset, year, field)
+    for variable in download_variables:
+        try:
+            variable_cache.get(dataset, year, variable)
+        except Exception:
+            census_url = CensusApiVariableSource.url(
+                dataset, year, variable, response_format="html"
+            )
+            census_variables_url = CensusApiVariableSource.variables_url(
+                dataset, year, response_format="html"
+            )
+
+            raise CensusApiException(
+                f"Unable to get metadata on the variable {variable} from the "
+                f"dataset {dataset} for year {year} from the census API. "
+                f"Check the census URL for the variable ({census_url}) to ensure it exists. "
+                f"If not found, check {census_variables_url} for all variables in the dataset."
+            )
 
     # If we were given a list, join it together into
     # a comma-separated string.
@@ -536,11 +551,31 @@ class CensusApiVariableSource(VariableSource):
     """
 
     @staticmethod
-    def url(
-        dataset: str,
-        year: int,
-        name: str,
-    ) -> str:
+    def variables_url(dataset: str, year: int, response_format: str = "json") -> str:
+        """
+        Construct the URL to fetch metadata about all variables.
+
+        Parameters
+        ----------
+        dataset
+            The census dataset.
+        year
+            The year
+        response_format
+            The desired format of the response. Either `json` (the default)
+            or `html`.
+
+        Returns
+        -------
+            The URL to fetch the metadata from.
+
+        """
+        return (
+            f"https://api.census.gov/data/{year}/{dataset}/variables.{response_format}"
+        )
+
+    @staticmethod
+    def url(dataset: str, year: int, name: str, response_format: str = "json") -> str:
         """
         Construct the URL to fetch metadata about a variable.
 
@@ -555,12 +590,15 @@ class CensusApiVariableSource(VariableSource):
             The year
         name
             The name of the variable.
+        response_format
+            The desired format of the response. Either `json` (the default)
+            or `html`.
 
         Returns
         -------
             The URL to fetch the metadata from.
         """
-        return f"https://api.census.gov/data/{year}/{dataset}/variables/{name}.json"
+        return f"https://api.census.gov/data/{year}/{dataset}/variables/{name}.{response_format}"
 
     @staticmethod
     def group_url(

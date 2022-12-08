@@ -63,6 +63,27 @@ class DownloadDetailTestCase(unittest.TestCase):
 
         self.assertEqual(["STATE", "COUNTY", "NAME", "B19001_001E"], list(df.columns))
 
+    def test_bad_variable(self):
+        """Try to download a variable that does not exist."""
+
+        with self.assertRaises(ced.CensusApiException) as cm:
+            ced.download_detail(
+                self._dataset,
+                self._year,
+                ["NAME", "I_DONT_EXIST"],
+                state=STATE_NJ,
+                county="*",
+            )
+
+        self.assertIn(
+            "https://api.census.gov/data/2020/acs/acs5/variables/I_DONT_EXIST.html",
+            str(cm.exception),
+        )
+        self.assertIn(
+            "https://api.census.gov/data/2020/acs/acs5/variables.html",
+            str(cm.exception),
+        )
+
     def test_wide(self):
         """
         Download a really wide set of variables.
