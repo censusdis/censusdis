@@ -203,7 +203,8 @@ class ShapeReader:
         Parameters
         ----------
         state
-             The state, e.g. `STATE_NJ`.
+             The state, e.g. `STATE_NJ`, or `"us"` for geographies where there
+             is one shapefile for the entire country.
         geography
             The geography we want to download bounds for. Supported
             geometries are `"state'`, `"county"`, `"cousub"` (county subdivision),
@@ -456,23 +457,30 @@ def relocate_ak_hi(gdf):
     -------
         a geo data frame with any geometry in AK or HI moved for plotting.
     """
-    if "STATEFP" in gdf.columns:
-        state_group_column = "STATEFP"
-    elif "STATE" in gdf.columns:
-        state_group_column = "STATE"
-    else:
-        raise ValueError(
-            "In order to relocate and plot, there must be either a 'STATEFP' or 'STATE' column in the data."
-        )
+    if "STATEFP" in gdf.columns or "STATE" in gdf.columns:
+        # There is a column idenfyig the state of each geometry
+        # so use that to decide what to relocate.
+        if "STATEFP" in gdf.columns:
+            state_group_column = "STATEFP"
+        else:
+            state_group_column = "STATE"
 
-    gdf = gdf.groupby(gdf[state_group_column], group_keys=False).apply(
-        _relocate_ak_hi_group
-    )
+        gdf = gdf.groupby(gdf[state_group_column], group_keys=False).apply(
+            _relocate_ak_hi_group
+        )
+    else:
+        # There is no column indicating the state of each geometry. This
+        # is often because the geometries span states. So we can't easily
+        # relocate the two states, but we can at least wrap the Aleutian
+        # islands if present so that plots don't look wierd with them
+        # all the way at the far right.
+        gdf = gdf.copy()
+        gdf.geometry = gdf.geometry.map(_wrap_polys)
 
     return gdf
 
 
-def plot_us(gdf: gpd.GeoDataFrame, *args, **kwargs):
+def plot_us(gdf: gpd.GeoDataFrame, *args, do_relocate_ak_hi: bool = True, **kwargs):
     """
     Plot a map of the US by relocating any geometries in the
     GeoDataFrame where the STATEFP column is for AK or HI.
@@ -481,6 +489,8 @@ def plot_us(gdf: gpd.GeoDataFrame, *args, **kwargs):
     ----------
     gdf
         The geometries to be plotted.
+    do_relocate_ak_hi
+        If `True` try to relocate AK and HI.
     args
         Args to pass to the plot
     kwargs
@@ -489,12 +499,17 @@ def plot_us(gdf: gpd.GeoDataFrame, *args, **kwargs):
     -------
         ax of the plot.
     """
-    gdf_relocated = relocate_ak_hi(gdf)
-    ax = gdf_relocated.plot(*args, **kwargs)
+    if do_relocate_ak_hi:
+        gdf = relocate_ak_hi(gdf)
+    else:
+        # At least wrap the Aleutian islands.
+        gdf.geometry = gdf.geometry.map(_wrap_polys)
+
+    ax = gdf.plot(*args, **kwargs)
     return ax
 
 
-def plot_us_boundary(gdf: gpd.GeoDataFrame, *args, **kwargs):
+def plot_us_boundary(gdf: gpd.GeoDataFrame, *args, do_relocate_ak_hi: bool = True, **kwargs):
     """
     Plot a map of the US by relocating any geometries in the
     GeoDataFrame where the STATEFP column is for AK or HI.
@@ -512,6 +527,12 @@ def plot_us_boundary(gdf: gpd.GeoDataFrame, *args, **kwargs):
     -------
         ax of the plot.
     """
-    gdf_relocated = relocate_ak_hi(gdf)
-    ax = gdf_relocated.boundary.plot(*args, **kwargs)
+    if do_relocate_ak_hi:
+        gdf = relocate_ak_hi(gdf)
+    else:
+        # At least wrap the Aleutian islands.
+        gdf = gdf.copy()
+        gdf.geometry = gdf.geometry.map(_wrap_polys)
+
+    ax = gdf.boundary.plot(*args, **kwargs)
     return ax
