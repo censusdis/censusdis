@@ -431,22 +431,30 @@ _AK_MIN_Y = 51.0
 _AK_MAX_X = -129.0
 _AK_MAX_Y = 72.0
 
-_AK_BOUNDS = Polygon((
-    (_AK_MIN_X, _AK_MIN_Y), (_AK_MAX_X, _AK_MIN_Y),
-    (_AK_MAX_X, _AK_MAX_Y), (_AK_MIN_X, _AK_MAX_Y),
-    (_AK_MIN_X, _AK_MIN_Y),
-))
+_AK_BOUNDS = Polygon(
+    (
+        (_AK_MIN_X, _AK_MIN_Y),
+        (_AK_MAX_X, _AK_MIN_Y),
+        (_AK_MAX_X, _AK_MAX_Y),
+        (_AK_MIN_X, _AK_MAX_Y),
+        (_AK_MIN_X, _AK_MIN_Y),
+    )
+)
 
 _HI_MIN_X = -179.0
 _HI_MIN_Y = 18.0
 _HI_MAX_X = -154.0
 _HI_MAX_Y = 29.0
 
-_HI_BOUNDS = Polygon((
-    (_HI_MIN_X, _HI_MIN_Y), (_HI_MAX_X, _HI_MIN_Y),
-    (_HI_MAX_X, _HI_MAX_Y), (_HI_MIN_X, _HI_MAX_Y),
-    (_HI_MIN_X, _HI_MIN_Y),
-))
+_HI_BOUNDS = Polygon(
+    (
+        (_HI_MIN_X, _HI_MIN_Y),
+        (_HI_MAX_X, _HI_MIN_Y),
+        (_HI_MAX_X, _HI_MAX_Y),
+        (_HI_MIN_X, _HI_MAX_Y),
+        (_HI_MIN_X, _HI_MIN_Y),
+    )
+)
 
 
 def _relocate_ak(geo: BaseGeometry) -> BaseGeometry:
@@ -467,8 +475,7 @@ def _relocate_ak(geo: BaseGeometry) -> BaseGeometry:
     ak_y = -34
     ak_origin = (-149.9003, 61.2181)  # Anchorage
     geo = shapely.affinity.scale(
-        geo,
-        xfact=ak_scale_x, yfact=ak_scale_y, origin=ak_origin
+        geo, xfact=ak_scale_x, yfact=ak_scale_y, origin=ak_origin
     )
     geo = shapely.affinity.translate(geo, xoff=ak_x, yoff=ak_y)
 
@@ -636,7 +643,9 @@ def plot_us(gdf: gpd.GeoDataFrame, *args, do_relocate_ak_hi: bool = True, **kwar
     return ax
 
 
-def plot_us_boundary(gdf: gpd.GeoDataFrame, *args, do_relocate_ak_hi: bool = True, **kwargs):
+def plot_us_boundary(
+    gdf: gpd.GeoDataFrame, *args, do_relocate_ak_hi: bool = True, **kwargs
+):
     """
     Plot a map of boundaries the US with AK and HI relocated.
 

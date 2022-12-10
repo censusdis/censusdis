@@ -49,14 +49,14 @@ class MapPlotTestCase(unittest.TestCase):
     `plot_us` and `plot_us_boundary` plot geo data frames.
     These tests make sure they can reproduce expected images.
     """
+
     @classmethod
     def setUpClass(cls) -> None:
         """Global set up once."""
         cls.shapefile_path = os.path.join(
-            os.path.dirname(__file__),
-            'data', 'shapefiles', 'cb_2020_us_state_20m'
+            os.path.dirname(__file__), "data", "shapefiles", "cb_2020_us_state_20m"
         )
-        cls.expected_dir = os.path.join(os.path.dirname(__file__), 'expected')
+        cls.expected_dir = os.path.join(os.path.dirname(__file__), "expected")
 
     def setUp(self) -> None:
         """Set up before each test."""
@@ -74,14 +74,14 @@ class MapPlotTestCase(unittest.TestCase):
         output_dir = tempfile.gettempdir()
         output_file = os.path.join(output_dir, png_file_name)
 
-        ax = cmap.plot_us(self.gdf, color='green')
+        ax = cmap.plot_us(self.gdf, color="green")
         ax.axis("off")
         fig = ax.get_figure()
         fig.savefig(output_file)
 
         self.assertTrue(
             filecmp.cmp(expected_file, output_file, shallow=False),
-            f"Expected newly generated file {output_file} to match {expected_file}"
+            f"Expected newly generated file {output_file} to match {expected_file}",
         )
 
     def x_test_plot_us_boundary(self):
@@ -98,14 +98,14 @@ class MapPlotTestCase(unittest.TestCase):
         output_dir = tempfile.gettempdir()
         output_file = os.path.join(output_dir, png_file_name)
 
-        ax = cmap.plot_us_boundary(self.gdf, edgecolor='blue', linewidth=0.5)
+        ax = cmap.plot_us_boundary(self.gdf, edgecolor="blue", linewidth=0.5)
         ax.axis("off")
         fig = ax.get_figure()
         fig.savefig(output_file)
 
         self.assertTrue(
             filecmp.cmp(expected_file, output_file, shallow=False),
-            f"Expected newly generated file {output_file} to match {expected_file}"
+            f"Expected newly generated file {output_file} to match {expected_file}",
         )
 
     def test_plot_us_no_relocate(self):
@@ -121,14 +121,14 @@ class MapPlotTestCase(unittest.TestCase):
         output_dir = tempfile.gettempdir()
         output_file = os.path.join(output_dir, png_file_name)
 
-        ax = cmap.plot_us(self.gdf, do_relocate_ak_hi=False, color='purple')
+        ax = cmap.plot_us(self.gdf, do_relocate_ak_hi=False, color="purple")
         ax.axis("off")
         fig = ax.get_figure()
         fig.savefig(output_file)
 
         self.assertTrue(
             filecmp.cmp(expected_file, output_file, shallow=False),
-            f"Expected newly generated file {output_file} to match {expected_file}"
+            f"Expected newly generated file {output_file} to match {expected_file}",
         )
 
     def test_plot_us_boundary_no_relocate(self):
@@ -144,14 +144,16 @@ class MapPlotTestCase(unittest.TestCase):
         output_dir = tempfile.gettempdir()
         output_file = os.path.join(output_dir, png_file_name)
 
-        ax = cmap.plot_us_boundary(self.gdf, do_relocate_ak_hi=False, edgecolor='red', linewidth=0.5)
+        ax = cmap.plot_us_boundary(
+            self.gdf, do_relocate_ak_hi=False, edgecolor="red", linewidth=0.5
+        )
         ax.axis("off")
         fig = ax.get_figure()
         fig.savefig(output_file)
 
         self.assertTrue(
             filecmp.cmp(expected_file, output_file, shallow=False),
-            f"Expected newly generated file {output_file} to match {expected_file}"
+            f"Expected newly generated file {output_file} to match {expected_file}",
         )
 
     def test_plot_us_without_statefp(self):
@@ -177,14 +179,14 @@ class MapPlotTestCase(unittest.TestCase):
         output_dir = tempfile.gettempdir()
         output_file = os.path.join(output_dir, png_file_name)
 
-        ax = cmap.plot_us(self.gdf, color='green')
+        ax = cmap.plot_us(self.gdf, color="green")
         ax.axis("off")
         fig = ax.get_figure()
         fig.savefig(output_file)
 
         self.assertTrue(
             filecmp.cmp(expected_file, output_file, shallow=False),
-            f"Expected newly generated file {output_file} to match {expected_file}"
+            f"Expected newly generated file {output_file} to match {expected_file}",
         )
 
 
