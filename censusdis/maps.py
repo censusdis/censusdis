@@ -423,7 +423,7 @@ def _wrap_polys(polys):
 # Boxes that contain AK and HI after _wrap_polys has
 # been applied to it. We use this to identify
 # geometries that we want to relocate in relocate_ak_hi
-# when we don't have a STATEFP column to help
+# when we don't have a STATEFP or STATE column to help
 # identify what is in AK or HI.
 
 _AK_MIN_X = -188.0
@@ -501,7 +501,7 @@ def _relocate_parts_in_ak_hi(geo: BaseGeometry) -> BaseGeometry:
 
     If the geometry is a simple polygon, check if it intersects the
     bounding boxes of AK or HI and relocate if so. If it is a
-    `MultipPolygon` then recurse in and relocate some
+    `MultiPolygon` then recurse in and relocate some
     contained geometries as appropriate. This way it can work on small
     polygons completely contained in the bounding box, or on larger
     multi-polygons like regions that may have some polygons in the bounding
@@ -599,8 +599,16 @@ def relocate_ak_hi(gdf):
 
 def plot_us(gdf: gpd.GeoDataFrame, *args, do_relocate_ak_hi: bool = True, **kwargs):
     """
-    Plot a map of the US by relocating any geometries in the
-    GeoDataFrame where the STATEFP column is for AK or HI.
+    Plot a map of the US with AK and HI relocated.
+
+    This function will move and scale AK and
+    HI so that they are plotted at the lower left of the other 48 states,
+    just below CA, AZ, and NM.
+
+    It also moves the Aleutian islands that are west of -180° longitude
+    so that they are plotted next to the rest of AK. Otherwise, they
+    tend to be plotted at longitudes just less than +180°, which
+    creates visual discontinuities.
 
     Parameters
     ----------
@@ -612,7 +620,8 @@ def plot_us(gdf: gpd.GeoDataFrame, *args, do_relocate_ak_hi: bool = True, **kwar
     args
         Args to pass to the plot.
     kwargs
-        Kwarge to pass to the plot.
+        Keyword args to pass to the plot.
+
     Returns
     -------
         ax of the plot.
@@ -629,9 +638,10 @@ def plot_us(gdf: gpd.GeoDataFrame, *args, do_relocate_ak_hi: bool = True, **kwar
 
 def plot_us_boundary(gdf: gpd.GeoDataFrame, *args, do_relocate_ak_hi: bool = True, **kwargs):
     """
-    Plot a map of the US by relocating any geometries in the
-    GeoDataFrame where the STATEFP column is for AK or HI.
-    Plot only the boundary of the geometry passed in.
+    Plot a map of boundaries the US with AK and HI relocated.
+
+    This function is very much like :py:func:`~plot_us` except
+    that it plots only the boundaries of geometries.
 
     Parameters
     ----------
@@ -643,7 +653,8 @@ def plot_us_boundary(gdf: gpd.GeoDataFrame, *args, do_relocate_ak_hi: bool = Tru
         If `True` try to relocate AK and HI. Otherwise, still wrap
         the Aleutian islands west of -180° longitude if present.
     kwargs
-        Kwarge to pass to the plot.
+        Keyword args to pass to the plot.
+
     Returns
     -------
         ax of the plot.
