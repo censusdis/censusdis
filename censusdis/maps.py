@@ -13,7 +13,9 @@ from zipfile import ZipFile, BadZipFile
 import geopandas as gpd
 import requests
 from shapely import affinity
-from shapely.geometry import MultiPolygon
+from shapely.geometry import MultiPolygon, Polygon
+from shapely.geometry.base import BaseGeometry
+import shapely.affinity
 
 from censusdis.states import STATE_AK, STATE_HI
 
@@ -418,6 +420,122 @@ def _wrap_polys(polys):
     return MultiPolygon(wrapped_polys)
 
 
+# Boxes that contain AK and HI after _wrap_polys has
+# been applied to it. We use this to identify
+# geometries that we want to relocate in relocate_ak_hi
+# when we don't have a STATEFP column to help
+# identify what is in AK or HI.
+
+_AK_MIN_X = -188.0
+_AK_MIN_Y = 51.0
+_AK_MAX_X = -129.0
+_AK_MAX_Y = 72.0
+
+_AK_BOUNDS = Polygon((
+    (_AK_MIN_X, _AK_MIN_Y), (_AK_MAX_X, _AK_MIN_Y),
+    (_AK_MAX_X, _AK_MAX_Y), (_AK_MIN_X, _AK_MAX_Y),
+    (_AK_MIN_X, _AK_MIN_Y),
+))
+
+_HI_MIN_X = -179.0
+_HI_MIN_Y = 18.0
+_HI_MAX_X = -154.0
+_HI_MAX_Y = 29.0
+
+_HI_BOUNDS = Polygon((
+    (_HI_MIN_X, _HI_MIN_Y), (_HI_MAX_X, _HI_MIN_Y),
+    (_HI_MAX_X, _HI_MAX_Y), (_HI_MIN_X, _HI_MAX_Y),
+    (_HI_MIN_X, _HI_MIN_Y),
+))
+
+
+def _relocate_ak(geo: BaseGeometry) -> BaseGeometry:
+    """
+    Relocate a geometry that is already known to be in the AK bounding box.
+
+    Parameters
+    ----------
+    geo
+        The geometry.
+    Returns
+    -------
+        The relocated geometry.
+    """
+    ak_scale_x = 0.25
+    ak_scale_y = 0.4
+    ak_x = 33
+    ak_y = -34
+    ak_origin = (-149.9003, 61.2181)  # Anchorage
+    geo = shapely.affinity.scale(
+        geo,
+        xfact=ak_scale_x, yfact=ak_scale_y, origin=ak_origin
+    )
+    geo = shapely.affinity.translate(geo, xoff=ak_x, yoff=ak_y)
+
+    return geo
+
+
+def _relocate_hi(geo: BaseGeometry) -> BaseGeometry:
+    """
+    Relocate a geometry that is already known to be in the HI bounding box.
+
+    Parameters
+    ----------
+    geo
+        The geometry.
+    Returns
+    -------
+        The relocated geometry.
+    """
+    hi_x = 50
+    hi_y = 6
+
+    geo = shapely.affinity.translate(geo, xoff=hi_x, yoff=hi_y)
+
+    return geo
+
+
+def _relocate_parts_in_ak_hi(geo: BaseGeometry) -> BaseGeometry:
+    """
+    Relocate any sub-geometries that happen to fall in the AK or HI bounding boxes.
+
+    If the geometry is a simple polygon, check if it intersects the
+    bounding boxes of AK or HI and relocate if so. If it is a
+    `MultipPolygon` then recurse in and relocate some
+    contained geometries as appropriate. This way it can work on small
+    polygons completely contained in the bounding box, or on larger
+    multi-polygons like regions that may have some polygons in the bounding
+    box and others outside it.
+
+    Parameters
+    ----------
+    geo
+        The geography.
+
+    Returns
+    -------
+        The geography, possibly with some parts relocated.
+    """
+    if isinstance(geo, MultiPolygon):
+        relocated_geos = [_relocate_parts_in_ak_hi(g) for g in geo.geoms]
+        return MultiPolygon(relocated_geos)
+
+    # It is an individual polygon. So see if it is
+    # in a box that should be relocated.
+
+    if geo.intersects(_AK_BOUNDS):
+        geo = _relocate_ak(geo)
+    elif geo.intersects(_HI_BOUNDS):
+        geo = _relocate_hi(geo)
+
+    return geo
+
+
+def _wrap_and_relocate_geos(geo: BaseGeometry):
+    geo = _wrap_polys(geo)
+    return _relocate_parts_in_ak_hi(geo)
+
+
 def _relocate_ak_hi_group(group):
     """
     A helper function that relocates a group of geometries.
@@ -428,27 +546,26 @@ def _relocate_ak_hi_group(group):
     if group.name == STATE_AK:
         # Deal with the Aleutian islands wrapping at -180/180 longitude.
         group.geometry = group.geometry.apply(_wrap_polys)
-        ak_scale_x = 0.25
-        ak_scale_y = 0.4
-        ak_x = 33
-        ak_y = -34
-        ak_origin = (-149.9003, 61.2181)  # Anchorage
-        group.geometry = group.geometry.scale(
-            xfact=ak_scale_x, yfact=ak_scale_y, origin=ak_origin
-        )
-        group.geometry = group.geometry.translate(xoff=ak_x, yoff=ak_y)
+        # Relocate
+        group.geometry = group.geometry.apply(_relocate_ak)
     elif group.name == STATE_HI:
-        hi_x = 50
-        hi_y = 6
-        group.geometry = group.geometry.translate(xoff=hi_x, yoff=hi_y)
+        group.geometry = group.geometry.apply(_relocate_hi)
 
     return group
 
 
 def relocate_ak_hi(gdf):
     """
-    Relocate any geometry that is in Alaska or Hawaii for plotting
-    purposes.
+    Relocate any geometry that is in Alaska or Hawaii for plotting purposes.
+
+    We first try an optimization. If there is a `STATEFP`
+    column then we relocate rows where that column has a value of
+    `STATE_AK` or `STATE_HI`. If there is not a `STATEFP` column
+    we check for a `STATE` column and do the same. If neither
+    column exists then we dig down into the geometries themselves
+    and relocate those that intersect bounding rectangles of the
+    two states.
+
     Parameters
     ----------
     gdf
@@ -471,11 +588,11 @@ def relocate_ak_hi(gdf):
     else:
         # There is no column indicating the state of each geometry. This
         # is often because the geometries span states. So we can't easily
-        # relocate the two states, but we can at least wrap the Aleutian
-        # islands if present so that plots don't look wierd with them
-        # all the way at the far right.
+        # relocate the two states, but we least wrap the Aleutian
+        # islands if present and then relocate any geometries that are
+        # in the bounding boxes of AK and HI.
         gdf = gdf.copy()
-        gdf.geometry = gdf.geometry.map(_wrap_polys)
+        gdf.geometry = gdf.geometry.map(_wrap_and_relocate_geos)
 
     return gdf
 
@@ -490,9 +607,10 @@ def plot_us(gdf: gpd.GeoDataFrame, *args, do_relocate_ak_hi: bool = True, **kwar
     gdf
         The geometries to be plotted.
     do_relocate_ak_hi
-        If `True` try to relocate AK and HI.
+        If `True` try to relocate AK and HI. Otherwise, still wrap
+        the Aleutian islands west of -180° longitude if present.
     args
-        Args to pass to the plot
+        Args to pass to the plot.
     kwargs
         Kwarge to pass to the plot.
     Returns
@@ -520,7 +638,10 @@ def plot_us_boundary(gdf: gpd.GeoDataFrame, *args, do_relocate_ak_hi: bool = Tru
     gdf
         The geometries to be plotted.
     args
-        Args to pass to the plot
+        Args to pass to the plot.
+    do_relocate_ak_hi
+        If `True` try to relocate AK and HI. Otherwise, still wrap
+        the Aleutian islands west of -180° longitude if present.
     kwargs
         Kwarge to pass to the plot.
     Returns
