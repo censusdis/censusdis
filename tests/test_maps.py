@@ -75,7 +75,7 @@ class MapPlotTestCase(unittest.TestCase):
             f"Expected newly generated file {output_file} to match {expected_file}"
         )
 
-    def test_plot_us_boundary(self):
+    def x_test_plot_us_boundary(self):
         png_file_name = "plot_us_boundary.png"
         expected_file = os.path.join(self.expected_dir, png_file_name)
 
