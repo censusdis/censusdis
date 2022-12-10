@@ -94,7 +94,7 @@ The notebooks include
 | [Seeing White.ipynb](https://github.com/vengroff/censusdis/blob/main/notebooks/Seeing%20White.ipynb)               | Load nationwide demographic data at the county level and plot of map of the US showing the percent of the population who identify as white only (no other race) at the county level. | 
 | [Map Demo.ipynb](https://github.com/vengroff/censusdis/blob/main/notebooks/Map%20Demo.ipynb)                       | Demonstrate loading at plotting maps of New Jersey at different geographic granularity.                                                                                              |
 | [Exploring Variables.ipynb](https://github.com/vengroff/censusdis/blob/main/notebooks/Exploring%20Variables.ipynb) | Load metatdata on a group of variables, visualize the tree hierarchy of variables in the group, and load data from the leaves of the tree.                                           |
-
+| [Map Geographies.ipynb](https://github.com/vengroff/censusdis/blob/main/notebooks/Map%20Geographies.ipynb)         | Illustrates a large number of different map geogpraphies and how to load them.                                                                                                       |
 
 ## Diversity and Integration Metrics
 
