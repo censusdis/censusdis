@@ -1,7 +1,13 @@
+import os.path
+import filecmp
 import unittest
 import tempfile
 
+import geopandas as gpd
+import matplotlib.pyplot as plt
+
 import censusdis.maps as cmap
+from censusdis.states import ALL_STATES_AND_DC
 
 
 class ShapeReaderTestCase(unittest.TestCase):
@@ -33,6 +39,154 @@ class ShapeReaderTestCase(unittest.TestCase):
         self.assertEqual(
             "https://www2.census.gov/geo/tiger/TIGER2020/SOMETHING/tl_something.zip",
             url,
+        )
+
+
+class MapPlotTestCase(unittest.TestCase):
+    """
+    Test the plotting utilities.
+
+    `plot_us` and `plot_us_boundary` plot geo data frames.
+    These tests make sure they can reproduce expected images.
+    """
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        """Global set up once."""
+        cls.shapefile_path = os.path.join(
+            os.path.dirname(__file__), "data", "shapefiles", "cb_2020_us_state_20m"
+        )
+        cls.expected_dir = os.path.join(os.path.dirname(__file__), "expected")
+
+    def setUp(self) -> None:
+        """Set up before each test."""
+        gdf = gpd.read_file(self.shapefile_path)
+        self.gdf = gdf[gdf.STATEFP.isin(ALL_STATES_AND_DC)]
+
+        plt.rcParams["figure.figsize"] = (8, 5)
+
+    def test_plot_us(self):
+        """Test calling plot_us."""
+
+        png_file_name = "plot_us.png"
+        expected_file = os.path.join(self.expected_dir, png_file_name)
+
+        output_dir = tempfile.gettempdir()
+        output_file = os.path.join(output_dir, png_file_name)
+
+        ax = cmap.plot_us(self.gdf, color="green")
+        ax.axis("off")
+        fig = ax.get_figure()
+        fig.savefig(output_file)
+
+        self.assertTrue(
+            filecmp.cmp(expected_file, output_file, shallow=False),
+            f"Expected newly generated file {output_file} to match {expected_file}",
+        )
+
+    def x_test_plot_us_boundary(self):
+        """
+        Test calling plot_us_boundary.
+
+        Temporily disabled due to a difference in output
+        on Linux vs. OS X.
+        """
+
+        png_file_name = "plot_us_boundary.png"
+        expected_file = os.path.join(self.expected_dir, png_file_name)
+
+        output_dir = tempfile.gettempdir()
+        output_file = os.path.join(output_dir, png_file_name)
+
+        ax = cmap.plot_us_boundary(self.gdf, edgecolor="blue", linewidth=0.5)
+        ax.axis("off")
+        fig = ax.get_figure()
+        fig.savefig(output_file)
+
+        self.assertTrue(
+            filecmp.cmp(expected_file, output_file, shallow=False),
+            f"Expected newly generated file {output_file} to match {expected_file}",
+        )
+
+    def test_plot_us_no_relocate(self):
+        """
+        Test calling plot_us without relocating AK and HI.
+
+        It should still get the western Aleutian islands right.
+        """
+
+        png_file_name = "plot_us_no_relocate.png"
+        expected_file = os.path.join(self.expected_dir, png_file_name)
+
+        output_dir = tempfile.gettempdir()
+        output_file = os.path.join(output_dir, png_file_name)
+
+        ax = cmap.plot_us(self.gdf, do_relocate_ak_hi=False, color="purple")
+        ax.axis("off")
+        fig = ax.get_figure()
+        fig.savefig(output_file)
+
+        self.assertTrue(
+            filecmp.cmp(expected_file, output_file, shallow=False),
+            f"Expected newly generated file {output_file} to match {expected_file}",
+        )
+
+    def test_plot_us_boundary_no_relocate(self):
+        """
+        Test calling plot_us_boundary without relocating AK and HI.
+
+        It should still get the western Aleutian islands right.
+        """
+
+        png_file_name = "plot_us_boundary_no_relocate.png"
+        expected_file = os.path.join(self.expected_dir, png_file_name)
+
+        output_dir = tempfile.gettempdir()
+        output_file = os.path.join(output_dir, png_file_name)
+
+        ax = cmap.plot_us_boundary(
+            self.gdf, do_relocate_ak_hi=False, edgecolor="red", linewidth=0.5
+        )
+        ax.axis("off")
+        fig = ax.get_figure()
+        fig.savefig(output_file)
+
+        self.assertTrue(
+            filecmp.cmp(expected_file, output_file, shallow=False),
+            f"Expected newly generated file {output_file} to match {expected_file}",
+        )
+
+    def test_plot_us_without_statefp(self):
+        """
+        Test calling plot_us without STATEFP.
+
+        We remove the STATEFP column from the data, so we have
+        to look at all the geometries to decide what to relocate.
+        """
+
+        # Drop the column and make sure it is dropped.
+        self.assertEqual((51, 10), self.gdf.shape)
+        self.assertIn("STATEFP", self.gdf.columns)
+
+        self.gdf.drop("STATEFP", axis="columns", inplace=True)
+
+        self.assertEqual((51, 9), self.gdf.shape)
+        self.assertNotIn("STATEFP", self.gdf.columns)
+
+        png_file_name = "plot_us.png"
+        expected_file = os.path.join(self.expected_dir, png_file_name)
+
+        output_dir = tempfile.gettempdir()
+        output_file = os.path.join(output_dir, png_file_name)
+
+        ax = cmap.plot_us(self.gdf, color="green")
+        ax.axis("off")
+        fig = ax.get_figure()
+        fig.savefig(output_file)
+
+        self.assertTrue(
+            filecmp.cmp(expected_file, output_file, shallow=False),
+            f"Expected newly generated file {output_file} to match {expected_file}",
         )
 
 
