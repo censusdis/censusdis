@@ -74,7 +74,10 @@ jobs:
         run: |
           /usr/bin/git config --local user.email "action@github.com"
           /usr/bin/git config --local user.name "GitHub Action"
-          /usr/bin/git add ./reports/coverage/coverage-badge.svg
+          /usr/bin/git add ./reports/coverage/*.html
+          /usr/bin/git add ./reports/coverage/*.png
+          /usr/bin/git add ./reports/coverage/*.js
+          /usr/bin/git add ./reports/coverage/*.css
           /usr/bin/git add ./reports/junit/tests-badge.svg
           /usr/bin/git diff --staged --quiet || /usr/bin/git commit -m "Update badge(s) [github action]"
       - name: Query branch name
