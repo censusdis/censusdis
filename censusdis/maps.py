@@ -233,7 +233,7 @@ class ShapeReader:
 
         These are smaller
         files suited for plotting maps, as compared to those returned by
-        :py:meth:`~ShapeReader.read_shapefile", which returns higher
+        :py:meth:`~ShapeReader.read_shapefile`, which returns higher
         resolution geometries.
 
         The files are read from the US Census servers and cached locally.
