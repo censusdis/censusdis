@@ -9,12 +9,31 @@
 import os
 import sys
 
-sys.path.append(os.path.join(os.path.curdir, os.pardir))
+from typing import MutableMapping
 
-project = "censusdis"
-copyright = "2022, Darren Erik Vengroff"
-author = "Darren Erik Vengroff"
-release = "0.1.0"
+sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
+
+def get_meta() -> MutableMapping:
+    """Get project metadata from pyproject.toml file.
+    Returns:
+        MutableMapping
+    """
+    import toml
+
+    toml_path = os.path.join(os.path.dirname(__file__), "..", "pyproject.toml")
+
+    with open(toml_path) as fopen:
+        pyproject = toml.load(fopen)
+
+    return pyproject
+
+
+meta = get_meta()
+
+project = meta["tool"]["poetry"]["name"]
+author = ",".join(meta["tool"]["poetry"]["authors"])
+copyright = f"2022, {author}"
+release = meta["tool"]["poetry"]["version"]
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
