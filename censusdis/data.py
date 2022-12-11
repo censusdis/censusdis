@@ -456,21 +456,21 @@ class VariableSource(ABC):
             :widths: 25 75
             :header-rows: 0
 
-        * - `"name"`
-          - The name of the variable.
-        * - '"label"`
-          - A description of the variable. Within groups, hierarchies of
-            variables are represented by seperating levels with `"!!"`.
-        * - `"concept"'
-          - The concept this variable and others in the group represent.
-        * - `"group"`
-          - The group the variable belongs to. To query an entire group,
-            use the :py:meth:`~get_group` method.
-        * - `"limit"`
-          -
-        * - `"attributes"`
-          - A comma-separated list of variables that are attributes of this
-            one.
+            * - `"name"`
+              - The name of the variable.
+            * - '"label"`
+              - A description of the variable. Within groups, hierarchies of
+                variables are represented by seperating levels with `"!!"`.
+            * - `"concept"`
+              - The concept this variable and others in the group represent.
+            * - `"group"`
+              - The group the variable belongs to. To query an entire group,
+                use the :py:meth:`~get_group` method.
+            * - `"limit"`
+              -
+            * - `"attributes"`
+              - A comma-separated list of variables that are attributes of this
+                one.
 
         This dictionary is very much like the JSON returned from US Census
         API URLs like
@@ -909,26 +909,26 @@ class VariableCache:
         skip_annotations
             If `True` try to filter out variables that are
             annotations rather than actual values, by skipping
-            those with labels that begin with `Annotation` or
-            'Margin of Error`.
+            those with labels that begin with "Annotation" or
+            "Margin of Error".
 
         Returns
         -------
             A list of the variables in the group that are leaves,
             i.e. they are not aggregates of other variables. For example,
-            in the group `B03002` in from the `acs/acs5` source in the
+            in the group `B03002` in the `acs/acs5` dataset in the
             year `2020`, the variable `B03002_003E` is a leaf, because
             it represents
-            `"Estimate!!Total:!!Not Hispanic or Latino:!!White alone"`,
+            "Estimate!!Total:!!Not Hispanic or Latino:!!White alone",
             whereas B03002_002E is not a leaf because it represents
-            `"Estimate!!Total:!!Not Hispanic or Latino:", which is a total
-            that includes B03002_003E as well as others like `"B03002_004E"`,
-            `"B03002_005E" and more.
+            "Estimate!!Total:!!Not Hispanic or Latino:", which is a total
+            that includes B03002_003E as well as others like "B03002_004E",
+            "B03002_005E" and more.
 
             The typical reason we want leaves is because that gives us a set
-            of variables representing counts that do not overalap and add up
+            of variables representing counts that do not overlap and add up
             to the total. We can use these directly in diversity and integration
-            calculations using the `divintseg` package.`
+            calculations using the `divintseg` package.
         """
         tree = self.group_tree(dataset, year, name)
         leaves = tree.leaf_variables()

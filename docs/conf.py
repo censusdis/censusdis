@@ -6,6 +6,11 @@
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
+import os
+import sys
+
+sys.path.append(os.path.join(os.path.curdir, os.pardir))
+
 project = "censusdis"
 copyright = "2022, Darren Erik Vengroff"
 author = "Darren Erik Vengroff"
