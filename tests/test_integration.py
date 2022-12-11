@@ -261,9 +261,38 @@ class ShapefileTestCase(unittest.TestCase):
 
         self.assertEqual((3233, 18), gdf_counties.shape)
 
+    def test_county_cb_shapefile(self):
+        gdf_counties = self.reader.read_cb_shapefile("us", "county")
+
+        self.assertIsInstance(gdf_counties, gpd.GeoDataFrame)
+
+        self.assertEqual((3233, 10), gdf_counties.shape)
+
     def test_puma_shapefile(self):
         gdf_puma = self.reader.read_cb_shapefile("us", "puma")
 
         self.assertIsInstance(gdf_puma, gpd.GeoDataFrame)
 
         self.assertEqual((2380, 9), gdf_puma.shape)
+
+    def test_2010_shapefile(self):
+        # Override the normal setup for 2010.
+        self._year = 2010
+        self.reader = cmp.ShapeReader(self.shapefile_path, self._year)
+
+        gdf_counties = self.reader.read_shapefile("us", "county")
+
+        self.assertIsInstance(gdf_counties, gpd.GeoDataFrame)
+
+        self.assertEqual((3221, 18), gdf_counties.shape)
+
+    def test_2010_cb_shapefile(self):
+        # Override the normal setup for 2010.
+        self._year = 2010
+        self.reader = cmp.ShapeReader(self.shapefile_path, self._year)
+
+        gdf_counties = self.reader.read_cb_shapefile("us", "county")
+
+        self.assertIsInstance(gdf_counties, gpd.GeoDataFrame)
+
+        self.assertEqual((3221, 7), gdf_counties.shape)
