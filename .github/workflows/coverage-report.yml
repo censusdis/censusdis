@@ -1,4 +1,4 @@
-#name: coverage-report
+name: coverage-report
 
 on:
   push:
