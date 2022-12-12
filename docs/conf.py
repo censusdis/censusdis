@@ -16,13 +16,17 @@ from typing import MutableMapping
 # We have to mock out certain modules that are not pure
 # python because RTD will not import them.
 MOCK_MODULES = [
-    'geopandas', 
-    'matplotlib', 'matplotlib.pyplot', 
-    'pandas', 
-    'numpy', 
-    'scipy',
-    'shapely', 'shapely.affinity', 'shapely.geometry', 'shapely.geometry.base',
-    'rtree',
+    "geopandas",
+    "matplotlib",
+    "matplotlib.pyplot",
+    "pandas",
+    "numpy",
+    "scipy",
+    "shapely",
+    "shapely.affinity",
+    "shapely.geometry",
+    "shapely.geometry.base",
+    "rtree",
 ]
 
 for mod_name in MOCK_MODULES:
@@ -36,7 +40,7 @@ sys.path.append(SRC_ROOT)
 def get_pyproject() -> MutableMapping:
     """
     Get project metadata from pyproject.toml file.
-    
+
     Returns:
         MutableMapping
     """
