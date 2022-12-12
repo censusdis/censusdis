@@ -22,6 +22,7 @@ matplotlib = "^3.5.3"
 Sphinx = { version = "^5.1.1", optional = true }
 sphinx-rtd-theme = { version = "1.0.0", optional = true }
 sphinxcontrib-napoleon = { version = "0.7", optional = true }
+toml = { version = "^0.10.0", optional = true }
 requests = "^2.28.1"
 geopy = "^2.2.0"
 
