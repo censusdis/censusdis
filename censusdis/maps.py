@@ -11,6 +11,7 @@ import shutil
 from zipfile import ZipFile, BadZipFile
 
 import geopandas as gpd
+import pandas as pd
 import requests
 from shapely import affinity
 from shapely.geometry import MultiPolygon, Polygon
