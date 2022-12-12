@@ -6,22 +6,34 @@
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
+import mock
+
 import os
 import sys
 
 from typing import MutableMapping
 
-sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
+# We have to mock out certain modules that are not pure
+# python because RTD will not import them.
+MOCK_MODULES = ['numpy', 'scipy', 'matplotlib', 'matplotlib.pyplot']
+for mod_name in MOCK_MODULES:
+    sys.modules[mod_name] = mock.Mock()
+
+# This is where the source we want to document lives.
+SRC_ROOT = os.path.join(os.path.dirname(__file__), os.pardir)
+sys.path.append(SRC_ROOT)
 
 
-def get_meta() -> MutableMapping:
-    """Get project metadata from pyproject.toml file.
+def get_pyproject() -> MutableMapping:
+    """
+    Get project metadata from pyproject.toml file.
+    
     Returns:
         MutableMapping
     """
     import toml
 
-    toml_path = os.path.join(os.path.dirname(__file__), "..", "pyproject.toml")
+    toml_path = os.path.join(os.path.dirname(__file__), os.pardir, "pyproject.toml")
 
     with open(toml_path) as fopen:
         pyproject = toml.load(fopen)
@@ -29,12 +41,12 @@ def get_meta() -> MutableMapping:
     return pyproject
 
 
-meta = get_meta()
+pyproject = get_pyproject()
 
-project = meta["tool"]["poetry"]["name"]
-author = ",".join(meta["tool"]["poetry"]["authors"])
+project = pyproject["tool"]["poetry"]["name"]
+author = ",".join(pyproject["tool"]["poetry"]["authors"])
 copyright = f"2022, {author}"
-release = meta["tool"]["poetry"]["version"]
+release = pyproject["tool"]["poetry"]["version"]
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
@@ -63,7 +75,7 @@ exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
-html_theme = "alabaster"
+# html_theme = "alabaster"
 # html_theme = "sphinx_rtd_theme"
 
 html_static_path = ["_static"]
