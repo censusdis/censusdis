@@ -21,7 +21,7 @@ MOCK_MODULES = [
     'pandas', 
     'numpy', 
     'scipy',
-    'shapely', 'shapely.geometry',
+    'shapely', 'shapely.affinity', 'shapely.geometry', 'shapely.geometry.base',
     'rtree',
 ]
 
