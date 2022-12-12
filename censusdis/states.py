@@ -1,7 +1,7 @@
 # Copyright (c) 2022 Darren Erik Vengroff
 
 """
-State FIPS codes.
+This module defines state FIPS codes and some utilities for using them.
 
 The US Census identifies states by their
 `FIPS Codes <https://en.wikipedia.org/wiki/Federal_Information_Processing_Standard_state_code#FIPS_state_codes>`_,
@@ -48,8 +48,6 @@ example::
 There is also a list that includes all states and the
 District of Columbia. It is called ``cds.ALL_STATES_AND_DC``.
 """
-
-import sys
 
 
 STATE_AL = "01"
@@ -275,7 +273,7 @@ Includes all 50 states, but not DC.
 Typically used to iterate over the states, as in::
 
     from censusdis.states import ALL_STATES
-    
+
     for state in ALL_STATES:
         process_state(state)
 """
@@ -289,7 +287,7 @@ Includes all 50 states and DC.
 Typically used to iterate over the states, as in::
 
     from censusdis.states import ALL_STATES_AND_DC
-    
+
     for state in ALL_STATES_AND_DC:
         process_state(state)
 """
