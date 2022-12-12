@@ -15,7 +15,14 @@ from typing import MutableMapping
 
 # We have to mock out certain modules that are not pure
 # python because RTD will not import them.
-MOCK_MODULES = ['geopandas', 'matplotlib', 'matplotlib.pyplot', 'numpy', 'scipy']
+MOCK_MODULES = [
+    'geopandas', 
+    'matplotlib', 'matplotlib.pyplot', 
+    'pandas', 
+    'numpy', 
+    'scipy',
+]
+
 for mod_name in MOCK_MODULES:
     sys.modules[mod_name] = mock.Mock()
 
