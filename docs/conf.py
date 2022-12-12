@@ -13,6 +13,7 @@ from typing import MutableMapping
 
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir))
 
+
 def get_meta() -> MutableMapping:
     """Get project metadata from pyproject.toml file.
     Returns:
