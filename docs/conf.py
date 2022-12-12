@@ -21,6 +21,8 @@ MOCK_MODULES = [
     'pandas', 
     'numpy', 
     'scipy',
+    'shapely',
+    'rtree',
 ]
 
 for mod_name in MOCK_MODULES:
