@@ -4,7 +4,7 @@
 State FIPS codes.
 
 The US Census identifies states by their
-`FIPS Codes <https://en.wikipedia.org/wiki/Federal_Information_Processing_Standard_state_code#FIPS_state_codes>`,
+`FIPS Codes <https://en.wikipedia.org/wiki/Federal_Information_Processing_Standard_state_code#FIPS_state_codes>`_,
 which are two-digit numeric strings. For convenience, we
 define identifiers for them.
 
