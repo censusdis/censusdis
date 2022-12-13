@@ -205,6 +205,12 @@ def __shapefile_reader(year: int):
 
 _GEO_QUERY_FROM_DATA_QUERY_INNER_GEO: Dict[str, Tuple[Optional[str], str, List[str], List[str]]] = {
     # innermost geo: ( shapefile_scope, shapefile_geo_name, df_on, gdf_on )
+    "region": ("us", "region", ["REGION"], ["REGIONCE"]),
+    "division": ("us", "division", ["DIVISION"], ["DIVISIONCE"]),
+    "combined statistical area": ("us", "csa", ["COMBINED_STATISTICAL_AREA"], ["CSAFP"]),
+    "metropolitan statistical area/micropolitan statistical area": (
+        "us", "cbsa", ["METROPOLITAN_STATISTICAL_AREA_MICROPOLITAN_STATISTICAL_AREA"], ["CBSAFP"]
+    ),
     "state": ("us", "state", ["STATE"], ["STATEFP"]),
     "county": ("us", "county", ["STATE", "COUNTY"], ["STATEFP", "COUNTYFP"]),
     # For these, the shapefiles are at the state level, so `None`
@@ -252,7 +258,7 @@ def _add_geometry(
     if geo_level not in _GEO_QUERY_FROM_DATA_QUERY_INNER_GEO:
         raise CensusApiException(
             "The with_geometry=True flag is only allowed if the "
-            f"geometry for the data to be loaded is one of "
+            f"geometry for the data to be loaded ('{geo_level}') is one of "
             f"{[geo for geo in _GEO_QUERY_FROM_DATA_QUERY_INNER_GEO.keys()]}."
         )
 
@@ -262,7 +268,6 @@ def _add_geometry(
     # then we have to get it from the bound path.
     if shapefile_scope is None:
         shapefile_scope = bound_path.bindings[bound_path.path_spec.path[0]]
-        print("SSS", shapefile_scope)
 
     gdf_shapefile = __shapefile_reader(year).read_cb_shapefile(
         shapefile_scope,
