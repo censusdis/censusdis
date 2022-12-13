@@ -10,6 +10,7 @@ Demo Notebooks
 
    nb/SoMa DIS Demo.ipynb
    nb/ACS Demo.ipynb
+   nb/Data With Geometry.ipynb
    nb/Exploring Variables.ipynb
    nb/Seeing White.ipynb
    nb/Map Demo.ipynb

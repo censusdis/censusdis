@@ -425,7 +425,7 @@ of variables. We did a little bit of this in the
 `SoMa DIS Demo <./nb/SoMa%20DIS%20Demo.html>`_
 notebook. We do some more rigorous analysis of
 groups and variables in the
-`SoMa DIS Demo <./nb/Exploring%20Variables.html>`_
+`Exploring Variables <./nb/Exploring%20Variables.html>`_
 notebook.
 
 Additional Examples in Notebooks
