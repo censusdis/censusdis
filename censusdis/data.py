@@ -201,31 +201,47 @@ def __shapefile_reader(year: int):
     return reader
 
 
-_GEO_QUERY_FROM_DATA_QUERY_INNER_GEO: Dict[str, Tuple[Optional[str], str, List[str], List[str]]] = {
+_GEO_QUERY_FROM_DATA_QUERY_INNER_GEO: Dict[
+    str, Tuple[Optional[str], str, List[str], List[str]]
+] = {
     # innermost geo: ( shapefile_scope, shapefile_geo_name, df_on, gdf_on )
     "region": ("us", "region", ["REGION"], ["REGIONCE"]),
     "division": ("us", "division", ["DIVISION"], ["DIVISIONCE"]),
-    "combined statistical area": ("us", "csa", ["COMBINED_STATISTICAL_AREA"], ["CSAFP"]),
+    "combined statistical area": (
+        "us",
+        "csa",
+        ["COMBINED_STATISTICAL_AREA"],
+        ["CSAFP"],
+    ),
     "metropolitan statistical area/micropolitan statistical area": (
-        "us", "cbsa", ["METROPOLITAN_STATISTICAL_AREA_MICROPOLITAN_STATISTICAL_AREA"], ["CBSAFP"]
+        "us",
+        "cbsa",
+        ["METROPOLITAN_STATISTICAL_AREA_MICROPOLITAN_STATISTICAL_AREA"],
+        ["CBSAFP"],
     ),
     "state": ("us", "state", ["STATE"], ["STATEFP"]),
     "county": ("us", "county", ["STATE", "COUNTY"], ["STATEFP", "COUNTYFP"]),
     # For these, the shapefiles are at the state level, so `None`
     # indicates that we have to fill it in based on the geometry
     # being queried.
-    "tract": (None, 'tract', ["STATE", "COUNTY", "TRACT"], ["STATEFP", "COUNTYFP", "TRACTCE"]),
+    "tract": (
+        None,
+        "tract",
+        ["STATE", "COUNTY", "TRACT"],
+        ["STATEFP", "COUNTYFP", "TRACTCE"],
+    ),
     "block group": (
-        None, 'bg',
+        None,
+        "bg",
         ["STATE", "COUNTY", "TRACT", "BLOCK_GROUP"],
-        ["STATEFP", "COUNTYFP", "TRACTCE", "BLKGRPCE"]
+        ["STATEFP", "COUNTYFP", "TRACTCE", "BLKGRPCE"],
     ),
 }
 """
 Helper map for the _with_geometry case.
 
 A map from the innermost level of a geometry specification
-to the arguments we need to pass to `get_cb_shapefile` 
+to the arguments we need to pass to `get_cb_shapefile`
 to get the right shapefile for the geography and the columns
 we need to join the data and shapefile on.
 """
@@ -260,7 +276,12 @@ def _add_geometry(
             f"{[geo for geo in _GEO_QUERY_FROM_DATA_QUERY_INNER_GEO.keys()]}."
         )
 
-    shapefile_scope, shapefile_geo_level, df_on, gdf_on = _GEO_QUERY_FROM_DATA_QUERY_INNER_GEO[geo_level]
+    (
+        shapefile_scope,
+        shapefile_geo_level,
+        df_on,
+        gdf_on,
+    ) = _GEO_QUERY_FROM_DATA_QUERY_INNER_GEO[geo_level]
 
     # If the query spec does not have a hard-coded value for the state
     # then we have to get it from the bound path.
