@@ -2,6 +2,8 @@
 
 [![Hippocratic License HL3-CL-ECO-EXTR-FFD-LAW-MIL-SV](https://img.shields.io/static/v1?label=Hippocratic%20License&message=HL3-CL-ECO-EXTR-FFD-LAW-MIL-SV&labelColor=5e2751&color=bc8c3d)](https://firstdonoharm.dev/version/3/0/cl-eco-extr-ffd-law-mil-sv.html)
 
+[![Documentation Status](https://readthedocs.org/projects/censusdis/badge/?version=latest)](https://censusdis.readthedocs.io/en/latest/?badge=latest)
+
 [![lint](https://github.com/vengroff/censusdis/actions/workflows/lint.yml/badge.svg)](https://github.com/vengroff/censusdis/actions/workflows/lint.yml)
 
 ![Tests Badge](reports/junit/tests-badge.svg)
