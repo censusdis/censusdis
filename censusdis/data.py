@@ -9,8 +9,6 @@ it wraps in a pythonic manner.
 import tempfile
 from abc import ABC, abstractmethod
 from collections import defaultdict
-from dataclasses import dataclass
-
 from typing import (
     Any,
     DefaultDict,
