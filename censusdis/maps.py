@@ -11,12 +11,11 @@ import shutil
 from zipfile import ZipFile, BadZipFile
 
 import geopandas as gpd
-import pandas as pd
 import requests
+import shapely.affinity
 from shapely import affinity
 from shapely.geometry import MultiPolygon, Polygon
 from shapely.geometry.base import BaseGeometry
-import shapely.affinity
 
 from censusdis.states import STATE_AK, STATE_HI
 
