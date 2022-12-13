@@ -174,7 +174,7 @@ class ShapeReader:
 
         return gdf
 
-    def read_shapefile(self, state: str, geography: str, crs=None):
+    def read_shapefile(self, shapefile_scope: str, geography: str, crs=None):
         """
         Read the geometries of geographies.
 
@@ -205,9 +205,15 @@ class ShapeReader:
 
         Parameters
         ----------
-        state
-             The state, e.g. `STATE_NJ`, or `"us"` for geographies where there
-             is one shapefile for the entire country.
+        shapefile_scope
+            The geography that is covered by the entire shapefile. In some
+            cases, this is a state, e.g. `STATE_NJ`. For cases where files
+            are available for the entire country, the string `"us"` is typically
+            used. In some rare cases, like for the Alaska Native Regional Corporations
+            (``"anrc"``) geography, other strings like ``"02"`` are used.
+            See the dowload links at
+            https://www.census.gov/geographies/mapping-files/time-series/geo/cartographic-boundary.2020.html
+            if you need to debug issues with a given geography.
         geography
             The geography we want to download bounds for. Supported
             geometries are `"state'`, `"county"`, `"cousub"` (county subdivision),
@@ -224,10 +230,10 @@ class ShapeReader:
             A `gpd.GeoDataFrame` containing the requested
             geometries.
         """
-        return self._tiger(state, geography, crs)
+        return self._tiger(shapefile_scope, geography, crs)
 
     def read_cb_shapefile(
-        self, state: str, geography: str, resolution: str = "500k", crs=None
+        self, shapefile_scope: str, geography: str, resolution: str = "500k", crs=None
     ) -> gpd.GeoDataFrame:
         """
         Read the cartographic boundaries of a given geography.
@@ -261,9 +267,15 @@ class ShapeReader:
 
         Parameters
         ----------
-        state
-            The state, e.g. `STATE_NJ`. For cases where files are available
-            for the entire country, the string `"us"` can be used.
+        shapefile_scope
+            The geography that is covered by the entire shapefile. In some
+            cases, this is a state, e.g. `STATE_NJ`. For cases where files
+            are available for the entire country, the string `"us"` is typically
+            used. In some rare cases, like for the Alaska Native Regional Corporations
+            (``"anrc"``) geography, other strings like ``"02"`` are used.
+            See the dowload links at
+            https://www.census.gov/geographies/mapping-files/time-series/geo/cartographic-boundary.2020.html
+            if you need to debug issues with a given geography.
         geography
             The geography we want to download bounds for. Supported
             geometries are `"state'`, `"county"`, `"cousub"` (county subdivision),
@@ -284,7 +296,7 @@ class ShapeReader:
             A `gpd.GeoDataFrame` containing the boundaries of the requested
             geometries.
         """
-        return self._cartographic_bound(state, geography, resolution, crs)
+        return self._cartographic_bound(shapefile_scope, geography, resolution, crs)
 
     def _auto_fetch_file(self, name: str, base_url: str):
         if not self._auto_fetch:

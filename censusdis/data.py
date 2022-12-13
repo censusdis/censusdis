@@ -9,6 +9,8 @@ it wraps in a pythonic manner.
 import tempfile
 from abc import ABC, abstractmethod
 from collections import defaultdict
+from dataclasses import dataclass
+
 from typing import (
     Any,
     DefaultDict,
@@ -201,16 +203,28 @@ def __shapefile_reader(year: int):
     return reader
 
 
-# A map whose key is the geography level
-# we are getting data for and whose value
-# is the name of the corresponding column
-# in the shapefile gdf.
-_geometry_columns = {
-    "state": "STATEFP",
-    "county": "COUNTYFP",
-    "tract": "TRACTCE",
-    "block group": "BLKGRPCE",
+_GEO_QUERY_FROM_DATA_QUERY_INNER_GEO: Dict[str, Tuple[Optional[str], str, List[str], List[str]]] = {
+    # innermost geo: ( shapefile_scope, shapefile_geo_name, df_on, gdf_on )
+    "state": ("us", "state", ["STATE"], ["STATEFP"]),
+    "county": ("us", "county", ["STATE", "COUNTY"], ["STATEFP", "COUNTYFP"]),
+    # For these, the shapefiles are at the state level, so `None`
+    # indicates that we have to fill it in based on the geometry
+    # being queried.
+    "tract": (None, 'tract', ["STATE", "COUNTY", "TRACT"], ["STATEFP", "COUNTYFP", "TRACTCE"]),
+    "block group": (
+        None, 'bg',
+        ["STATE", "COUNTY", "TRACT", "BLOCK_GROUP"],
+        ["STATEFP", "COUNTYFP", "TRACTCE", "BLKGRPCE"]
+    ),
 }
+"""
+Helper map for the _with_geometry case.
+
+A map from the innermost level of a geometry specification
+to the arguments we need to pass to `get_cb_shapefile` 
+to get the right shapefile for the geography and the columns
+we need to join the data and shapefile on.
+"""
 
 
 def _add_geometry(
@@ -233,31 +247,27 @@ def _add_geometry(
         added geometry column for each row.
     """
 
-    state = bound_path.bindings[bound_path.path_spec.path[0]]
     geo_level = bound_path.path_spec.path[-1]
 
-    if geo_level not in _geometry_columns:
+    if geo_level not in _GEO_QUERY_FROM_DATA_QUERY_INNER_GEO:
         raise CensusApiException(
             "The with_geometry=True flag is only allowed if the "
             f"geometry for the data to be loaded is one of "
-            f"{[geo for geo in _geometry_columns.keys()]}."
+            f"{[geo for geo in _GEO_QUERY_FROM_DATA_QUERY_INNER_GEO.keys()]}."
         )
 
-    # Some higher levels have only a single national map.
-    if geo_level in ["state", "county"]:
-        state = "us"
-    elif geo_level == "block group":
-        geo_level = "bg"
+    shapefile_scope, shapefile_geo_level, df_on, gdf_on = _GEO_QUERY_FROM_DATA_QUERY_INNER_GEO[geo_level]
+
+    # If the query spec does not have a hard-coded value for the state
+    # then we have to get it from the bound path.
+    if shapefile_scope is None:
+        shapefile_scope = bound_path.bindings[bound_path.path_spec.path[0]]
+        print("SSS", shapefile_scope)
 
     gdf_shapefile = __shapefile_reader(year).read_cb_shapefile(
-        state,
-        geo_level,
+        shapefile_scope,
+        shapefile_geo_level,
     )
-
-    gdf_on = [_geometry_columns[g_level] for g_level in bound_path.path_spec.path]
-    df_on = [
-        f"{g_level.upper().replace(' ', '_')}" for g_level in bound_path.path_spec.path
-    ]
 
     gdf_data = (
         gdf_shapefile[gdf_on + ["geometry"]]
