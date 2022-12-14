@@ -71,7 +71,7 @@ class ShapeReader:
         path = os.path.join(self._shapefile_root, basename, basename + ".shp")
         return path
 
-    def _through_2010_tiger(self, prefix, state, suffix):
+    def _through_2010_tiger(self, prefix, shapefile_scope: str, suffix):
         # Curiously, the server side puts the 2000 files under
         # the TIGER2010 directory early in the path and early
         # in the file name.
@@ -79,10 +79,10 @@ class ShapeReader:
         path_year = max(path_year, 2010)
 
         base_url = f"https://www2.census.gov/geo/tiger/TIGER{path_year}/{suffix.upper()}/{self._year}"
-        name = f"{prefix}_{path_year}_{state}_{suffix}{str(self._year)[-2:]}"
+        name = f"{prefix}_{path_year}_{shapefile_scope}_{suffix}{str(self._year)[-2:]}"
         return base_url, name
 
-    def _post_2010_tiger(self, prefix, state, suffix):
+    def _post_2010_tiger(self, prefix, shapefile_scope: str, suffix):
         base_url = (
             f"https://www2.census.gov/geo/tiger/TIGER{self._year}/{suffix.upper()}"
         )
@@ -90,16 +90,16 @@ class ShapeReader:
         if self._year == 2020 and suffix in ["puma", "tabblock"]:
             suffix = f"{suffix}10"
 
-        name = f"{prefix}_{self._year}_{state}_{suffix}"
+        name = f"{prefix}_{self._year}_{shapefile_scope}_{suffix}"
         return base_url, name
 
-    def _tiger(self, state, geography, crs):
+    def _tiger(self, shapefile_scope: str, geography, crs):
         prefix, suffix = ("tl", geography)
 
         if self._year <= 2010:
-            base_url, name = self._through_2010_tiger(prefix, state, suffix)
+            base_url, name = self._through_2010_tiger(prefix, shapefile_scope, suffix)
         else:
-            base_url, name = self._post_2010_tiger(prefix, state, suffix)
+            base_url, name = self._post_2010_tiger(prefix, shapefile_scope, suffix)
 
         gdf = self._read_shapefile(name, base_url, crs)
 
@@ -116,7 +116,7 @@ class ShapeReader:
             gdf.rename(mapper, axis="columns", inplace=True)
 
         if "STATEFP" not in gdf.columns:
-            gdf["STATEFP"] = state
+            gdf["STATEFP"] = shapefile_scope
 
         return gdf
 
@@ -131,31 +131,31 @@ class ShapeReader:
         "bg": "150",
     }
 
-    def _through_2010_cb(self, state: str, geography: str, resolution: str):
+    def _through_2010_cb(self, cartographic_scope: str, geography: str, resolution: str):
         summary_level = self._CB_SUMMARY_LEVEL_BY_GEOGRAPHY_THROUGH_2010[geography]
 
-        name = f"gz_{self._year}_{state}_{summary_level}_00_{resolution}"
+        name = f"gz_{self._year}_{cartographic_scope}_{summary_level}_00_{resolution}"
         base_url = f"https://www2.census.gov/geo/tiger/GENZ{self._year}"
 
         return base_url, name
 
-    def _post_2010_cb(self, state: str, geography, resolution: str):
+    def _post_2010_cb(self, cartographic_scope: str, geography, resolution: str):
         # May need to revise when 2020 PUMA is published.
         if geography == "puma" and 2010 <= self._year < 2020:
             geography = "puma10"
 
-        name = f"cb_{self._year}_{state}_{geography}_{resolution}"
+        name = f"cb_{self._year}_{cartographic_scope}_{geography}_{resolution}"
         base_url = f"https://www2.census.gov/geo/tiger/GENZ{self._year}/shp"
 
         return base_url, name
 
     def _cartographic_bound(
-        self, state, geography, resolution, crs
+        self, shapefile_scope, geography, resolution, crs
     ) -> gpd.GeoDataFrame:
         if self._year <= 2010:
-            base_url, name = self._through_2010_cb(state, geography, resolution)
+            base_url, name = self._through_2010_cb(shapefile_scope, geography, resolution)
         else:
-            base_url, name = self._post_2010_cb(state, geography, resolution)
+            base_url, name = self._post_2010_cb(shapefile_scope, geography, resolution)
 
         gdf = self._read_shapefile(name, base_url, crs)
 
