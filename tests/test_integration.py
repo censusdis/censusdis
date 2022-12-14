@@ -15,7 +15,7 @@ import pandas as pd
 
 from censusdis import data as ced
 from censusdis import maps as cmp
-from censusdis.states import STATE_NJ
+from censusdis.states import STATE_NJ, STATE_NY, STATE_CA
 
 if __name__ == "__main__":
     unittest.main()
@@ -31,7 +31,7 @@ class DownloadDetailTestCase(unittest.TestCase):
     concerned with the data that comes back.
     """
 
-    PATH_PREFIX = "test_data_shapefiles_"
+    PATH_PREFIX = "test_integration_shapefiles_"
 
     @classmethod
     def setUpClass(cls) -> None:
@@ -242,7 +242,7 @@ class DownloadDetailTestCase(unittest.TestCase):
 
 class ShapefileTestCase(unittest.TestCase):
 
-    PATH_PREFIX = "test_data_shapefiles_"
+    PATH_PREFIX = "test_integration_shapefiles_"
 
     @classmethod
     def setUpClass(cls) -> None:
@@ -296,3 +296,133 @@ class ShapefileTestCase(unittest.TestCase):
         self.assertIsInstance(gdf_counties, gpd.GeoDataFrame)
 
         self.assertEqual((3221, 7), gdf_counties.shape)
+
+
+class AddInferredGeographyTestCase(unittest.TestCase):
+    """Test our ability to add inferred geometry."""
+
+    PATH_PREFIX = "test_integration_shapefiles_"
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        """Set up our shapefile path once at class load time."""
+        cls.shapefile_path = tempfile.mkdtemp(prefix=cls.PATH_PREFIX)
+
+    def setUp(self) -> None:
+        """Set up before each test."""
+        self._year = 2020
+        self.reader = cmp.ShapeReader(self.shapefile_path, self._year)
+
+    def test_state(self):
+        """Test that we can infer state geometries."""
+        df_state = pd.DataFrame(
+            [[STATE_NJ, 0.5, 0.6], [STATE_CA, 0.1, 0.2]],
+            columns=["STATE", "metric1", "metric2"],
+        )
+
+        gdf_inferred = ced.add_inferred_geography(df_state, self._year)
+
+        self._assert_data_unchanged_in_inference(df_state, gdf_inferred)
+
+        # Now get the state shapefile directly and see if we
+        # inferred the right geometries.
+
+        gdf_state = self.reader.read_cb_shapefile("us", "state")
+
+        for state in df_state["STATE"]:
+            self.assertTrue(
+                gdf_state[gdf_state.STATEFP == state].geometry.iloc[0],
+                gdf_inferred[gdf_inferred.STATE == state].geometry.iloc[0],
+            )
+
+    def test_county(self):
+        """Test that we can infer a county geometries."""
+        df_county = pd.DataFrame(
+            [[STATE_NJ, "011", 0.5, 0.6], [STATE_NJ, "013", 0.1, 0.2]],
+            columns=["STATE", "COUNTY", "metric1", "metric2"],
+        )
+
+        gdf_inferred = ced.add_inferred_geography(df_county, self._year)
+
+        self._assert_data_unchanged_in_inference(df_county, gdf_inferred)
+
+        # Now get the county shapefile directly and see if we
+        # inferred the right geometries.
+
+        gdf_county = self.reader.read_cb_shapefile("us", "county")
+
+        for row in df_county[["STATE", "COUNTY"]].itertuples():
+            state, county = row.STATE, row.COUNTY
+            self.assertEqual(
+                gdf_county[
+                    (gdf_county.STATEFP == state) & (gdf_county.COUNTYFP == county)
+                ].geometry.iloc[0],
+                gdf_inferred[
+                    (gdf_inferred.STATE == state) & (gdf_inferred.COUNTY == county)
+                ].geometry.iloc[0],
+            )
+
+    def test_tract(self):
+        """Test that we can infer census tract geometries."""
+        df_tract = pd.DataFrame(
+            [
+                [STATE_NJ, "013", "019000", 0.1, 0.2],
+                [STATE_NJ, "013", "019100", 0.3, 0.4],
+                [STATE_NJ, "013", "019200", 0.5, 0.6],
+                [STATE_NY, "061", "021600", 1.0, 1.1],
+                [STATE_NY, "061", "021800", 1.2, 1.3],
+            ],
+            columns=["STATE", "COUNTY", "TRACT", "metric1", "metric2"],
+        )
+
+        gdf_inferred = ced.add_inferred_geography(df_tract, self._year)
+
+        self._assert_data_unchanged_in_inference(df_tract, gdf_inferred)
+
+        # Now get the county shapefiles directly and see if we
+        # inferred the right geometries.
+
+        gdf_tract_nj = self.reader.read_cb_shapefile(STATE_NJ, "tract")
+        gdf_tract_ny = self.reader.read_cb_shapefile(STATE_NY, "tract")
+
+        gdf_tract = gdf_tract_nj.append(gdf_tract_ny)
+
+        for row in df_tract[["STATE", "COUNTY", "TRACT"]].itertuples():
+            state, county, tract = row.STATE, row.COUNTY, row.TRACT
+            self.assertEqual(
+                gdf_tract[
+                    (gdf_tract.STATEFP == state)
+                    & (gdf_tract.COUNTYFP == county)
+                    & (gdf_tract.TRACTCE == tract)
+                ].geometry.iloc[0],
+                gdf_inferred[
+                    (gdf_inferred.STATE == state)
+                    & (gdf_inferred.COUNTY == county)
+                    & (gdf_inferred.TRACT == tract)
+                ].geometry.iloc[0],
+            )
+
+    def _assert_data_unchanged_in_inference(self, df, gdf_inferred):
+        """
+        Assert that when we added a geometry column nothing else changed.
+
+        Parameters
+        ----------
+        df
+            The original df.
+        gdf_inferred
+            The gdf with inferred geometry.
+        """
+        # We should have the name number of rows and one new column
+        # for geometry.
+        old_shape = df.shape
+        new_shape = gdf_inferred.shape
+
+        self.assertEqual(old_shape[0], new_shape[0])
+        self.assertEqual(old_shape[1] + 1, new_shape[1])
+
+        self.assertTrue(all(col in gdf_inferred.columns for col in df.columns))
+        self.assertIn("geometry", gdf_inferred.columns)
+
+        # Make sure all the data we had stayed where it was.
+        self.assertTrue((gdf_inferred[df.columns] == df).all().all())
