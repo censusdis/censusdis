@@ -131,7 +131,9 @@ class ShapeReader:
         "bg": "150",
     }
 
-    def _through_2010_cb(self, cartographic_scope: str, geography: str, resolution: str):
+    def _through_2010_cb(
+        self, cartographic_scope: str, geography: str, resolution: str
+    ):
         summary_level = self._CB_SUMMARY_LEVEL_BY_GEOGRAPHY_THROUGH_2010[geography]
 
         name = f"gz_{self._year}_{cartographic_scope}_{summary_level}_00_{resolution}"
@@ -153,7 +155,9 @@ class ShapeReader:
         self, shapefile_scope, geography, resolution, crs
     ) -> gpd.GeoDataFrame:
         if self._year <= 2010:
-            base_url, name = self._through_2010_cb(shapefile_scope, geography, resolution)
+            base_url, name = self._through_2010_cb(
+                shapefile_scope, geography, resolution
+            )
         else:
             base_url, name = self._post_2010_cb(shapefile_scope, geography, resolution)
 
