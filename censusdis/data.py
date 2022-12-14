@@ -425,7 +425,7 @@ def add_inferred_geography(df: pd.DataFrame, year: int) -> gpd.GeoDataFrame:
     shapefile_scope_column = _GEO_QUERY_FROM_DATA_QUERY_INNER_GEO[geo_level][2][0]
 
     df_with_geo = (
-        df.groupby(shapefile_scope_column)
+        df.groupby(shapefile_scope_column, group_keys=False)
         .apply(lambda g: _add_geography(g, year, g.name, geo_level))
         .reset_index(drop=True)
     )
