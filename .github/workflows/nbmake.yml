@@ -55,4 +55,23 @@ jobs:
       - name: Test run notebooks
         run: |
           source .venv/bin/activate
-          pytest --nbmake notebooks/*.ipynb
+          pytest --junitxml=reports/nbmake/junit.xml --nbmake notebooks/*.ipynb
+          genbadge tests --name "Notebook Tests" -i reports/nbmake/junit.xml -o reports/nbmake/nbmake-badge.svg 
+      #----------------------------------------------
+      #              commit badge
+      #----------------------------------------------
+      - name: Commit badge
+        run: |
+          /usr/bin/git config --local user.email "action@github.com"
+          /usr/bin/git config --local user.name "GitHub Action"
+          /usr/bin/git add ./reports/nbmake/nbmake-badge.svg
+          /usr/bin/git diff --staged --quiet || /usr/bin/git commit -m "Update badge [github action]"
+      - name: Query branch name
+        run: |
+          echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+        id: query_branch
+      - name: Push coverage commit
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ steps.query_branch.outputs.branch }}
