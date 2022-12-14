@@ -1,4 +1,4 @@
-name: coverage-report
+name: nbmake
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  test:
+  nbmake:
     runs-on: ubuntu-latest
     steps:
       #----------------------------------------------
@@ -50,37 +50,22 @@ jobs:
       - name: Install library
         run: poetry install --no-interaction
       #----------------------------------------------
-      #              run test suite
+      #              test run notebooks
       #----------------------------------------------
-      - name: Run tests and coverage
+      - name: Test run notebooks
         run: |
           source .venv/bin/activate
-          coverage run -m pytest --junitxml=reports/junit/junit.xml
+          pytest --junitxml=reports/nbmake/junit.xml --nbmake notebooks/*.ipynb
+          genbadge tests --name "notebook tests" -i reports/nbmake/junit.xml -o reports/nbmake/nbmake-badge.svg
       #----------------------------------------------
-      #              generate coverage
+      #              commit badge
       #----------------------------------------------
-      - name: Generate coverage reports and badges
-        run: |
-          source .venv/bin/activate
-          coverage report 
-          coverage xml -o ./reports/coverage/coverage.xml
-          coverage html -d ./reports/coverage 
-          genbadge coverage -n coverage -o ./reports/coverage/coverage-badge.svg
-          genbadge tests --name tests -i reports/junit/junit.xml -o ./reports/junit/tests-badge.svg
-      #----------------------------------------------
-      #              commit coverage
-      #----------------------------------------------
-      - name: Commit coverage reports and badge
+      - name: Commit badge
         run: |
           /usr/bin/git config --local user.email "action@github.com"
           /usr/bin/git config --local user.name "GitHub Action"
-          /usr/bin/git add ./reports/coverage/*.html
-          /usr/bin/git add ./reports/coverage/*.png
-          /usr/bin/git add ./reports/coverage/*.js
-          /usr/bin/git add ./reports/coverage/*.css
-          /usr/bin/git add ./reports/coverage/coverage-badge.svg
-          /usr/bin/git add ./reports/junit/tests-badge.svg
-          /usr/bin/git diff --staged --quiet || /usr/bin/git commit -m "Update badge(s) [github action]"
+          /usr/bin/git add ./reports/nbmake/nbmake-badge.svg
+          /usr/bin/git diff --staged --quiet || /usr/bin/git commit -m "Update badge [github action]"
           /usr/bin/git pull --rebase
       - name: Query branch name
         run: |

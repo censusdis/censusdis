@@ -8,6 +8,9 @@
 
 ![Tests Badge](reports/junit/tests-badge.svg)
 ![Coverage Badge](reports/coverage/coverage-badge.svg)
+![Notebook Tests Badge](reports/nbmake/nbmake-badge.svg)
+
+![PyPI - Downloads](https://img.shields.io/pypi/dm/censusdis)
 
 ## Introduction 
 
