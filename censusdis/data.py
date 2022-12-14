@@ -247,8 +247,8 @@ we need to join the data and shapefile on.
 """
 
 
-def _add_geometry(
-    df_data: pd.DataFrame, year: int, bound_path: cgeo.BoundGeographyPath
+def _add_geography(
+    df_data: pd.DataFrame, year: int, shapefile_scope: str, geo_level: str
 ) -> Union[pd.DataFrame, gpd.GeoDataFrame]:
     """
     Add geography to data.
@@ -257,17 +257,20 @@ def _add_geometry(
     ----------
     df_data
         The data we downloaded from the census API
-    bound_path
-        The geographic path we used to query the data,
-        so we can figure out what shapefile to load
-        and merge.
+    year
+        The year for which to fetch geometries. We need this
+        because they change over time.
+    shapefile_scope
+        The scope of the shapefile. This is typically either a state
+        such as `STATE_NJ` or the string `"us"`.
+    geo_level
+        The geography level we want to add.
+
     Returns
     -------
         A GeoDataFrame with the original data and an
         added geometry column for each row.
     """
-
-    geo_level = bound_path.path_spec.path[-1]
 
     if geo_level not in _GEO_QUERY_FROM_DATA_QUERY_INNER_GEO:
         raise CensusApiException(
@@ -277,16 +280,15 @@ def _add_geometry(
         )
 
     (
-        shapefile_scope,
+        query_shapefile_scope,
         shapefile_geo_level,
         df_on,
         gdf_on,
     ) = _GEO_QUERY_FROM_DATA_QUERY_INNER_GEO[geo_level]
 
-    # If the query spec does not have a hard-coded value for the state
-    # then we have to get it from the bound path.
-    if shapefile_scope is None:
-        shapefile_scope = bound_path.bindings[bound_path.path_spec.path[0]]
+    # If the query spec has a hard-coded value then we use it.
+    if query_shapefile_scope is not None:
+        shapefile_scope = query_shapefile_scope
 
     gdf_shapefile = __shapefile_reader(year).read_cb_shapefile(
         shapefile_scope,
@@ -305,6 +307,132 @@ def _add_geometry(
     ]
 
     return gdf_data
+
+
+def infer_geo_level(df: pd.DataFrame) -> str:
+    """
+    Infer the geography level based on columns names.
+
+    Parameters
+    ----------
+    df
+        A dataframe of variables with one or more columns that
+        can be used to infer what geometry level the rows represent.
+
+        For example, if the column `"STATE"` exists, we could infer that
+        the data in on a state by state basis. But if there are
+        columns for both `"STATE"` and `"COUNTY"`, the data is probably
+        at the county level.
+
+        If, on the other hand, there is a `"COUNTY" column but not a
+        `"STATE"` column, then there is some ambiguity. The data
+        probably corresponds to counties, but the same county ID can
+        exist in multiple states, so we will raise a
+        :py:class:`~CensusApiException` with an error message expalining
+        the situation.
+
+        If there is no match, we will also raise an exception. Again we
+        do this, rather than for example, returning `None`, so that we
+        can provide an informative error message about the likely cause
+        and what to do about it.
+
+        This function is not often called directly, but rather from
+        :py:func:`~add_inferred_geography`, which infers the geography
+        level and then adds a `geometry` column containing the appropriate
+        geography for each row.
+
+    Returns
+    -------
+        The name of the geography level.
+    """
+    match_key = None
+    match_on_len = 0
+    partial_match_keys = []
+
+    for k, (_, _, df_on, _) in _GEO_QUERY_FROM_DATA_QUERY_INNER_GEO.items():
+        if all(col in df.columns for col in df_on):
+            # Full match. We want the longest full match
+            # we find.
+            if match_key is None or len(df_on) > match_on_len:
+                match_key = k
+        elif df_on[-1] in df.columns:
+            # Partial match. This could result in us
+            # not getting what we expect. Like if we
+            # have STATE and TRACT, but not COUNTY, we will
+            # get a partial match on [STATE, COUNTY. TRACT]
+            # and a full match on [STATE]. We probably did
+            # not mean to match [STATE], we just lost the
+            # COUNTY column somewhere along the way.
+            partial_match_keys.append(k)
+
+    if match_key is None:
+        raise CensusApiException(
+            f"Unable to infer geometry. Was not able to locate any of the "
+            "known sets of columns "
+            f"{tuple(df_on for _, _, df_on, _ in _GEO_QUERY_FROM_DATA_QUERY_INNER_GEO.values())} "
+            f"in the columns {list(df.columns)}."
+        )
+
+    if partial_match_keys:
+        raise CensusApiException(
+            f"Unable to infer geometry. Geometry matched {match_key} on columns "
+            f"{_GEO_QUERY_FROM_DATA_QUERY_INNER_GEO[match_key][2]} "
+            "but also partially matched one or more candidates "
+            f"{tuple(_GEO_QUERY_FROM_DATA_QUERY_INNER_GEO[k][2] for k in partial_match_keys)}. "
+            "Partial matches are usually unintended. Either add columns to allow a "
+            "full match or rename some columns to prevent the undesired partial match."
+        )
+
+    return match_key
+
+
+def add_inferred_geography(df: pd.DataFrame, year: int) -> gpd.GeoDataFrame:
+    """
+    Infer the geography level of the given dataframe and
+    add geometry to each row for that level.
+
+    See Also
+    --------
+        :py:ref:`~infer_geo_level` for more on how inference is done.
+
+    Parameters
+    ----------
+    df
+        A dataframe of variables with one or more columns that
+        can be used to infer what geometry level the rows represent.
+    year
+        The year for which to fetch geometries. We need this
+        because they change over time.
+
+    Returns
+    -------
+        A geo data frame containing the original data augmented with
+        the appropriate geometry for each row.
+    """
+
+    geo_level = infer_geo_level(df)
+
+    shapefile_scope = _GEO_QUERY_FROM_DATA_QUERY_INNER_GEO[geo_level][0]
+
+    if shapefile_scope is not None:
+        # The scope is the same across the board.
+        gdf = _add_geography(df, year, shapefile_scope, geo_level)
+        return gdf
+
+    # We have to group by different values of the shapefile
+    # scope from the appropriate column and add the right
+    # geography to each group.
+    shapefile_scope_column = _GEO_QUERY_FROM_DATA_QUERY_INNER_GEO[geo_level][2][0]
+
+    df_with_geo = (
+        df.groupby(shapefile_scope_column)
+        .apply(lambda g: _add_geography(g, year, g.name, geo_level))
+        .reset_index(drop=True)
+    )
+
+    gdf = gpd.GeoDataFrame(df_with_geo)
+
+    return gdf
 
 
 def download_detail(
@@ -428,7 +556,10 @@ def download_detail(
 
     if with_geometry:
         # We need to get the geometry and merge it in.
-        gdf_data = _add_geometry(df_data, year, bound_path)
+        geo_level = bound_path.path_spec.path[-1]
+        shapefile_scope = bound_path.bindings[bound_path.path_spec.path[0]]
+
+        gdf_data = _add_geography(df_data, year, shapefile_scope, geo_level)
         return gdf_data
 
     return df_data
