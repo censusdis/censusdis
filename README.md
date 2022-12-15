@@ -25,6 +25,27 @@ this one:
 
 ![Median income by block group in GA](_static/images/GA.png)
 
+We downloaded the data behind this plot, including
+the geometry of all the block groups, with a
+single call
+
+```python
+import censusdis.data as ced
+
+# This is a census variable for median household income.
+# See https://api.census.gov/data/2020/acs/acs5/variables/B19013_001E.html
+MEDIAN_HOUSEHOLD_INCOME_VARIABLE = "B19013_001E"
+
+gdf_bg = ced.download_detail(
+    "acs/acs5",  # The American Community Survey 5-Year Data
+    2020, 
+    ["NAME", MEDIAN_HOUSEHOLD_INCOME_VARIABLE], 
+    state=STATE_GA, 
+    block_group="*", 
+    with_geometry=True
+)
+```
+
 > ### I want to dive right in!
 > 
 > If you are the kind of person that wants to get straight
