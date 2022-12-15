@@ -18,18 +18,32 @@
 diversity, integration, and segregation metrics
 to U.S. Census demographic data. It is designed to be intuitive and Pythonic,
 but give users access to the full collection of data and maps the US Census
-publishes via their APIs. Data and maps are returned in familiar
-[Pandas](https://pandas.pydata.org/)
-and 
-[GeoPandas](https://geopandas.org/en/stable/)
-formats for easy integration with a wide variety of other Python data 
-analysis, machine learning, and plotting tools.
+publishes via their APIs. 
+
+`censusdis` lets you quickly and easily load US Census data and make plots like 
+this one:
+
+![Median income by block group in GA](_static/images/GA.png)
+
+> ### I want to dive right in!
+> 
+> If you are the kind of person that wants to get straight
+> to the code to see what it can do, try our 
+> [Getting Started](https://censusdis.readthedocs.io/en/latest/intro.html)
+> guide.
 
 ### Data Loading
 
 The `censusdis` data loading capabilities have been tested extensively with data from the 
 [American Community Survey (ACS) 5-year data set](https://www.census.gov/data/developers/data-sets/acs-5year.html).
 They also work well with other data sets available via the US Census API. 
+
+`censusdis` returns data and maps in familiar
+[Pandas](https://pandas.pydata.org/)
+and 
+[GeoPandas](https://geopandas.org/en/stable/)
+formats for easy integration with a wide variety of other Python data 
+analysis, machine learning, and plotting tools.
 
 ### Maps
 
