@@ -46,9 +46,16 @@ gdf_bg = ced.download_detail(
 )
 ```
 
-> ### I want to dive right in!
+Similarly, we can download data and geographies, do a little
+analysis on our own using familiar [Pandas](https://pandas.pydata.org/)
+data frame operations, and plot graphs like these
+
+![Percent of population identifying as white by county](_static/images/US-white.png)
+![Integration is SoMa](_static/images/SoMa.png)
+
+> ## I want to dive right in!
 > 
-> If you are the kind of person that wants to get straight
+> To get straight
 > to the code to see what it can do, try our 
 > [Getting Started](https://censusdis.readthedocs.io/en/latest/intro.html)
 > guide.

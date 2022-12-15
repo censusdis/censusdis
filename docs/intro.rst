@@ -1,8 +1,23 @@
+.. _getting_started:
+
 Getting Started
 ===============
 
-Once you have :ref:`installed <installation>` ``censusdis`` in your Python
-environment, you are ready to start using it.
+.. _installation:
+
+Installing ``censusdis``
+------------------------
+
+Installation follows the typical model for Python::
+
+    pip install censusdis
+
+will install the package in your python environment.
+
+If you are using a tool like `conda <https://docs.conda.io/en/latest/>`_
+or `poetry <https://python-poetry.org/>`_ to manage
+your dependencies, then you can add ``censusdis`` the
+same way you would add any other dependency.
 
 Making Your First Query
 -----------------------
