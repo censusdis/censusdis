@@ -4,8 +4,6 @@
 
 [![Documentation Status](https://readthedocs.org/projects/censusdis/badge/?version=latest)](https://censusdis.readthedocs.io/en/latest/?badge=latest)
 
-[![lint](https://github.com/vengroff/censusdis/actions/workflows/lint.yml/badge.svg)](https://github.com/vengroff/censusdis/actions/workflows/lint.yml)
-
 ![Tests Badge](reports/junit/tests-badge.svg)
 ![Coverage Badge](reports/coverage/coverage-badge.svg)
 ![Notebook Tests Badge](reports/nbmake/nbmake-badge.svg)
