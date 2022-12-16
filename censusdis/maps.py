@@ -17,7 +17,7 @@ from shapely import affinity
 from shapely.geometry import MultiPolygon, Polygon
 from shapely.geometry.base import BaseGeometry
 
-from censusdis.states import STATE_AK, STATE_HI
+from censusdis.states import STATE_AK, STATE_HI, TERRITORY_PR
 
 
 class MapException(Exception):
@@ -472,6 +472,21 @@ _HI_BOUNDS = Polygon(
     )
 )
 
+_PR_MIN_X = -68.0
+_PR_MIN_Y = 17.0
+_PR_MAX_X = -65.0
+_PR_MAX_Y = 19.0
+
+_PR_BOUNDS = Polygon(
+    (
+        (_PR_MIN_X, _PR_MIN_Y),
+        (_PR_MAX_X, _PR_MIN_Y),
+        (_PR_MAX_X, _PR_MAX_Y),
+        (_PR_MIN_X, _PR_MAX_Y),
+        (_PR_MIN_X, _PR_MIN_Y),
+    )
+)
+
 
 def _relocate_ak(geo: BaseGeometry) -> BaseGeometry:
     """
@@ -518,9 +533,29 @@ def _relocate_hi(geo: BaseGeometry) -> BaseGeometry:
     return geo
 
 
-def _relocate_parts_in_ak_hi(geo: BaseGeometry) -> BaseGeometry:
+def _relocate_pr(geo: BaseGeometry) -> BaseGeometry:
     """
-    Relocate any sub-geometries that happen to fall in the AK or HI bounding boxes.
+    Relocate a geometry that is already known to be in the PR bounding box.
+
+    Parameters
+    ----------
+    geo
+        The geometry.
+    Returns
+    -------
+        The relocated geometry.
+    """
+    pr_x = -7
+    pr_y = 8
+
+    geo = shapely.affinity.translate(geo, xoff=pr_x, yoff=pr_y)
+
+    return geo
+
+
+def _relocate_parts_in_ak_hi_pr(geo: BaseGeometry) -> BaseGeometry:
+    """
+    Relocate any sub-geometries that happen to fall in the AK or HI or PR bounding boxes.
 
     If the geometry is a simple polygon, check if it intersects the
     bounding boxes of AK or HI and relocate if so. If it is a
@@ -540,7 +575,7 @@ def _relocate_parts_in_ak_hi(geo: BaseGeometry) -> BaseGeometry:
         The geography, possibly with some parts relocated.
     """
     if isinstance(geo, MultiPolygon):
-        relocated_geos = [_relocate_parts_in_ak_hi(g) for g in geo.geoms]
+        relocated_geos = [_relocate_parts_in_ak_hi_pr(g) for g in geo.geoms]
         return MultiPolygon(relocated_geos)
 
     # It is an individual polygon. So see if it is
@@ -550,20 +585,22 @@ def _relocate_parts_in_ak_hi(geo: BaseGeometry) -> BaseGeometry:
         geo = _relocate_ak(geo)
     elif geo.intersects(_HI_BOUNDS):
         geo = _relocate_hi(geo)
+    elif geo.intersects(_PR_BOUNDS):
+        geo = _relocate_pr(geo)
 
     return geo
 
 
 def _wrap_and_relocate_geos(geo: BaseGeometry):
     geo = _wrap_polys(geo)
-    return _relocate_parts_in_ak_hi(geo)
+    return _relocate_parts_in_ak_hi_pr(geo)
 
 
-def _relocate_ak_hi_group(group):
+def _relocate_ak_hi_pr_group(group):
     """
     A helper function that relocates a group of geometries.
 
-    They are relocated if they belong to AK or HI, otherwise
+    They are relocated if they belong to AK, HI or PR, otherwise
     they are left alone.
     """
     if group.name == STATE_AK:
@@ -573,18 +610,20 @@ def _relocate_ak_hi_group(group):
         group.geometry = group.geometry.apply(_relocate_ak)
     elif group.name == STATE_HI:
         group.geometry = group.geometry.apply(_relocate_hi)
+    elif group.name == TERRITORY_PR:
+        group.geometry = group.geometry.apply(_relocate_pr)
 
     return group
 
 
-def relocate_ak_hi(gdf):
+def relocate_ak_hi_pr(gdf):
     """
     Relocate any geometry that is in Alaska or Hawaii for plotting purposes.
 
     We first try an optimization. If there is a `STATEFP`
     column then we relocate rows where that column has a value of
-    `STATE_AK` or `STATE_HI`. If there is not a `STATEFP` column
-    we check for a `STATE` column and do the same. If neither
+    `STATE_AK`, `STATE_HI` or `TERRITORY_PR`. If there is not a
+    `STATEFP` column we check for a `STATE` column and do the same. If neither
     column exists then we dig down into the geometries themselves
     and relocate those that intersect bounding rectangles of the
     two states.
@@ -606,7 +645,7 @@ def relocate_ak_hi(gdf):
             state_group_column = "STATE"
 
         gdf = gdf.groupby(gdf[state_group_column], group_keys=False).apply(
-            _relocate_ak_hi_group
+            _relocate_ak_hi_pr_group
         )
     else:
         # There is no column indicating the state of each geometry. This
@@ -620,7 +659,7 @@ def relocate_ak_hi(gdf):
     return gdf
 
 
-def plot_us(gdf: gpd.GeoDataFrame, *args, do_relocate_ak_hi: bool = True, **kwargs):
+def plot_us(gdf: gpd.GeoDataFrame, *args, do_relocate_ak_hi_pr: bool = True, **kwargs):
     """
     Plot a map of the US with AK and HI relocated.
 
@@ -637,8 +676,8 @@ def plot_us(gdf: gpd.GeoDataFrame, *args, do_relocate_ak_hi: bool = True, **kwar
     ----------
     gdf
         The geometries to be plotted.
-    do_relocate_ak_hi
-        If `True` try to relocate AK and HI. Otherwise, still wrap
+    do_relocate_ak_hi_pr
+        If `True` try to relocate AK, HI, and PR. Otherwise, still wrap
         the Aleutian islands west of -180° longitude if present.
     args
         Args to pass to the plot.
@@ -649,8 +688,8 @@ def plot_us(gdf: gpd.GeoDataFrame, *args, do_relocate_ak_hi: bool = True, **kwar
     -------
         ax of the plot.
     """
-    if do_relocate_ak_hi:
-        gdf = relocate_ak_hi(gdf)
+    if do_relocate_ak_hi_pr:
+        gdf = relocate_ak_hi_pr(gdf)
     else:
         # At least wrap the Aleutian islands.
         gdf.geometry = gdf.geometry.map(_wrap_polys)
@@ -660,7 +699,7 @@ def plot_us(gdf: gpd.GeoDataFrame, *args, do_relocate_ak_hi: bool = True, **kwar
 
 
 def plot_us_boundary(
-    gdf: gpd.GeoDataFrame, *args, do_relocate_ak_hi: bool = True, **kwargs
+    gdf: gpd.GeoDataFrame, *args, do_relocate_ak_hi_pr: bool = True, **kwargs
 ):
     """
     Plot a map of boundaries the US with AK and HI relocated.
@@ -674,8 +713,8 @@ def plot_us_boundary(
         The geometries to be plotted.
     args
         Args to pass to the plot.
-    do_relocate_ak_hi
-        If `True` try to relocate AK and HI. Otherwise, still wrap
+    do_relocate_ak_hi_pr
+        If `True` try to relocate AK, HI, and PR. Otherwise, still wrap
         the Aleutian islands west of -180° longitude if present.
     kwargs
         Keyword args to pass to the plot.
@@ -684,8 +723,8 @@ def plot_us_boundary(
     -------
         ax of the plot.
     """
-    if do_relocate_ak_hi:
-        gdf = relocate_ak_hi(gdf)
+    if do_relocate_ak_hi_pr:
+        gdf = relocate_ak_hi_pr(gdf)
     else:
         # At least wrap the Aleutian islands.
         gdf = gdf.copy()

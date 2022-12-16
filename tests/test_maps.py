@@ -7,7 +7,7 @@ import geopandas as gpd
 import matplotlib.pyplot as plt
 
 import censusdis.maps as cmap
-from censusdis.states import ALL_STATES_AND_DC
+from censusdis.states import ALL_STATES_DC_AND_PR
 
 
 class ShapeReaderTestCase(unittest.TestCase):
@@ -61,7 +61,7 @@ class MapPlotTestCase(unittest.TestCase):
     def setUp(self) -> None:
         """Set up before each test."""
         gdf = gpd.read_file(self.shapefile_path)
-        self.gdf = gdf[gdf.STATEFP.isin(ALL_STATES_AND_DC)]
+        self.gdf = gdf[gdf.STATEFP.isin(ALL_STATES_DC_AND_PR)]
 
         plt.rcParams["figure.figsize"] = (8, 5)
 
@@ -121,7 +121,7 @@ class MapPlotTestCase(unittest.TestCase):
         output_dir = tempfile.gettempdir()
         output_file = os.path.join(output_dir, png_file_name)
 
-        ax = cmap.plot_us(self.gdf, do_relocate_ak_hi=False, color="purple")
+        ax = cmap.plot_us(self.gdf, do_relocate_ak_hi_pr=False, color="purple")
         ax.axis("off")
         fig = ax.get_figure()
         fig.savefig(output_file)
@@ -145,7 +145,7 @@ class MapPlotTestCase(unittest.TestCase):
         output_file = os.path.join(output_dir, png_file_name)
 
         ax = cmap.plot_us_boundary(
-            self.gdf, do_relocate_ak_hi=False, edgecolor="red", linewidth=0.5
+            self.gdf, do_relocate_ak_hi_pr=False, edgecolor="red", linewidth=0.5
         )
         ax.axis("off")
         fig = ax.get_figure()
@@ -165,12 +165,12 @@ class MapPlotTestCase(unittest.TestCase):
         """
 
         # Drop the column and make sure it is dropped.
-        self.assertEqual((51, 10), self.gdf.shape)
+        self.assertEqual((52, 10), self.gdf.shape)
         self.assertIn("STATEFP", self.gdf.columns)
 
         self.gdf.drop("STATEFP", axis="columns", inplace=True)
 
-        self.assertEqual((51, 9), self.gdf.shape)
+        self.assertEqual((52, 9), self.gdf.shape)
         self.assertNotIn("STATEFP", self.gdf.columns)
 
         png_file_name = "plot_us.png"
