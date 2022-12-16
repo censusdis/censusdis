@@ -531,10 +531,12 @@ The resulting plot looks like
 .. image:: _static/images/US-median.png
 
 We used ``cem.plot_us`` because it does some nice things
-for us, like relocate Alaska and Hawaii from their actual
-longitude and latitude to a location in the lower left
-corner of the map. Otherwise, it largely takes ``**kwargs``
-that Matplotlib normally takes.
+for us, like relocate Alaska, Hawaii, and Puerto Rico
+from their actual longitude and latitude to locations
+that allow us to plot the map more compactly.
+In addition to doing this relocation, ``cem.plot_is``
+takes the same ``*args`` and ``**kwargs`` that
+Matplotlib normally takes.
 
 Additional Examples in Notebooks
 --------------------------------
