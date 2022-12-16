@@ -73,8 +73,8 @@ jobs:
       - name: Archive code coverage
         uses: actions/upload-artifact@v3
         with:
-          name: code-coverage-report
-          path: tests/_test_products
+          name: test_artifacts
+          path: tests/_test_artifacts
           retention-days: 7
       #----------------------------------------------
       #              commit coverage
