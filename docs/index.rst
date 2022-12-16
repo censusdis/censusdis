@@ -36,7 +36,7 @@ and maps from the
 `US Census TIGER/Line Geodatabases <https://www.census.gov/geographies/mapping-files/time-series/geo/tiger-geodatabase-file.2020.html>`_
 and
 `US Census Cartographic Boundary Files <https://www.census.gov/geographies/mapping-files/time-series/geo/cartographic-boundary.2020.html>`_
-in a unified pythonic manner. The goal is to make it
+in a unified Pythonic manner. The goal is to make it
 easy get the data and maps you want together in one place with
 as little effort as possible. That way you can concentrate
 on your research and modeling, not on wrangling and
@@ -52,15 +52,15 @@ Installation and Getting Started
 --------------------------------
 
 If you want to jump right in, see the
-:ref:`getting started <getting_started>`
+:ref:`Getting Started <getting_started>`
 guide.
 
 Sample Notebooks
 ----------------
 
-If you would like to see some examples
-of what ``censusdis`` can do, there are a number of `demo
-notebooks <./notebooks.html>`_.
+If you would like to see some complete examples
+of what ``censusdis`` can do, check out the `Demo
+Notebooks <./notebooks.html>`_ section.
 
 .. toctree::
    :maxdepth: 2
