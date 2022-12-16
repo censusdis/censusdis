@@ -58,10 +58,14 @@ class MapPlotTestCase(unittest.TestCase):
         cls.shapefile_path = os.path.join(
             os.path.dirname(__file__), "data", "shapefiles", "cb_2020_us_state_20m"
         )
-        cls.expected_dir = os.path.join(os.path.dirname(__file__), "expected", sys.platform)
+        cls.expected_dir = os.path.join(
+            os.path.dirname(__file__), "expected", sys.platform
+        )
 
         # Create a clean output directory
-        cls.output_dir = os.path.join(os.path.dirname(__file__), "_test_artifacts", sys.platform)
+        cls.output_dir = os.path.join(
+            os.path.dirname(__file__), "_test_artifacts", sys.platform
+        )
         rmtree(cls.output_dir, ignore_errors=True)
         os.makedirs(cls.output_dir)
 
