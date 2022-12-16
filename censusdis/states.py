@@ -203,6 +203,9 @@ STATE_WI = "55"
 STATE_WY = "56"
 """Wyoming"""
 
+TERRITORY_PR = "72"
+"""Puerto Rico"""
+
 
 STATE_NAMES_FROM_IDS = {
     STATE_AL: "Alabama",
@@ -256,6 +259,7 @@ STATE_NAMES_FROM_IDS = {
     STATE_WV: "West Virginia",
     STATE_WI: "Wisconsin",
     STATE_WY: "Wyoming",
+    TERRITORY_PR: "Puerto Rico",
 }
 """
 The names of each state, indexed by FIPS code.
@@ -278,7 +282,23 @@ Typically used to iterate over the states, as in::
         process_state(state)
 """
 
-ALL_STATES_AND_DC = list(STATE_NAMES_FROM_IDS.keys())
+ALL_STATES_DC_AND_PR = list(STATE_NAMES_FROM_IDS.keys())
+
+"""
+All the state FIPS codes and DC and PR.
+
+Includes all 50 states, DC and PR.
+
+Typically used to iterate over the states, as in::
+
+    from censusdis.states import ALL_STATES_DC_AND_PR
+
+    for state in ALL_STATES_DC_AND_PR:
+        process_state(state)
+"""
+
+ALL_STATES_AND_DC = [state for state in ALL_STATES_DC_AND_PR if state != TERRITORY_PR]
+
 """
 All the state FIPS codes and DC.
 

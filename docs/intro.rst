@@ -1,30 +1,72 @@
+.. _getting_started:
+
 Getting Started
 ===============
 
-Once you have :ref:`installed <installation>` ``censusdis`` in your Python
-environment, you are ready to start using it.
+.. _installation:
+
+Installing ``censusdis``
+------------------------
+
+Installation follows the typical model for Python::
+
+    pip install censusdis
+
+will install the package in your python environment.
+
+If you are using a tool like `conda <https://docs.conda.io/en/latest/>`_
+or `poetry <https://python-poetry.org/>`_ to manage
+your dependencies, then you can add ``censusdis`` the
+same way you would add any other dependency.
 
 Making Your First Query
 -----------------------
 
 Let's start with a simple example. We will use ``censusis.data``
-to load the population of every state in the country from
-the 2020 US Census redistricting data. In Census terms, the
-name of dataset we want to use is `"dec/pl" <https://api.census.gov/data/2020/dec/pl.html>`_  and the name
-of the variable we want to load is
-`"P2_001N" <https://api.census.gov/data/2020/dec/pl/variables/P2_001N.html>`_.
-``censusdis`` has APIs to explore and discover variables, but
-for now, let's just assume we already knew what data set and
-variable we wanted.
+to load the population and median houshold income of every state
+in the country from the 2020 American Community Survey 5-Year Data.
+In Census terms, the
+name of dataset we want to use is
+`"acs/acs5" <https://api.census.gov/data/2020/dec/pl.html>`_  and the name
+of the variables we want to load are
+`"B01003_001E" <https://api.census.gov/data/2020/acs/acs5/variables/B01003_001E.html>`_
+and
+`"B19013_001E" <https://api.census.gov/data/2020/acs/acs5/variables/B19013_001E.html>`_.
+If you have worked with US Census data before you may recognize
+the format of the data set and variable names. If you are new to
+US Census data, don't worry. We will talk about how to discover
+data sets and query metadata on available variables later.
 
-We can load the data as follows::
+We will import `censusdis.data` and set things up as describe above
+with the following code::
 
     import censusdis.data as ced
 
-    DATASET = "dec/pl"
-    YEAR = 2020
-    VARIABLES = ["NAME", "P2_001N"]
+    # American Community Survey 5-Year Data
+    # https://www.census.gov/data/developers/data-sets/acs-5year.html
+    DATASET = "acs/acs5"
 
+    # The year we want data for.
+    YEAR = 2020
+
+    # This are the census variables for total population and median household income.
+    # For more details, see
+    #
+    #     https://api.census.gov/data/2020/acs/acs5/variables.html,
+    #     https://api.census.gov/data/2020/acs/acs5/variables/B01003_001E.html, and
+    #     https://api.census.gov/data/2020/acs/acs5/variables/B19013_001E.html.
+    #
+    TOTAL_POPULATION_VARIABLE = "B01003_001E"
+    MEDIAN_HOUSEHOLD_INCOME_VARIABLE = "B19013_001E"
+
+    # The variables we are going to query.
+    VARIABLES = ["NAME", TOTAL_POPULATION_VARIABLE, MEDIAN_HOUSEHOLD_INCOME_VARIABLE]
+
+Once we have done that, we can make the following query to get the
+data we want::
+
+    # Get the value of our variables for every state in the
+    # year we have chosen.
     df_states = ced.download_detail(
         DATASET,
         YEAR,
@@ -33,78 +75,80 @@ We can load the data as follows::
     )
 
 The call
-to ``ced.download_detail`` will construct
-a URL in the Census API's preferred format
-(``https://api.census.gov/data/2020/dec/pl?get=NAME,P2_001N&for=state:*``),
+to ``ced.download_detail`` will construct a URL in the Census API's preferred
+format
+(`https://api.census.gov/data/2020/acs/acs5?get=NAME,B01003_001E,B19013_001E&for=state:*
+<https://api.census.gov/data/2020/acs/acs5?get=NAME,B01003_001E,B19013_001E&for=state:*>`_),
 make a
 request to the Census servers at that URL, parse the JSON that is
 returned, and turn it into a ``pandas.DataFrame``.
 
 ``df_states`` now has the
-name and population of all 50 states and the District of
-Columbia. If we print it, it looks like::
+name and population and median income of all 50 states and the District of
+Columbia. The value returned into ``df_states`` is::
 
-       STATE                  NAME   P2_001N
-    0     42          Pennsylvania  13002700
-    1     06            California  39538223
-    2     54         West Virginia   1793716
-    3     49                  Utah   3271616
-    4     36              New York  20201249
-    5     11  District of Columbia    689545
-    6     02                Alaska    733391
-    7     12               Florida  21538187
-    8     45        South Carolina   5118425
-    9     38          North Dakota    779094
-    10    23                 Maine   1362359
-    11    13               Georgia  10711908
-    12    01               Alabama   5024279
-    13    33         New Hampshire   1377529
-    14    41                Oregon   4237256
-    15    56               Wyoming    576851
-    16    04               Arizona   7151502
-    17    22             Louisiana   4657757
-    18    18               Indiana   6785528
-    19    16                 Idaho   1839106
-    20    09           Connecticut   3605944
-    21    15                Hawaii   1455271
-    22    17              Illinois  12812508
-    23    25         Massachusetts   7029917
-    24    48                 Texas  29145505
-    25    30               Montana   1084225
-    26    31              Nebraska   1961504
-    27    39                  Ohio  11799448
-    28    08              Colorado   5773714
-    29    34            New Jersey   9288994
-    30    24              Maryland   6177224
-    31    51              Virginia   8631393
-    32    50               Vermont    643077
-    33    37        North Carolina  10439388
-    34    05              Arkansas   3011524
-    35    53            Washington   7705281
-    36    20                Kansas   2937880
-    37    40              Oklahoma   3959353
-    38    55             Wisconsin   5893718
-    39    28           Mississippi   2961279
-    40    29              Missouri   6154913
-    41    26              Michigan  10077331
-    42    44          Rhode Island   1097379
-    43    27             Minnesota   5706494
-    44    19                  Iowa   3190369
-    45    35            New Mexico   2117522
-    46    32                Nevada   3104614
-    47    10              Delaware    989948
-    48    72           Puerto Rico   3285874
-    49    21              Kentucky   4505836
-    50    46          South Dakota    886667
-    51    47             Tennessee   6910840
+       STATE                  NAME  B01003_001E  B19013_001E
+    0     42          Pennsylvania     12794885        63627
+    1     06            California     39346023        78672
+    2     54         West Virginia      1807426        48037
+    3     49                  Utah      3151239        74197
+    4     36              New York     19514849        71117
+    5     11  District of Columbia       701974        90842
+    6     02                Alaska       736990        77790
+    7     12               Florida     21216924        57703
+    8     45        South Carolina      5091517        54864
+    9     38          North Dakota       760394        65315
+    10    23                 Maine      1340825        59489
+    11    13               Georgia     10516579        61224
+    12    01               Alabama      4893186        52035
+    13    33         New Hampshire      1355244        77923
+    14    41                Oregon      4176346        65667
+    15    56               Wyoming       581348        65304
+    16    04               Arizona      7174064        61529
+    17    22             Louisiana      4664616        50800
+    18    18               Indiana      6696893        58235
+    19    16                 Idaho      1754367        58915
+    20    09           Connecticut      3570549        79855
+    21    15                Hawaii      1420074        83173
+    22    17              Illinois     12716164        68428
+    23    25         Massachusetts      6873003        84385
+    24    48                 Texas     28635442        63826
+    25    30               Montana      1061705        56539
+    26    31              Nebraska      1923826        63015
+    27    39                  Ohio     11675275        58116
+    28    08              Colorado      5684926        75231
+    29    34            New Jersey      8885418        85245
+    30    24              Maryland      6037624        87063
+    31    51              Virginia      8509358        76398
+    32    50               Vermont       624340        63477
+    33    37        North Carolina     10386227        56642
+    34    05              Arkansas      3011873        49475
+    35    53            Washington      7512465        77006
+    36    20                Kansas      2912619        61091
+    37    40              Oklahoma      3949342        53840
+    38    55             Wisconsin      5806975        63293
+    39    28           Mississippi      2981835        46511
+    40    29              Missouri      6124160        57290
+    41    26              Michigan      9973907        59234
+    42    44          Rhode Island      1057798        70305
+    43    27             Minnesota      5600166        73382
+    44    19                  Iowa      3150011        61836
+    45    35            New Mexico      2097021        51243
+    46    32                Nevada      3030281        62043
+    47    10              Delaware       967679        69110
+    48    72           Puerto Rico      3255642        21058
+    49    21              Kentucky      4461952        52238
+    50    46          South Dakota       879336        59896
+    51    47             Tennessee      6772268        54833
 
-Notice that the data frame has three columns, ``"STATE"``,
-``"NAME"``, and ``"P2_001N"``. The second and third are
-what we asked for. But what about the first one, ``"STATE"``?
+Notice that the data frame has four columns, ``STATE``,
+``NAME``, ``B01003_001E``, and ``B19013_001E``.
+``NAME``, ``B01003_001E``, and ``B19013_001E`` are
+what we asked for. But what about the first column, ``STATE``?
 That is additional data that indicates the state
 of each row, specified in terms of a
 `FIPS Code <https://en.wikipedia.org/wiki/Federal_Information_Processing_Standard_state_code#FIPS_state_codes>`_.
-FIPS codes are two-digit strings that the Census
+FIPS codes are two-digit strings that the US Census
 uses to identify states.
 
 ``censusdis`` returns FIPS codes like these to
@@ -127,20 +171,16 @@ of the state, or by the population.
 Filtering Queries
 -----------------
 
-Our first query got the population of every state.
+Our first query got the population and median income
+of every state.
 Sometimes, especially when we are working at a smaller
 level of granularity like a county, we don't want the
-data for the whole country. We might want it just for
+data for the entire country. We might want it just for
 the counties of a particular state, say New Jersey.
 In that case, we can specify this with additional
 arguments to ``ced.download_detail``. For example::
 
-    import censusdis.data as ced
     from censusdis.states import STATE_NJ
-
-    DATASET = "dec/pl"
-    YEAR = 2020
-    VARIABLES = ["NAME", "P2_001N"]
 
     df_counties = ced.download_detail(
         DATASET,
@@ -150,30 +190,35 @@ arguments to ``ced.download_detail``. For example::
         county="*",
     )
 
-This query returns the following dataframe::
+This code is almost exactly the same as the last query
+except that we changed ``state="*"`` to ``state=STATE_NJ``
+and ``county="*"``. So instead of asking for the data aggregated
+at the state level across all states, we are asking for only
+the data from the state of New Jersey, aggregated at the
+county level. The value returned into ``df_counties`` is::
 
-       STATE COUNTY                           NAME  P2_001N
-    0     34    003      Bergen County, New Jersey   955732
-    1     34    009    Cape May County, New Jersey    95263
-    2     34    015  Gloucester County, New Jersey   302294
-    3     34    021      Mercer County, New Jersey   387340
-    4     34    027      Morris County, New Jersey   509285
-    5     34    033       Salem County, New Jersey    64837
-    6     34    039       Union County, New Jersey   575345
-    7     34    001    Atlantic County, New Jersey   274534
-    8     34    005  Burlington County, New Jersey   461860
-    9     34    007      Camden County, New Jersey   523485
-    10    34    011  Cumberland County, New Jersey   154152
-    11    34    013       Essex County, New Jersey   863728
-    12    34    017      Hudson County, New Jersey   724854
-    13    34    019   Hunterdon County, New Jersey   128947
-    14    34    023   Middlesex County, New Jersey   863162
-    15    34    025    Monmouth County, New Jersey   643615
-    16    34    029       Ocean County, New Jersey   637229
-    17    34    031     Passaic County, New Jersey   524118
-    18    34    035    Somerset County, New Jersey   345361
-    19    34    037      Sussex County, New Jersey   144221
-    20    34    041      Warren County, New Jersey   109632
+       STATE COUNTY                           NAME  B01003_001E  B19013_001E
+    0     34    003      Bergen County, New Jersey       931275       104623
+    1     34    009    Cape May County, New Jersey        92701        72385
+    2     34    015  Gloucester County, New Jersey       291745        89056
+    3     34    021      Mercer County, New Jersey       368085        83306
+    4     34    027      Morris County, New Jersey       492715       117298
+    5     34    033       Salem County, New Jersey        62754        64234
+    6     34    039       Union County, New Jersey       555208        82644
+    7     34    001    Atlantic County, New Jersey       264650        63680
+    8     34    005  Burlington County, New Jersey       446301        90329
+    9     34    007      Camden County, New Jersey       506721        70957
+    10    34    011  Cumberland County, New Jersey       150085        55709
+    11    34    013       Essex County, New Jersey       798698        63959
+    12    34    017      Hudson County, New Jersey       671923        75062
+    13    34    019   Hunterdon County, New Jersey       125063       117858
+    14    34    023   Middlesex County, New Jersey       825015        91731
+    15    34    025    Monmouth County, New Jersey       620821       103523
+    16    34    029       Ocean County, New Jersey       602018        72679
+    17    34    031     Passaic County, New Jersey       502763        73562
+    18    34    035    Somerset County, New Jersey       330151       116510
+    19    34    037      Sussex County, New Jersey       140996        96222
+    20    34    041      Warren County, New Jersey       105730        83497
 
 Note that in this case, we received both the FIPS code for
 the state (34 in New Jersey) and the county within the state,
@@ -186,15 +231,15 @@ get really messy. Is "Bergen CNTY, NJ" the same as
 "Bergen County, New Jersey"?
 
 Since the first two queries we did both went to the same
-underlying "dec/pl" dataset, the numbers they contain
+underlying "acs/acs5" dataset, the numbers they contain
 should add up. We can verify this by seeing if the total
 population of all the counties in New Jersey in the second
 query is equal to the population of the state from the
 first query with::
 
-    df_counties['P2_001N'].sum()
+    df_counties["B01003_001E"].sum()
 
-Sure enough, this sum is ``9288994``, exactly what we
+Sure enough, this sum is ``8885418``, exactly what we
 saw in the New Jersey row of ``df_states``.
 
 Additional Geographies
@@ -206,12 +251,6 @@ Some, like region, are very large. In the US Census
 data model, there are only four regions. Their populations
 can be queried with::
 
-    import censusdis.data as ced
-
-    DATASET = "dec/pl"
-    YEAR = 2020
-    VARIABLES = ["NAME", "P2_001N"]
-
     df_region = ced.download_detail(
         DATASET,
         YEAR,
@@ -221,11 +260,11 @@ can be queried with::
 
 The result is::
 
-      REGION              NAME    P2_001N
-    0      2    Midwest Region   68985454
-    1      3      South Region  126266107
-    2      4       West Region   78588572
-    3      1  Northeast Region   57609148
+      REGION              NAME  B01003_001E  B19013_001E
+    0      2    Midwest Region     68219726        62054
+    1      3      South Region    124605822        59816
+    2      4       West Region     77726849        72464
+    3      1  Northeast Region     56016911        72698
 
 On the other hand, we can go down to very small
 geographies called *block groups*. These are
@@ -235,14 +274,7 @@ somewhere between hundreds and thousands of
 people. Here is
 a block group query for Essex County, NJ::
 
-    import censusdis.data as ced
-    from censusdis.states import STATE_NJ
-
     COUNTY_ESSEX_NJ = "013" # See county query above.
-
-    DATASET = "dec/pl"
-    YEAR = 2020
-    VARIABLES = ["NAME", "P2_001N"]
 
     df_bg = ced.download_detail(
         DATASET,
@@ -258,41 +290,50 @@ dataframes. There are 672 block groups in the county.
 The results (leaving out a bunch of rows in the middle)
 look like::
 
-        STATE COUNTY   TRACT BLOCK_GROUP                                                             NAME  P2_001N
-    0      34    013  000100           2      Block Group 2, Census Tract 1, Essex County, New Jersey         2104
-    1      34    013  000200           2      Block Group 2, Census Tract 2, Essex County, New Jersey         2096
-    2      34    013  000400           1      Block Group 1, Census Tract 4, Essex County, New Jersey         2514
-    3      34    013  000600           1      Block Group 1, Census Tract 6, Essex County, New Jersey         1816
-    4      34    013  000700           2      Block Group 2, Census Tract 7, Essex County, New Jersey         2469
-    5      34    013  000800           1      Block Group 1, Census Tract 8, Essex County, New Jersey         2388
-    6      34    013  000900           1      Block Group 1, Census Tract 9, Essex County, New Jersey         1960
-    7      34    013  001000           1      Block Group 1, Census Tract 10, Essex County, New Jersey        1100
-    8      34    013  001100           2      Block Group 2, Census Tract 11, Essex County, New Jersey        1228
-    9      34    013  001400           2      Block Group 2, Census Tract 14, Essex County, New Jersey        1742
+       STATE  COUNTY   TRACT BLOCK_GROUP                                                          NAME B01003_001E  B19013_001E
+    0      34    013  000100           2      Block Group 2, Census Tract 1, Essex County, New Jersey         1826        31250
+    1      34    013  000200           2      Block Group 2, Census Tract 2, Essex County, New Jersey         2156        39944
+    2      34    013  000400           1      Block Group 1, Census Tract 4, Essex County, New Jersey         2121        41736
+    3      34    013  000600           1      Block Group 1, Census Tract 6, Essex County, New Jersey         2363        44705
+    4      34    013  000700           2      Block Group 2, Census Tract 7, Essex County, New Jersey         2321        32382
+    5      34    013  000800           1      Block Group 1, Census Tract 8, Essex County, New Jersey         1811        78100
+    6      34    013  000900           1      Block Group 1, Census Tract 9, Essex County, New Jersey         1066        16125
+    7      34    013  001000           1     Block Group 1, Census Tract 10, Essex County, New Jersey         1305   -666666666
+    8      34    013  001100           2     Block Group 2, Census Tract 11, Essex County, New Jersey         1660        69650
+    9      34    013  001400           2     Block Group 2, Census Tract 14, Essex County, New Jersey         1434        54516
 
     ...
 
-    662    34    013  004700           2      Block Group 2, Census Tract 47, Essex County, New Jersey        1086
-    663    34    013  004700           3      Block Group 3, Census Tract 47, Essex County, New Jersey         772
-    664    34    013  004700           4      Block Group 4, Census Tract 47, Essex County, New Jersey         894
-    665    34    013  004700           5      Block Group 5, Census Tract 47, Essex County, New Jersey         913
-    666    34    013  004801           1      Block Group 1, Census Tract 48.01, Essex County, New Jersey     1681
-    667    34    013  004801           2      Block Group 2, Census Tract 48.01, Essex County, New Jersey      912
-    668    34    013  004802           1      Block Group 1, Census Tract 48.02, Essex County, New Jersey     1899
-    669    34    013  004802           2      Block Group 2, Census Tract 48.02, Essex County, New Jersey      563
-    670    34    013  004802           3      Block Group 3, Census Tract 48.02, Essex County, New Jersey     1651
-    671    34    013  004900           1      Block Group 1, Census Tract 49, Essex County, New Jersey        1052
+    662    34    013  004700           2     Block Group 2, Census Tract 47, Essex County, New Jersey         1373        53125
+    663    34    013  004700           3     Block Group 3, Census Tract 47, Essex County, New Jersey         1028   -666666666
+    664    34    013  004700           4     Block Group 4, Census Tract 47, Essex County, New Jersey         1253        53368
+    665    34    013  004700           5     Block Group 5, Census Tract 47, Essex County, New Jersey          796        49097
+    666    34    013  004801           1  Block Group 1, Census Tract 48.01, Essex County, New Jersey         1850        37619
+    667    34    013  004801           2  Block Group 2, Census Tract 48.01, Essex County, New Jersey          530        58705
+    668    34    013  004802           1  Block Group 1, Census Tract 48.02, Essex County, New Jersey         2130        11634
+    669    34    013  004802           2  Block Group 2, Census Tract 48.02, Essex County, New Jersey          694        19919
+    670    34    013  004802           3  Block Group 3, Census Tract 48.02, Essex County, New Jersey         1102        11713
+    671    34    013  004900           1     Block Group 1, Census Tract 49, Essex County, New Jersey          885        28362
 
 An interesting thing happened here. We asked for all the
 block groups in the county. ``censusdis`` was smart
 enough to realize that block groups are nested inside
 geographies called census tracts, that are in turn nested
 inside counties. In order to give us enough identifiers
-to unambiguously differentiate the rows, the "TRACT"
+to unambiguously differentiate the rows, the ``TRACT``
 column was added even though we did not mention it in
 our query. As you can see in the results, the block group
-identifier is typically a single digit number, but is
-unique within a tract.
+identifier is typically a single digit number so many rows
+use the same value, but is unique within a tract. Each row
+is a unique combination of state, census tract, and block
+group.
+
+One other interesting thing happened. There are two rows
+where the value -666666666 was returned in the column ``B19013_001E``.
+This is a special value that indicates that there was not
+enough data in the survey to estimate the value accurately.
+In many cases we will want to drop these rows or treat them
+in a special way in our analysis.
 
 If you want to find out what all the supported geographies
 for a data set are, you can check a US Census page like
@@ -307,9 +348,6 @@ look at this information with the following code::
 
     import censusdis.geography as cgeo
 
-    DATASET = "dec/pl"
-    YEAR = 2020
-
     specs = cgeo.geo_path_snake_specs(DATASET, YEAR)
 
 ``specs`` will now contain::
@@ -321,7 +359,7 @@ look at this information with the following code::
      '050': ['state', 'county'],
      '060': ['state', 'county', 'county_subdivision'],
      '067': ['state', 'county', 'county_subdivision', 'subminor_civil_division'],
-     '100': ['state', 'county', 'tract', 'block'],
+     '070': ['state', 'county', 'county_subdivision', 'place_remainder_or_part'],
      '140': ['state', 'county', 'tract'],
      '150': ['state', 'county', 'tract', 'block_group'],
 
@@ -331,13 +369,15 @@ look at this information with the following code::
 
      ...
 
-     '745': ['state',
-             'county',
-             'voting_district',
-             'county_subdivision_or_part',
-             'subminor_civil_division_or_part',
-             'tract_or_part',
-             'block_group_or_part'],
+     '550': ['state',
+             'congressional_district',
+             'american_indian_area_alaska_native_area_hawaiian_home_land_or_part'],
+     '610': ['state', 'state_legislative_district_upper_chamber'],
+     '612': ['state', 'state_legislative_district_upper_chamber', 'county_or_part'],
+     '620': ['state', 'state_legislative_district_lower_chamber'],
+     '622': ['state', 'state_legislative_district_lower_chamber', 'county_or_part'],
+     '795': ['state', 'public_use_microdata_area'],
+     '860': ['zip_code_tabulation_area'],
      '950': ['state', 'school_district_elementary'],
      '960': ['state', 'school_district_secondary'],
      '970': ['state', 'school_district_unified']}
@@ -354,12 +394,6 @@ We can query any of these geographies we like, using the
 argument naming conventions returned in ``specs`` above.
 For example::
 
-    import censusdis.data as ced
-
-    DATASET = "dec/pl"
-    YEAR = 2020
-    VARIABLES = ["NAME", "P2_001N"]
-
     df_csa = ced.download_detail(
         DATASET,
         YEAR,
@@ -369,30 +403,30 @@ For example::
 
 which produces the results::
 
-      COMBINED_STATISTICAL_AREA                                                     NAME  P2_001N
-    0                       104                               Albany-Schenectady, NY CSA  1190727
-    1                       106                   Albuquerque-Santa Fe-Las Vegas, NM CSA  1162523
-    2                       107                               Altoona-Huntingdon, PA CSA   166914
-    3                       108                            Amarillo-Pampa-Borger, TX CSA   311362
-    4                       118                          Appleton-Oshkosh-Neenah, WI CSA   414877
-    5                       120                         Asheville-Marion-Brevard, NC CSA   546579
-    6                       122  Atlanta--Athens-Clarke County--Sandy Springs, GA-AL CSA  6930423
-    7                       140                                  Bend-Prineville, OR CSA   222991
-    8                       142                      Birmingham-Hoover-Talladega, AL CSA  1350646
-    9                       144                              Bloomington-Bedford, IN CSA   206050
+        COMBINED_STATISTICAL_AREA                                                     NAME  B01003_001E  B19013_001E
+    0                         104                               Albany-Schenectady, NY CSA      1169019        69275
+    1                         106                   Albuquerque-Santa Fe-Las Vegas, NM CSA      1156289        55499
+    2                         107                               Altoona-Huntingdon, PA CSA       167640        51497
+    3                         108                            Amarillo-Pampa-Borger, TX CSA       308297        56120
+    4                         118                          Appleton-Oshkosh-Neenah, WI CSA       407758        65838
+    5                         120                         Asheville-Marion-Brevard, NC CSA       538785        54033
+    6                         122  Atlanta--Athens-Clarke County--Sandy Springs, GA-AL CSA      6770764        68938
+    7                         140                                  Bend-Prineville, OR CSA       215482        67851
+    8                         142                      Birmingham-Hoover-Talladega, AL CSA      1315561        56576
+    9                         144                              Bloomington-Bedford, IN CSA       213724        53695
 
     ...
 
-    165                     539                                   Tupelo-Corinth, MS CSA   198138
-    166                     540                               Tyler-Jacksonville, TX CSA   283891
-    167                     544                             Victoria-Port Lavaca, TX CSA   118437
-    168                     545                        Virginia Beach-Norfolk, VA-NC CSA  1890162
-    169                     548       Washington-Baltimore-Arlington, DC-MD-VA-WV-PA CSA  9973383
-    170                     554            Wausau-Stevens Point-Wisconsin Rapids, WI CSA   311012
-    171                     556                                 Wichita-Winfield, KS CSA   682159
-    172                     558                          Williamsport-Lock Haven, PA CSA   151638
-    173                     566                             Youngstown-Warren, OH-PA CSA   643120
-    174                     517                              Spencer-Spirit Lake, IA CSA    34087
+    165                       539                                   Tupelo-Corinth, MS CSA       202909        47893
+    166                       540                               Tyler-Jacksonville, TX CSA       282525        57327
+    167                       544                             Victoria-Port Lavaca, TX CSA       121092        58325
+    168                       545                        Virginia Beach-Norfolk, VA-NC CSA      1858942        67884
+    169                       548       Washington-Baltimore-Arlington, DC-MD-VA-WV-PA CSA      9781219        95810
+    170                       554            Wausau-Stevens Point-Wisconsin Rapids, WI CSA       306886        59919
+    171                       556                                 Wichita-Winfield, KS CSA       674758        57808
+    172                       558                          Williamsport-Lock Haven, PA CSA       152563        53990
+    173                       566                             Youngstown-Warren, OH-PA CSA       640629        48251
+    174                       517                              Spencer-Spirit Lake, IA CSA        33398        55762
 
 for the 175 CSAs in the US.
 
@@ -400,7 +434,8 @@ More Variables
 --------------
 
 So far, we have only been looking at the variables
-``'NAME'`` and ``'P2_001N'`` from the ``'dec/pl'``
+``NAME``, ``B01003_001E``, and ``B19013_001E`` from the
+``acs/acs5``
 dataset. But there are thousands of other interesting
 variables in various data sets you might want to look at.
 
@@ -413,13 +448,6 @@ notebook, which looks at racial demographics and
 computes diversity and integration metrics at the
 census tract level.
 
-Aside from ``"dev/pl"``, you might want to look at the
-`American Community Survey (ACS) <https://www.census.gov/programs-surveys/acs>`_
-data sets. There is a
-demo of how to load and use ACS 5-year survey
-data in the `ACS Demo <./nb/ACS%20Demo.html>`_
-notebook.
-
 One way to explore variables is to look at groups
 of variables. We did a little bit of this in the
 `SoMa DIS Demo <./nb/SoMa%20DIS%20Demo.html>`_
@@ -427,6 +455,88 @@ notebook. We do some more rigorous analysis of
 groups and variables in the
 `Exploring Variables <./nb/Exploring%20Variables.html>`_
 notebook.
+
+Adding Geography and Plotting
+-----------------------------
+
+All of the US Census data we queried above was organized
+by geography. Often it is interesting to plot this data.
+But in order to do so, we need data on the shapes and locations
+of the geographical areas corresponding to each geography
+represented in the data. Often this means loading the geometry
+separately and then joining it together with the data.
+With ``censusdis``, we don't have to do this. Instead, we
+can ask it to include geometry with the data it returns
+by adding the ``with_geometry=True`` flag. Here is an
+example that follows up on the examples in the previous
+section::
+
+    gdf_counties = ced.download_detail(
+        DATASET,
+        YEAR,
+        VARIABLES,
+        state="*",
+        county="*",
+        with_geometry=True
+    )
+
+In this example, aside from adding ``with_geometry=True``, we
+passed ``state="*"`` and ``county="*"``. This means we want
+data for all the counties in all the states in the country.
+
+If we look at the return value, it looks like::
+
+            STATE	COUNTY	                    NAME	B01003_001E	B19013_001E	                                         geometry
+        0	   01	   001	 Autauga County, Alabama	      55639	      57982  POLYGON ((-86.92120 32.65754, -86.92035 32.658...
+        1      01	   003	 Baldwin County, Alabama	     218289	      61756	 POLYGON ((-88.02858 30.22676, -88.02399 30.230...
+        2	   01	   005	 Barbour County, Alabama	      25026	      34990	 POLYGON ((-85.74803 31.61918, -85.74544 31.618...
+        3	   01	   007	    Bibb County, Alabama	      22374	      51721	 POLYGON ((-87.42194 33.00338, -87.33177 33.005...
+        4 	   01	   009	  Blount County, Alabama	      57755	      48922	 POLYGON ((-86.96336 33.85822, -86.95967 33.857...
+        5	   01	   011	 Bullock County, Alabama	      10173	      33866	 POLYGON ((-85.99926 32.25018, -85.98655 32.250...
+        6	   01	   013	  Butler County, Alabama	      19726	      44850	 POLYGON ((-86.90894 31.96167, -86.88668 31.961...
+        7	   01	   015	 Calhoun County, Alabama	     114324	      50128	 POLYGON ((-86.14623 33.70218, -86.14577 33.704...
+        8	   21	   135	  Lewis County, Kentucky	      13345	      29844	 POLYGON ((-83.64418 38.63783, -83.64048 38.648...
+        9	   21	   137	Lincoln County, Kentucky	      24493	      42231	 POLYGON ((-84.85792 37.48407, -84.85755 37.508...
+
+        ...
+
+     3220	   27	   153	  Todd County, Minnesota	      24603	      54502	 POLYGON ((-95.15557 46.36888, -95.15013 46.368...
+
+It contains results for all 3,221 counties in the country. But in addition to
+the columns we explicitly asked for and the two that identify the state and
+county of each row, there is a final column called ``geometry`` that represents
+the geometry of the county. The entire data frame is actually a ``GeoDataFrame``,
+which is an extension of the Pandas ``DataFrame`` you are probably used to.
+
+Now we can plot data in our geo-data frame as follows::
+
+    import censusdis.maps as cem
+
+    ax = cem.plot_us(
+        gdf_counties,
+        MEDIAN_HOUSEHOLD_INCOME_VARIABLE,
+        cmap="autumn",
+        legend=True,
+        vmin=0.0,
+        vmax=150_000,
+        figsize=(12, 6)
+    )
+
+    ax.set_title(f"{YEAR} Median Household Income by County")
+
+    ax.axis("off")
+
+The resulting plot looks like
+
+.. image:: _static/images/US-median.png
+
+We used ``cem.plot_us`` because it does some nice things
+for us, like relocate Alaska, Hawaii, and Puerto Rico
+from their actual longitude and latitude to locations
+that allow us to plot the map more compactly.
+In addition to doing this relocation, ``cem.plot_is``
+takes the same ``*args`` and ``**kwargs`` that
+Matplotlib normally takes.
 
 Additional Examples in Notebooks
 --------------------------------
