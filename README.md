@@ -12,6 +12,12 @@
 
 ![PyPI - Downloads](https://img.shields.io/pypi/dm/censusdis)
 
+[<img src="docs/_static/images/sample00.png" alt="Integration in SoMa Tracts" height=160>](notebooks/SoMa%20DIS%20Demo.ipynb)
+[<img src="docs/_static/images/sample01.png" alt="Diversity in New Jersey" height=160>](notebooks/Data%20With%20Geometry.ipynb)
+[<img src="docs/_static/images/sample02.png" alt="2020 Median Income by County in Georgia" height=160>](notebooks/Data%20With%20Geometry.ipynb)
+[<img src="docs/_static/images/sample03.png" alt="White Alone Population as a Percent of County Population" height=160>](notebooks/Seeing%20White.ipynb)
+[<img src="docs/_static/images/sample04.png" alt="Average Age by Public Use Microdata Area in Massachusetts" height=160>](notebooks/PUMS%20Demo.ipynb)
+
 ## Introduction 
 
 `censusdis` is a package for discovering, loading, analyzing, and computing
@@ -58,8 +64,8 @@ Similarly, we can download data and geographies, do a little
 analysis on our own using familiar [Pandas](https://pandas.pydata.org/)
 data frame operations, and plot graphs like these
 
-![Percent of population identifying as white by county](_static/images/US-white.png)
-![Integration is SoMa](_static/images/SoMa.png)
+![Percent of population identifying as white by county](docs/_static/images/sample03.png)
+![Integration is SoMa](docs/_static/images/sample00.png)
 
 ## Modules
 

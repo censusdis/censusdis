@@ -3,6 +3,10 @@
 Getting Started
 ===============
 
+*N.B.* If you already have an environment with ``censusdis``
+installed and prefer to jump straight to complete
+demo notebooks you can find them `here <./notebooks.html>`_.
+
 .. _installation:
 
 Installing ``censusdis``
