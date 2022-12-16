@@ -36,7 +36,7 @@ publishes via their APIs.
 `censusdis` lets you quickly and easily load US Census data and make plots like 
 this one:
 
-![Median income by block group in GA](_static/images/GA.png)
+![Median income by block group in GA](docs/_static/images/sample02.png)
 
 We downloaded the data behind this plot, including
 the geometry of all the block groups, with a
