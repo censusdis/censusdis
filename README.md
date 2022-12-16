@@ -34,10 +34,11 @@ this one:
 
 We downloaded the data behind this plot, including
 the geometry of all the block groups, with a
-single call
+single call:
 
 ```python
 import censusdis.data as ced
+from censusdis.states import STATE_GA
 
 # This is a census variable for median household income.
 # See https://api.census.gov/data/2020/acs/acs5/variables/B19013_001E.html
@@ -80,16 +81,17 @@ directory of the source code.
 
 The demo notebooks include
 
-| Notebook Name                                                                                                      | Description                                                                                                                                                                          |
-|--------------------------------------------------------------------------------------------------------------------|:-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| [ACS Demo.ipynb](./notebooks/ACS%20Demo.ipynb)                                                                     | Load American Community Survey (ACS) data for New Jersey and plot diversity statewide at the census block group level.                                                               |
-| [Data With Geometry.ipynb](./notebooks/Data%20With%Geometry.ipynb)                                                 | Load American Community Survey (ACS) data for New Jersey and plot diversity statewide at the census block group level.                                                               |
-| [Exploring Variables.ipynb](./notebooks/Exploring%20Variables.ipynb) | Load metatdata on a group of variables, visualize the tree hierarchy of variables in the group, and load data from the leaves of the tree.                                           |
-| [Map Demo.ipynb](./notebooks/Map%20Demo.ipynb)                       | Demonstrate loading at plotting maps of New Jersey at different geographic granularity.                                                                                              |
-| [Map Geographies.ipynb](./notebooks/Map%20Geographies.ipynb)         | Illustrates a large number of different map geogpraphies and how to load them.                                                                                                       |
-| [PUMS Demo.ipynb](./notebooks/PUMS%20Demo.ipynb)                     | Load Public-Use Microdata Samples (PUMS) data for Massachusetts and plot it.                                                                                                         |
-| [Seeing White.ipynb](./notebooks/Seeing%20White.ipynb)               | Load nationwide demographic data at the county level and plot of map of the US showing the percent of the population who identify as white only (no other race) at the county level. | 
-| [SoMa DIS Demo.ipynb](./notebooks/SoMa%20DIS%20Demo.ipynb)           | Load race and ethnicity data for two towns in Essex County, NJ and compute diversity and integration metrics.                                                                        |
+| Notebook Name                                                                    | Description                                                                                                                                                                          |
+|----------------------------------------------------------------------------------|:-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| [ACS Demo.ipynb](./notebooks/ACS%20Demo.ipynb)                                   | Load American Community Survey (ACS) data for New Jersey and plot diversity statewide at the census block group level.                                                               |
+| [Data With Geometry.ipynb](./notebooks/Data%20With%Geometry.ipynb)               | Load American Community Survey (ACS) data for New Jersey and plot diversity statewide at the census block group level.                                                               |
+| [Exploring Variables.ipynb](./notebooks/Exploring%20Variables.ipynb)             | Load metatdata on a group of variables, visualize the tree hierarchy of variables in the group, and load data from the leaves of the tree.                                           |
+| [Getting Started Examples.ipynb](./notebooks/Getting%20Started%20Examples.ipynb) | Sample code from the [Getting Started](https://censusdis.readthedocs.io/en/latest/intro.html) guide.                                                                                 |                                                         |
+| [Map Demo.ipynb](./notebooks/Map%20Demo.ipynb)                                   | Demonstrate loading at plotting maps of New Jersey at different geographic granularity.                                                                                              |
+| [Map Geographies.ipynb](./notebooks/Map%20Geographies.ipynb)                     | Illustrates a large number of different map geogpraphies and how to load them.                                                                                                       |
+| [PUMS Demo.ipynb](./notebooks/PUMS%20Demo.ipynb)                                 | Load Public-Use Microdata Samples (PUMS) data for Massachusetts and plot it.                                                                                                         |
+| [Seeing White.ipynb](./notebooks/Seeing%20White.ipynb)                           | Load nationwide demographic data at the county level and plot of map of the US showing the percent of the population who identify as white only (no other race) at the county level. | 
+| [SoMa DIS Demo.ipynb](./notebooks/SoMa%20DIS%20Demo.ipynb)                       | Load race and ethnicity data for two towns in Essex County, NJ and compute diversity and integration metrics.                                                                        |
 
 ## Diversity and Integration Metrics
 
