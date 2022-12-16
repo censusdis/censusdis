@@ -2,6 +2,7 @@ import os.path
 import filecmp
 import unittest
 import tempfile
+from shutil import rmtree
 
 import geopandas as gpd
 import matplotlib.pyplot as plt
@@ -58,6 +59,11 @@ class MapPlotTestCase(unittest.TestCase):
         )
         cls.expected_dir = os.path.join(os.path.dirname(__file__), "expected")
 
+        # Create a clean output directory
+        cls.output_dir = os.path.join(os.path.dirname(__file__), "_test_products")
+        rmtree(cls.output_dir, ignore_errors=True)
+        os.makedirs(cls.output_dir)
+
     def setUp(self) -> None:
         """Set up before each test."""
         gdf = gpd.read_file(self.shapefile_path)
@@ -71,8 +77,7 @@ class MapPlotTestCase(unittest.TestCase):
         png_file_name = "plot_us.png"
         expected_file = os.path.join(self.expected_dir, png_file_name)
 
-        output_dir = tempfile.gettempdir()
-        output_file = os.path.join(output_dir, png_file_name)
+        output_file = os.path.join(self.output_dir, png_file_name)
 
         ax = cmap.plot_us(self.gdf, color="green")
         ax.axis("off")
@@ -84,7 +89,7 @@ class MapPlotTestCase(unittest.TestCase):
             f"Expected newly generated file {output_file} to match {expected_file}",
         )
 
-    def x_test_plot_us_boundary(self):
+    def test_plot_us_boundary(self):
         """
         Test calling plot_us_boundary.
 
@@ -95,8 +100,7 @@ class MapPlotTestCase(unittest.TestCase):
         png_file_name = "plot_us_boundary.png"
         expected_file = os.path.join(self.expected_dir, png_file_name)
 
-        output_dir = tempfile.gettempdir()
-        output_file = os.path.join(output_dir, png_file_name)
+        output_file = os.path.join(self.output_dir, png_file_name)
 
         ax = cmap.plot_us_boundary(self.gdf, edgecolor="blue", linewidth=0.5)
         ax.axis("off")
@@ -108,7 +112,7 @@ class MapPlotTestCase(unittest.TestCase):
             f"Expected newly generated file {output_file} to match {expected_file}",
         )
 
-    def x_test_plot_us_no_relocate(self):
+    def test_plot_us_no_relocate(self):
         """
         Test calling plot_us without relocating AK and HI.
 
@@ -118,8 +122,7 @@ class MapPlotTestCase(unittest.TestCase):
         png_file_name = "plot_us_no_relocate.png"
         expected_file = os.path.join(self.expected_dir, png_file_name)
 
-        output_dir = tempfile.gettempdir()
-        output_file = os.path.join(output_dir, png_file_name)
+        output_file = os.path.join(self.output_dir, png_file_name)
 
         ax = cmap.plot_us(self.gdf, do_relocate_ak_hi_pr=False, color="purple")
         ax.axis("off")
@@ -141,8 +144,7 @@ class MapPlotTestCase(unittest.TestCase):
         png_file_name = "plot_us_boundary_no_relocate.png"
         expected_file = os.path.join(self.expected_dir, png_file_name)
 
-        output_dir = tempfile.gettempdir()
-        output_file = os.path.join(output_dir, png_file_name)
+        output_file = os.path.join(self.output_dir, png_file_name)
 
         ax = cmap.plot_us_boundary(
             self.gdf, do_relocate_ak_hi_pr=False, edgecolor="red", linewidth=0.5
@@ -176,8 +178,7 @@ class MapPlotTestCase(unittest.TestCase):
         png_file_name = "plot_us.png"
         expected_file = os.path.join(self.expected_dir, png_file_name)
 
-        output_dir = tempfile.gettempdir()
-        output_file = os.path.join(output_dir, png_file_name)
+        output_file = os.path.join(self.output_dir, png_file_name)
 
         ax = cmap.plot_us(self.gdf, color="green")
         ax.axis("off")
