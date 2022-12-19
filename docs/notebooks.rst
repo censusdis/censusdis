@@ -14,6 +14,7 @@ Demo Notebooks
    nb/Map Demo.ipynb
    nb/Map Geographies.ipynb
    nb/Nationwide Diversity and Integration.ipynb
+   nb/Population Change 2020-2021.ipynb
    nb/PUMS Demo.ipynb
    nb/Seeing White.ipynb
    nb/SoMa DIS Demo.ipynb

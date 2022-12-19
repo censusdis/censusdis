@@ -1,14 +1,14 @@
 # censusdis
 
 [![Hippocratic License HL3-CL-ECO-EXTR-FFD-LAW-MIL-SV](https://img.shields.io/static/v1?label=Hippocratic%20License&message=HL3-CL-ECO-EXTR-FFD-LAW-MIL-SV&labelColor=5e2751&color=bc8c3d)](https://firstdonoharm.dev/version/3/0/cl-eco-extr-ffd-law-mil-sv.html)
-
 [![Documentation Status](https://readthedocs.org/projects/censusdis/badge/?version=latest)](https://censusdis.readthedocs.io/en/latest/?badge=latest)
-
 ![Tests Badge](reports/junit/tests-badge.svg)
 ![Coverage Badge](reports/coverage/coverage-badge.svg)
 ![Notebook Tests Badge](reports/nbmake/nbmake-badge.svg)
-
 ![PyPI - Downloads](https://img.shields.io/pypi/dm/censusdis)
+
+Click any of the thumbnails below to see the notebook
+that generated it.
 
 [<img src="docs/_static/images/sample00.png" alt="Integration in SoMa Tracts" height=160>](notebooks/SoMa%20DIS%20Demo.ipynb)
 [<img src="docs/_static/images/sample01.png" alt="Diversity in New Jersey" height=160>](notebooks/Data%20With%20Geometry.ipynb)
@@ -23,7 +23,12 @@
 diversity, integration, and segregation metrics
 to U.S. Census demographic data. It is designed to be intuitive and Pythonic,
 but give users access to the full collection of data and maps the US Census
-publishes via their APIs. 
+publishes via their APIs. It also avoids hard-coding metadata
+about U.S. Census variables, such as their names, types, and
+hierarchies in groups. Instead it queries this from the 
+U.S. Census API. This allows it to operate over a large set
+of datasets and years, likely including many that don't
+exist as of time of this writing.
 
 > ### I'm not sure I get it. Show me what it can do.
 > 
@@ -103,6 +108,7 @@ The demo notebooks include
 | [Nationwide Diversity and Integration.ipynb](./notebooks/Nationwide%20Diversity%20and%20Integration.ipynb) | Load nationwide demographic data, compute diversity and integration, and plot.                                                                                                       |
 | [Map Demo.ipynb](./notebooks/Map%20Demo.ipynb)                                                             | Demonstrate loading at plotting maps of New Jersey at different geographic granularity.                                                                                              |
 | [Map Geographies.ipynb](./notebooks/Map%20Geographies.ipynb)                                               | Illustrates a large number of different map geogpraphies and how to load them.                                                                                                       |
+| [Population Change 2020-2021.ipynb](./notebooks/Population%20Change%202020-2021.ipynb)                     | Track the change in state population from 2020 to 2021 using ACS5 data.                                                                                                              |
 | [PUMS Demo.ipynb](./notebooks/PUMS%20Demo.ipynb)                                                           | Load Public-Use Microdata Samples (PUMS) data for Massachusetts and plot it.                                                                                                         |
 | [Seeing White.ipynb](./notebooks/Seeing%20White.ipynb)                                                     | Load nationwide demographic data at the county level and plot of map of the US showing the percent of the population who identify as white only (no other race) at the county level. | 
 | [SoMa DIS Demo.ipynb](./notebooks/SoMa%20DIS%20Demo.ipynb)                                                 | Load race and ethnicity data for two towns in Essex County, NJ and compute diversity and integration metrics.                                                                        |
