@@ -15,7 +15,7 @@ import pandas as pd
 
 from censusdis import data as ced
 from censusdis import maps as cmp
-from censusdis.states import STATE_NJ, STATE_NY, STATE_CA
+from censusdis.states import STATE_NJ, STATE_NY, STATE_CA, ALL_STATES_AND_DC
 
 if __name__ == "__main__":
     unittest.main()
@@ -238,6 +238,120 @@ class DownloadDetailTestCase(unittest.TestCase):
         self.assertNotIsInstance(df, gpd.GeoDataFrame)
 
         self.assertEqual((570, 5), df.shape)
+
+    def test_multi_state(self):
+        """
+        Test the case where the only geo argument has multiple values.
+
+        As in `state=[STATE_NJ, STATE_NY]`, vs. the more general
+        `state="*"`.
+        """
+
+        df = ced.download_detail(
+            self._dataset,
+            self._year,
+            ["NAME", self._name],
+            state=[STATE_NJ, STATE_NY]
+        )
+
+        self.assertEqual((2, 3), df.shape)
+
+        self.assertIn(STATE_NJ, list(df["STATE"]))
+        self.assertIn(STATE_NY, list(df["STATE"]))
+
+    def test_multi_state_county(self):
+        """
+        Test the case where the first geo argument has multiple values.
+
+        As in `state=[STATE_NJ, STATE_NY]`, vs. the more general
+        `state="*"` and `county="*"`.
+        """
+
+        df = ced.download_detail(
+            self._dataset,
+            self._year,
+            ["NAME", self._name],
+            state=[STATE_NJ, STATE_NY],
+            county="*"
+        )
+
+        self.assertEqual((83, 4), df.shape)
+
+        df_51 = ced.download_detail(
+            self._dataset,
+            self._year,
+            ["NAME", self._name],
+            state=ALL_STATES_AND_DC,
+            county="*"
+        )
+
+        df_star = ced.download_detail(
+            self._dataset,
+            self._year,
+            ["NAME", self._name],
+            state="*",
+            county="*"
+        )
+
+        # This will get us some outside the 51.
+        self.assertLess(len(df_51.index), len(df_star.index))
+
+        df_star = df_star[df_star.STATE.isin(ALL_STATES_AND_DC)]
+
+        self.assertEqual(len(df_51.index), len(df_star.index))
+
+    def test_multi_state_tract(self):
+        """
+        Test the case where the first geo argument has multiple values.
+
+        As in `state=[STATE_NJ, STATE_NY]`, vs. the more general
+        `state="*"` and `tract="*"`.
+
+        In this test we also skip a level.
+        """
+
+        df = ced.download_detail(
+            self._dataset,
+            self._year,
+            ["NAME", self._name],
+            state=[STATE_NJ, STATE_NY],
+            tract="*"
+        )
+
+        self.assertEqual((7592, 5), df.shape)
+
+        self.assertIn("STATE", df.columns)
+        self.assertIn("COUNTY", df.columns)
+        self.assertIn("TRACT", df.columns)
+        self.assertIn("NAME", df.columns)
+        self.assertIn(self._name, df.columns)
+
+    def test_multi_state_bg(self):
+        """
+        Test the case where the first geo argument has multiple values.
+
+        As in `state=[STATE_NJ, STATE_NY]`, vs. the more general
+        `state="*"` and `tract="*"`.
+
+        In this test we also skip two levels.
+        """
+
+        df = ced.download_detail(
+            self._dataset,
+            self._year,
+            ["NAME", self._name],
+            state=[STATE_NJ, STATE_NY],
+            block_group="*"
+        )
+
+        self.assertEqual((22669, 6), df.shape)
+
+        self.assertIn("STATE", df.columns)
+        self.assertIn("COUNTY", df.columns)
+        self.assertIn("TRACT", df.columns)
+        self.assertIn("BLOCK_GROUP", df.columns)
+        self.assertIn("NAME", df.columns)
+        self.assertIn(self._name, df.columns)
 
 
 class ShapefileTestCase(unittest.TestCase):
