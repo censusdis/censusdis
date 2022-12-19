@@ -248,10 +248,7 @@ class DownloadDetailTestCase(unittest.TestCase):
         """
 
         df = ced.download_detail(
-            self._dataset,
-            self._year,
-            ["NAME", self._name],
-            state=[STATE_NJ, STATE_NY]
+            self._dataset, self._year, ["NAME", self._name], state=[STATE_NJ, STATE_NY]
         )
 
         self.assertEqual((2, 3), df.shape)
@@ -272,7 +269,7 @@ class DownloadDetailTestCase(unittest.TestCase):
             self._year,
             ["NAME", self._name],
             state=[STATE_NJ, STATE_NY],
-            county="*"
+            county="*",
         )
 
         self.assertEqual((83, 4), df.shape)
@@ -282,15 +279,11 @@ class DownloadDetailTestCase(unittest.TestCase):
             self._year,
             ["NAME", self._name],
             state=ALL_STATES_AND_DC,
-            county="*"
+            county="*",
         )
 
         df_star = ced.download_detail(
-            self._dataset,
-            self._year,
-            ["NAME", self._name],
-            state="*",
-            county="*"
+            self._dataset, self._year, ["NAME", self._name], state="*", county="*"
         )
 
         # This will get us some outside the 51.
@@ -315,7 +308,7 @@ class DownloadDetailTestCase(unittest.TestCase):
             self._year,
             ["NAME", self._name],
             state=[STATE_NJ, STATE_NY],
-            tract="*"
+            tract="*",
         )
 
         self.assertEqual((7592, 5), df.shape)
@@ -341,7 +334,7 @@ class DownloadDetailTestCase(unittest.TestCase):
             self._year,
             ["NAME", self._name],
             state=[STATE_NJ, STATE_NY],
-            block_group="*"
+            block_group="*",
         )
 
         self.assertEqual((22669, 6), df.shape)
