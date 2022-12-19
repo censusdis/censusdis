@@ -19,6 +19,11 @@ that generated it.
     :alt: Median Household Income by Census Tract in Georgia
     :target: nb/Data%20With%20Geometry.html
 
+.. image:: _static/images/sample05.png
+    :height: 160
+    :alt: Nationwide Integration at the Census Tract over Block Group Level
+    :target: nb/Nationwide%20Diversity%20and%20Integration.html
+
 .. image:: _static/images/sample03.png
     :height: 160
     :alt: White Alone Population as a Percent of County Population
