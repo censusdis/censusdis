@@ -52,7 +52,9 @@ class ShapeReader:
         auto_fetch: bool = True,
     ):
         if shapefile_root is None:
-            shapefile_root = os.path.join(os.environ["HOME"], ".censusdis", "data", "shapefiles")
+            shapefile_root = os.path.join(
+                os.environ["HOME"], ".censusdis", "data", "shapefiles"
+            )
             os.makedirs(shapefile_root, exist_ok=True)
 
         self._shapefile_root = shapefile_root
