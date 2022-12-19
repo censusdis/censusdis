@@ -6,7 +6,6 @@ This module relies on the US Census API, which
 it wraps in a pythonic manner.
 """
 
-import tempfile
 from abc import ABC, abstractmethod
 from collections import defaultdict
 from typing import (
@@ -150,11 +149,11 @@ def _download_concat_detail(
     return df_data
 
 
-__shapefile_root: str = tempfile.mkdtemp(prefix="data_shapefiles_")
+__shapefile_root: Union[str, None] = None
 __shapefile_readers: Dict[int, cmap.ShapeReader] = {}
 
 
-def set_shapefile_path(shapefile_path: str) -> None:
+def set_shapefile_path(shapefile_path: Union[str, None]) -> None:
     """
     Set the path to the directory to cache shapefiles.
 
@@ -171,7 +170,7 @@ def set_shapefile_path(shapefile_path: str) -> None:
     __shapefile_root = shapefile_path
 
 
-def get_shapefile_path() -> str:
+def get_shapefile_path() -> Union[str, None]:
     """
     Get the path to the directory to cache shapefiles.
 
