@@ -17,6 +17,8 @@ from shapely import affinity
 from shapely.geometry import MultiPolygon, Polygon
 from shapely.geometry.base import BaseGeometry
 
+from typing import Optional
+
 from censusdis.states import STATE_AK, STATE_HI, TERRITORY_PR
 
 
@@ -45,14 +47,22 @@ class ShapeReader:
 
     def __init__(
         self,
-        shapefile_root: str,
+        shapefile_root: Optional[str] = None,
         year: int = 2020,
         auto_fetch: bool = True,
     ):
+        if shapefile_root is None:
+            shapefile_root = os.path.join(os.environ["HOME"], ".censusdis", "data", "shapefiles")
+            os.makedirs(shapefile_root, exist_ok=True)
 
         self._shapefile_root = shapefile_root
         self._year = year
         self._auto_fetch = auto_fetch
+
+    @property
+    def shapefile_root(self) -> str:
+        """The path at which shapefiles are cached locally."""
+        return self._shapefile_root
 
     def _read_shapefile(self, base_name: str, base_url: str, crs) -> gpd.GeoDataFrame:
         """Helper function to read a shapefile."""
