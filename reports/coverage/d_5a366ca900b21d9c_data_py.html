@@ -65,7 +65,7 @@
             <a id="nextFileLink" class="nav" href="d_5a366ca900b21d9c_geography_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io">coverage.py v6.5.0</a>,
-            created at 2022-12-18 14:44 +0000
+            created at 2022-12-19 02:13 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"/>
@@ -232,11 +232,11 @@
     <p class="run"><span class="n"><a id="t150" href="#t150">150</a></span><span class="t">    <span class="key">return</span> <span class="nam">df_data</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t151" href="#t151">151</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t152" href="#t152">152</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t153" href="#t153">153</a></span><span class="t"><span class="nam">__shapefile_root</span><span class="op">:</span> <span class="nam">str</span> <span class="op">=</span> <span class="nam">tempfile</span><span class="op">.</span><span class="nam">mkdtemp</span><span class="op">(</span><span class="nam">prefix</span><span class="op">=</span><span class="str">"data_shapefiles_"</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t153" href="#t153">153</a></span><span class="t"><span class="nam">__shapefile_root</span><span class="op">:</span> <span class="nam">Union</span><span class="op">[</span><span class="nam">str</span><span class="op">,</span> <span class="key">None</span><span class="op">]</span> <span class="op">=</span> <span class="key">None</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t154" href="#t154">154</a></span><span class="t"><span class="nam">__shapefile_readers</span><span class="op">:</span> <span class="nam">Dict</span><span class="op">[</span><span class="nam">int</span><span class="op">,</span> <span class="nam">cmap</span><span class="op">.</span><span class="nam">ShapeReader</span><span class="op">]</span> <span class="op">=</span> <span class="op">{</span><span class="op">}</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t155" href="#t155">155</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t156" href="#t156">156</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t157" href="#t157">157</a></span><span class="t"><span class="key">def</span> <span class="nam">set_shapefile_path</span><span class="op">(</span><span class="nam">shapefile_path</span><span class="op">:</span> <span class="nam">str</span><span class="op">)</span> <span class="op">-></span> <span class="key">None</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t157" href="#t157">157</a></span><span class="t"><span class="key">def</span> <span class="nam">set_shapefile_path</span><span class="op">(</span><span class="nam">shapefile_path</span><span class="op">:</span> <span class="nam">Union</span><span class="op">[</span><span class="nam">str</span><span class="op">,</span> <span class="key">None</span><span class="op">]</span><span class="op">)</span> <span class="op">-></span> <span class="key">None</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t158" href="#t158">158</a></span><span class="t">    <span class="str">"""</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t159" href="#t159">159</a></span><span class="t"><span class="str">    Set the path to the directory to cache shapefiles.</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t160" href="#t160">160</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
@@ -253,7 +253,7 @@
     <p class="run"><span class="n"><a id="t171" href="#t171">171</a></span><span class="t">    <span class="nam">__shapefile_root</span> <span class="op">=</span> <span class="nam">shapefile_path</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t172" href="#t172">172</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t173" href="#t173">173</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t174" href="#t174">174</a></span><span class="t"><span class="key">def</span> <span class="nam">get_shapefile_path</span><span class="op">(</span><span class="op">)</span> <span class="op">-></span> <span class="nam">str</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t174" href="#t174">174</a></span><span class="t"><span class="key">def</span> <span class="nam">get_shapefile_path</span><span class="op">(</span><span class="op">)</span> <span class="op">-></span> <span class="nam">Union</span><span class="op">[</span><span class="nam">str</span><span class="op">,</span> <span class="key">None</span><span class="op">]</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t175" href="#t175">175</a></span><span class="t">    <span class="str">"""</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t176" href="#t176">176</a></span><span class="t"><span class="str">    Get the path to the directory to cache shapefiles.</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t177" href="#t177">177</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
@@ -1257,7 +1257,7 @@
             <a id="nextFileLink" class="nav" href="d_5a366ca900b21d9c_geography_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io">coverage.py v6.5.0</a>,
-            created at 2022-12-18 14:44 +0000
+            created at 2022-12-19 02:13 +0000
         </p>
     </div>
 </footer>
