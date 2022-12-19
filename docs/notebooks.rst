@@ -8,11 +8,12 @@ Demo Notebooks
    :maxdepth: 1
    :caption: Demo Notebooks:
 
-   nb/SoMa DIS Demo.ipynb
    nb/ACS Demo.ipynb
    nb/Data With Geometry.ipynb
    nb/Exploring Variables.ipynb
-   nb/Seeing White.ipynb
    nb/Map Demo.ipynb
-   nb/PUMS Demo.ipynb
    nb/Map Geographies.ipynb
+   nb/Nationwide Diversity and Integration.ipynb
+   nb/PUMS Demo.ipynb
+   nb/Seeing White.ipynb
+   nb/SoMa DIS Demo.ipynb
