@@ -6,7 +6,6 @@ This module relies on the US Census API, which
 it wraps in a pythonic manner.
 """
 
-import tempfile
 from abc import ABC, abstractmethod
 from collections import defaultdict
 from typing import (
