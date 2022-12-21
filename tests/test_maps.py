@@ -202,15 +202,15 @@ class GeographicCentroidsTestCase(unittest.TestCase):
     def setUp(self) -> None:
         """Set up before each test."""
 
-        # Approximate geometry of Wyoming.
+        # Geometry of Wyoming.
 
         geometry_wy = Polygon(
             [
-                [-111.0, 41.0],
-                [-104.0, 41.0],
-                [-104.0, 45.0],
-                [-111.0, 45.0],
-                [-111.0, 41.0],
+                [-111.05, 41.0],
+                [-104.05, 41.0],
+                [-104.05, 45.0],
+                [-111.05, 45.0],
+                [-111.05, 41.0],
             ]
         )
 
