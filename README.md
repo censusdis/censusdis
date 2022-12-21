@@ -25,10 +25,17 @@ to U.S. Census demographic data. It is designed to be intuitive and Pythonic,
 but give users access to the full collection of data and maps the US Census
 publishes via their APIs. It also avoids hard-coding metadata
 about U.S. Census variables, such as their names, types, and
-hierarchies in groups. Instead it queries this from the 
+hierarchies in groups. Instead, it queries this from the 
 U.S. Census API. This allows it to operate over a large set
 of datasets and years, likely including many that don't
-exist as of time of this writing.
+exist as of time of this writing. It also integrates
+downloading and merging the geometry of geographic 
+geometries to make plotting data and derived metrics simple
+and easy. Finally, it interacts with the `divintseg`
+package to compute diversity and integration metrics.
+
+The design goal of `censusdis` are discussed in more
+detail in [design-goals.md](./design-goals.md).
 
 > ### I'm not sure I get it. Show me what it can do.
 > 

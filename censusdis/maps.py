@@ -14,10 +14,10 @@ import geopandas as gpd
 import requests
 import shapely.affinity
 from shapely import affinity
-from shapely.geometry import MultiPolygon, Polygon
+from shapely.geometry import MultiPolygon, Polygon, Point
 from shapely.geometry.base import BaseGeometry
 
-from typing import Optional
+from typing import Optional, Union
 
 from censusdis.states import STATE_AK, STATE_HI, TERRITORY_PR
 
@@ -423,13 +423,17 @@ def clip_to_states(gdf, gdf_state_bounds):
     )
 
 
-def _wrap_poly(poly):
+def _wrap_poly(poly: Union[Polygon, Point]):
     """
     A helper function for moving a polygon.
 
     Used in shifting AK and HI geometries.
     """
-    x_coord, _ = poly.exterior.coords.xy
+    if isinstance(poly, Polygon):
+        x_coord, _ = poly.exterior.coords.xy
+    elif isinstance(poly, Point):
+        x_coord = [poly.x]
+
     if x_coord[0] > 0:
         poly = affinity.translate(poly, xoff=-360.0, yoff=0.0)
     return poly
@@ -744,3 +748,28 @@ def plot_us_boundary(
 
     ax = gdf.boundary.plot(*args, **kwargs)
     return ax
+
+
+def geographic_centroids(gdf: gpd.GeoDataFrame) -> gpd.GeoSeries:
+    """
+    Compute the centroid of a geography.
+
+    We do this by projecting to epsg 3857 (https://epsg.io/3857),
+    computing the centroid, and then projecting back. This gives
+    a reasonable answer for most geometries and avoids warnings from
+    `GeoPandas`.
+
+    Parameters
+    ----------
+    gdf
+
+    Returns
+    -------
+
+    """
+    crs = gdf.crs
+
+    projected_centroids = gdf.geometry.to_crs(epsg=3857).geometry.centroid
+    centroids = projected_centroids.to_crs(crs)
+
+    return centroids
