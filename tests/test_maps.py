@@ -3,13 +3,15 @@ import filecmp
 import sys
 import unittest
 import tempfile
+from shapely.geometry import Polygon
+from pyproj.crs import CRS
 from shutil import rmtree
 
 import geopandas as gpd
 import matplotlib.pyplot as plt
 
 import censusdis.maps as cmap
-from censusdis.states import ALL_STATES_DC_AND_PR
+from censusdis.states import ALL_STATES_DC_AND_PR, STATE_WY
 
 
 class ShapeReaderTestCase(unittest.TestCase):
@@ -194,6 +196,43 @@ class MapPlotTestCase(unittest.TestCase):
             filecmp.cmp(expected_file, output_file, shallow=False),
             f"Expected newly generated file {output_file} to match {expected_file}",
         )
+
+
+class GeographicCentroidsTestCase(unittest.TestCase):
+    def setUp(self) -> None:
+        """Set up before each test."""
+
+        # Approximate geometry of Wyoming.
+
+        geometry_wy = Polygon(
+            [
+                [-111.0, 41.0],
+                [-104.0, 41.0],
+                [-104.0, 45.0],
+                [-111.0, 45.0],
+                [-111.0, 41.0],
+            ]
+        )
+
+        self.gdf_wy = gpd.GeoDataFrame(
+            [STATE_WY],
+            columns=["STATE"],
+            geometry=[geometry_wy],
+            crs=CRS(4269),  # This is what Census shapefiles are delivered with.
+        )
+
+    def test_geographic_centroids(self):
+        """We should get a slightly different centroid under the projection to 3857."""
+
+        centroid_geo = cmap.geographic_centroids(self.gdf_wy).iloc[0]
+
+        centroid_4269 = self.gdf_wy.centroid.iloc[0]
+
+        # In the x direction the projection should be symmetric about the
+        # centroid, but in the y it should not. This is because the projection
+        # stretches the y non-linearly.
+        self.assertAlmostEqual(centroid_4269.x, centroid_geo.x, places=10)
+        self.assertGreater(centroid_geo.y - centroid_4269.y, 0.03)
 
 
 if __name__ == "__main__":
