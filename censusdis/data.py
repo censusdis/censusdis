@@ -610,7 +610,13 @@ def download(
         field_type = variable_cache.get(dataset, year, field)["predicateType"]
 
         if field_type == "int":
-            df_data[field] = df_data[field].astype(int)
+            if df_data[field].isnull().any():
+                # Some Census data sets put in null in int fields.
+                # We have to go with a float to make this a NaN.
+                # Int has no representation for NaN or None.
+                df_data[field] = df_data[field].astype(float)
+            else:
+                df_data[field] = df_data[field].astype(int)
         elif field_type == "float":
             df_data[field] = df_data[field].astype(float)
         elif field_type == "string":

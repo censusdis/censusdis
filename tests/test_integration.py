@@ -11,17 +11,18 @@ import unittest
 
 import geopandas
 import geopandas as gpd
+import numpy as np
 import pandas as pd
 
 from censusdis import data as ced
 from censusdis import maps as cmp
-from censusdis.states import STATE_NJ, STATE_NY, STATE_CA, ALL_STATES_AND_DC
+from censusdis.states import STATE_NJ, STATE_NY, STATE_CA, ALL_STATES_AND_DC, TERRITORY_PR
 
 if __name__ == "__main__":
     unittest.main()
 
 
-class DownloadDetailTestCase(unittest.TestCase):
+class DownloadTestCase(unittest.TestCase):
     """
     Test the full download capability.
 
@@ -361,6 +362,36 @@ class DownloadDetailTestCase(unittest.TestCase):
         self.assertIn("BLOCK_GROUP", df.columns)
         self.assertIn("NAME", df.columns)
         self.assertIn(self._name, df.columns)
+
+
+class AcsSubjectTestCase(unittest.TestCase):
+    """
+    Test on ACS Subject Data that includes null in an int field.
+    """
+
+    def setUp(self) -> None:
+        """Set up before each test."""
+        self._dataset = "acs/acs5/profile"
+        self._year = 2021
+        self._variable_name = "DP02_0001E"
+
+    def test_states_with_null_in_pr(self):
+        df = ced.download(
+            self._dataset,
+            self._year,
+            ['NAME', self._variable_name],
+            state="*"
+        )
+
+        self.assertEqual((52, 3), df.shape)
+
+        # The API returns a null for PR but numbers for all others.
+        # We have to convert to a float to represent this even though
+        # the census metadata says the variable is an int.
+        self.assertEqual(np.float64, df[self._variable_name].dtype)
+
+        self.assertFalse(df[df.STATE != TERRITORY_PR][self._variable_name].isnull().any())
+        self.assertTrue(df[df.STATE == TERRITORY_PR][self._variable_name].isnull().all())
 
 
 class ShapefileTestCase(unittest.TestCase):
