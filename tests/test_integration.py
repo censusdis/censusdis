@@ -16,7 +16,13 @@ import pandas as pd
 
 from censusdis import data as ced
 from censusdis import maps as cmp
-from censusdis.states import STATE_NJ, STATE_NY, STATE_CA, ALL_STATES_AND_DC, TERRITORY_PR
+from censusdis.states import (
+    STATE_NJ,
+    STATE_NY,
+    STATE_CA,
+    ALL_STATES_AND_DC,
+    TERRITORY_PR,
+)
 
 if __name__ == "__main__":
     unittest.main()
@@ -377,10 +383,7 @@ class AcsSubjectTestCase(unittest.TestCase):
 
     def test_states_with_null_in_pr(self):
         df = ced.download(
-            self._dataset,
-            self._year,
-            ['NAME', self._variable_name],
-            state="*"
+            self._dataset, self._year, ["NAME", self._variable_name], state="*"
         )
 
         self.assertEqual((52, 3), df.shape)
@@ -390,8 +393,12 @@ class AcsSubjectTestCase(unittest.TestCase):
         # the census metadata says the variable is an int.
         self.assertEqual(np.float64, df[self._variable_name].dtype)
 
-        self.assertFalse(df[df.STATE != TERRITORY_PR][self._variable_name].isnull().any())
-        self.assertTrue(df[df.STATE == TERRITORY_PR][self._variable_name].isnull().all())
+        self.assertFalse(
+            df[df.STATE != TERRITORY_PR][self._variable_name].isnull().any()
+        )
+        self.assertTrue(
+            df[df.STATE == TERRITORY_PR][self._variable_name].isnull().all()
+        )
 
 
 class ShapefileTestCase(unittest.TestCase):
