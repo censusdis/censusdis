@@ -492,7 +492,8 @@ def download_detail(
     warnings.warn(
         "censusdis.data.download_detail is deprecated. "
         "Please use censusdis.data.download instead.",
-        DeprecationWarning, 2
+        DeprecationWarning,
+        2,
     )
     return download(
         dataset,
@@ -501,7 +502,7 @@ def download_detail(
         with_geometry=with_geometry,
         api_key=api_key,
         variable_cache=variable_cache,
-        **kwargs
+        **kwargs,
     )
 
 
@@ -645,7 +646,7 @@ def census_table_url(
 ) -> Tuple[str, Mapping[str, str], cgeo.BoundGeographyPath]:
     """
     Construct the URL to download data from the U.S. Census API.
-    
+
     Parameters
     ----------
     dataset

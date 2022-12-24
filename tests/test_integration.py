@@ -68,7 +68,11 @@ class DownloadDetailTestCase(unittest.TestCase):
 
         with self.assertWarns(DeprecationWarning):
             df = ced.download_detail(
-                self._dataset, self._year, ["NAME", self._name], state=STATE_NJ, county="*"
+                self._dataset,
+                self._year,
+                ["NAME", self._name],
+                state=STATE_NJ,
+                county="*",
             )
 
         self.assertEqual((21, 4), df.shape)
