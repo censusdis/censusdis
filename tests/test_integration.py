@@ -101,7 +101,7 @@ class DownloadDetailTestCase(unittest.TestCase):
         Download a really wide set of variables.
 
         The goal is to trigger a call to
-        `_download_concat_detail`.
+        `_download_concat`.
         """
 
         # A bunch of sex by age variables.

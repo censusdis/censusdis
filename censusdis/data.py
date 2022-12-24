@@ -100,7 +100,7 @@ def json_from_url(url: str, params: Optional[Mapping[str, str]] = None) -> Any:
 _MAX_FIELDS_PER_DOWNLOAD = 50
 
 
-def _download_concat_detail(
+def _download_concat(
     dataset: str,
     year: int,
     fields: List[str],
@@ -110,7 +110,41 @@ def _download_concat_detail(
     with_geometry: bool = False,
     **kwargs: cgeo.InSpecType,
 ) -> pd.DataFrame:
+    """
+    Download data in groups of columns and concatenate the results together.
 
+    The reason for this function is that the API will only return a maximum
+    of 50 columns per query. This function downloads wider data 50 columns
+    at a time and concatenates them.
+
+    Parameters
+    ----------
+    dataset
+        The dataset to download from. For example `acs/acs5` or
+        `dec/pl`.
+    year
+        The year to download data for.
+    download_variables
+        The census variables to download, for example `["NAME", "B01001_001E"]`.
+    with_geometry
+        If `True` a :py:class:`gpd.GeoDataFrame` will be returned and each row
+        will have a geometry that is a cartographic boundary suitable for platting
+        a map. See https://www.census.gov/geographies/mapping-files/time-series/geo/cartographic-boundary.2020.html
+        for details of the shapefiles that will be downloaded on your behalf to
+        generate these boundaries.
+    api_key
+        An optional API key. If you don't have or don't use a key, the number
+        of calls you can make will be limited.
+    variable_cache
+        A cache of metadata about variables.
+    kwargs
+        A specification of the geometry that we want data for.
+
+    Returns
+    -------
+        The full results of the query with all columns.
+
+    """
     # Divide the fields into groups.
     field_groups = [
         # black and flake8 disagree about the whitespace before ':' here...
@@ -532,7 +566,7 @@ def download(
 
     # Special case if we are trying to get too many fields.
     if len(download_variables) > _MAX_FIELDS_PER_DOWNLOAD:
-        return _download_concat_detail(
+        return _download_concat(
             dataset,
             year,
             download_variables,
@@ -566,7 +600,7 @@ def download(
     # a comma-separated string.
     string_kwargs = {k: _gf2s(v) for k, v in kwargs.items()}
 
-    url, params, bound_path = census_detail_table_url(
+    url, params, bound_path = census_table_url(
         dataset, year, download_variables, api_key=api_key, **string_kwargs
     )
     df_data = data_from_url(url, params)
@@ -601,14 +635,37 @@ def download(
     return df_data
 
 
-def census_detail_table_url(
+def census_table_url(
     dataset: str,
     year: int,
-    fields: Iterable[str],
+    download_variables: Iterable[str],
     *,
     api_key: Optional[str] = None,
     **kwargs: cgeo.InSpecType,
 ) -> Tuple[str, Mapping[str, str], cgeo.BoundGeographyPath]:
+    """
+    Construct the URL to download data from the U.S. Census API.
+    
+    Parameters
+    ----------
+    dataset
+        The dataset to download from. For example `acs/acs5` or
+        `dec/pl`.
+    year
+        The year to download data for.
+    download_variables
+        The census variables to download, for example `["NAME", "B01001_001E"]`.
+    api_key
+        An optional API key. If you don't have or don't use a key, the number
+        of calls you can make will be limited.
+    kwargs
+        A specification of the geometry that we want data for.
+
+    Returns
+    -------
+        The URL, parameters and bound path.
+
+    """
     bound_path = cgeo.PathSpec.partial_prefix_match(dataset, year, **kwargs)
 
     if bound_path is None:
@@ -622,10 +679,10 @@ def census_detail_table_url(
         )
 
     query_spec = cgeo.CensusGeographyQuerySpec(
-        dataset, year, list(fields), bound_path, api_key=api_key
+        dataset, year, list(download_variables), bound_path, api_key=api_key
     )
 
-    url, params = query_spec.detail_table_url()
+    url, params = query_spec.table_url()
 
     return url, params, bound_path
 

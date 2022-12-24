@@ -176,7 +176,7 @@ class CensusGeographyQuerySpecTestCase(unittest.TestCase):
                 f"https://api.census.gov/data/{self.year}/{self.dataset}",
                 {"for": "state", "get": "NAME"},
             ),
-            query_spec.detail_table_url(),
+            query_spec.table_url(),
         )
 
     def test_for_bound(self):
@@ -197,7 +197,7 @@ class CensusGeographyQuerySpecTestCase(unittest.TestCase):
                 f"https://api.census.gov/data/{self.year}/{self.dataset}",
                 {"for": "state:36", "get": "NAME"},
             ),
-            query_spec.detail_table_url(),
+            query_spec.table_url(),
         )
 
     def test_for_in(self):
@@ -220,7 +220,7 @@ class CensusGeographyQuerySpecTestCase(unittest.TestCase):
                 f"https://api.census.gov/data/{self.year}/{self.dataset}",
                 {"for": "tract", "get": "NAME", "in": "state:36 county:001"},
             ),
-            query_spec.detail_table_url(),
+            query_spec.table_url(),
         )
 
     def test_for_in_skip_components(self):
@@ -250,7 +250,7 @@ class CensusGeographyQuerySpecTestCase(unittest.TestCase):
                     "in": "state:36 county:* tract:*",
                 },
             ),
-            query_spec.detail_table_url(),
+            query_spec.table_url(),
         )
 
     def test_for_in_bound(self):
@@ -275,7 +275,7 @@ class CensusGeographyQuerySpecTestCase(unittest.TestCase):
                 f"https://api.census.gov/data/{self.year}/{self.dataset}",
                 {"for": "tract:001802", "get": "NAME", "in": "state:36 county:001"},
             ),
-            query_spec.detail_table_url(),
+            query_spec.table_url(),
         )
 
 
