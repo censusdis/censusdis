@@ -250,7 +250,14 @@ class CensusGeographyQuerySpec:
 
         return None
 
-    def detail_table_url(self) -> Tuple[str, Mapping[str, str]]:
+    def table_url(self) -> Tuple[str, Mapping[str, str]]:
+        """
+        Construct the URL to query census data.
+
+        Returns
+        -------
+            The URL and the parameters to pass to it.
+        """
         url = "/".join([self._BASE_URL, f"{self.year:04}", self.dataset])
 
         params = {

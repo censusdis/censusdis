@@ -69,12 +69,12 @@ from censusdis.states import STATE_GA
 # See https://api.census.gov/data/2020/acs/acs5/variables/B19013_001E.html
 MEDIAN_HOUSEHOLD_INCOME_VARIABLE = "B19013_001E"
 
-gdf_bg = ced.download_detail(
+gdf_bg = ced.download(
     "acs/acs5",  # The American Community Survey 5-Year Data
-    2020, 
-    ["NAME", MEDIAN_HOUSEHOLD_INCOME_VARIABLE], 
-    state=STATE_GA, 
-    block_group="*", 
+    2020,
+    ["NAME", MEDIAN_HOUSEHOLD_INCOME_VARIABLE],
+    state=STATE_GA,
+    block_group="*",
     with_geometry=True
 )
 ```
@@ -108,7 +108,10 @@ The demo notebooks include
 
 | Notebook Name                                                                                              | Description                                                                                                                                                                          |
 |------------------------------------------------------------------------------------------------------------|:-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| [ACS Demo.ipynb](./notebooks/ACS%20Demo.ipynb)                                                             | Load American Community Survey (ACS) data for New Jersey and plot diversity statewide at the census block group level.                                                               |
+| [ACS Comparison Profile.ipynb](./notebooks/ACS%20Comparison%20Profile.ipynb)                               | Load and plot American Community Survey (ACS) Comparison Profile data at the state level.                                                                                            |
+| [ACS Data Profile.ipynb](./notebooks/ACS%20Data%20Profile.ipynb)                                           | Load and plot American Community Survey (ACS) Data Profile data at the state level.                                                                                                  |
+| [ACS Demo.ipynb](./notebooks/ACS%20Demo.ipynb)                                                             | Load American Community Survey (ACS) Detail Table data for New Jersey and plot diversity statewide at the census block group level.                                                  |
+| [ACS Subject Table.ipynb](./notebooks/ACS%20Subject%20Table.ipynb)                                         | Load and plot American Community Survey (ACS) Subject Table data at the state level.                                                                                                 |
 | [Data With Geometry.ipynb](./notebooks/Data%20With%Geometry.ipynb)                                         | Load American Community Survey (ACS) data for New Jersey and plot diversity statewide at the census block group level.                                                               |
 | [Exploring Variables.ipynb](./notebooks/Exploring%20Variables.ipynb)                                       | Load metatdata on a group of variables, visualize the tree hierarchy of variables in the group, and load data from the leaves of the tree.                                           |
 | [Getting Started Examples.ipynb](./notebooks/Getting%20Started%20Examples.ipynb)                           | Sample code from the [Getting Started](https://censusdis.readthedocs.io/en/latest/intro.html) guide.                                                                                 |                                                         |

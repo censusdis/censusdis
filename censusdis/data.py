@@ -6,6 +6,7 @@ This module relies on the US Census API, which
 it wraps in a pythonic manner.
 """
 
+import warnings
 from abc import ABC, abstractmethod
 from collections import defaultdict
 from typing import (
@@ -67,7 +68,7 @@ def _df_from_census_json(parsed_json):
     ):
         return pd.DataFrame(
             parsed_json[1:],
-            columns=(
+            columns=[
                 c.upper()
                 .replace(" ", "_")
                 .replace("-", "_")
@@ -75,7 +76,7 @@ def _df_from_census_json(parsed_json):
                 .replace("(", "")
                 .replace(")", "")
                 for c in parsed_json[0]
-            ),
+            ],
         )
 
     raise CensusApiException(
@@ -99,7 +100,7 @@ def json_from_url(url: str, params: Optional[Mapping[str, str]] = None) -> Any:
 _MAX_FIELDS_PER_DOWNLOAD = 50
 
 
-def _download_concat_detail(
+def _download_concat(
     dataset: str,
     year: int,
     fields: List[str],
@@ -109,7 +110,41 @@ def _download_concat_detail(
     with_geometry: bool = False,
     **kwargs: cgeo.InSpecType,
 ) -> pd.DataFrame:
+    """
+    Download data in groups of columns and concatenate the results together.
 
+    The reason for this function is that the API will only return a maximum
+    of 50 columns per query. This function downloads wider data 50 columns
+    at a time and concatenates them.
+
+    Parameters
+    ----------
+    dataset
+        The dataset to download from. For example `acs/acs5` or
+        `dec/pl`.
+    year
+        The year to download data for.
+    download_variables
+        The census variables to download, for example `["NAME", "B01001_001E"]`.
+    with_geometry
+        If `True` a :py:class:`gpd.GeoDataFrame` will be returned and each row
+        will have a geometry that is a cartographic boundary suitable for platting
+        a map. See https://www.census.gov/geographies/mapping-files/time-series/geo/cartographic-boundary.2020.html
+        for details of the shapefiles that will be downloaded on your behalf to
+        generate these boundaries.
+    api_key
+        An optional API key. If you don't have or don't use a key, the number
+        of calls you can make will be limited.
+    variable_cache
+        A cache of metadata about variables.
+    kwargs
+        A specification of the geometry that we want data for.
+
+    Returns
+    -------
+        The full results of the query with all columns.
+
+    """
     # Divide the fields into groups.
     field_groups = [
         # black and flake8 disagree about the whitespace before ':' here...
@@ -119,7 +154,7 @@ def _download_concat_detail(
 
     # Get the data for each chunk.
     dfs = [
-        download_detail(
+        download(
             dataset,
             year,
             field_group,
@@ -158,7 +193,7 @@ def set_shapefile_path(shapefile_path: Union[str, None]) -> None:
     Set the path to the directory to cache shapefiles.
 
     This is where we will cache shapefiles downloaded when
-    `with_geometry=True` is passed to :py:func:`~download_detail`.
+    `with_geometry=True` is passed to :py:func:`~download`.
 
     Parameters
     ----------
@@ -175,7 +210,7 @@ def get_shapefile_path() -> Union[str, None]:
     Get the path to the directory to cache shapefiles.
 
     This is where we will cache shapefiles downloaded when
-    `with_geometry=True` is passed to :py:func:`~download_detail`.
+    `with_geometry=True` is passed to :py:func:`~download`.
 
     Returns
     -------
@@ -445,6 +480,43 @@ def download_detail(
     **kwargs: cgeo.InSpecType,
 ) -> Union[pd.DataFrame, gpd.GeoDataFrame]:
     """
+    Deprecated version of :py:ref:`~download`; use `download` instead.
+
+    Same functionality but under the old name. Back in the pre-history
+    of `censusdis`, this function started life as a way to download
+    ACS detail tables. It evolved significantly since then and does much
+    more now. Hence the name change.
+
+    This function will disappear completely in a future version.
+    """
+    warnings.warn(
+        "censusdis.data.download_detail is deprecated. "
+        "Please use censusdis.data.download instead.",
+        DeprecationWarning,
+        2,
+    )
+    return download(
+        dataset,
+        year,
+        download_variables,
+        with_geometry=with_geometry,
+        api_key=api_key,
+        variable_cache=variable_cache,
+        **kwargs,
+    )
+
+
+def download(
+    dataset: str,
+    year: int,
+    download_variables: Iterable[str],
+    *,
+    with_geometry: bool = False,
+    api_key: Optional[str] = None,
+    variable_cache: Optional["VariableCache"] = None,
+    **kwargs: cgeo.InSpecType,
+) -> Union[pd.DataFrame, gpd.GeoDataFrame]:
+    """
     Download data from the US Census API.
 
     This is the main API for downloading US Census data with the
@@ -495,7 +567,7 @@ def download_detail(
 
     # Special case if we are trying to get too many fields.
     if len(download_variables) > _MAX_FIELDS_PER_DOWNLOAD:
-        return _download_concat_detail(
+        return _download_concat(
             dataset,
             year,
             download_variables,
@@ -529,7 +601,7 @@ def download_detail(
     # a comma-separated string.
     string_kwargs = {k: _gf2s(v) for k, v in kwargs.items()}
 
-    url, params, bound_path = census_detail_table_url(
+    url, params, bound_path = census_table_url(
         dataset, year, download_variables, api_key=api_key, **string_kwargs
     )
     df_data = data_from_url(url, params)
@@ -538,7 +610,13 @@ def download_detail(
         field_type = variable_cache.get(dataset, year, field)["predicateType"]
 
         if field_type == "int":
-            df_data[field] = df_data[field].astype(int)
+            if df_data[field].isnull().any():
+                # Some Census data sets put in null in int fields.
+                # We have to go with a float to make this a NaN.
+                # Int has no representation for NaN or None.
+                df_data[field] = df_data[field].astype(float)
+            else:
+                df_data[field] = df_data[field].astype(int)
         elif field_type == "float":
             df_data[field] = df_data[field].astype(float)
         elif field_type == "string":
@@ -564,14 +642,37 @@ def download_detail(
     return df_data
 
 
-def census_detail_table_url(
+def census_table_url(
     dataset: str,
     year: int,
-    fields: Iterable[str],
+    download_variables: Iterable[str],
     *,
     api_key: Optional[str] = None,
     **kwargs: cgeo.InSpecType,
 ) -> Tuple[str, Mapping[str, str], cgeo.BoundGeographyPath]:
+    """
+    Construct the URL to download data from the U.S. Census API.
+
+    Parameters
+    ----------
+    dataset
+        The dataset to download from. For example `acs/acs5` or
+        `dec/pl`.
+    year
+        The year to download data for.
+    download_variables
+        The census variables to download, for example `["NAME", "B01001_001E"]`.
+    api_key
+        An optional API key. If you don't have or don't use a key, the number
+        of calls you can make will be limited.
+    kwargs
+        A specification of the geometry that we want data for.
+
+    Returns
+    -------
+        The URL, parameters and bound path.
+
+    """
     bound_path = cgeo.PathSpec.partial_prefix_match(dataset, year, **kwargs)
 
     if bound_path is None:
@@ -585,10 +686,10 @@ def census_detail_table_url(
         )
 
     query_spec = cgeo.CensusGeographyQuerySpec(
-        dataset, year, list(fields), bound_path, api_key=api_key
+        dataset, year, list(download_variables), bound_path, api_key=api_key
     )
 
-    url, params = query_spec.detail_table_url()
+    url, params = query_spec.table_url()
 
     return url, params, bound_path
 

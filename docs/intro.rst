@@ -71,7 +71,7 @@ data we want::
 
     # Get the value of our variables for every state in the
     # year we have chosen.
-    df_states = ced.download_detail(
+    df_states = ced.download(
         DATASET,
         YEAR,
         VARIABLES,
@@ -79,7 +79,7 @@ data we want::
     )
 
 The call
-to ``ced.download_detail`` will construct a URL in the Census API's preferred
+to ``ced.download`` will construct a URL in the Census API's preferred
 format
 (`https://api.census.gov/data/2020/acs/acs5?get=NAME,B01003_001E,B19013_001E&for=state:*
 <https://api.census.gov/data/2020/acs/acs5?get=NAME,B01003_001E,B19013_001E&for=state:*>`_),
@@ -182,11 +182,11 @@ level of granularity like a county, we don't want the
 data for the entire country. We might want it just for
 the counties of a particular state, say New Jersey.
 In that case, we can specify this with additional
-arguments to ``ced.download_detail``. For example::
+arguments to ``ced.download``. For example::
 
     from censusdis.states import STATE_NJ
 
-    df_counties = ced.download_detail(
+    df_counties = ced.download(
         DATASET,
         YEAR,
         VARIABLES,
@@ -255,7 +255,7 @@ Some, like region, are very large. In the US Census
 data model, there are only four regions. Their populations
 can be queried with::
 
-    df_region = ced.download_detail(
+    df_region = ced.download(
         DATASET,
         YEAR,
         VARIABLES,
@@ -280,7 +280,7 @@ a block group query for Essex County, NJ::
 
     COUNTY_ESSEX_NJ = "013" # See county query above.
 
-    df_bg = ced.download_detail(
+    df_bg = ced.download(
         DATASET,
         YEAR,
         VARIABLES,
@@ -398,7 +398,7 @@ We can query any of these geographies we like, using the
 argument naming conventions returned in ``specs`` above.
 For example::
 
-    df_csa = ced.download_detail(
+    df_csa = ced.download(
         DATASET,
         YEAR,
         VARIABLES,
@@ -475,7 +475,7 @@ by adding the ``with_geometry=True`` flag. Here is an
 example that follows up on the examples in the previous
 section::
 
-    gdf_counties = ced.download_detail(
+    gdf_counties = ced.download(
         DATASET,
         YEAR,
         VARIABLES,

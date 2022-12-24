@@ -11,17 +11,24 @@ import unittest
 
 import geopandas
 import geopandas as gpd
+import numpy as np
 import pandas as pd
 
 from censusdis import data as ced
 from censusdis import maps as cmp
-from censusdis.states import STATE_NJ, STATE_NY, STATE_CA, ALL_STATES_AND_DC
+from censusdis.states import (
+    STATE_NJ,
+    STATE_NY,
+    STATE_CA,
+    ALL_STATES_AND_DC,
+    TERRITORY_PR,
+)
 
 if __name__ == "__main__":
     unittest.main()
 
 
-class DownloadDetailTestCase(unittest.TestCase):
+class DownloadTestCase(unittest.TestCase):
     """
     Test the full download capability.
 
@@ -55,9 +62,25 @@ class DownloadDetailTestCase(unittest.TestCase):
     def test_download(self):
         """Download just a couple of variables."""
 
-        df = ced.download_detail(
+        df = ced.download(
             self._dataset, self._year, ["NAME", self._name], state=STATE_NJ, county="*"
         )
+
+        self.assertEqual((21, 4), df.shape)
+
+        self.assertEqual(["STATE", "COUNTY", "NAME", "B19001_001E"], list(df.columns))
+
+    def test_download_detail(self):
+        """Use the deprecated API and assert it warns."""
+
+        with self.assertWarns(DeprecationWarning):
+            df = ced.download_detail(
+                self._dataset,
+                self._year,
+                ["NAME", self._name],
+                state=STATE_NJ,
+                county="*",
+            )
 
         self.assertEqual((21, 4), df.shape)
 
@@ -67,7 +90,7 @@ class DownloadDetailTestCase(unittest.TestCase):
         """Try to download a variable that does not exist."""
 
         with self.assertRaises(ced.CensusApiException) as cm:
-            ced.download_detail(
+            ced.download(
                 self._dataset,
                 self._year,
                 ["NAME", "I_DONT_EXIST"],
@@ -89,7 +112,7 @@ class DownloadDetailTestCase(unittest.TestCase):
         Download a really wide set of variables.
 
         The goal is to trigger a call to
-        `_download_concat_detail`.
+        `_download_concat`.
         """
 
         # A bunch of sex by age variables.
@@ -102,7 +125,7 @@ class DownloadDetailTestCase(unittest.TestCase):
 
         self.assertGreater(len(variables), ced._MAX_FIELDS_PER_DOWNLOAD)
 
-        df = ced.download_detail(
+        df = ced.download(
             self._dataset, self._year, ["NAME"] + variables, state=STATE_NJ, county="*"
         )
 
@@ -116,7 +139,7 @@ class DownloadDetailTestCase(unittest.TestCase):
     def test_download_with_geometry_county(self):
         """Download at the county level with geometry."""
 
-        gdf = ced.download_detail(
+        gdf = ced.download(
             self._dataset,
             self._year,
             ["NAME", self._name],
@@ -136,7 +159,7 @@ class DownloadDetailTestCase(unittest.TestCase):
     def test_download_with_geometry_state(self):
         """Download at the county level with geometry."""
 
-        gdf = ced.download_detail(
+        gdf = ced.download(
             self._dataset,
             self._year,
             ["NAME", self._name],
@@ -155,7 +178,7 @@ class DownloadDetailTestCase(unittest.TestCase):
     def test_download_with_geometry_tract(self):
         """Download at the county level with geometry."""
 
-        gdf = ced.download_detail(
+        gdf = ced.download(
             self._dataset,
             self._year,
             ["NAME", self._name],
@@ -177,7 +200,7 @@ class DownloadDetailTestCase(unittest.TestCase):
     def test_download_with_geometry_block_group(self):
         """Download at the county level with geometry."""
 
-        gdf = ced.download_detail(
+        gdf = ced.download(
             self._dataset,
             self._year,
             ["NAME", self._name],
@@ -208,7 +231,7 @@ class DownloadDetailTestCase(unittest.TestCase):
         """Download at the county level with geometry."""
 
         with self.assertRaises(ced.CensusApiException) as assertion:
-            ced.download_detail(
+            ced.download(
                 self._dataset,
                 self._year,
                 ["NAME", self._name],
@@ -225,7 +248,7 @@ class DownloadDetailTestCase(unittest.TestCase):
 
         # But it is OK without geometry.
 
-        df = ced.download_detail(
+        df = ced.download(
             self._dataset,
             self._year,
             ["NAME", self._name],
@@ -247,7 +270,7 @@ class DownloadDetailTestCase(unittest.TestCase):
         `state="*"`.
         """
 
-        df = ced.download_detail(
+        df = ced.download(
             self._dataset, self._year, ["NAME", self._name], state=[STATE_NJ, STATE_NY]
         )
 
@@ -264,7 +287,7 @@ class DownloadDetailTestCase(unittest.TestCase):
         `state="*"` and `county="*"`.
         """
 
-        df = ced.download_detail(
+        df = ced.download(
             self._dataset,
             self._year,
             ["NAME", self._name],
@@ -274,7 +297,7 @@ class DownloadDetailTestCase(unittest.TestCase):
 
         self.assertEqual((83, 4), df.shape)
 
-        df_51 = ced.download_detail(
+        df_51 = ced.download(
             self._dataset,
             self._year,
             ["NAME", self._name],
@@ -282,7 +305,7 @@ class DownloadDetailTestCase(unittest.TestCase):
             county="*",
         )
 
-        df_star = ced.download_detail(
+        df_star = ced.download(
             self._dataset, self._year, ["NAME", self._name], state="*", county="*"
         )
 
@@ -303,7 +326,7 @@ class DownloadDetailTestCase(unittest.TestCase):
         In this test we also skip a level.
         """
 
-        df = ced.download_detail(
+        df = ced.download(
             self._dataset,
             self._year,
             ["NAME", self._name],
@@ -329,7 +352,7 @@ class DownloadDetailTestCase(unittest.TestCase):
         In this test we also skip two levels.
         """
 
-        df = ced.download_detail(
+        df = ced.download(
             self._dataset,
             self._year,
             ["NAME", self._name],
@@ -345,6 +368,37 @@ class DownloadDetailTestCase(unittest.TestCase):
         self.assertIn("BLOCK_GROUP", df.columns)
         self.assertIn("NAME", df.columns)
         self.assertIn(self._name, df.columns)
+
+
+class AcsSubjectTestCase(unittest.TestCase):
+    """
+    Test on ACS Subject Data that includes null in an int field.
+    """
+
+    def setUp(self) -> None:
+        """Set up before each test."""
+        self._dataset = "acs/acs5/profile"
+        self._year = 2021
+        self._variable_name = "DP02_0001E"
+
+    def test_states_with_null_in_pr(self):
+        df = ced.download(
+            self._dataset, self._year, ["NAME", self._variable_name], state="*"
+        )
+
+        self.assertEqual((52, 3), df.shape)
+
+        # The API returns a null for PR but numbers for all others.
+        # We have to convert to a float to represent this even though
+        # the census metadata says the variable is an int.
+        self.assertEqual(np.float64, df[self._variable_name].dtype)
+
+        self.assertFalse(
+            df[df.STATE != TERRITORY_PR][self._variable_name].isnull().any()
+        )
+        self.assertTrue(
+            df[df.STATE == TERRITORY_PR][self._variable_name].isnull().all()
+        )
 
 
 class ShapefileTestCase(unittest.TestCase):
