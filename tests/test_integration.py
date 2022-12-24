@@ -55,9 +55,21 @@ class DownloadDetailTestCase(unittest.TestCase):
     def test_download(self):
         """Download just a couple of variables."""
 
-        df = ced.download_detail(
+        df = ced.download(
             self._dataset, self._year, ["NAME", self._name], state=STATE_NJ, county="*"
         )
+
+        self.assertEqual((21, 4), df.shape)
+
+        self.assertEqual(["STATE", "COUNTY", "NAME", "B19001_001E"], list(df.columns))
+
+    def test_download_detail(self):
+        """Use the deprecated API and assert it warns."""
+
+        with self.assertWarns(DeprecationWarning):
+            df = ced.download_detail(
+                self._dataset, self._year, ["NAME", self._name], state=STATE_NJ, county="*"
+            )
 
         self.assertEqual((21, 4), df.shape)
 
@@ -67,7 +79,7 @@ class DownloadDetailTestCase(unittest.TestCase):
         """Try to download a variable that does not exist."""
 
         with self.assertRaises(ced.CensusApiException) as cm:
-            ced.download_detail(
+            ced.download(
                 self._dataset,
                 self._year,
                 ["NAME", "I_DONT_EXIST"],
@@ -102,7 +114,7 @@ class DownloadDetailTestCase(unittest.TestCase):
 
         self.assertGreater(len(variables), ced._MAX_FIELDS_PER_DOWNLOAD)
 
-        df = ced.download_detail(
+        df = ced.download(
             self._dataset, self._year, ["NAME"] + variables, state=STATE_NJ, county="*"
         )
 
@@ -116,7 +128,7 @@ class DownloadDetailTestCase(unittest.TestCase):
     def test_download_with_geometry_county(self):
         """Download at the county level with geometry."""
 
-        gdf = ced.download_detail(
+        gdf = ced.download(
             self._dataset,
             self._year,
             ["NAME", self._name],
@@ -136,7 +148,7 @@ class DownloadDetailTestCase(unittest.TestCase):
     def test_download_with_geometry_state(self):
         """Download at the county level with geometry."""
 
-        gdf = ced.download_detail(
+        gdf = ced.download(
             self._dataset,
             self._year,
             ["NAME", self._name],
@@ -155,7 +167,7 @@ class DownloadDetailTestCase(unittest.TestCase):
     def test_download_with_geometry_tract(self):
         """Download at the county level with geometry."""
 
-        gdf = ced.download_detail(
+        gdf = ced.download(
             self._dataset,
             self._year,
             ["NAME", self._name],
@@ -177,7 +189,7 @@ class DownloadDetailTestCase(unittest.TestCase):
     def test_download_with_geometry_block_group(self):
         """Download at the county level with geometry."""
 
-        gdf = ced.download_detail(
+        gdf = ced.download(
             self._dataset,
             self._year,
             ["NAME", self._name],
@@ -208,7 +220,7 @@ class DownloadDetailTestCase(unittest.TestCase):
         """Download at the county level with geometry."""
 
         with self.assertRaises(ced.CensusApiException) as assertion:
-            ced.download_detail(
+            ced.download(
                 self._dataset,
                 self._year,
                 ["NAME", self._name],
@@ -225,7 +237,7 @@ class DownloadDetailTestCase(unittest.TestCase):
 
         # But it is OK without geometry.
 
-        df = ced.download_detail(
+        df = ced.download(
             self._dataset,
             self._year,
             ["NAME", self._name],
@@ -247,7 +259,7 @@ class DownloadDetailTestCase(unittest.TestCase):
         `state="*"`.
         """
 
-        df = ced.download_detail(
+        df = ced.download(
             self._dataset, self._year, ["NAME", self._name], state=[STATE_NJ, STATE_NY]
         )
 
@@ -264,7 +276,7 @@ class DownloadDetailTestCase(unittest.TestCase):
         `state="*"` and `county="*"`.
         """
 
-        df = ced.download_detail(
+        df = ced.download(
             self._dataset,
             self._year,
             ["NAME", self._name],
@@ -274,7 +286,7 @@ class DownloadDetailTestCase(unittest.TestCase):
 
         self.assertEqual((83, 4), df.shape)
 
-        df_51 = ced.download_detail(
+        df_51 = ced.download(
             self._dataset,
             self._year,
             ["NAME", self._name],
@@ -282,7 +294,7 @@ class DownloadDetailTestCase(unittest.TestCase):
             county="*",
         )
 
-        df_star = ced.download_detail(
+        df_star = ced.download(
             self._dataset, self._year, ["NAME", self._name], state="*", county="*"
         )
 
@@ -303,7 +315,7 @@ class DownloadDetailTestCase(unittest.TestCase):
         In this test we also skip a level.
         """
 
-        df = ced.download_detail(
+        df = ced.download(
             self._dataset,
             self._year,
             ["NAME", self._name],
@@ -329,7 +341,7 @@ class DownloadDetailTestCase(unittest.TestCase):
         In this test we also skip two levels.
         """
 
-        df = ced.download_detail(
+        df = ced.download(
             self._dataset,
             self._year,
             ["NAME", self._name],

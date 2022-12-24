@@ -69,12 +69,12 @@ from censusdis.states import STATE_GA
 # See https://api.census.gov/data/2020/acs/acs5/variables/B19013_001E.html
 MEDIAN_HOUSEHOLD_INCOME_VARIABLE = "B19013_001E"
 
-gdf_bg = ced.download_detail(
+gdf_bg = ced.download(
     "acs/acs5",  # The American Community Survey 5-Year Data
-    2020, 
-    ["NAME", MEDIAN_HOUSEHOLD_INCOME_VARIABLE], 
-    state=STATE_GA, 
-    block_group="*", 
+    2020,
+    ["NAME", MEDIAN_HOUSEHOLD_INCOME_VARIABLE],
+    state=STATE_GA,
+    block_group="*",
     with_geometry=True
 )
 ```

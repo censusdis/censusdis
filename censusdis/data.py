@@ -6,6 +6,7 @@ This module relies on the US Census API, which
 it wraps in a pythonic manner.
 """
 
+import warnings
 from abc import ABC, abstractmethod
 from collections import defaultdict
 from typing import (
@@ -67,7 +68,7 @@ def _df_from_census_json(parsed_json):
     ):
         return pd.DataFrame(
             parsed_json[1:],
-            columns=(
+            columns=[
                 c.upper()
                 .replace(" ", "_")
                 .replace("-", "_")
@@ -75,7 +76,7 @@ def _df_from_census_json(parsed_json):
                 .replace("(", "")
                 .replace(")", "")
                 for c in parsed_json[0]
-            ),
+            ],
         )
 
     raise CensusApiException(
@@ -119,7 +120,7 @@ def _download_concat_detail(
 
     # Get the data for each chunk.
     dfs = [
-        download_detail(
+        download(
             dataset,
             year,
             field_group,
@@ -158,7 +159,7 @@ def set_shapefile_path(shapefile_path: Union[str, None]) -> None:
     Set the path to the directory to cache shapefiles.
 
     This is where we will cache shapefiles downloaded when
-    `with_geometry=True` is passed to :py:func:`~download_detail`.
+    `with_geometry=True` is passed to :py:func:`~download`.
 
     Parameters
     ----------
@@ -175,7 +176,7 @@ def get_shapefile_path() -> Union[str, None]:
     Get the path to the directory to cache shapefiles.
 
     This is where we will cache shapefiles downloaded when
-    `with_geometry=True` is passed to :py:func:`~download_detail`.
+    `with_geometry=True` is passed to :py:func:`~download`.
 
     Returns
     -------
@@ -435,6 +436,42 @@ def add_inferred_geography(df: pd.DataFrame, year: int) -> gpd.GeoDataFrame:
 
 
 def download_detail(
+    dataset: str,
+    year: int,
+    download_variables: Iterable[str],
+    *,
+    with_geometry: bool = False,
+    api_key: Optional[str] = None,
+    variable_cache: Optional["VariableCache"] = None,
+    **kwargs: cgeo.InSpecType,
+) -> Union[pd.DataFrame, gpd.GeoDataFrame]:
+    """
+    Deprecated version of :py:ref:`~download`; use `download` instead.
+
+    Same functionality but under the old name. Back in the pre-history
+    of `censusdis`, this function started life as a way to download
+    ACS detail tables. It evolved significantly since then and does much
+    more now. Hence the name change.
+
+    This function will disappear completely in a future version.
+    """
+    warnings.warn(
+        "censusdis.data.download_detail is deprecated. "
+        "Please use censusdis.data.download instead.",
+        DeprecationWarning, 2
+    )
+    return download(
+        dataset,
+        year,
+        download_variables,
+        with_geometry=with_geometry,
+        api_key=api_key,
+        variable_cache=variable_cache,
+        **kwargs
+    )
+
+
+def download(
     dataset: str,
     year: int,
     download_variables: Iterable[str],
