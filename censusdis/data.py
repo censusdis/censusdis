@@ -841,6 +841,25 @@ class VariableSource(ABC):
         """
         raise NotImplementedError("Abstract method.")
 
+    @abstractmethod
+    def get_datasets(self, year: Optional[int]) -> Dict[str, Any]:
+        """
+        Get descriptions of all the datasets available for a given year.
+
+        Parameters
+        ----------
+        year
+            The year. If `None`, get all datasets for all years.
+
+        Returns
+        -------
+            A dictionary with a key "datasets". The value associated
+            with that key is a dictionary that maps from the names
+            of data sets to dictionaries of attributes of each data
+            set.
+        """
+        raise NotImplementedError("Abstract method.")
+
 
 class CensusApiVariableSource(VariableSource):
     """
@@ -982,10 +1001,20 @@ class CensusApiVariableSource(VariableSource):
 
         return value
 
+    def get_datasets(self, year: Optional[int]) -> Dict[str, Any]:
+        if year is not None:
+            url = f"https://api.census.gov/data/{year}.json"
+        else:
+            url = "https://api.census.gov/data.json"
+
+        json = json_from_url(url)
+
+        return json
+
 
 class VariableCache:
     """
-    A cache of vatiables and groups.
+    A cache of variables and groups.
 
     This looks a lot like a :py:class:`~VariableSource` but it
     implements a cache in front of a :py:class:`~VariableSource`.
@@ -1006,6 +1035,9 @@ class VariableCache:
         self._group_cache: DefaultDict[
             str, DefaultDict[int, Dict[str, Any]]
         ] = defaultdict(lambda: defaultdict(dict))
+
+        self._all_data_sets_cache: Optional[pd.DataFrame] = None
+        self._data_sets_by_year_cache: Dict[int, pd.DataFrame] = {}
 
     def get(
         self,
@@ -1186,6 +1218,95 @@ class VariableCache:
         def __repr__(self) -> str:
             return str(self)
 
+    def _all_data_sets(self) -> pd.DataFrame:
+        """
+        Get all the data sets.
+
+        Cache to avoid repeated remote calls.
+
+        Returns
+        -------
+            A data frame of all the data sets for all years.
+        """
+        if self._all_data_sets_cache is None:
+            datasets = self._variable_source.get_datasets(year=None)
+
+            self._all_data_sets_cache = self._datasets_from_source_dict(datasets)
+
+        return self._all_data_sets_cache
+
+    def _data_sets_for_year(self, year: int) -> pd.DataFrame:
+        """
+        Get all data sets for a given year.
+
+        Cache to avoid repeated remote calls.
+
+        Parameters
+        ----------
+        year
+            The year to query. If not provided, all data sets for all
+            years are queried.
+
+        Returns
+        -------
+            A data frame of all the data sets for the year.
+        """
+        if year not in self._data_sets_by_year_cache:
+            datasets = self._variable_source.get_datasets(year)
+
+            self._data_sets_by_year_cache[year] = self._datasets_from_source_dict(
+                datasets
+            )
+
+        return self._data_sets_by_year_cache[year]
+
+    @staticmethod
+    def _datasets_from_source_dict(datasets) -> pd.DataFrame:
+        """
+        Parse a dict from :py:meth:`VariableSource.get_datasets` into a data frame of data sets.
+
+        Parameters
+        ----------
+        datasets
+            The data sets in dictionary form.
+
+        Returns
+        -------
+            A dataframe with a row describing each dataset.
+        """
+        datasets = datasets["dataset"]
+        df = pd.DataFrame(
+            [
+                {
+                    "YEAR": dataset.get("c_vintage", None),
+                    "DATASET": "/".join(dataset["c_dataset"]),
+                    "TITLE": dataset.get("title", None),
+                    "DESCRIPTION": dataset.get("description", None),
+                }
+                for dataset in datasets
+            ]
+        )
+        return df.sort_values(["YEAR", "DATASET"]).reset_index(drop=True)
+
+    def all_data_sets(self, *, year: Optional[int] = None) -> pd.DataFrame:
+        """
+        Retrieve a description of available data sets.
+
+        Parameters
+        ----------
+        year
+            The year to query. If not provided, all data sets for all
+            years are queried.
+
+        Returns
+        -------
+            A data frame describing the data sets that are available.
+        """
+        if year is not None:
+            return self._data_sets_for_year(year)
+
+        return self._all_data_sets()
+
     def all_groups(
         self,
         dataset: str,
@@ -1220,7 +1341,27 @@ class VariableCache:
                 ]
             )
             .sort_values(["dataset", "year", "group"])
-            .reset_index()
+            .reset_index(drop=True)
+        )
+
+    def all_variables(
+        self, dataset: str, year: int, group_name: Optional[str]
+    ) -> pd.DataFrame:
+        group_variables = self.group_variables(dataset, year, group_name)
+
+        print("GGG", group_variables)
+
+        return pd.DataFrame(
+            [
+                {
+                    "YEAR": year,
+                    "DATASET": dataset,
+                    "GROUP": group_name,
+                    "VARIABLE": variable_name,
+                    "LABEL": self.get(dataset, year, variable_name)["label"],
+                }
+                for variable_name in group_variables
+            ]
         )
 
     def group_tree(
@@ -1314,10 +1455,10 @@ class VariableCache:
         return sorted(leaves)
 
     def group_variables(
-        self, dataset: str, year: int, name: str, *, skip_annotations: bool = True
+        self, dataset: str, year: int, group_name: str, *, skip_annotations: bool = True
     ) -> List[str]:
         """
-        Find the leaves of a given group.
+        Find the variables of a given group.
 
         Parameters
         ----------
@@ -1325,7 +1466,7 @@ class VariableCache:
             The census dataset.
         year
             The year
-        name
+        group_name
             The name of the group.
         skip_annotations
             If `True` try to filter out variables that are
@@ -1337,7 +1478,7 @@ class VariableCache:
         -------
             A list of the variables in the group.
         """
-        tree = self.get_group(dataset, year, name)
+        tree = self.get_group(dataset, year, group_name)
 
         if skip_annotations:
             group_variables = [

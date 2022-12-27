@@ -1,5 +1,5 @@
 import unittest
-from typing import Any, Dict, Iterable
+from typing import Any, Dict, Iterable, Optional
 
 import pandas as pd
 
@@ -126,6 +126,18 @@ class VariableCacheTestCase(unittest.TestCase):
                     "description": "HISPANIC OR LATINO ORIGIN BY RACE",
                     "universe ": "TOTAL_POP",
                 }
+            }
+
+        def get_datasets(self, year: Optional[int]) -> Dict[str, Any]:
+            return {
+                "datasets": [
+                    {
+                        "c_vintage": 2019 if year is None else year,
+                        "c_dataset": ["acs", "acs5"],
+                        "title": "American Community Survey: 5-Year Estimates: Data Tables",
+                        "description": "Description of the dataset...",
+                    }
+                ]
             }
 
         def group_variable_names(
