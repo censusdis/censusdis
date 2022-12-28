@@ -8,6 +8,8 @@ which it downloads as needed and caches locally.
 
 import os
 import shutil
+from logging import getLogger
+from typing import Optional, Union
 from zipfile import ZipFile, BadZipFile
 
 import geopandas as gpd
@@ -17,9 +19,9 @@ from shapely import affinity
 from shapely.geometry import MultiPolygon, Polygon, Point
 from shapely.geometry.base import BaseGeometry
 
-from typing import Optional, Union
-
 from censusdis.states import STATE_AK, STATE_HI, TERRITORY_PR
+
+logger = getLogger(__name__)
 
 
 class MapException(Exception):
@@ -644,6 +646,11 @@ def relocate_ak_hi_pr(gdf):
     and relocate those that intersect bounding rectangles of the
     two states.
 
+    Note: the expectation is that the crs or the incoming geo data frame
+    is EPSG:4269 or something that closely approximates it, in units of
+    degrees of latitude and longitude. If this is not the case, results
+    are unpredictable.
+
     Parameters
     ----------
     gdf
@@ -675,7 +682,13 @@ def relocate_ak_hi_pr(gdf):
     return gdf
 
 
-def plot_us(gdf: gpd.GeoDataFrame, *args, do_relocate_ak_hi_pr: bool = True, **kwargs):
+def plot_us(
+    gdf: gpd.GeoDataFrame,
+    *args,
+    do_relocate_ak_hi_pr: bool = True,
+    epsg: int = 9311,
+    **kwargs,
+):
     """
     Plot a map of the US with AK and HI relocated.
 
@@ -688,6 +701,11 @@ def plot_us(gdf: gpd.GeoDataFrame, *args, do_relocate_ak_hi_pr: bool = True, **k
     tend to be plotted at longitudes just less than +180°, which
     creates visual discontinuities.
 
+    Note: the expectation is that the crs or the incoming geo data frame
+    is EPSG:4269 or something that closely approximates it, in units of
+    degrees of latitude and longitude. If this is not the case, results
+    are unpredictable.
+
     Parameters
     ----------
     gdf
@@ -697,6 +715,9 @@ def plot_us(gdf: gpd.GeoDataFrame, *args, do_relocate_ak_hi_pr: bool = True, **k
         the Aleutian islands west of -180° longitude if present.
     args
         Args to pass to the plot.
+    epsg:
+        The EPSG CRS to project to before plotting. Default is 9311, which
+        is equal area. See https://epsg.io/9311.
     kwargs
         Keyword args to pass to the plot.
 
@@ -704,18 +725,29 @@ def plot_us(gdf: gpd.GeoDataFrame, *args, do_relocate_ak_hi_pr: bool = True, **k
     -------
         ax of the plot.
     """
+    if gdf.crs != 4269:
+        logger.warning(
+            f"Expected map to have crs epsg:4269, but got {gdf.crs} instead."
+        )
+
     if do_relocate_ak_hi_pr:
         gdf = relocate_ak_hi_pr(gdf)
     else:
         # At least wrap the Aleutian islands.
         gdf.geometry = gdf.geometry.map(_wrap_polys)
 
+    gdf = gdf.to_crs(epsg=epsg)
+
     ax = gdf.plot(*args, **kwargs)
     return ax
 
 
 def plot_us_boundary(
-    gdf: gpd.GeoDataFrame, *args, do_relocate_ak_hi_pr: bool = True, **kwargs
+    gdf: gpd.GeoDataFrame,
+    *args,
+    do_relocate_ak_hi_pr: bool = True,
+    epsg: int = 9311,
+    **kwargs,
 ):
     """
     Plot a map of boundaries the US with AK and HI relocated.
@@ -723,6 +755,11 @@ def plot_us_boundary(
     This function is very much like :py:func:`~plot_us` except
     that it plots only the boundaries of geometries.
 
+    Note: the expectation is that the crs or the incoming geo data frame
+    is EPSG:4269 or something that closely approximates it, in units of
+    degrees of latitude and longitude. If this is not the case, results
+    are unpredictable.
+
     Parameters
     ----------
     gdf
@@ -732,6 +769,9 @@ def plot_us_boundary(
     do_relocate_ak_hi_pr
         If `True` try to relocate AK, HI, and PR. Otherwise, still wrap
         the Aleutian islands west of -180° longitude if present.
+    epsg:
+        The EPSG CRS to project to before plotting. Default is 9311, which
+        is equal area. See https://epsg.io/9311.
     kwargs
         Keyword args to pass to the plot.
 
@@ -739,12 +779,19 @@ def plot_us_boundary(
     -------
         ax of the plot.
     """
+    if gdf.crs != 4269:
+        logger.warning(
+            f"Expected map to have crs epsg:4269, but got {gdf.crs} instead."
+        )
+
     if do_relocate_ak_hi_pr:
         gdf = relocate_ak_hi_pr(gdf)
     else:
         # At least wrap the Aleutian islands.
         gdf = gdf.copy()
         gdf.geometry = gdf.geometry.map(_wrap_polys)
+
+    gdf = gdf.to_crs(epsg=epsg)
 
     ax = gdf.boundary.plot(*args, **kwargs)
     return ax
@@ -762,10 +809,11 @@ def geographic_centroids(gdf: gpd.GeoDataFrame) -> gpd.GeoSeries:
     Parameters
     ----------
     gdf
-
+        A geo data frame in any crs.
     Returns
     -------
-
+        A geo data series of the centroids of all the geometries in
+        `gdf`.
     """
     crs = gdf.crs
 
