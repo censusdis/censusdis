@@ -24,6 +24,7 @@ from typing import (
 
 import geopandas as gpd
 import pandas as pd
+import numpy as np
 import requests
 
 import censusdis.geography as cgeo
@@ -152,6 +153,13 @@ def _download_concat(
         for start in range(0, len(fields), _MAX_FIELDS_PER_DOWNLOAD)
     ]
 
+    if len(field_groups) < 2:
+        raise ValueError(
+            "_download_concat expects to be called with at least "
+            f"{_MAX_FIELDS_PER_DOWNLOAD + 1} variables. With fewer,"
+            "use download instead."
+        )
+
     # Get the data for each chunk.
     dfs = [
         download(
@@ -169,17 +177,60 @@ def _download_concat(
     # What fields came back in the first df but were not
     # requested? These are the ones that will be duplicated
     # in the later dfs.
-    extra_fields = [f for f in dfs[0].columns if f not in set(field_groups[0])]
+    extra_variables = [f for f in dfs[0].columns if f not in set(field_groups[0])]
 
     # If we put in the geometry column, it's not part of the merge
     # key.
     if with_geometry:
-        extra_fields = [f for f in extra_fields if f != "geometry"]
+        extra_variables = [f for f in extra_variables if f != "geometry"]
 
-    df_data = dfs[0]
+    # Verify that, as much as we can tell from the other columns,
+    # that things line up properly. For some cases like area-based
+    # counts where each row represents a unique geography, we could
+    # do repeated merges instead of the concat below, but for survey
+    # data where each row is representative of a fraction of the population
+    # they are not unique and an inner join will blow up the size and
+    # give us results that do not make sense. But we have to go with the
+    # merge strategy if the rows are in different order.
 
-    for df_right in dfs[1:]:
-        df_data = df_data.merge(df_right, on=extra_fields)
+    rows0 = len(dfs[0].index)
+    extra_variables_match = True
+
+    for df in dfs[1:]:
+        extra_variables_match = (
+            rows0 == len(df.index) and
+            (dfs[0][extra_variables] == df[extra_variables]).all().all()
+        )
+        if not extra_variables_match:
+            # At least one difference. So we will have to
+            # see if we can fall back on the merge strategy.
+            break
+
+    if extra_variables_match:
+        # Having done the verification, we can concatenate all
+        # the data together.
+        df_data = pd.concat(
+            [dfs[0]] + [df.drop(extra_variables, axis="columns") for df in dfs[1:]],
+            axis="columns"
+        )
+    else:
+        # This is the kind of join that only works when the values
+        # in extra_variables are unique per row, like in acs/acs5 and
+        # similar count-based data sets. But all the rows have to be
+        # unique. If they are not all unique then the merge will
+        # generate cross products that we almost certainly not intended.
+        for df in dfs:
+            if len(df.value_counts(extra_variables, sort=False)) != len(df.index):
+                raise CensusApiException(
+                    "Unexpected data misalignment across multiple API calls. "
+                    "Extra variables don't all match but values are duplicated."
+                )
+
+        # Now we can do the merging strategy.
+        df_data = dfs[0]
+
+        for df_right in dfs[1:]:
+            df_data = df_data.merge(df_right, on=extra_variables)
 
     return df_data
 
@@ -618,9 +669,15 @@ def download(
                     # Some Census data sets put in null in int fields.
                     # We have to go with a float to make this a NaN.
                     # Int has no representation for NaN or None.
-                    df_data[field] = df_data[field].astype(float)
+                    df_data[field] = df_data[field].astype(float, errors="ignore")
                 else:
-                    df_data[field] = df_data[field].astype(int)
+                    try:
+                        df_data[field] = df_data[field].astype(int)
+                    except ValueError:
+                        # Sometimes census metadata says int, but they
+                        # put in float values anyway, so fall back on
+                        # trying to get them as floats.
+                        df_data[field] = df_data[field].astype(float, errors="ignore")
             elif field_type == "float":
                 df_data[field] = df_data[field].astype(float)
             elif field_type == "string":
@@ -988,6 +1045,14 @@ class CensusApiVariableSource(VariableSource):
         url = self.group_url(dataset, year, name)
         value = json_from_url(url)
 
+        if True:
+            # Filter out psuedo-variables like 'for' and 'in'.
+            value["variables"] = {
+                k: v
+                for k, v in value["variables"].items()
+                if k not in ["in", "for", "ucgid"]
+            }
+
         # Put the name into the nested dictionaries, so it looks the same is if
         # we had gotten it via the variable API even though that API leaves it out.
         for k, v in value["variables"].items():
@@ -1324,23 +1389,29 @@ class VariableCache:
 
         Returns
         -------
-            All of the groups in the data set.
+            All the groups in the data set.
         """
         groups = self._variable_source.get_all_groups(dataset, year)
+
+        # Some data sets have no groups.
+        if len(groups["groups"]) == 0:
+            return pd.DataFrame(
+                columns=["DATASET", "YEAR", "GROUP", "DESCRIPTION"]
+            )
 
         return (
             pd.DataFrame(
                 [
                     {
-                        "dataset": dataset,
-                        "year": year,
-                        "group": group["name"],
-                        "description": group["description"],
+                        "DATASET": dataset,
+                        "YEAR": year,
+                        "GROUP": group["name"],
+                        "DESCRIPTION": group["description"],
                     }
                     for group in groups["groups"]
                 ]
             )
-            .sort_values(["dataset", "year", "group"])
+            .sort_values(["DATASET", "YEAR", "GROUP"])
             .reset_index(drop=True)
         )
 
@@ -1349,16 +1420,23 @@ class VariableCache:
     ) -> pd.DataFrame:
         group_variables = self.group_variables(dataset, year, group_name)
 
-        print("GGG", group_variables)
+        def variable_items(variable_dict: Dict) -> Optional[Dict[str, str]]:
+            if "values" in variable_dict:
+                values = variable_dict["values"]
+                return values.get("item", np.nan)
+
+            return None
 
         return pd.DataFrame(
             [
                 {
                     "YEAR": year,
                     "DATASET": dataset,
-                    "GROUP": group_name,
+                    "GROUP": self.get(dataset, year, variable_name).get("group", np.nan),
                     "VARIABLE": variable_name,
                     "LABEL": self.get(dataset, year, variable_name)["label"],
+                    "SUGGESTED_WEIGHT": self.get(dataset, year, variable_name).get("suggested-weight", np.nan),
+                    "VALUES": variable_items(self.get(dataset, year, variable_name))
                 }
                 for variable_name in group_variables
             ]
@@ -1441,6 +1519,7 @@ class VariableCache:
             calculations using the `divintseg` package.
         """
         tree = self.group_tree(dataset, year, name)
+
         leaves = tree.leaf_variables()
 
         if skip_annotations:
