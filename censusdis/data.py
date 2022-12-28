@@ -24,6 +24,7 @@ from typing import (
 
 import geopandas as gpd
 import pandas as pd
+import numpy as np
 import requests
 
 import censusdis.geography as cgeo
@@ -152,6 +153,13 @@ def _download_concat(
         for start in range(0, len(fields), _MAX_FIELDS_PER_DOWNLOAD)
     ]
 
+    if len(field_groups) < 2:
+        raise ValueError(
+            "_download_concat expects to be called with at least "
+            f"{_MAX_FIELDS_PER_DOWNLOAD + 1} variables. With fewer,"
+            "use download instead."
+        )
+
     # Get the data for each chunk.
     dfs = [
         download(
@@ -169,17 +177,60 @@ def _download_concat(
     # What fields came back in the first df but were not
     # requested? These are the ones that will be duplicated
     # in the later dfs.
-    extra_fields = [f for f in dfs[0].columns if f not in set(field_groups[0])]
+    extra_variables = [f for f in dfs[0].columns if f not in set(field_groups[0])]
 
     # If we put in the geometry column, it's not part of the merge
     # key.
     if with_geometry:
-        extra_fields = [f for f in extra_fields if f != "geometry"]
+        extra_variables = [f for f in extra_variables if f != "geometry"]
 
-    df_data = dfs[0]
+    # Verify that, as much as we can tell from the other columns,
+    # that things line up properly. For some cases like area-based
+    # counts where each row represents a unique geography, we could
+    # do repeated merges instead of the concat below, but for survey
+    # data where each row is representative of a fraction of the population
+    # they are not unique and an inner join will blow up the size and
+    # give us results that do not make sense. But we have to go with the
+    # merge strategy if the rows are in different order.
 
-    for df_right in dfs[1:]:
-        df_data = df_data.merge(df_right, on=extra_fields)
+    rows0 = len(dfs[0].index)
+    extra_variables_match = True
+
+    for df in dfs[1:]:
+        extra_variables_match = (
+            rows0 == len(df.index)
+            and (dfs[0][extra_variables] == df[extra_variables]).all().all()
+        )
+        if not extra_variables_match:
+            # At least one difference. So we will have to
+            # see if we can fall back on the merge strategy.
+            break
+
+    if extra_variables_match:
+        # Having done the verification, we can concatenate all
+        # the data together.
+        df_data = pd.concat(
+            [dfs[0]] + [df.drop(extra_variables, axis="columns") for df in dfs[1:]],
+            axis="columns",
+        )
+    else:
+        # This is the kind of join that only works when the values
+        # in extra_variables are unique per row, like in acs/acs5 and
+        # similar count-based data sets. But all the rows have to be
+        # unique. If they are not all unique then the merge will
+        # generate cross products that we almost certainly not intended.
+        for df in dfs:
+            if len(df.value_counts(extra_variables, sort=False)) != len(df.index):
+                raise CensusApiException(
+                    "Unexpected data misalignment across multiple API calls. "
+                    "Extra variables don't all match but values are duplicated."
+                )
+
+        # Now we can do the merging strategy.
+        df_data = dfs[0]
+
+        for df_right in dfs[1:]:
+            df_data = df_data.merge(df_right, on=extra_variables)
 
     return df_data
 
@@ -607,28 +658,40 @@ def download(
     df_data = data_from_url(url, params)
 
     for field in download_variables:
-        field_type = variable_cache.get(dataset, year, field)["predicateType"]
+        # predicateType does not exist in some older data sets like acs/acs3
+        # So in that case we just go with what we got in the JSON. But if we
+        # have it try to set the type.
+        if "predicateType" in variable_cache.get(dataset, year, field):
+            field_type = variable_cache.get(dataset, year, field)["predicateType"]
 
-        if field_type == "int":
-            if df_data[field].isnull().any():
-                # Some Census data sets put in null in int fields.
-                # We have to go with a float to make this a NaN.
-                # Int has no representation for NaN or None.
+            if field_type == "int":
+                if df_data[field].isnull().any():
+                    # Some Census data sets put in null in int fields.
+                    # We have to go with a float to make this a NaN.
+                    # Int has no representation for NaN or None.
+                    df_data[field] = df_data[field].astype(float, errors="ignore")
+                else:
+                    try:
+                        df_data[field] = df_data[field].astype(int)
+                    except ValueError:
+                        # Sometimes census metadata says int, but they
+                        # put in float values anyway, so fall back on
+                        # trying to get them as floats.
+                        df_data[field] = df_data[field].astype(float, errors="ignore")
+            elif field_type == "float":
                 df_data[field] = df_data[field].astype(float)
+            elif field_type == "string":
+                pass
             else:
-                df_data[field] = df_data[field].astype(int)
-        elif field_type == "float":
-            df_data[field] = df_data[field].astype(float)
-        elif field_type == "string":
-            pass
-        else:
-            # Leave it as an object?
-            pass
+                # Leave it as an object?
+                pass
 
-    # Put the geo fields that came back up front.
+    download_variables_upper = [dv.upper() for dv in download_variables]
+
+    # Put the geo fields (STATE, COUNTY, etc...) that came back up front.
     df_data = df_data[
-        [col for col in df_data.columns if col not in download_variables]
-        + download_variables
+        [col for col in df_data.columns if col not in download_variables_upper]
+        + download_variables_upper
     ]
 
     if with_geometry:
@@ -805,6 +868,55 @@ class VariableSource(ABC):
         """
         raise NotImplementedError("Abstract method.")
 
+    @abstractmethod
+    def get_all_groups(self, dataset: str, year: int) -> Dict[str, Dict]:
+        """
+        Get information on a group of variables for a given dataset in a given year.
+
+        The return value is a dictionary that is very much like the JSON returned
+        from US Census API URLs like
+        https://api.census.gov/data/2020/acs/acs5/groups.json
+
+        See :py:meth:`~VariableSource.get_all_groups` for more details.
+
+        dataset
+            The census dataset, for example `dec/acs5` for ACS5 data
+            (https://www.census.gov/data/developers/data-sets/acs-5year.html and
+            https://api.census.gov/data/2020/acs/acs5.html)
+            or `dec/pl` for redistricting data
+            (https://www.census.gov/programs-surveys/decennial-census/about/rdo.html and
+            https://api.census.gov/data/2020/dec/pl.html)
+        year
+            The year
+
+        Returns
+        -------
+            A dictionary with a single key `"groups"`. The value
+            associated with that key is a dictionary that maps from the
+            names of groups to dictionaries of attributes
+            of each group.
+        """
+        raise NotImplementedError("Abstract method.")
+
+    @abstractmethod
+    def get_datasets(self, year: Optional[int]) -> Dict[str, Any]:
+        """
+        Get descriptions of all the datasets available for a given year.
+
+        Parameters
+        ----------
+        year
+            The year. If `None`, get all datasets for all years.
+
+        Returns
+        -------
+            A dictionary with a key "datasets". The value associated
+            with that key is a dictionary that maps from the names
+            of data sets to dictionaries of attributes of each data
+            set.
+        """
+        raise NotImplementedError("Abstract method.")
+
 
 class CensusApiVariableSource(VariableSource):
     """
@@ -903,6 +1015,24 @@ class CensusApiVariableSource(VariableSource):
 
         return f"https://api.census.gov/data/{year}/{dataset}/groups/{group_name}.json"
 
+    @staticmethod
+    def all_groups_url(dataset: str, year: int) -> str:
+        """
+        Get the URL to fetch the names of all groups.
+
+        Parameters
+        ----------
+        dataset
+            The census dataset.
+        year
+            The year
+
+        Returns
+        -------
+            The URL to fetch the metadata from.
+        """
+        return f"https://api.census.gov/data/{year}/{dataset}/groups.json"
+
     def get(self, dataset: str, year: int, name: str) -> Dict[str, Any]:
         url = self.url(dataset, year, name)
         value = json_from_url(url)
@@ -915,6 +1045,14 @@ class CensusApiVariableSource(VariableSource):
         url = self.group_url(dataset, year, name)
         value = json_from_url(url)
 
+        if True:
+            # Filter out psuedo-variables like 'for' and 'in'.
+            value["variables"] = {
+                k: v
+                for k, v in value["variables"].items()
+                if k not in ["in", "for", "ucgid"]
+            }
+
         # Put the name into the nested dictionaries, so it looks the same is if
         # we had gotten it via the variable API even though that API leaves it out.
         for k, v in value["variables"].items():
@@ -922,10 +1060,26 @@ class CensusApiVariableSource(VariableSource):
 
         return value
 
+    def get_all_groups(self, dataset: str, year: int) -> Dict[str, Dict]:
+        url = self.all_groups_url(dataset, year)
+        value = json_from_url(url)
+
+        return value
+
+    def get_datasets(self, year: Optional[int]) -> Dict[str, Any]:
+        if year is not None:
+            url = f"https://api.census.gov/data/{year}.json"
+        else:
+            url = "https://api.census.gov/data.json"
+
+        json = json_from_url(url)
+
+        return json
+
 
 class VariableCache:
     """
-    A cache of vatiables and groups.
+    A cache of variables and groups.
 
     This looks a lot like a :py:class:`~VariableSource` but it
     implements a cache in front of a :py:class:`~VariableSource`.
@@ -946,6 +1100,9 @@ class VariableCache:
         self._group_cache: DefaultDict[
             str, DefaultDict[int, Dict[str, Any]]
         ] = defaultdict(lambda: defaultdict(dict))
+
+        self._all_data_sets_cache: Optional[pd.DataFrame] = None
+        self._data_sets_by_year_cache: Dict[int, pd.DataFrame] = {}
 
     def get(
         self,
@@ -1126,6 +1283,167 @@ class VariableCache:
         def __repr__(self) -> str:
             return str(self)
 
+    def _all_data_sets(self) -> pd.DataFrame:
+        """
+        Get all the data sets.
+
+        Cache to avoid repeated remote calls.
+
+        Returns
+        -------
+            A data frame of all the data sets for all years.
+        """
+        if self._all_data_sets_cache is None:
+            datasets = self._variable_source.get_datasets(year=None)
+
+            self._all_data_sets_cache = self._datasets_from_source_dict(datasets)
+
+        return self._all_data_sets_cache
+
+    def _data_sets_for_year(self, year: int) -> pd.DataFrame:
+        """
+        Get all data sets for a given year.
+
+        Cache to avoid repeated remote calls.
+
+        Parameters
+        ----------
+        year
+            The year to query. If not provided, all data sets for all
+            years are queried.
+
+        Returns
+        -------
+            A data frame of all the data sets for the year.
+        """
+        if year not in self._data_sets_by_year_cache:
+            datasets = self._variable_source.get_datasets(year)
+
+            self._data_sets_by_year_cache[year] = self._datasets_from_source_dict(
+                datasets
+            )
+
+        return self._data_sets_by_year_cache[year]
+
+    @staticmethod
+    def _datasets_from_source_dict(datasets) -> pd.DataFrame:
+        """
+        Parse a dict from :py:meth:`VariableSource.get_datasets` into a data frame of data sets.
+
+        Parameters
+        ----------
+        datasets
+            The data sets in dictionary form.
+
+        Returns
+        -------
+            A dataframe with a row describing each dataset.
+        """
+        datasets = datasets["dataset"]
+        df = pd.DataFrame(
+            [
+                {
+                    "YEAR": dataset.get("c_vintage", None),
+                    "DATASET": "/".join(dataset["c_dataset"]),
+                    "TITLE": dataset.get("title", None),
+                    "DESCRIPTION": dataset.get("description", None),
+                }
+                for dataset in datasets
+            ]
+        )
+        return df.sort_values(["YEAR", "DATASET"]).reset_index(drop=True)
+
+    def all_data_sets(self, *, year: Optional[int] = None) -> pd.DataFrame:
+        """
+        Retrieve a description of available data sets.
+
+        Parameters
+        ----------
+        year
+            The year to query. If not provided, all data sets for all
+            years are queried.
+
+        Returns
+        -------
+            A data frame describing the data sets that are available.
+        """
+        if year is not None:
+            return self._data_sets_for_year(year)
+
+        return self._all_data_sets()
+
+    def all_groups(
+        self,
+        dataset: str,
+        year: int,
+    ) -> pd.DataFrame:
+        """
+        Get descriptions of all the groups in the data set.
+
+        Parameters
+        ----------
+        dataset
+            The data set.
+        year
+            The year.
+
+        Returns
+        -------
+            All the groups in the data set.
+        """
+        groups = self._variable_source.get_all_groups(dataset, year)
+
+        # Some data sets have no groups.
+        if len(groups["groups"]) == 0:
+            return pd.DataFrame(columns=["DATASET", "YEAR", "GROUP", "DESCRIPTION"])
+
+        return (
+            pd.DataFrame(
+                [
+                    {
+                        "DATASET": dataset,
+                        "YEAR": year,
+                        "GROUP": group["name"],
+                        "DESCRIPTION": group["description"],
+                    }
+                    for group in groups["groups"]
+                ]
+            )
+            .sort_values(["DATASET", "YEAR", "GROUP"])
+            .reset_index(drop=True)
+        )
+
+    def all_variables(
+        self, dataset: str, year: int, group_name: Optional[str]
+    ) -> pd.DataFrame:
+        group_variables = self.group_variables(dataset, year, group_name)
+
+        def variable_items(variable_dict: Dict) -> Optional[Dict[str, str]]:
+            if "values" in variable_dict:
+                values = variable_dict["values"]
+                return values.get("item", np.nan)
+
+            return None
+
+        return pd.DataFrame(
+            [
+                {
+                    "YEAR": year,
+                    "DATASET": dataset,
+                    "GROUP": self.get(dataset, year, variable_name).get(
+                        "group", np.nan
+                    ),
+                    "VARIABLE": variable_name,
+                    "LABEL": self.get(dataset, year, variable_name)["label"],
+                    "SUGGESTED_WEIGHT": self.get(dataset, year, variable_name).get(
+                        "suggested-weight", np.nan
+                    ),
+                    "VALUES": variable_items(self.get(dataset, year, variable_name)),
+                }
+                for variable_name in group_variables
+            ]
+        )
+
     def group_tree(
         self,
         dataset: str,
@@ -1140,6 +1458,13 @@ class VariableCache:
 
         for variable_name, details in group.items():
             path = details["label"].split("!!")
+
+            if skip_annotations and (
+                path[0].startswith("Annotation")
+                or path[0].startswith("Margin of Error")
+                or path[0].startswith("Statistical Significance")
+            ):
+                continue
 
             node = root
 
@@ -1196,6 +1521,7 @@ class VariableCache:
             calculations using the `divintseg` package.
         """
         tree = self.group_tree(dataset, year, name)
+
         leaves = tree.leaf_variables()
 
         if skip_annotations:
@@ -1208,6 +1534,44 @@ class VariableCache:
             )
 
         return sorted(leaves)
+
+    def group_variables(
+        self, dataset: str, year: int, group_name: str, *, skip_annotations: bool = True
+    ) -> List[str]:
+        """
+        Find the variables of a given group.
+
+        Parameters
+        ----------
+        dataset
+            The census dataset.
+        year
+            The year
+        group_name
+            The name of the group.
+        skip_annotations
+            If `True` try to filter out variables that are
+            annotations rather than actual values, by skipping
+            those with labels that begin with "Annotation" or
+            "Margin of Error".
+
+        Returns
+        -------
+            A list of the variables in the group.
+        """
+        tree = self.get_group(dataset, year, group_name)
+
+        if skip_annotations:
+            group_variables = [
+                k
+                for k, v in tree.items()
+                if (not v["label"].startswith("Annotation"))
+                and (not v["label"].startswith("Margin of Error"))
+            ]
+        else:
+            group_variables = list(tree.keys())
+
+        return sorted(group_variables)
 
     def __contains__(self, item: Tuple[str, int, str]) -> bool:
         """Magic method behind the `in` operator."""

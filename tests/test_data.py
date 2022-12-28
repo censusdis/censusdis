@@ -1,5 +1,5 @@
 import unittest
-from typing import Any, Dict, Iterable
+from typing import Any, Dict, Iterable, Optional
 
 import pandas as pd
 
@@ -29,6 +29,7 @@ class VariableCacheTestCase(unittest.TestCase):
         def __init__(self):
             self._gets = 0
             self._group_gets = 0
+            self._all_group_gets = 0
 
         @property
         def gets(self):
@@ -38,9 +39,14 @@ class VariableCacheTestCase(unittest.TestCase):
         def group_gets(self):
             return self._group_gets
 
+        @property
+        def all_group_gets(self):
+            return self._all_group_gets
+
         def reset_counts(self):
             self._gets = 0
             self._group_gets = 0
+            self._all_group_gets = 0
 
         def get(self, source: str, year: int, name: str) -> Dict[str, Any]:
             """
@@ -103,6 +109,35 @@ class VariableCacheTestCase(unittest.TestCase):
                         "universe": "TOTAL_POP",
                     },
                 }
+            }
+
+        def get_all_groups(self, dataset: str, year: int) -> Dict[str, Dict]:
+            """
+            Construct a collection (of size 1) of groups.
+
+            This looks a bit like a subset of what we might get from
+            https://api.census.gov/data/2020/acs/acs5/groups.json
+            """
+            self._all_group_gets = self.all_group_gets + 1
+
+            return {
+                "groups": {
+                    "name": "B03002",
+                    "description": "HISPANIC OR LATINO ORIGIN BY RACE",
+                    "universe ": "TOTAL_POP",
+                }
+            }
+
+        def get_datasets(self, year: Optional[int]) -> Dict[str, Any]:
+            return {
+                "datasets": [
+                    {
+                        "c_vintage": 2019 if year is None else year,
+                        "c_dataset": ["acs", "acs5"],
+                        "title": "American Community Survey: 5-Year Estimates: Data Tables",
+                        "description": "Description of the dataset...",
+                    }
+                ]
             }
 
         def group_variable_names(
