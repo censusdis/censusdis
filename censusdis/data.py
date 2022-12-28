@@ -198,8 +198,8 @@ def _download_concat(
 
     for df in dfs[1:]:
         extra_variables_match = (
-            rows0 == len(df.index) and
-            (dfs[0][extra_variables] == df[extra_variables]).all().all()
+            rows0 == len(df.index)
+            and (dfs[0][extra_variables] == df[extra_variables]).all().all()
         )
         if not extra_variables_match:
             # At least one difference. So we will have to
@@ -211,7 +211,7 @@ def _download_concat(
         # the data together.
         df_data = pd.concat(
             [dfs[0]] + [df.drop(extra_variables, axis="columns") for df in dfs[1:]],
-            axis="columns"
+            axis="columns",
         )
     else:
         # This is the kind of join that only works when the values
@@ -1395,9 +1395,7 @@ class VariableCache:
 
         # Some data sets have no groups.
         if len(groups["groups"]) == 0:
-            return pd.DataFrame(
-                columns=["DATASET", "YEAR", "GROUP", "DESCRIPTION"]
-            )
+            return pd.DataFrame(columns=["DATASET", "YEAR", "GROUP", "DESCRIPTION"])
 
         return (
             pd.DataFrame(
@@ -1432,11 +1430,15 @@ class VariableCache:
                 {
                     "YEAR": year,
                     "DATASET": dataset,
-                    "GROUP": self.get(dataset, year, variable_name).get("group", np.nan),
+                    "GROUP": self.get(dataset, year, variable_name).get(
+                        "group", np.nan
+                    ),
                     "VARIABLE": variable_name,
                     "LABEL": self.get(dataset, year, variable_name)["label"],
-                    "SUGGESTED_WEIGHT": self.get(dataset, year, variable_name).get("suggested-weight", np.nan),
-                    "VALUES": variable_items(self.get(dataset, year, variable_name))
+                    "SUGGESTED_WEIGHT": self.get(dataset, year, variable_name).get(
+                        "suggested-weight", np.nan
+                    ),
+                    "VALUES": variable_items(self.get(dataset, year, variable_name)),
                 }
                 for variable_name in group_variables
             ]
