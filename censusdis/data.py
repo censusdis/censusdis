@@ -9,6 +9,7 @@ it wraps in a pythonic manner.
 import warnings
 from abc import ABC, abstractmethod
 from collections import defaultdict
+from logging import getLogger
 from typing import (
     Any,
     DefaultDict,
@@ -29,6 +30,10 @@ import requests
 
 import censusdis.geography as cgeo
 import censusdis.maps as cmap
+
+
+logger = getLogger(__name__)
+
 
 # This is the type we can accept for geographic
 # filters. When provided, these filters are either
@@ -55,6 +60,8 @@ class CensusApiException(Exception):
 
 
 def data_from_url(url: str, params: Optional[Mapping[str, str]] = None) -> pd.DataFrame:
+    logger.info(f"Downloading data from {url} with {params}.")
+
     parsed_json = json_from_url(url, params)
 
     return _df_from_census_json(parsed_json)
