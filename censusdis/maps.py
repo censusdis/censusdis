@@ -19,12 +19,13 @@ from shapely import affinity
 from shapely.geometry import MultiPolygon, Polygon, Point
 from shapely.geometry.base import BaseGeometry
 
+from censusdis.impl.exceptions import CensusApiException
 from censusdis.states import STATE_AK, STATE_HI, TERRITORY_PR
 
 logger = getLogger(__name__)
 
 
-class MapException(Exception):
+class MapException(CensusApiException):
     pass
 
 
