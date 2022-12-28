@@ -10,13 +10,13 @@ import os
 import shutil
 from logging import getLogger
 from typing import Optional, Union
-from zipfile import ZipFile, BadZipFile
+from zipfile import BadZipFile, ZipFile
 
 import geopandas as gpd
 import requests
 import shapely.affinity
 from shapely import affinity
-from shapely.geometry import MultiPolygon, Polygon, Point
+from shapely.geometry import MultiPolygon, Point, Polygon
 from shapely.geometry.base import BaseGeometry
 
 from censusdis.impl.exceptions import CensusApiException

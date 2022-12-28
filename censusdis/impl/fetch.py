@@ -3,12 +3,11 @@
 Utilities for loading census data.
 """
 
-from typing import Optional, Mapping, Any
+from logging import getLogger
+from typing import Any, Mapping, Optional
 
 import pandas as pd
 import requests
-
-from logging import getLogger
 
 from censusdis.impl.exceptions import CensusApiException
 

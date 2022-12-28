@@ -1,8 +1,8 @@
 import unittest
-from typing import Dict, Any, Optional, Iterable
+from typing import Any, Dict, Iterable, Optional
 
-from censusdis.impl.varsource.base import VariableSource
 from censusdis.impl.varcache import VariableCache
+from censusdis.impl.varsource.base import VariableSource
 
 
 class VariableCacheTestCase(unittest.TestCase):

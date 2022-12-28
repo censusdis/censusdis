@@ -3,7 +3,7 @@
 A variable source that loads metadata about variables from the U.S. Census API.
 """
 
-from typing import Optional, Dict, Any
+from typing import Any, Dict, Optional
 
 from censusdis.impl.fetch import json_from_url
 from censusdis.impl.varsource.base import VariableSource

@@ -4,7 +4,8 @@ Variable cache code to cache metatada about variables locally.
 """
 
 from collections import defaultdict
-from typing import Optional, DefaultDict, Dict, Any, Iterable, Tuple, Generator, List
+from typing import (Any, DefaultDict, Dict, Generator, Iterable, List,
+                    Optional, Tuple)
 
 import numpy as np
 import pandas as pd

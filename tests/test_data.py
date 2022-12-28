@@ -2,8 +2,8 @@ import unittest
 
 import pandas as pd
 
-from censusdis import CensusApiException
 import censusdis.data as ced
+from censusdis import CensusApiException
 
 
 class TestFilters(unittest.TestCase):

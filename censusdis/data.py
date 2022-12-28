@@ -7,15 +7,7 @@ it wraps in a pythonic manner.
 """
 
 import warnings
-from typing import (
-    Dict,
-    Iterable,
-    List,
-    Mapping,
-    Optional,
-    Tuple,
-    Union,
-)
+from typing import Dict, Iterable, List, Mapping, Optional, Tuple, Union
 
 import geopandas as gpd
 import pandas as pd
