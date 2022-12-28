@@ -4,6 +4,11 @@ from typing import Any, Dict, Iterable, Optional
 import pandas as pd
 
 import censusdis.data as ced
+import censusdis.impl.exceptions
+import censusdis.impl.fetch
+import censusdis.impl.varcache
+import censusdis.impl.varsource.base
+import censusdis.impl.varsource.censusapi
 from censusdis.data import _gf2s
 
 
@@ -23,7 +28,7 @@ class TestFilters(unittest.TestCase):
 
 
 class VariableCacheTestCase(unittest.TestCase):
-    class MockVariableSource(ced.VariableSource):
+    class MockVariableSource(censusdis.impl.varsource.base.VariableSource):
         """A mock variable source."""
 
         def __init__(self):
@@ -152,7 +157,9 @@ class VariableCacheTestCase(unittest.TestCase):
         self.source = "acs/acs5"
         self.year = 2020
         self.mock_source = self.MockVariableSource()
-        self.variables = ced.VariableCache(variable_source=self.mock_source)
+        self.variables = censusdis.impl.varcache.VariableCache(
+            variable_source=self.mock_source
+        )
 
     def test_operators(self):
         """Test basic operators."""
@@ -373,7 +380,9 @@ class VariableCacheTestCase(unittest.TestCase):
 
 class CensusApiVariableSourceTestCase(unittest.TestCase):
     def setUp(self) -> None:
-        self._variable_source = ced.CensusApiVariableSource()
+        self._variable_source = (
+            censusdis.impl.varsource.censusapi.CensusApiVariableSource()
+        )
         self._dataset = "acs/acs5"
         self._year = 2020
         self._group_name = "B01001"
@@ -424,14 +433,14 @@ class ParseCensusJsonTestCase(unittest.TestCase):
             columns=["B01001_001E", "STATE", "COUNTY", "TRACT"],
         )
 
-        df = ced._df_from_census_json(parsed_json)
+        df = censusdis.impl.fetch._df_from_census_json(parsed_json)
 
         self.assertTrue((df == expected_df).all().all())
 
     def test_parse_bad_json(self):
 
-        with self.assertRaises(ced.CensusApiException):
-            ced._df_from_census_json([])
+        with self.assertRaises(censusdis.impl.exceptions.CensusApiException):
+            censusdis.impl.fetch._df_from_census_json([])
 
 
 class InferGeoTestCase(unittest.TestCase):
@@ -468,14 +477,14 @@ class InferGeoTestCase(unittest.TestCase):
         """County without state is ambiguous and does not match."""
         df = pd.DataFrame([["013"]], columns=["COUNTY"])
 
-        with self.assertRaises(ced.CensusApiException):
+        with self.assertRaises(censusdis.impl.exceptions.CensusApiException):
             _ = ced.infer_geo_level(df)
 
     def test_infer_geo_no_match_block_group(self):
         """Missing state and county is ambiguous and does not match."""
         df = pd.DataFrame([["019400", "1"]], columns=["TRACT", "BLOCK_GROUP"])
 
-        with self.assertRaises(ced.CensusApiException) as cm:
+        with self.assertRaises(censusdis.impl.exceptions.CensusApiException) as cm:
             _ = ced.infer_geo_level(df)
 
         # Make sure the text is informative.
@@ -490,7 +499,7 @@ class InferGeoTestCase(unittest.TestCase):
             [["34", "019400", "1"]], columns=["STATE", "TRACT", "BLOCK_GROUP"]
         )
 
-        with self.assertRaises(ced.CensusApiException) as cm:
+        with self.assertRaises(censusdis.impl.exceptions.CensusApiException) as cm:
             _ = ced.infer_geo_level(df)
 
         # Make sure the text is informative.

@@ -14,6 +14,8 @@ import geopandas as gpd
 import numpy as np
 import pandas as pd
 
+import censusdis.impl.exceptions
+import censusdis.impl.varsource.censusapi
 from censusdis import data as ced
 from censusdis import maps as cmp
 from censusdis.states import (
@@ -47,7 +49,9 @@ class DownloadTestCase(unittest.TestCase):
 
     def setUp(self) -> None:
         """Set up before each test."""
-        self._variable_source = ced.CensusApiVariableSource()
+        self._variable_source = (
+            censusdis.impl.varsource.censusapi.CensusApiVariableSource()
+        )
         self._dataset = "acs/acs5"
         self._year = 2020
         self._group_name = "B19001"
@@ -89,7 +93,7 @@ class DownloadTestCase(unittest.TestCase):
     def test_bad_variable(self):
         """Try to download a variable that does not exist."""
 
-        with self.assertRaises(ced.CensusApiException) as cm:
+        with self.assertRaises(censusdis.impl.exceptions.CensusApiException) as cm:
             ced.download(
                 self._dataset,
                 self._year,
@@ -230,7 +234,9 @@ class DownloadTestCase(unittest.TestCase):
     def test_download_with_geometry_cousub(self):
         """Download at the county level with geometry."""
 
-        with self.assertRaises(ced.CensusApiException) as assertion:
+        with self.assertRaises(
+            censusdis.impl.exceptions.CensusApiException
+        ) as assertion:
             ced.download(
                 self._dataset,
                 self._year,
