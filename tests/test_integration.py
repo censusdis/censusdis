@@ -111,35 +111,6 @@ class DownloadTestCase(unittest.TestCase):
             str(cm.exception),
         )
 
-    def test_wide(self):
-        """
-        Download a really wide set of variables.
-
-        The goal is to trigger a call to
-        `_download_concat`.
-        """
-
-        # A bunch of sex by age variables.
-        variables = (
-            [f"B01001_{ii:03d}E" for ii in range(1, 50)]
-            + [f"B01001A_{ii:03d}E" for ii in range(1, 32)]
-            + [f"B01001B_{ii:03d}E" for ii in range(1, 32)]
-            + [f"B01001I_{ii:03d}E" for ii in range(1, 32)]
-        )
-
-        self.assertGreater(len(variables), ced._MAX_FIELDS_PER_DOWNLOAD)
-
-        df = ced.download(
-            self._dataset, self._year, ["NAME"] + variables, state=STATE_NJ, county="*"
-        )
-
-        # One column per variable plus state, county, and name.
-        self.assertEqual((21, 3 + len(variables)), df.shape)
-
-        columns = set(df.columns)
-        for variable in ["STATE", "COUNTY", "NAME"] + variables:
-            self.assertIn(variable, columns)
-
     def test_download_with_geometry_county(self):
         """Download at the county level with geometry."""
 
@@ -374,6 +345,153 @@ class DownloadTestCase(unittest.TestCase):
         self.assertIn("BLOCK_GROUP", df.columns)
         self.assertIn("NAME", df.columns)
         self.assertIn(self._name, df.columns)
+
+    def test_get_all_groups(self):
+        """Test get_all_groups and related functionality."""
+        df_groups = ced.variables.all_groups(self._dataset, self._year)
+
+        group = df_groups.iloc[0]["GROUP"]
+
+        df_variables = ced.variables.all_variables(self._dataset, self._year, group)
+
+        self.assertEqual((49, 7), df_variables.shape)
+
+        self.assertEqual(
+            [
+                "YEAR",
+                "DATASET",
+                "GROUP",
+                "VARIABLE",
+                "LABEL",
+                "SUGGESTED_WEIGHT",
+                "VALUES",
+            ],
+            list(df_variables.columns),
+        )
+
+        self.assertTrue((df_variables["GROUP"] == group).all())
+
+    def test_get_all_datasets(self):
+        """Test getting all data sets."""
+        df_datasets = ced.variables.all_data_sets()
+
+        df_datasets_for_year = ced.variables.all_data_sets(year=self._year)
+
+        self.assertEqual(list(df_datasets.columns), list(df_datasets_for_year.columns))
+
+        # There are more total than in the one year.
+        self.assertGreater(len(df_datasets.index), len(df_datasets_for_year.index))
+
+        # Everything in the year is in the year.
+        self.assertTrue((df_datasets_for_year["YEAR"] == self._year).all())
+
+        # Everything in the year is in the df of all datasets.
+        df_both = df_datasets_for_year.merge(
+            df_datasets,
+            on=list(df_datasets.columns),
+        )
+
+        self.assertEqual(df_both.shape, df_datasets_for_year.shape)
+
+        self.assertTrue((df_both == df_datasets_for_year).all().all())
+
+
+class DownloadWideTestCase(unittest.TestCase):
+    """
+    Test downloading wide tables.
+
+    For these cases, we have to make multiple calls to the census
+    API and then merge or concatenate the results that come back,
+    depending on the details of the scenario.
+    """
+
+    def test_wide_possible_merge(self):
+        """
+        Download a really wide set of variables.
+
+        The goal is to trigger a call to
+        `_download_concat`. This version is for a scenario
+        that will *sometimes* trigger the merge strategy
+        because not all the queries will return rows with
+        the query variable STATE in the same order.
+
+        But other times all the calls of 50 columns come back
+        in the same order, which triggers the concat strategy.
+
+        The hope here is that if our merge strategy code is
+        broken that it will be invoked often enough by this
+        integration test's interaction with the census API
+        that we will catch the bug.
+        """
+
+        dataset = "acs/acs1/spp"
+        year = 2019
+        group = "S0201"
+
+        variables = ced.variables.group_variables(
+            dataset, year, group, skip_annotations=False
+        )
+
+        self.assertGreater(len(variables), ced._MAX_FIELDS_PER_DOWNLOAD)
+
+        metrics_0 = ced._download_wide_strategy_metrics()
+
+        df = ced.download(dataset, year, variables, state="*")
+
+        metrics_1 = ced._download_wide_strategy_metrics()
+
+        metrics_diff = {k: v - metrics_0[k] for k, v in metrics_1.items()}
+
+        # At this point we would like to assert that metrics_diff tells
+        # us we used the merge strategy. But we can't because sometimes
+        # the results all come back in order and we use the concat
+        # strategy.
+        _ = metrics_diff
+
+        self.assertEqual((51, 1 + len(variables)), df.shape)
+
+        columns = set(df.columns)
+        for variable in variables:
+            self.assertIn(variable, columns)
+
+    def test_wide_concat(self):
+        """
+        Download a really wide set of variables.
+
+        The goal is to trigger a call to
+        `_download_concat`. This version is for a scenario
+        that will trigger the concat strategy because the
+        query column (state in this case) is not unique.
+        """
+        dataset = "cps/basic/nov"
+        year = 2020
+
+        variables = ced.variables.group_variables(dataset, year, None)
+
+        self.assertEqual(389, len(variables))
+        self.assertGreater(len(variables), ced._MAX_FIELDS_PER_DOWNLOAD)
+
+        metrics_0 = ced._download_wide_strategy_metrics()
+
+        df = ced.download(dataset, year, variables, state=STATE_NJ)
+
+        metrics_1 = ced._download_wide_strategy_metrics()
+
+        metrics_diff = {k: v - metrics_0[k] for k, v in metrics_1.items()}
+
+        self.assertEqual(1, metrics_diff["concat"])
+        self.assertEqual(0, metrics_diff["merge"])
+
+        # One column per variable, plus state. Lots of rows.
+        self.assertEqual((2109, len(variables) + 1), df.shape)
+
+        # All the same state.
+        self.assertTrue((df["STATE"] == STATE_NJ).all())
+
+        # One column per variable plus state.
+        columns = set(df.columns)
+        for variable in ["STATE"] + variables:
+            self.assertIn(variable, columns)
 
 
 class AcsSubjectTestCase(unittest.TestCase):

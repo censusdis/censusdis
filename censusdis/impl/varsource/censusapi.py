@@ -3,7 +3,7 @@
 A variable source that loads metadata about variables from the U.S. Census API.
 """
 
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 
 from censusdis.impl.fetch import json_from_url
 from censusdis.impl.varsource.base import VariableSource
@@ -151,7 +151,7 @@ class CensusApiVariableSource(VariableSource):
 
         return value
 
-    def get_all_groups(self, dataset: str, year: int) -> Dict[str, Dict]:
+    def get_all_groups(self, dataset: str, year: int) -> Dict[str, List]:
         url = self.all_groups_url(dataset, year)
         value = json_from_url(url)
 

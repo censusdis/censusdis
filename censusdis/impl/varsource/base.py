@@ -8,7 +8,7 @@ from the U.S. Census API.
 """
 
 from abc import ABC, abstractmethod
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 
 
 class VariableSource(ABC):
@@ -123,7 +123,7 @@ class VariableSource(ABC):
         raise NotImplementedError("Abstract method.")
 
     @abstractmethod
-    def get_all_groups(self, dataset: str, year: int) -> Dict[str, Dict]:
+    def get_all_groups(self, dataset: str, year: int) -> Dict[str, List]:
         """
         Get information on a group of variables for a given dataset in a given year.
 

@@ -42,6 +42,24 @@ def _gf2s(geo_filter: GeoFilterType) -> Optional[str]:
 _MAX_FIELDS_PER_DOWNLOAD = 50
 
 
+__dw_strategy_metrics = {"merge": 0, "concat": 0}
+"""
+Counters for how often we use each strategy for wide tables.
+"""
+
+
+def _download_wide_strategy_metrics() -> Dict[str, int]:
+    """
+    Metrics on which strategies have been used for wide tables.
+
+    Returns
+    -------
+        A dictionary of metrics on how often each strategy has
+        been used.
+    """
+    return dict(**__dw_strategy_metrics)
+
+
 def _download_concat(
     dataset: str,
     year: int,
@@ -150,6 +168,9 @@ def _download_concat(
     if extra_variables_match:
         # Having done the verification, we can concatenate all
         # the data together.
+
+        __dw_strategy_metrics["concat"] = __dw_strategy_metrics["concat"] + 1
+
         df_data = pd.concat(
             [dfs[0]] + [df.drop(extra_variables, axis="columns") for df in dfs[1:]],
             axis="columns",
@@ -168,6 +189,8 @@ def _download_concat(
                 )
 
         # Now we can do the merging strategy.
+        __dw_strategy_metrics["merge"] = __dw_strategy_metrics["merge"] + 1
+
         df_data = dfs[0]
 
         for df_right in dfs[1:]:

@@ -1,5 +1,5 @@
 import unittest
-from typing import Any, Dict, Iterable, Optional
+from typing import Any, Dict, Iterable, List, Optional
 
 from censusdis.impl.varcache import VariableCache
 from censusdis.impl.varsource.base import VariableSource
@@ -94,7 +94,7 @@ class VariableCacheTestCase(unittest.TestCase):
                 }
             }
 
-        def get_all_groups(self, dataset: str, year: int) -> Dict[str, Dict]:
+        def get_all_groups(self, dataset: str, year: int) -> Dict[str, List]:
             """
             Construct a collection (of size 1) of groups.
 
@@ -104,16 +104,25 @@ class VariableCacheTestCase(unittest.TestCase):
             self._all_group_gets = self.all_group_gets + 1
 
             return {
-                "groups": {
-                    "name": "B03002",
-                    "description": "HISPANIC OR LATINO ORIGIN BY RACE",
-                    "universe ": "TOTAL_POP",
-                }
+                "groups": [
+                    {
+                        "name": "B03001",
+                        "description": "HISPANIC OR LATINO ORIGIN BY SPECIFIC ORIGIN",
+                        "variables": "http://api.census.gov/data/2020/acs/acs5/groups/B03001.json",
+                        "universe ": "TOTAL_POP",
+                    },
+                    {
+                        "name": "B25031",
+                        "description": "MEDIAN GROSS RENT BY BEDROOMS",
+                        "variables": "http://api.census.gov/data/2020/acs/acs5/groups/B25031.json",
+                        "universe ": "RENTER_OCCUPIED_UNIT_CASH",
+                    },
+                ]
             }
 
         def get_datasets(self, year: Optional[int]) -> Dict[str, Any]:
             return {
-                "datasets": [
+                "dataset": [
                     {
                         "c_vintage": 2019 if year is None else year,
                         "c_dataset": ["acs", "acs5"],
@@ -352,6 +361,74 @@ class VariableCacheTestCase(unittest.TestCase):
 
                     for leaf_node in ethnicity_node.values():
                         self.assertTrue(leaf_node.is_leaf())
+
+    def test_all_datasets(self):
+        """
+        Test :py:meth:`~censisdis.impl.varcache.VariableCache.all_data_sets`.
+
+        Do it twice to cover the cached and uncached code paths.
+        """
+        df_datasets_first_time = self.variables.all_data_sets()
+
+        self.assertEqual((1, 4), df_datasets_first_time.shape)
+
+        df_datasets_cached = self.variables.all_data_sets()
+
+        self.assertTrue((df_datasets_first_time == df_datasets_cached).all().all())
+
+        print(df_datasets_cached)
+
+        self.assertEqual(
+            ["YEAR", "DATASET", "TITLE", "DESCRIPTION"],
+            list(df_datasets_cached.columns),
+        )
+
+    def test_all_groups(self):
+        """
+        Test :py:meth:`~censisdis.impl.varcache.VariableCache.all_groups`.
+
+        Do it twice to cover the cached and uncached code paths.
+        """
+        df_datasets = self.variables.all_data_sets()
+
+        dataset = df_datasets.iloc[0]["DATASET"]
+        year = df_datasets.iloc[0]["YEAR"]
+
+        df_groups_first_time = self.variables.all_groups(dataset, year)
+        self.assertEqual((2, 4), df_groups_first_time.shape)
+
+        df_groups_cached = self.variables.all_groups(dataset, year)
+
+        self.assertTrue((df_groups_first_time == df_groups_cached).all().all())
+
+    def test_all_variables(self):
+        """
+        Test :py:meth:`~censisdis.impl.varcache.VariableCache.all_variables`.
+
+        Do it twice to cover the cached and uncached code paths.
+        """
+        df_datasets = self.variables.all_data_sets()
+
+        dataset = df_datasets.iloc[0]["DATASET"]
+        year = df_datasets.iloc[0]["YEAR"]
+
+        df_groups = self.variables.all_groups(dataset, year)
+
+        group = df_groups.iloc[0]["GROUP"]
+
+        df_variables_first_time = self.variables.all_variables(dataset, year, group)
+
+        self.assertEqual((3, 7), df_variables_first_time.shape)
+
+        df_variables_cached = self.variables.all_variables(dataset, year, group)
+
+        # The last two columns are null, so they don't compare as equal. But make
+        # sure both are or they are equal, but not both.
+        df_equal_or_both_null = (df_variables_first_time == df_variables_cached) ^ (
+            df_variables_cached.isnull() & df_variables_cached.isnull()
+        )
+
+        self.assertTrue(df_equal_or_both_null.all().all())
 
 
 if __name__ == "__main__":
