@@ -6,12 +6,11 @@
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
-import mock
-
 import os
 import sys
-
 from typing import MutableMapping
+
+import mock
 
 # We have to mock out certain modules that are not pure
 # python because RTD will not import them.

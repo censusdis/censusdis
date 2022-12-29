@@ -14,13 +14,15 @@ import geopandas as gpd
 import numpy as np
 import pandas as pd
 
+import censusdis.impl.exceptions
+import censusdis.impl.varsource.censusapi
 from censusdis import data as ced
 from censusdis import maps as cmp
 from censusdis.states import (
+    ALL_STATES_AND_DC,
+    STATE_CA,
     STATE_NJ,
     STATE_NY,
-    STATE_CA,
-    ALL_STATES_AND_DC,
     TERRITORY_PR,
 )
 
@@ -47,7 +49,9 @@ class DownloadTestCase(unittest.TestCase):
 
     def setUp(self) -> None:
         """Set up before each test."""
-        self._variable_source = ced.CensusApiVariableSource()
+        self._variable_source = (
+            censusdis.impl.varsource.censusapi.CensusApiVariableSource()
+        )
         self._dataset = "acs/acs5"
         self._year = 2020
         self._group_name = "B19001"
@@ -89,7 +93,7 @@ class DownloadTestCase(unittest.TestCase):
     def test_bad_variable(self):
         """Try to download a variable that does not exist."""
 
-        with self.assertRaises(ced.CensusApiException) as cm:
+        with self.assertRaises(censusdis.impl.exceptions.CensusApiException) as cm:
             ced.download(
                 self._dataset,
                 self._year,
@@ -106,35 +110,6 @@ class DownloadTestCase(unittest.TestCase):
             "https://api.census.gov/data/2020/acs/acs5/variables.html",
             str(cm.exception),
         )
-
-    def test_wide(self):
-        """
-        Download a really wide set of variables.
-
-        The goal is to trigger a call to
-        `_download_concat`.
-        """
-
-        # A bunch of sex by age variables.
-        variables = (
-            [f"B01001_{ii:03d}E" for ii in range(1, 50)]
-            + [f"B01001A_{ii:03d}E" for ii in range(1, 32)]
-            + [f"B01001B_{ii:03d}E" for ii in range(1, 32)]
-            + [f"B01001I_{ii:03d}E" for ii in range(1, 32)]
-        )
-
-        self.assertGreater(len(variables), ced._MAX_FIELDS_PER_DOWNLOAD)
-
-        df = ced.download(
-            self._dataset, self._year, ["NAME"] + variables, state=STATE_NJ, county="*"
-        )
-
-        # One column per variable plus state, county, and name.
-        self.assertEqual((21, 3 + len(variables)), df.shape)
-
-        columns = set(df.columns)
-        for variable in ["STATE", "COUNTY", "NAME"] + variables:
-            self.assertIn(variable, columns)
 
     def test_download_with_geometry_county(self):
         """Download at the county level with geometry."""
@@ -230,7 +205,9 @@ class DownloadTestCase(unittest.TestCase):
     def test_download_with_geometry_cousub(self):
         """Download at the county level with geometry."""
 
-        with self.assertRaises(ced.CensusApiException) as assertion:
+        with self.assertRaises(
+            censusdis.impl.exceptions.CensusApiException
+        ) as assertion:
             ced.download(
                 self._dataset,
                 self._year,
@@ -368,6 +345,153 @@ class DownloadTestCase(unittest.TestCase):
         self.assertIn("BLOCK_GROUP", df.columns)
         self.assertIn("NAME", df.columns)
         self.assertIn(self._name, df.columns)
+
+    def test_get_all_groups(self):
+        """Test get_all_groups and related functionality."""
+        df_groups = ced.variables.all_groups(self._dataset, self._year)
+
+        group = df_groups.iloc[0]["GROUP"]
+
+        df_variables = ced.variables.all_variables(self._dataset, self._year, group)
+
+        self.assertEqual((49, 7), df_variables.shape)
+
+        self.assertEqual(
+            [
+                "YEAR",
+                "DATASET",
+                "GROUP",
+                "VARIABLE",
+                "LABEL",
+                "SUGGESTED_WEIGHT",
+                "VALUES",
+            ],
+            list(df_variables.columns),
+        )
+
+        self.assertTrue((df_variables["GROUP"] == group).all())
+
+    def test_get_all_datasets(self):
+        """Test getting all data sets."""
+        df_datasets = ced.variables.all_data_sets()
+
+        df_datasets_for_year = ced.variables.all_data_sets(year=self._year)
+
+        self.assertEqual(list(df_datasets.columns), list(df_datasets_for_year.columns))
+
+        # There are more total than in the one year.
+        self.assertGreater(len(df_datasets.index), len(df_datasets_for_year.index))
+
+        # Everything in the year is in the year.
+        self.assertTrue((df_datasets_for_year["YEAR"] == self._year).all())
+
+        # Everything in the year is in the df of all datasets.
+        df_both = df_datasets_for_year.merge(
+            df_datasets,
+            on=list(df_datasets.columns),
+        )
+
+        self.assertEqual(df_both.shape, df_datasets_for_year.shape)
+
+        self.assertTrue((df_both == df_datasets_for_year).all().all())
+
+
+class DownloadWideTestCase(unittest.TestCase):
+    """
+    Test downloading wide tables.
+
+    For these cases, we have to make multiple calls to the census
+    API and then merge or concatenate the results that come back,
+    depending on the details of the scenario.
+    """
+
+    def test_wide_merge(self):
+        """
+        Download a really wide set of variables.
+
+        The goal is to trigger a call to
+        `_download_multiple`. This version is for a scenario
+        that will trigger the merge strategy because each
+        sub-query will have rows with a unique geogrpahic key.
+        """
+
+        dataset = "acs/acs1/spp"
+        year = 2019
+        group = "S0201"
+
+        variables = ced.variables.group_variables(
+            dataset, year, group, skip_annotations=False
+        )
+
+        self.assertGreater(len(variables), ced._MAX_VARIABLES_PER_DOWNLOAD)
+
+        metrics_0 = ced._download_wide_strategy_metrics()
+
+        df = ced.download(dataset, year, variables, state="*")
+
+        metrics_1 = ced._download_wide_strategy_metrics()
+
+        metrics_diff = {k: v - metrics_0[k] for k, v in metrics_1.items()}
+
+        self.assertEqual(1, metrics_diff["merge"])
+        self.assertEqual(0, metrics_diff["concat"])
+
+        self.assertEqual((51, 1 + len(variables)), df.shape)
+
+        columns = set(df.columns)
+        for variable in variables:
+            self.assertIn(variable, columns)
+
+    def test_wide_concat(self):
+        """
+        Download a really wide set of variables.
+
+        The goal is to trigger a call to
+        `_download_multiple`. This version is for a scenario
+        that will trigger the concat strategy because the
+        query column (state in this case) is not unique.
+        """
+        dataset = "cps/basic/nov"
+        year = 2020
+
+        variables = ced.variables.group_variables(dataset, year, None)
+
+        self.assertEqual(389, len(variables))
+        self.assertGreater(len(variables), ced._MAX_VARIABLES_PER_DOWNLOAD)
+
+        metrics_0 = ced._download_wide_strategy_metrics()
+
+        with self.assertLogs(ced.__name__, level="INFO") as cm:
+            df = ced.download(dataset, year, variables, state=STATE_NJ)
+
+        # Make sure we got the log message.
+
+        self.assertTrue(
+            any(
+                message.startswith(
+                    "INFO:censusdis.data:Using the concat strategy, which is not guaranteed reliable if "
+                )
+                for message in cm.output
+            )
+        )
+
+        metrics_1 = ced._download_wide_strategy_metrics()
+
+        metrics_diff = {k: v - metrics_0[k] for k, v in metrics_1.items()}
+
+        self.assertEqual(1, metrics_diff["concat"])
+        self.assertEqual(0, metrics_diff["merge"])
+
+        # One column per variable, plus state. Lots of rows.
+        self.assertEqual((2109, len(variables) + 1), df.shape)
+
+        # All the same state.
+        self.assertTrue((df["STATE"] == STATE_NJ).all())
+
+        # One column per variable plus state.
+        columns = set(df.columns)
+        for variable in ["STATE"] + variables:
+            self.assertIn(variable, columns)
 
 
 class AcsSubjectTestCase(unittest.TestCase):

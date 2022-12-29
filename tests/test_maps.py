@@ -1,14 +1,14 @@
-import os.path
 import filecmp
+import os.path
 import sys
-import unittest
 import tempfile
-from shapely.geometry import Polygon
-from pyproj.crs import CRS
+import unittest
 from shutil import rmtree
 
 import geopandas as gpd
 import matplotlib.pyplot as plt
+from pyproj.crs import CRS
+from shapely.geometry import Polygon
 
 import censusdis.maps as cmap
 from censusdis.states import ALL_STATES_DC_AND_PR, STATE_WY

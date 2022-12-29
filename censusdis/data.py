@@ -1,35 +1,24 @@
 # Copyright (c) 2022 Darren Erik Vengroff
 """
-Utilities for loading census dats.
+Utilities for loading census data.
 
 This module relies on the US Census API, which
 it wraps in a pythonic manner.
 """
 
 import warnings
-from abc import ABC, abstractmethod
-from collections import defaultdict
 from logging import getLogger
-from typing import (
-    Any,
-    DefaultDict,
-    Dict,
-    Generator,
-    Iterable,
-    List,
-    Mapping,
-    Optional,
-    Tuple,
-    Union,
-)
+from typing import Dict, Iterable, List, Mapping, Optional, Tuple, Union
 
 import geopandas as gpd
 import pandas as pd
-import numpy as np
-import requests
 
 import censusdis.geography as cgeo
 import censusdis.maps as cmap
+from censusdis.impl.exceptions import CensusApiException
+from censusdis.impl.fetch import data_from_url
+from censusdis.impl.varcache import VariableCache
+from censusdis.impl.varsource.censusapi import CensusApiVariableSource
 
 
 logger = getLogger(__name__)
@@ -55,60 +44,38 @@ def _gf2s(geo_filter: GeoFilterType) -> Optional[str]:
     return ",".join(geo_filter)
 
 
-class CensusApiException(Exception):
-    pass
+_MAX_VARIABLES_PER_DOWNLOAD = 50
+"""
+The maximum number of variables we can ask for in one census API query.
+
+The U.S. Census sets this limit, not us. In order to not expose our
+users to the limit, :py:func:`~download` mostly obscures the fact that
+requests to download more than this many variables are broken into
+multiple calls to the census API and then the results are stitched back
+together be either merging or concatenation. This is all handled in
+:py:func:`~_download_multiple`.
+"""
 
 
-def data_from_url(url: str, params: Optional[Mapping[str, str]] = None) -> pd.DataFrame:
-    logger.info(f"Downloading data from {url} with {params}.")
-
-    parsed_json = json_from_url(url, params)
-
-    return _df_from_census_json(parsed_json)
+__dw_strategy_metrics = {"merge": 0, "concat": 0}
+"""
+Counters for how often we use each strategy for wide tables.
+"""
 
 
-def _df_from_census_json(parsed_json):
+def _download_wide_strategy_metrics() -> Dict[str, int]:
+    """
+    Metrics on which strategies have been used for wide tables.
 
-    if (
-        isinstance(parsed_json, list)
-        and len(parsed_json) >= 1
-        and isinstance(parsed_json[0], list)
-    ):
-        return pd.DataFrame(
-            parsed_json[1:],
-            columns=[
-                c.upper()
-                .replace(" ", "_")
-                .replace("-", "_")
-                .replace("/", "_")
-                .replace("(", "")
-                .replace(")", "")
-                for c in parsed_json[0]
-            ],
-        )
-
-    raise CensusApiException(
-        f"Expected json data to be a list of lists, not a {type(parsed_json)}"
-    )
+    Returns
+    -------
+        A dictionary of metrics on how often each strategy has
+        been used.
+    """
+    return dict(**__dw_strategy_metrics)
 
 
-def json_from_url(url: str, params: Optional[Mapping[str, str]] = None) -> Any:
-    request = requests.get(url, params=params)
-
-    if request.status_code == 200:
-        parsed_json = request.json()
-        return parsed_json
-
-    # Do our best to tell the user something informative.
-    raise CensusApiException(
-        f"Census API request to {request.url} failed with status {request.status_code}. {request.text}"
-    )
-
-
-_MAX_FIELDS_PER_DOWNLOAD = 50
-
-
-def _download_concat(
+def _download_multiple(
     dataset: str,
     year: int,
     fields: List[str],
@@ -156,14 +123,14 @@ def _download_concat(
     # Divide the fields into groups.
     field_groups = [
         # black and flake8 disagree about the whitespace before ':' here...
-        fields[start : start + _MAX_FIELDS_PER_DOWNLOAD]  # noqa: 203
-        for start in range(0, len(fields), _MAX_FIELDS_PER_DOWNLOAD)
+        fields[start : start + _MAX_VARIABLES_PER_DOWNLOAD]  # noqa: 203
+        for start in range(0, len(fields), _MAX_VARIABLES_PER_DOWNLOAD)
     ]
 
     if len(field_groups) < 2:
         raise ValueError(
-            "_download_concat expects to be called with at least "
-            f"{_MAX_FIELDS_PER_DOWNLOAD + 1} variables. With fewer,"
+            "_download_multiple expects to be called with at least "
+            f"{_MAX_VARIABLES_PER_DOWNLOAD + 1} variables. With fewer,"
             "use download instead."
         )
 
@@ -182,62 +149,96 @@ def _download_concat(
     ]
 
     # What fields came back in the first df but were not
-    # requested? These are the ones that will be duplicated
-    # in the later dfs.
-    extra_variables = [f for f in dfs[0].columns if f not in set(field_groups[0])]
+    # requested? These are a key to the geography the row
+    # represents. For example, 'STATE' amd 'COUNTY' might
+    # be these variables if we did a county-level query to
+    # the census API.
+    geo_key_variables = [f for f in dfs[0].columns if f not in set(field_groups[0])]
 
-    # If we put in the geometry column, it's not part of the merge
+    # If we put in the geometry column, it's not part of the
     # key.
     if with_geometry:
-        extra_variables = [f for f in extra_variables if f != "geometry"]
+        geo_key_variables = [f for f in geo_key_variables if f != "geometry"]
 
-    # Verify that, as much as we can tell from the other columns,
-    # that things line up properly. For some cases like area-based
-    # counts where each row represents a unique geography, we could
-    # do repeated merges instead of the concat below, but for survey
-    # data where each row is representative of a fraction of the population
-    # they are not unique and an inner join will blow up the size and
-    # give us results that do not make sense. But we have to go with the
-    # merge strategy if the rows are in different order.
+    # Now we have to decide if we are going to use the merge
+    # strategy or the concat strategy to combine the data frames
+    # we downloaded. Why do we have two strategies? Because we are
+    # dealing with two kinds of data. One kind, from data sets like
+    # ACS (https://www.census.gov/programs-surveys/acs.html),
+    # has a unique key of columns that specify geography. The other
+    # kind, from data sets like CPS
+    # (https://www.census.gov/programs-surveys/cps.html) doesn't.
+    #
+    # In the unique key case, we can join the data frames that come
+    # back on those key columns and get the final wide data frame
+    # we want for the user.
+    #
+    # In the non-unique key case, we can't do this. There data sets
+    # may have multiple rows for a value of the key columns. We can't
+    # join here. Instead, we can only concatenate the tables
+    # horizontally and hope that the rows came back in the same order
+    # for each of them.
 
-    rows0 = len(dfs[0].index)
-    extra_variables_match = True
+    # We hope to be able to merge. It is safer.
+    merge_strategy = True
 
-    for df in dfs[1:]:
-        extra_variables_match = (
-            rows0 == len(df.index)
-            and (dfs[0][extra_variables] == df[extra_variables]).all().all()
-        )
-        if not extra_variables_match:
-            # At least one difference. So we will have to
-            # see if we can fall back on the merge strategy.
+    # But if there are any non-unique keys in any df, we can't
+    # merge.
+    for df in dfs:
+        if len(df.value_counts(geo_key_variables, sort=False)) != len(df.index):
+            merge_strategy = False
             break
 
-    if extra_variables_match:
-        # Having done the verification, we can concatenate all
-        # the data together.
-        df_data = pd.concat(
-            [dfs[0]] + [df.drop(extra_variables, axis="columns") for df in dfs[1:]],
-            axis="columns",
-        )
-    else:
-        # This is the kind of join that only works when the values
-        # in extra_variables are unique per row, like in acs/acs5 and
-        # similar count-based data sets. But all the rows have to be
-        # unique. If they are not all unique then the merge will
-        # generate cross products that we almost certainly not intended.
-        for df in dfs:
-            if len(df.value_counts(extra_variables, sort=False)) != len(df.index):
-                raise CensusApiException(
-                    "Unexpected data misalignment across multiple API calls. "
-                    "Extra variables don't all match but values are duplicated."
-                )
+    if merge_strategy:
+        # We can do the merge strategy.
 
-        # Now we can do the merging strategy.
+        __dw_strategy_metrics["merge"] = __dw_strategy_metrics["merge"] + 1
+
         df_data = dfs[0]
 
         for df_right in dfs[1:]:
-            df_data = df_data.merge(df_right, on=extra_variables)
+            df_data = df_data.merge(df_right, on=geo_key_variables)
+    else:
+        # We are going to have to fall back on the concat
+        # strategy. Before we do the concat, however, let's
+        # double-check that the key columns are the same in
+        # at the corresponding row in every df. Otherwise, something
+        # is fishy, and it is not safe to concat without mixing
+        # data that should be in different rows.
+
+        rows0 = len(dfs[0].index)
+
+        for df in dfs[1:]:
+            if not (
+                rows0 == len(df.index)
+                and (dfs[0][geo_key_variables] == df[geo_key_variables]).all().all()
+            ):
+                # At least one difference. So we cannot use the
+                # concat strategy either.
+                raise CensusApiException(
+                    "Neither the merge nor the concat strategy is viable. "
+                    "We made multiple queries to the census API because more than "
+                    f"{_MAX_VARIABLES_PER_DOWNLOAD} variables were requested. "
+                    "If you don't need all the variables, it is always safer to "
+                    f"download less than {_MAX_VARIABLES_PER_DOWNLOAD} variables. "
+                )
+
+        # Concat strategy is as safe as it will ever be. We hope the server
+        # side did not reorder the results across queries.
+        logger.info(
+            "Using the concat strategy, which is not guaranteed reliable if "
+            "the census API returned data for multiple sub-queries of less than "
+            f"or equal to {_MAX_VARIABLES_PER_DOWNLOAD} in different row orders. "
+            f"It is always safest to query no more than {_MAX_VARIABLES_PER_DOWNLOAD} "
+            "variables at a time. Please do so unless you really need them all."
+        )
+
+        __dw_strategy_metrics["concat"] = __dw_strategy_metrics["concat"] + 1
+
+        df_data = pd.concat(
+            [dfs[0]] + [df.drop(geo_key_variables, axis="columns") for df in dfs[1:]],
+            axis="columns",
+        )
 
     return df_data
 
@@ -624,8 +625,8 @@ def download(
         download_variables = list(download_variables)
 
     # Special case if we are trying to get too many fields.
-    if len(download_variables) > _MAX_FIELDS_PER_DOWNLOAD:
-        return _download_concat(
+    if len(download_variables) > _MAX_VARIABLES_PER_DOWNLOAD:
+        return _download_multiple(
             dataset,
             year,
             download_variables,
@@ -762,878 +763,6 @@ def census_table_url(
     url, params = query_spec.table_url()
 
     return url, params, bound_path
-
-
-class VariableSource(ABC):
-    """
-    A source of variables, typically used behind a :py:class:`~VariableCache`.
-
-    The purpose of this class is to get variable and group information
-    from a source, typically a remote API call to the US Census API.
-    Another use case is to enable mocking for testing the rest of the
-    :py:class:`~VariableCache` functionality, which is a superset of
-    what this class does.
-    """
-
-    @abstractmethod
-    def get(
-        self,
-        dataset: str,
-        year: int,
-        name: str,
-    ) -> Dict[str, Any]:
-        """
-        Get information on a variable for a given dataset in a given year.
-
-        The return value is a dictionary with the following fields:
-
-        .. list-table:: Title
-            :widths: 25 75
-            :header-rows: 0
-
-            * - `"name"`
-              - The name of the variable.
-            * - '"label"`
-              - A description of the variable. Within groups, hierarchies of
-                variables are represented by seperating levels with `"!!"`.
-            * - `"concept"`
-              - The concept this variable and others in the group represent.
-            * - `"group"`
-              - The group the variable belongs to. To query an entire group,
-                use the :py:meth:`~get_group` method.
-            * - `"limit"`
-              -
-            * - `"attributes"`
-              - A comma-separated list of variables that are attributes of this
-                one.
-
-        This dictionary is very much like the JSON returned from US Census
-        API URLs like
-        https://api.census.gov/data/2020/acs/acs5/variables/B03001_001E.json
-
-        Parameters
-        ----------
-        dataset
-            The census dataset, for example `dec/acs5` for ACS5 data
-            (https://www.census.gov/data/developers/data-sets/acs-5year.html and
-            https://api.census.gov/data/2020/acs/acs5.html)
-            or `dec/pl` for redistricting data
-            (https://www.census.gov/programs-surveys/decennial-census/about/rdo.html and
-            https://api.census.gov/data/2020/dec/pl.html)
-        year
-            The year
-        name
-            The name of the variable to get information about. For example,
-            `B03002_001E` is a variable from the ACS5 data set that represents
-            total population in a geographic area.
-        Returns
-        -------
-            A dictionary of information about the variable.
-        """
-        raise NotImplementedError("Abstract method.")
-
-    @abstractmethod
-    def get_group(
-        self,
-        dataset: str,
-        year: int,
-        name: str,
-    ) -> Dict[str, Dict]:
-        """
-        Get information on a group of variables for a given dataset in a given year.
-
-        The return value is a dictionary that is very much like the JSON returned
-        from US Census API URLs like
-        https://api.census.gov/data/2020/acs/acs5/groups/B03002.json
-
-        See :py:meth:`~VariableSource.get` for more details.
-
-        Parameters
-        ----------
-        dataset
-            The census dataset, for example `dec/acs5` for ACS5 data
-            (https://www.census.gov/data/developers/data-sets/acs-5year.html and
-            https://api.census.gov/data/2020/acs/acs5.html)
-            or `dec/pl` for redistricting data
-            (https://www.census.gov/programs-surveys/decennial-census/about/rdo.html and
-            https://api.census.gov/data/2020/dec/pl.html)
-        year
-            The year
-        name
-            The name of the group to get information about. For example,
-            `B03002` is a group from the ACS5 data set that contains
-            variables that represent the population of various racial and
-            ethnic groups in a geographic area.
-
-        Returns
-        -------
-            A dictionary with a single key `"variables"`. The value
-            associated with that key is a dictionary that maps from the
-            names of variables in the group to dictionaries of attributes
-            of the variable, in the same form as that returned for individual
-            variables by the method :py:meth:`~VariableSource.get`.
-        """
-        raise NotImplementedError("Abstract method.")
-
-    @abstractmethod
-    def get_all_groups(self, dataset: str, year: int) -> Dict[str, Dict]:
-        """
-        Get information on a group of variables for a given dataset in a given year.
-
-        The return value is a dictionary that is very much like the JSON returned
-        from US Census API URLs like
-        https://api.census.gov/data/2020/acs/acs5/groups.json
-
-        See :py:meth:`~VariableSource.get_all_groups` for more details.
-
-        dataset
-            The census dataset, for example `dec/acs5` for ACS5 data
-            (https://www.census.gov/data/developers/data-sets/acs-5year.html and
-            https://api.census.gov/data/2020/acs/acs5.html)
-            or `dec/pl` for redistricting data
-            (https://www.census.gov/programs-surveys/decennial-census/about/rdo.html and
-            https://api.census.gov/data/2020/dec/pl.html)
-        year
-            The year
-
-        Returns
-        -------
-            A dictionary with a single key `"groups"`. The value
-            associated with that key is a dictionary that maps from the
-            names of groups to dictionaries of attributes
-            of each group.
-        """
-        raise NotImplementedError("Abstract method.")
-
-    @abstractmethod
-    def get_datasets(self, year: Optional[int]) -> Dict[str, Any]:
-        """
-        Get descriptions of all the datasets available for a given year.
-
-        Parameters
-        ----------
-        year
-            The year. If `None`, get all datasets for all years.
-
-        Returns
-        -------
-            A dictionary with a key "datasets". The value associated
-            with that key is a dictionary that maps from the names
-            of data sets to dictionaries of attributes of each data
-            set.
-        """
-        raise NotImplementedError("Abstract method.")
-
-
-class CensusApiVariableSource(VariableSource):
-    """
-    A :py:class:`~VariableSource` that gets data from the US Census remote API.
-
-    Users will rarely if ever need to explicitly construct objects
-    of this class. There is one behind the singleton cache
-    `censusdis.censusdata.variables`.
-    """
-
-    @staticmethod
-    def variables_url(dataset: str, year: int, response_format: str = "json") -> str:
-        """
-        Construct the URL to fetch metadata about all variables.
-
-        Parameters
-        ----------
-        dataset
-            The census dataset.
-        year
-            The year
-        response_format
-            The desired format of the response. Either `json` (the default)
-            or `html`.
-
-        Returns
-        -------
-            The URL to fetch the metadata from.
-
-        """
-        return (
-            f"https://api.census.gov/data/{year}/{dataset}/variables.{response_format}"
-        )
-
-    @staticmethod
-    def url(dataset: str, year: int, name: str, response_format: str = "json") -> str:
-        """
-        Construct the URL to fetch metadata about a variable.
-
-        This is where we fetch metadata that is then put into the
-        local cache.
-
-        Parameters
-        ----------
-        dataset
-            The census dataset.
-        year
-            The year
-        name
-            The name of the variable.
-        response_format
-            The desired format of the response. Either `json` (the default)
-            or `html`.
-
-        Returns
-        -------
-            The URL to fetch the metadata from.
-        """
-        return f"https://api.census.gov/data/{year}/{dataset}/variables/{name}.{response_format}"
-
-    @staticmethod
-    def group_url(
-        dataset: str,
-        year: int,
-        group_name: Optional[str] = None,
-    ) -> str:
-        """
-        Get the URL to fetch metadata about a group of variables.
-
-        This can either be all the variables in a dataset, if a group
-        name is not specified, or just the variables in a particular
-        group if the data set has groups.
-
-        Some datasets, `dec/pl` dataset for example, do not have
-        groups, so a group name need not be passed. Others, like
-        `acs/acs5` have groups, so a group name such as `B01001`
-        will normally be passed in.
-
-        Parameters
-        ----------
-        dataset
-            The census dataset.
-        year
-            The year
-        group_name
-            The name of the group, or `None` if the dataset has no
-            groups.
-
-        Returns
-        -------
-            The URL to fetch the metadata from.
-        """
-
-        if group_name is None:
-            return f"https://api.census.gov/data/{year}/{dataset}/variables.json"
-
-        return f"https://api.census.gov/data/{year}/{dataset}/groups/{group_name}.json"
-
-    @staticmethod
-    def all_groups_url(dataset: str, year: int) -> str:
-        """
-        Get the URL to fetch the names of all groups.
-
-        Parameters
-        ----------
-        dataset
-            The census dataset.
-        year
-            The year
-
-        Returns
-        -------
-            The URL to fetch the metadata from.
-        """
-        return f"https://api.census.gov/data/{year}/{dataset}/groups.json"
-
-    def get(self, dataset: str, year: int, name: str) -> Dict[str, Any]:
-        url = self.url(dataset, year, name)
-        value = json_from_url(url)
-
-        return value
-
-    def get_group(
-        self, dataset: str, year: int, name: Optional[str]
-    ) -> Dict[str, Dict]:
-        url = self.group_url(dataset, year, name)
-        value = json_from_url(url)
-
-        if True:
-            # Filter out psuedo-variables like 'for' and 'in'.
-            value["variables"] = {
-                k: v
-                for k, v in value["variables"].items()
-                if k not in ["in", "for", "ucgid"]
-            }
-
-        # Put the name into the nested dictionaries, so it looks the same is if
-        # we had gotten it via the variable API even though that API leaves it out.
-        for k, v in value["variables"].items():
-            v["name"] = k
-
-        return value
-
-    def get_all_groups(self, dataset: str, year: int) -> Dict[str, Dict]:
-        url = self.all_groups_url(dataset, year)
-        value = json_from_url(url)
-
-        return value
-
-    def get_datasets(self, year: Optional[int]) -> Dict[str, Any]:
-        if year is not None:
-            url = f"https://api.census.gov/data/{year}.json"
-        else:
-            url = "https://api.census.gov/data.json"
-
-        json = json_from_url(url)
-
-        return json
-
-
-class VariableCache:
-    """
-    A cache of variables and groups.
-
-    This looks a lot like a :py:class:`~VariableSource` but it
-    implements a cache in front of a :py:class:`~VariableSource`.
-
-    Users will rarely if ever need to construct one of these
-    themselves. In almost all cases they will use the singleton
-    `censusdis.censusdata.variables`.
-    """
-
-    def __init__(self, *, variable_source: Optional[VariableSource] = None):
-        if variable_source is None:
-            variable_source = CensusApiVariableSource()
-
-        self._variable_source = variable_source
-        self._variable_cache: DefaultDict[
-            str, DefaultDict[int, Dict[str, Any]]
-        ] = defaultdict(lambda: defaultdict(dict))
-        self._group_cache: DefaultDict[
-            str, DefaultDict[int, Dict[str, Any]]
-        ] = defaultdict(lambda: defaultdict(dict))
-
-        self._all_data_sets_cache: Optional[pd.DataFrame] = None
-        self._data_sets_by_year_cache: Dict[int, pd.DataFrame] = {}
-
-    def get(
-        self,
-        dataset: str,
-        year: int,
-        name: str,
-    ) -> Dict[str, Dict]:
-        """
-        Get the description of a given variable.
-
-        See :py:meth:`VariableSource.get`
-        for details on the data format. We first look in the cache and then if
-        we don't find what we are looking for, we call the source behind us and
-        cache the results before returning them.
-
-        Parameters
-        ----------
-        dataset
-            The census dataset.
-        year
-            The year
-        name
-            The name of the variable.
-
-        Returns
-        -------
-            The details of the variable.
-        """
-        cached_value = self._variable_cache[dataset][year].get(name, None)
-
-        if cached_value is not None:
-            return cached_value
-
-        value = self._variable_source.get(dataset, year, name)
-
-        self._variable_cache[dataset][year][name] = value
-
-        return value
-
-    def get_group(
-        self,
-        dataset: str,
-        year: int,
-        name: Optional[str],
-    ) -> Dict[str, Dict]:
-        """
-        Get information on the variables in a group.
-
-        Parameters
-        ----------
-        dataset
-            The census dataset.
-        year
-            The year
-        name
-            The name of the group. Or None if this data set does not have
-            groups.
-
-        Returns
-        -------
-            A dictionary that maps from the names of each variable in the group
-            to a dictionary containing a description of the variable. The
-            format of the description is a dictionary as described in
-            the documentation for
-            :py:meth:`VariableSource.get`.
-        """
-        group_variable_names = self._group_cache[dataset][year].get(name, None)
-
-        if group_variable_names is None:
-            # Missed in the cache, so go fetch it.
-            value = self._variable_source.get_group(dataset, year, name)
-
-            # Cache all the variables in the group.
-            group_variables = value["variables"]
-
-            for variable_name, variable_details in group_variables.items():
-                self._variable_cache[dataset][year][variable_name] = variable_details
-
-            # Cache the names of the variables in the group.
-            group_variable_names = list(
-                variable_name for variable_name in group_variables
-            )
-            self._group_cache[dataset][year][name] = group_variable_names
-
-        # Reformat what we return so it includes the full
-        # details on each variable.
-        return {
-            group_variable_name: self.get(dataset, year, group_variable_name)
-            for group_variable_name in group_variable_names
-        }
-
-    class GroupTreeNode:
-        def __init__(self, name: Optional[str] = None):
-            self._name = name
-
-            self._children: Dict[str, "VariableCache.GroupTreeNode"] = {}
-
-        @property
-        def name(self):
-            return self._name
-
-        @name.setter
-        def name(self, name: Optional[str]):
-            self._name = name
-
-        def add_child(self, path_component: str, child: "VariableCache.GroupTreeNode"):
-            self._children[path_component] = child
-
-        def is_leaf(self) -> bool:
-            return len(self._children) == 0
-
-        def __len__(self):
-            return len(self._children)
-
-        def __contains__(self, component: str):
-            return component in self._children
-
-        def __getitem__(self, component: str):
-            return self._children[component]
-
-        def keys(self) -> Iterable[str]:
-            for key, _ in self.items():
-                yield key
-
-        def values(self) -> Iterable["VariableCache.GroupTreeNode"]:
-            for _, value in self.items():
-                yield value
-
-        def items(self) -> Iterable[Tuple[str, "VariableCache.GroupTreeNode"]]:
-            return self._children.items()
-
-        def get(
-            self, component, default: Optional["VariableCache.GroupTreeNode"] = None
-        ):
-            return self._children.get(component, default)
-
-        def leaves(self) -> Generator["VariableCache.GroupTreeNode", None, None]:
-            if self.is_leaf():
-                yield self
-            for child in self._children.values():
-                yield from child.leaves()
-
-        def leaf_variables(self) -> Generator[str, None, None]:
-            yield from (leaf.name for leaf in self.leaves())
-
-        def _min_leaf_name(self) -> str:
-            return min(self.leaf_variables())
-
-        def _node_str(self, level: int, component: str, indent_prefix: str) -> str:
-            line = indent_prefix * level
-            if len(self._children) > 0 or self._name is not None:
-                line = f"{line}+ {component}"
-            if self.name is not None:
-                line = f"{line} ({self.name})"
-
-            return line
-
-        def _subtree_str(self, level: int, component: str, indent_prefix: str) -> str:
-            rep = self._node_str(level, component, indent_prefix)
-            for path_component, child in sorted(
-                self._children.items(), key=lambda t: t[1]._min_leaf_name()
-            ):
-                rep = (
-                    rep
-                    + "\n"
-                    + child._subtree_str(level + 1, path_component, indent_prefix)
-                )
-            return rep
-
-        def __str__(self) -> str:
-            return "\n".join(
-                child._subtree_str(0, path_component, indent_prefix="    ")
-                for path_component, child in sorted(
-                    self._children.items(), key=lambda t: t[1]._min_leaf_name()
-                )
-            )
-
-        def __repr__(self) -> str:
-            return str(self)
-
-    def _all_data_sets(self) -> pd.DataFrame:
-        """
-        Get all the data sets.
-
-        Cache to avoid repeated remote calls.
-
-        Returns
-        -------
-            A data frame of all the data sets for all years.
-        """
-        if self._all_data_sets_cache is None:
-            datasets = self._variable_source.get_datasets(year=None)
-
-            self._all_data_sets_cache = self._datasets_from_source_dict(datasets)
-
-        return self._all_data_sets_cache
-
-    def _data_sets_for_year(self, year: int) -> pd.DataFrame:
-        """
-        Get all data sets for a given year.
-
-        Cache to avoid repeated remote calls.
-
-        Parameters
-        ----------
-        year
-            The year to query. If not provided, all data sets for all
-            years are queried.
-
-        Returns
-        -------
-            A data frame of all the data sets for the year.
-        """
-        if year not in self._data_sets_by_year_cache:
-            datasets = self._variable_source.get_datasets(year)
-
-            self._data_sets_by_year_cache[year] = self._datasets_from_source_dict(
-                datasets
-            )
-
-        return self._data_sets_by_year_cache[year]
-
-    @staticmethod
-    def _datasets_from_source_dict(datasets) -> pd.DataFrame:
-        """
-        Parse a dict from :py:meth:`VariableSource.get_datasets` into a data frame of data sets.
-
-        Parameters
-        ----------
-        datasets
-            The data sets in dictionary form.
-
-        Returns
-        -------
-            A dataframe with a row describing each dataset.
-        """
-        datasets = datasets["dataset"]
-        df = pd.DataFrame(
-            [
-                {
-                    "YEAR": dataset.get("c_vintage", None),
-                    "DATASET": "/".join(dataset["c_dataset"]),
-                    "TITLE": dataset.get("title", None),
-                    "DESCRIPTION": dataset.get("description", None),
-                }
-                for dataset in datasets
-            ]
-        )
-        return df.sort_values(["YEAR", "DATASET"]).reset_index(drop=True)
-
-    def all_data_sets(self, *, year: Optional[int] = None) -> pd.DataFrame:
-        """
-        Retrieve a description of available data sets.
-
-        Parameters
-        ----------
-        year
-            The year to query. If not provided, all data sets for all
-            years are queried.
-
-        Returns
-        -------
-            A data frame describing the data sets that are available.
-        """
-        if year is not None:
-            return self._data_sets_for_year(year)
-
-        return self._all_data_sets()
-
-    def all_groups(
-        self,
-        dataset: str,
-        year: int,
-    ) -> pd.DataFrame:
-        """
-        Get descriptions of all the groups in the data set.
-
-        Parameters
-        ----------
-        dataset
-            The data set.
-        year
-            The year.
-
-        Returns
-        -------
-            All the groups in the data set.
-        """
-        groups = self._variable_source.get_all_groups(dataset, year)
-
-        # Some data sets have no groups.
-        if len(groups["groups"]) == 0:
-            return pd.DataFrame(columns=["DATASET", "YEAR", "GROUP", "DESCRIPTION"])
-
-        return (
-            pd.DataFrame(
-                [
-                    {
-                        "DATASET": dataset,
-                        "YEAR": year,
-                        "GROUP": group["name"],
-                        "DESCRIPTION": group["description"],
-                    }
-                    for group in groups["groups"]
-                ]
-            )
-            .sort_values(["DATASET", "YEAR", "GROUP"])
-            .reset_index(drop=True)
-        )
-
-    def all_variables(
-        self, dataset: str, year: int, group_name: Optional[str]
-    ) -> pd.DataFrame:
-        group_variables = self.group_variables(dataset, year, group_name)
-
-        def variable_items(variable_dict: Dict) -> Optional[Dict[str, str]]:
-            if "values" in variable_dict:
-                values = variable_dict["values"]
-                return values.get("item", np.nan)
-
-            return None
-
-        return pd.DataFrame(
-            [
-                {
-                    "YEAR": year,
-                    "DATASET": dataset,
-                    "GROUP": self.get(dataset, year, variable_name).get(
-                        "group", np.nan
-                    ),
-                    "VARIABLE": variable_name,
-                    "LABEL": self.get(dataset, year, variable_name)["label"],
-                    "SUGGESTED_WEIGHT": self.get(dataset, year, variable_name).get(
-                        "suggested-weight", np.nan
-                    ),
-                    "VALUES": variable_items(self.get(dataset, year, variable_name)),
-                }
-                for variable_name in group_variables
-            ]
-        )
-
-    def group_tree(
-        self,
-        dataset: str,
-        year: int,
-        group_name: Optional[str],
-        *,
-        skip_annotations: bool = True,
-    ) -> "VariableCache.GroupTreeNode":
-        group = self.get_group(dataset, year, group_name)
-
-        root = VariableCache.GroupTreeNode()
-
-        for variable_name, details in group.items():
-            path = details["label"].split("!!")
-
-            if skip_annotations and (
-                path[0].startswith("Annotation")
-                or path[0].startswith("Margin of Error")
-                or path[0].startswith("Statistical Significance")
-            ):
-                continue
-
-            node = root
-
-            # Construct a nested path of nodes down to the
-            # leaf.
-            for component in path:
-                child = node.get(component, None)
-                if child is None:
-                    child = VariableCache.GroupTreeNode()
-                    node.add_child(component, child)
-                node = child
-
-            # Put the variable name at the lead.
-            node.name = variable_name
-
-        return root
-
-    def group_leaves(
-        self, dataset: str, year: int, name: str, *, skip_annotations: bool = True
-    ) -> List[str]:
-        """
-        Find the leaves of a given group.
-
-        Parameters
-        ----------
-        dataset
-            The census dataset.
-        year
-            The year
-        name
-            The name of the group.
-        skip_annotations
-            If `True` try to filter out variables that are
-            annotations rather than actual values, by skipping
-            those with labels that begin with "Annotation" or
-            "Margin of Error".
-
-        Returns
-        -------
-            A list of the variables in the group that are leaves,
-            i.e. they are not aggregates of other variables. For example,
-            in the group `B03002` in the `acs/acs5` dataset in the
-            year `2020`, the variable `B03002_003E` is a leaf, because
-            it represents
-            "Estimate!!Total:!!Not Hispanic or Latino:!!White alone",
-            whereas B03002_002E is not a leaf because it represents
-            "Estimate!!Total:!!Not Hispanic or Latino:", which is a total
-            that includes B03002_003E as well as others like "B03002_004E",
-            "B03002_005E" and more.
-
-            The typical reason we want leaves is because that gives us a set
-            of variables representing counts that do not overlap and add up
-            to the total. We can use these directly in diversity and integration
-            calculations using the `divintseg` package.
-        """
-        tree = self.group_tree(dataset, year, name)
-
-        leaves = tree.leaf_variables()
-
-        if skip_annotations:
-            group = self.get_group(dataset, year, name)
-            leaves = (
-                leaf
-                for leaf in leaves
-                if (not group[leaf]["label"].startswith("Annotation"))
-                and (not group[leaf]["label"].startswith("Margin of Error"))
-            )
-
-        return sorted(leaves)
-
-    def group_variables(
-        self, dataset: str, year: int, group_name: str, *, skip_annotations: bool = True
-    ) -> List[str]:
-        """
-        Find the variables of a given group.
-
-        Parameters
-        ----------
-        dataset
-            The census dataset.
-        year
-            The year
-        group_name
-            The name of the group.
-        skip_annotations
-            If `True` try to filter out variables that are
-            annotations rather than actual values, by skipping
-            those with labels that begin with "Annotation" or
-            "Margin of Error".
-
-        Returns
-        -------
-            A list of the variables in the group.
-        """
-        tree = self.get_group(dataset, year, group_name)
-
-        if skip_annotations:
-            group_variables = [
-                k
-                for k, v in tree.items()
-                if (not v["label"].startswith("Annotation"))
-                and (not v["label"].startswith("Margin of Error"))
-            ]
-        else:
-            group_variables = list(tree.keys())
-
-        return sorted(group_variables)
-
-    def __contains__(self, item: Tuple[str, int, str]) -> bool:
-        """Magic method behind the `in` operator."""
-        source, year, name = item
-
-        return name in self._variable_cache[source][year]
-
-    def __getitem__(self, item: Tuple[str, int, str]):
-        """Magic method behind the `[]` operator."""
-        return self.get(*item)
-
-    def __len__(self):
-        """The number of elements in the cache."""
-        return sum(
-            len(names)
-            for years in self._variable_cache.values()
-            for names in years.values()
-        )
-
-    def keys(self) -> Iterable[Tuple[str, int, str]]:
-        """Keys, i.e. the names of variables, in the cache."""
-        for key, _ in self.items():
-            yield key
-
-    def __iter__(self) -> Iterable[Tuple[str, int, str]]:
-        return self.keys()
-
-    def values(self) -> Iterable[dict]:
-        """Values, i.e. the descriptions of variables, in the cache."""
-        for _, value in self.items():
-            yield value
-
-    def items(self) -> Iterable[Tuple[Tuple[str, int, str], dict]]:
-        """Items in the mapping from variable name to descpription."""
-        for source, values_for_source in self._variable_cache.items():
-            for year, values_for_year in values_for_source.items():
-                for name, value in values_for_year.items():
-                    yield (source, year, name), value
-
-    def invalidate(self, dataset: str, year: int, name: str):
-        """Remove an item from the cache."""
-        if self._variable_cache[dataset][year].pop(name, None):
-            if len(self._variable_cache[dataset][year]) == 0:
-                self._variable_cache[dataset].pop(year)
-                if len(self._variable_cache[dataset]) == 0:
-                    self._variable_cache.pop(dataset)
-
-    def clear(self):
-        """
-        Clear the entire cache.
-
-        This just means that further calls to :py:meth:`~get` will
-        have to make a call to the source behind the cache.
-        """
-        self._variable_cache = defaultdict(lambda: defaultdict(dict))
 
 
 variables = VariableCache()
