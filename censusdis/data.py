@@ -210,8 +210,8 @@ def _download_multiple(
 
         for df in dfs[1:]:
             if not (
-                    rows0 == len(df.index)
-                    and (dfs[0][geo_key_variables] == df[geo_key_variables]).all().all()
+                rows0 == len(df.index)
+                and (dfs[0][geo_key_variables] == df[geo_key_variables]).all().all()
             ):
                 # At least one difference. So we cannot use the
                 # concat strategy either.

@@ -461,7 +461,7 @@ class DownloadWideTestCase(unittest.TestCase):
 
         metrics_0 = ced._download_wide_strategy_metrics()
 
-        with self.assertLogs(ced.__name__, level='INFO') as cm:
+        with self.assertLogs(ced.__name__, level="INFO") as cm:
             df = ced.download(dataset, year, variables, state=STATE_NJ)
 
         # Make sure we got the log message.
@@ -469,7 +469,7 @@ class DownloadWideTestCase(unittest.TestCase):
         self.assertTrue(
             any(
                 message.startswith(
-                    'INFO:censusdis.data:Using the concat strategy, which is not guaranteed reliable if '
+                    "INFO:censusdis.data:Using the concat strategy, which is not guaranteed reliable if "
                 )
                 for message in cm.output
             )
