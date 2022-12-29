@@ -405,23 +405,14 @@ class DownloadWideTestCase(unittest.TestCase):
     depending on the details of the scenario.
     """
 
-    def test_wide_possible_merge(self):
+    def test_wide_merge(self):
         """
         Download a really wide set of variables.
 
         The goal is to trigger a call to
-        `_download_concat`. This version is for a scenario
-        that will *sometimes* trigger the merge strategy
-        because not all the queries will return rows with
-        the query variable STATE in the same order.
-
-        But other times all the calls of 50 columns come back
-        in the same order, which triggers the concat strategy.
-
-        The hope here is that if our merge strategy code is
-        broken that it will be invoked often enough by this
-        integration test's interaction with the census API
-        that we will catch the bug.
+        `_download_multiple`. This version is for a scenario
+        that will trigger the merge strategy because each
+        sub-query will have rows with a unique geogrpahic key.
         """
 
         dataset = "acs/acs1/spp"
@@ -432,7 +423,7 @@ class DownloadWideTestCase(unittest.TestCase):
             dataset, year, group, skip_annotations=False
         )
 
-        self.assertGreater(len(variables), ced._MAX_FIELDS_PER_DOWNLOAD)
+        self.assertGreater(len(variables), ced._MAX_VARIABLES_PER_DOWNLOAD)
 
         metrics_0 = ced._download_wide_strategy_metrics()
 
@@ -442,11 +433,8 @@ class DownloadWideTestCase(unittest.TestCase):
 
         metrics_diff = {k: v - metrics_0[k] for k, v in metrics_1.items()}
 
-        # At this point we would like to assert that metrics_diff tells
-        # us we used the merge strategy. But we can't because sometimes
-        # the results all come back in order and we use the concat
-        # strategy.
-        _ = metrics_diff
+        self.assertEqual(1, metrics_diff["merge"])
+        self.assertEqual(0, metrics_diff["concat"])
 
         self.assertEqual((51, 1 + len(variables)), df.shape)
 
@@ -459,7 +447,7 @@ class DownloadWideTestCase(unittest.TestCase):
         Download a really wide set of variables.
 
         The goal is to trigger a call to
-        `_download_concat`. This version is for a scenario
+        `_download_multiple`. This version is for a scenario
         that will trigger the concat strategy because the
         query column (state in this case) is not unique.
         """
@@ -469,11 +457,23 @@ class DownloadWideTestCase(unittest.TestCase):
         variables = ced.variables.group_variables(dataset, year, None)
 
         self.assertEqual(389, len(variables))
-        self.assertGreater(len(variables), ced._MAX_FIELDS_PER_DOWNLOAD)
+        self.assertGreater(len(variables), ced._MAX_VARIABLES_PER_DOWNLOAD)
 
         metrics_0 = ced._download_wide_strategy_metrics()
 
-        df = ced.download(dataset, year, variables, state=STATE_NJ)
+        with self.assertLogs(ced.__name__, level='INFO') as cm:
+            df = ced.download(dataset, year, variables, state=STATE_NJ)
+
+        # Make sure we got the log message.
+
+        self.assertTrue(
+            any(
+                message.startswith(
+                    'INFO:censusdis.data:Using the concat strategy, which is not guaranteed reliable if '
+                )
+                for message in cm.output
+            )
+        )
 
         metrics_1 = ced._download_wide_strategy_metrics()
 

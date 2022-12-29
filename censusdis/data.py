@@ -7,6 +7,7 @@ it wraps in a pythonic manner.
 """
 
 import warnings
+from logging import getLogger
 from typing import Dict, Iterable, List, Mapping, Optional, Tuple, Union
 
 import geopandas as gpd
@@ -18,6 +19,10 @@ from censusdis.impl.exceptions import CensusApiException
 from censusdis.impl.fetch import data_from_url
 from censusdis.impl.varcache import VariableCache
 from censusdis.impl.varsource.censusapi import CensusApiVariableSource
+
+
+logger = getLogger(__name__)
+
 
 # This is the type we can accept for geographic
 # filters. When provided, these filters are either
@@ -39,7 +44,17 @@ def _gf2s(geo_filter: GeoFilterType) -> Optional[str]:
     return ",".join(geo_filter)
 
 
-_MAX_FIELDS_PER_DOWNLOAD = 50
+_MAX_VARIABLES_PER_DOWNLOAD = 50
+"""
+The maximum number of variables we can ask for in one census API query.
+
+The U.S. Census sets this limit, not us. In order to not expose our
+users to the limit, :py:func:`~download` mostly obscures the fact that
+requests to download more than this many variables are broken into
+multiple calls to the census API and then the results are stitched back
+together be either merging or concatenation. This is all handled in
+:py:func:`~_download_multiple`.
+"""
 
 
 __dw_strategy_metrics = {"merge": 0, "concat": 0}
@@ -60,7 +75,7 @@ def _download_wide_strategy_metrics() -> Dict[str, int]:
     return dict(**__dw_strategy_metrics)
 
 
-def _download_concat(
+def _download_multiple(
     dataset: str,
     year: int,
     fields: List[str],
@@ -108,14 +123,14 @@ def _download_concat(
     # Divide the fields into groups.
     field_groups = [
         # black and flake8 disagree about the whitespace before ':' here...
-        fields[start : start + _MAX_FIELDS_PER_DOWNLOAD]  # noqa: 203
-        for start in range(0, len(fields), _MAX_FIELDS_PER_DOWNLOAD)
+        fields[start : start + _MAX_VARIABLES_PER_DOWNLOAD]  # noqa: 203
+        for start in range(0, len(fields), _MAX_VARIABLES_PER_DOWNLOAD)
     ]
 
     if len(field_groups) < 2:
         raise ValueError(
-            "_download_concat expects to be called with at least "
-            f"{_MAX_FIELDS_PER_DOWNLOAD + 1} variables. With fewer,"
+            "_download_multiple expects to be called with at least "
+            f"{_MAX_VARIABLES_PER_DOWNLOAD + 1} variables. With fewer,"
             "use download instead."
         )
 
@@ -134,67 +149,96 @@ def _download_concat(
     ]
 
     # What fields came back in the first df but were not
-    # requested? These are the ones that will be duplicated
-    # in the later dfs.
-    extra_variables = [f for f in dfs[0].columns if f not in set(field_groups[0])]
+    # requested? These are a key to the geography the row
+    # represents. For example, 'STATE' amd 'COUNTY' might
+    # be these variables if we did a county-level query to
+    # the census API.
+    geo_key_variables = [f for f in dfs[0].columns if f not in set(field_groups[0])]
 
-    # If we put in the geometry column, it's not part of the merge
+    # If we put in the geometry column, it's not part of the
     # key.
     if with_geometry:
-        extra_variables = [f for f in extra_variables if f != "geometry"]
+        geo_key_variables = [f for f in geo_key_variables if f != "geometry"]
 
-    # Verify that, as much as we can tell from the other columns,
-    # that things line up properly. For some cases like area-based
-    # counts where each row represents a unique geography, we could
-    # do repeated merges instead of the concat below, but for survey
-    # data where each row is representative of a fraction of the population
-    # they are not unique and an inner join will blow up the size and
-    # give us results that do not make sense. But we have to go with the
-    # merge strategy if the rows are in different order.
+    # Now we have to decide if we are going to use the merge
+    # strategy or the concat strategy to combine the data frames
+    # we downloaded. Why do we have two strategies? Because we are
+    # dealing with two kinds of data. One kind, from data sets like
+    # ACS (https://www.census.gov/programs-surveys/acs.html),
+    # has a unique key of columns that specify geography. The other
+    # kind, from data sets like CPS
+    # (https://www.census.gov/programs-surveys/cps.html) doesn't.
+    #
+    # In the unique key case, we can join the data frames that come
+    # back on those key columns and get the final wide data frame
+    # we want for the user.
+    #
+    # In the non-unique key case, we can't do this. There data sets
+    # may have multiple rows for a value of the key columns. We can't
+    # join here. Instead, we can only concatenate the tables
+    # horizontally and hope that the rows came back in the same order
+    # for each of them.
 
-    rows0 = len(dfs[0].index)
-    extra_variables_match = True
+    # We hope to be able to merge. It is safer.
+    merge_strategy = True
 
-    for df in dfs[1:]:
-        extra_variables_match = (
-            rows0 == len(df.index)
-            and (dfs[0][extra_variables] == df[extra_variables]).all().all()
-        )
-        if not extra_variables_match:
-            # At least one difference. So we will have to
-            # see if we can fall back on the merge strategy.
+    # But if there are any non-unique keys in any df, we can't
+    # merge.
+    for df in dfs:
+        if len(df.value_counts(geo_key_variables, sort=False)) != len(df.index):
+            merge_strategy = False
             break
 
-    if extra_variables_match:
-        # Having done the verification, we can concatenate all
-        # the data together.
+    if merge_strategy:
+        # We can do the merge strategy.
 
-        __dw_strategy_metrics["concat"] = __dw_strategy_metrics["concat"] + 1
-
-        df_data = pd.concat(
-            [dfs[0]] + [df.drop(extra_variables, axis="columns") for df in dfs[1:]],
-            axis="columns",
-        )
-    else:
-        # This is the kind of join that only works when the values
-        # in extra_variables are unique per row, like in acs/acs5 and
-        # similar count-based data sets. But all the rows have to be
-        # unique. If they are not all unique then the merge will
-        # generate cross products that we almost certainly not intended.
-        for df in dfs:
-            if len(df.value_counts(extra_variables, sort=False)) != len(df.index):
-                raise CensusApiException(
-                    "Unexpected data misalignment across multiple API calls. "
-                    "Extra variables don't all match but values are duplicated."
-                )
-
-        # Now we can do the merging strategy.
         __dw_strategy_metrics["merge"] = __dw_strategy_metrics["merge"] + 1
 
         df_data = dfs[0]
 
         for df_right in dfs[1:]:
-            df_data = df_data.merge(df_right, on=extra_variables)
+            df_data = df_data.merge(df_right, on=geo_key_variables)
+    else:
+        # We are going to have to fall back on the concat
+        # strategy. Before we do the concat, however, let's
+        # double-check that the key columns are the same in
+        # at the corresponding row in every df. Otherwise, something
+        # is fishy, and it is not safe to concat without mixing
+        # data that should be in different rows.
+
+        rows0 = len(dfs[0].index)
+
+        for df in dfs[1:]:
+            if not (
+                    rows0 == len(df.index)
+                    and (dfs[0][geo_key_variables] == df[geo_key_variables]).all().all()
+            ):
+                # At least one difference. So we cannot use the
+                # concat strategy either.
+                raise CensusApiException(
+                    "Neither the merge nor the concat strategy is viable. "
+                    "We made multiple queries to the census API because more than "
+                    f"{_MAX_VARIABLES_PER_DOWNLOAD} variables were requested. "
+                    "If you don't need all the variables, it is always safer to "
+                    f"download less than {_MAX_VARIABLES_PER_DOWNLOAD} variables. "
+                )
+
+        # Concat strategy is as safe as it will ever be. We hope the server
+        # side did not reorder the results across queries.
+        logger.info(
+            "Using the concat strategy, which is not guaranteed reliable if "
+            "the census API returned data for multiple sub-queries of less than "
+            f"or equal to {_MAX_VARIABLES_PER_DOWNLOAD} in different row orders. "
+            f"It is always safest to query no more than {_MAX_VARIABLES_PER_DOWNLOAD} "
+            "variables at a time. Please do so unless you really need them all."
+        )
+
+        __dw_strategy_metrics["concat"] = __dw_strategy_metrics["concat"] + 1
+
+        df_data = pd.concat(
+            [dfs[0]] + [df.drop(geo_key_variables, axis="columns") for df in dfs[1:]],
+            axis="columns",
+        )
 
     return df_data
 
@@ -581,8 +625,8 @@ def download(
         download_variables = list(download_variables)
 
     # Special case if we are trying to get too many fields.
-    if len(download_variables) > _MAX_FIELDS_PER_DOWNLOAD:
-        return _download_concat(
+    if len(download_variables) > _MAX_VARIABLES_PER_DOWNLOAD:
+        return _download_multiple(
             dataset,
             year,
             download_variables,
