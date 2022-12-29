@@ -7,6 +7,14 @@ on:
 
 jobs:
   nbmake:
+    strategy:
+      matrix:
+        notebook-type: [notebook, dataset]
+        include:
+          - notebook-type: notebook
+            notebook-dir: notebooks
+          - notebook-type: dataset
+            notebook-dir: notebooks/datasets
     runs-on: ubuntu-latest
     steps:
       #----------------------------------------------
@@ -55,8 +63,8 @@ jobs:
       - name: Test run notebooks
         run: |
           source .venv/bin/activate
-          pytest --junitxml=reports/nbmake/junit.xml --nbmake notebooks/*.ipynb notebooks/datasets/*.ipynb
-          genbadge tests --name "notebook tests" -i reports/nbmake/junit.xml -o reports/nbmake/nbmake-badge.svg
+          pytest --junitxml=reports/nbmake/${{matrix.notebook-type}}/junit.xml --nbmake ${{matrix.notebook-dir}}/*.ipynb
+          genbadge tests --name "${{matrix.notebook-type}} tests" -i reports/nbmake/${{matrix.notebook-type}}/junit.xml -o reports/nbmake/nbmake-${{matrix.notebook-type}}-badge.svg
       #----------------------------------------------
       #              commit badge
       #----------------------------------------------
@@ -64,7 +72,7 @@ jobs:
         run: |
           /usr/bin/git config --local user.email "action@github.com"
           /usr/bin/git config --local user.name "GitHub Action"
-          /usr/bin/git add ./reports/nbmake/nbmake-badge.svg
+          /usr/bin/git add ./reports/nbmake/nbmake-${{matrix.notebook-type}}-badge.svg
           /usr/bin/git diff --staged --quiet || /usr/bin/git commit -m "Update badge [github action]"
           /usr/bin/git pull --rebase
       - name: Query branch name
