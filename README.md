@@ -4,7 +4,8 @@
 [![Documentation Status](https://readthedocs.org/projects/censusdis/badge/?version=latest)](https://censusdis.readthedocs.io/en/latest/?badge=latest)
 ![Tests Badge](reports/junit/tests-badge.svg)
 ![Coverage Badge](reports/coverage/coverage-badge.svg)
-![Notebook Tests Badge](reports/nbmake/nbmake-badge.svg)
+![Notebook Tests Badge](reports/nbmake/nbmake-notebook-badge.svg)
+![Dataset Tests Badge](reports/nbmake/nbmake-dataset-badge.svg)
 ![PyPI - Downloads](https://img.shields.io/pypi/dm/censusdis)
 
 Click any of the thumbnails below to see the notebook

@@ -64,7 +64,7 @@ jobs:
         run: |
           source .venv/bin/activate
           pytest --junitxml=reports/nbmake/${{matrix.notebook-type}}/junit.xml --nbmake ${{matrix.notebook-dir}}/*.ipynb
-          genbadge tests --name "${{matrix.notebook-type}} tests" -i reports/nbmake/${{matrix.notebook-type}}/junit.xml -o reports/nbmake/${{matrix.notebook-type}}/nbmake-badge.svg
+          genbadge tests --name "${{matrix.notebook-type}} tests" -i reports/nbmake/${{matrix.notebook-type}}/junit.xml -o reports/nbmake/nbmake-${{matrix.notebook-type}}-badge.svg
       #----------------------------------------------
       #              commit badge
       #----------------------------------------------
