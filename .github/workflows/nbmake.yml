@@ -58,8 +58,8 @@ jobs:
       - name: Test run notebooks
         run: |
           source .venv/bin/activate
-          pytest --junitxml=reports/nbmake/${{notebook-dir}}/junit.xml --nbmake ${{notebook-dir}}/*.ipynb
-          genbadge tests --name "notebook tests" -i reports/nbmake/${{notebook-dir}}/junit.xml -o reports/nbmake/${{notebook-dir}}/nbmake-badge.svg
+          pytest --junitxml=reports/nbmake/${{matrix.notebook-dir}}/junit.xml --nbmake ${{matrix.notebook-dir}}/*.ipynb
+          genbadge tests --name "notebook tests" -i reports/nbmake/${{matrix.notebook-dir}}/junit.xml -o reports/nbmake/${{matrix.notebook-dir}}/nbmake-badge.svg
       #----------------------------------------------
       #              commit badge
       #----------------------------------------------
@@ -67,7 +67,7 @@ jobs:
         run: |
           /usr/bin/git config --local user.email "action@github.com"
           /usr/bin/git config --local user.name "GitHub Action"
-          /usr/bin/git add ./reports/nbmake/${{notebook-dir}}/nbmake-badge.svg
+          /usr/bin/git add ./reports/nbmake/${{matrix.notebook-dir}}/nbmake-badge.svg
           /usr/bin/git diff --staged --quiet || /usr/bin/git commit -m "Update badge [github action]"
           /usr/bin/git pull --rebase
       - name: Query branch name
