@@ -124,7 +124,7 @@ def _download_multiple(
     # Divide the variables into groups.
     variable_groups = [
         # black and flake8 disagree about the whitespace before ':' here...
-        download_variables[start: start + _MAX_VARIABLES_PER_DOWNLOAD]  # noqa: 203
+        download_variables[start : start + _MAX_VARIABLES_PER_DOWNLOAD]  # noqa: 203
         for start in range(0, len(download_variables), _MAX_VARIABLES_PER_DOWNLOAD)
     ]
 
@@ -186,7 +186,9 @@ def _download_multiple(
     # But if there are any non-unique keys in any df, we can't
     # merge.
     for df_slice in dfs:
-        if len(df_slice.value_counts(geo_key_variables, sort=False)) != len(df_slice.index):
+        if len(df_slice.value_counts(geo_key_variables, sort=False)) != len(
+            df_slice.index
+        ):
             merge_strategy = False
             break
 
@@ -232,7 +234,8 @@ def _download_multiple(
             "or equal to %d in different row orders. "
             "It is always safest to query no more than %d "
             "variables at a time. Please do so unless you really need them all.",
-            _MAX_VARIABLES_PER_DOWNLOAD, _MAX_VARIABLES_PER_DOWNLOAD
+            _MAX_VARIABLES_PER_DOWNLOAD,
+            _MAX_VARIABLES_PER_DOWNLOAD,
         )
 
         __dw_strategy_metrics["concat"] = __dw_strategy_metrics["concat"] + 1
@@ -248,6 +251,7 @@ def _download_multiple(
 @dataclass
 class _ShapefileRoot:
     """A private class to stash the root we will use to cache shapefiles locally."""
+
     shapefile_root: Optional[str] = None
 
 
@@ -652,10 +656,13 @@ def download(
 
     # Parse out the download variables
     download_variables = _parse_download_variables(
-        dataset, year,
+        dataset,
+        year,
         download_variables=download_variables,
-        group=group, leaves_of_group=leaves_of_group,
-        skip_annotations=skip_annotations, variable_cache=variable_cache,
+        group=group,
+        leaves_of_group=leaves_of_group,
+        skip_annotations=skip_annotations,
+        variable_cache=variable_cache,
     )
 
     # Special case if we are trying to get too many fields.
@@ -685,7 +692,7 @@ def download(
         with_geometry=with_geometry,
         api_key=api_key,
         variable_cache=variable_cache,
-        **string_kwargs
+        **string_kwargs,
     )
 
 
@@ -697,7 +704,7 @@ def _download_remote(
     with_geometry: bool,
     api_key: Optional[str],
     variable_cache: "VariableCache",
-    **kwargs
+    **kwargs,
 ) -> Union[pd.DataFrame, gpd.GeoDataFrame]:
     """
     Make the actual remote call to download the data.
@@ -740,7 +747,9 @@ def _download_remote(
     df_data = data_from_url(url, params)
 
     # Coerce the types based on metadata about the variables.
-    _coerce_downloaded_variable_types(dataset, year, download_variables, df_data, variable_cache)
+    _coerce_downloaded_variable_types(
+        dataset, year, download_variables, df_data, variable_cache
+    )
 
     download_variables_upper = [dv.upper() for dv in download_variables]
 
@@ -766,7 +775,7 @@ def _coerce_downloaded_variable_types(
     year: int,
     download_variables: List[str],
     df_data: pd.DataFrame,
-    variable_cache: "VariableCache"
+    variable_cache: "VariableCache",
 ) -> None:
     """
     Coerce the type of each returned variable (column) in a data frame.
@@ -807,7 +816,9 @@ def _coerce_downloaded_variable_types(
                         # Sometimes census metadata says int, but they
                         # put in float values anyway, so fall back on
                         # trying to get them as floats.
-                        df_data[variable] = df_data[variable].astype(float, errors="ignore")
+                        df_data[variable] = df_data[variable].astype(
+                            float, errors="ignore"
+                        )
             elif field_type == "float":
                 df_data[variable] = df_data[variable].astype(float)
             elif field_type == "string":

@@ -132,6 +132,7 @@ class VariableCache:
 
     class GroupTreeNode:
         """A node in a tree of variables that make up a group."""
+
         def __init__(self, name: Optional[str] = None):
             self._name = name
 
@@ -205,7 +206,9 @@ class VariableCache:
             for _, value in self.items():
                 yield value
 
-        def items(self) -> Generator[Tuple[str, "VariableCache.GroupTreeNode"], None, None]:
+        def items(
+            self,
+        ) -> Generator[Tuple[str, "VariableCache.GroupTreeNode"], None, None]:
             """
             The items are (key, value) pairs. See :py:meth:`keys` and
             :py:meth:`values`.

@@ -68,7 +68,9 @@ class ShapeReader:
         """The path at which shapefiles are cached locally."""
         return self._shapefile_root
 
-    def _read_shapefile(self, base_name: str, base_url: str, crs, timeout: int) -> gpd.GeoDataFrame:
+    def _read_shapefile(
+        self, base_name: str, base_url: str, crs, timeout: int
+    ) -> gpd.GeoDataFrame:
         """Helper function to read a shapefile."""
 
         self._auto_fetch_file(base_name, base_url, timeout=timeout)
@@ -192,8 +194,7 @@ class ShapeReader:
         return gdf
 
     def read_shapefile(
-        self, shapefile_scope: str, geography: str, crs=None,
-        *, timeout: int = 30
+        self, shapefile_scope: str, geography: str, crs=None, *, timeout: int = 30
     ):
         """
         Read the geometries of geographies.
@@ -255,8 +256,13 @@ class ShapeReader:
         return self._tiger(shapefile_scope, geography, crs, timeout=timeout)
 
     def read_cb_shapefile(
-        self, shapefile_scope: str, geography: str, resolution: str = "500k", crs=None,
-        *, timeout: int = 30
+        self,
+        shapefile_scope: str,
+        geography: str,
+        resolution: str = "500k",
+        crs=None,
+        *,
+        timeout: int = 30,
     ) -> gpd.GeoDataFrame:
         """
         Read the cartographic boundaries of a given geography.
@@ -321,7 +327,9 @@ class ShapeReader:
             A `gpd.GeoDataFrame` containing the boundaries of the requested
             geometries.
         """
-        return self._cartographic_bound(shapefile_scope, geography, resolution, crs, timeout=timeout)
+        return self._cartographic_bound(
+            shapefile_scope, geography, resolution, crs, timeout=timeout
+        )
 
     def _auto_fetch_file(self, name: str, base_url: str, *, timeout: int):
         if not self._auto_fetch:
@@ -736,7 +744,9 @@ def plot_us(
         ax of the plot.
     """
     if gdf.crs != 4269:
-        logger.warning("Expected map to have crs epsg:4269, but got %s instead.", gdf.crs)
+        logger.warning(
+            "Expected map to have crs epsg:4269, but got %s instead.", gdf.crs
+        )
 
     if do_relocate_ak_hi_pr:
         gdf = relocate_ak_hi_pr(gdf)
@@ -787,7 +797,9 @@ def plot_us_boundary(
         ax of the plot.
     """
     if gdf.crs != 4269:
-        logger.warning("Expected map to have crs epsg:4269, but got %d instead.", gdf.crs)
+        logger.warning(
+            "Expected map to have crs epsg:4269, but got %d instead.", gdf.crs
+        )
 
     if do_relocate_ak_hi_pr:
         gdf = relocate_ak_hi_pr(gdf)
