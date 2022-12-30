@@ -569,7 +569,10 @@ class DownloadGroupTestCase(unittest.TestCase):
             self._dataset, self._year, self._group_name_0
         )
 
-        self.assertEqual(["STATE", "COUNTY", extra_variable] + group_variables, list(df_group.columns))
+        self.assertEqual(
+            ["STATE", "COUNTY", extra_variable] + group_variables,
+            list(df_group.columns),
+        )
 
     def test_leaves_of_group_plus(self):
         """Download the leaves of the group plus another variable."""
@@ -590,7 +593,10 @@ class DownloadGroupTestCase(unittest.TestCase):
             self._dataset, self._year, self._group_name_0
         )
 
-        self.assertEqual(["STATE", "COUNTY", extra_variable] + leaf_variables, list(df_leaves.columns))
+        self.assertEqual(
+            ["STATE", "COUNTY", extra_variable] + leaf_variables,
+            list(df_leaves.columns),
+        )
 
     def test_group_with_dups(self):
         """Test the case where some variables are double specified."""
