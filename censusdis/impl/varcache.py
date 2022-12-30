@@ -131,6 +131,7 @@ class VariableCache:
         }
 
     class GroupTreeNode:
+        """A node in a tree of variables that make up a group."""
         def __init__(self, name: Optional[str] = None):
             self._name = name
 
@@ -138,6 +139,7 @@ class VariableCache:
 
         @property
         def name(self):
+            """The name of the node."""
             return self._name
 
         @name.setter
@@ -145,9 +147,31 @@ class VariableCache:
             self._name = name
 
         def add_child(self, path_component: str, child: "VariableCache.GroupTreeNode"):
+            """
+            Add a child to a node.
+
+            Parameters
+            ----------
+            path_component
+                The next component of the path to the variable, beyond the
+                path to `self`.
+            child
+                The node that should be our child at the specified path component.
+
+            Returns
+            -------
+                None
+            """
             self._children[path_component] = child
 
         def is_leaf(self) -> bool:
+            """
+            Is the node a leaf?
+
+            Returns
+            -------
+                `True` if it is a leaf; `False` if it is an internal node.
+            """
             return len(self._children) == 0
 
         def __len__(self):
@@ -159,32 +183,86 @@ class VariableCache:
         def __getitem__(self, component: str):
             return self._children[component]
 
-        def keys(self) -> Iterable[str]:
+        def keys(self) -> Generator[str, None, None]:
+            """
+            The keys, which are the strings of the next component to each child.
+
+            Returns
+            -------
+                The keys
+            """
             for key, _ in self.items():
                 yield key
 
-        def values(self) -> Iterable["VariableCache.GroupTreeNode"]:
+        def values(self) -> Generator["VariableCache.GroupTreeNode", None, None]:
+            """
+            The values, which are our children.
+
+            Returns
+            -------
+                The values (our children).
+            """
             for _, value in self.items():
                 yield value
 
-        def items(self) -> Iterable[Tuple[str, "VariableCache.GroupTreeNode"]]:
+        def items(self) -> Generator[Tuple[str, "VariableCache.GroupTreeNode"], None, None]:
+            """
+            The items are (key, value) pairs. See :py:meth:`keys` and
+            :py:meth:`values`.
+
+            Returns
+            -------
+                The items
+            """
             return self._children.items()
 
         def get(
             self, component, default: Optional["VariableCache.GroupTreeNode"] = None
         ):
+            """
+            Get the child at the given path component below us.
+
+            Parameters
+            ----------
+            component
+                The next component of the path below us.
+            default
+                The default value to return if there is no node at the path.
+
+            Returns
+            -------
+                The node below us or `default` if it is not there,
+            """
             return self._children.get(component, default)
 
         def leaves(self) -> Generator["VariableCache.GroupTreeNode", None, None]:
+            """
+            All the leaves below us. Compare with :py:meth:`~leaf_variables`
+            which returns just the names of the leaves.
+
+            Returns
+            -------
+                All the leaves below us.
+            """
             if self.is_leaf():
                 yield self
             for child in self._children.values():
                 yield from child.leaves()
 
         def leaf_variables(self) -> Generator[str, None, None]:
+            """
+            The names of all the leaves below us. Compare with :py:meth:`~leaves`
+            which returns the full node for each leaf.
+
+            Returns
+            -------
+                The names of the leaves below us.
+            """
             yield from (leaf.name for leaf in self.leaves())
 
-        def _min_leaf_name(self) -> str:
+        @property
+        def min_leaf_name(self) -> str:
+            """The name of the first leaf."""
             return min(self.leaf_variables())
 
         def _node_str(self, level: int, component: str, indent_prefix: str) -> str:
@@ -196,23 +274,28 @@ class VariableCache:
 
             return line
 
-        def _subtree_str(self, level: int, component: str, indent_prefix: str) -> str:
+        def subtree_str(self, level: int, component: str, indent_prefix: str) -> str:
+            """
+            A string representing a subtree.
+
+            Used to construct an indented string representation for the whole tree.
+            """
             rep = self._node_str(level, component, indent_prefix)
             for path_component, child in sorted(
-                self._children.items(), key=lambda t: t[1]._min_leaf_name()
+                self._children.items(), key=lambda t: t[1].min_leaf_name
             ):
                 rep = (
                     rep
                     + "\n"
-                    + child._subtree_str(level + 1, path_component, indent_prefix)
+                    + child.subtree_str(level + 1, path_component, indent_prefix)
                 )
             return rep
 
         def __str__(self) -> str:
             return "\n".join(
-                child._subtree_str(0, path_component, indent_prefix="    ")
+                child.subtree_str(0, path_component, indent_prefix="    ")
                 for path_component, child in sorted(
-                    self._children.items(), key=lambda t: t[1]._min_leaf_name()
+                    self._children.items(), key=lambda t: t[1].min_leaf_name
                 )
             )
 
@@ -276,7 +359,7 @@ class VariableCache:
             A dataframe with a row describing each dataset.
         """
         datasets = datasets["dataset"]
-        df = pd.DataFrame(
+        df_datasets = pd.DataFrame(
             [
                 {
                     "YEAR": dataset.get("c_vintage", None),
@@ -287,7 +370,7 @@ class VariableCache:
                 for dataset in datasets
             ]
         )
-        return df.sort_values(["YEAR", "DATASET"]).reset_index(drop=True)
+        return df_datasets.sort_values(["YEAR", "DATASET"]).reset_index(drop=True)
 
     def all_data_sets(self, *, year: Optional[int] = None) -> pd.DataFrame:
         """
@@ -325,7 +408,7 @@ class VariableCache:
 
         Returns
         -------
-            All the groups in the data set.
+            Metadata on all the groups in the data set.
         """
         groups = self._variable_source.get_all_groups(dataset, year)
 
@@ -352,6 +435,22 @@ class VariableCache:
     def all_variables(
         self, dataset: str, year: int, group_name: Optional[str]
     ) -> pd.DataFrame:
+        """
+        Produce a data frame of metadata on all variables in a group.
+
+        Parameters
+        ----------
+        dataset
+            The data set.
+        year
+            The year.
+        group_name
+            The group.
+
+        Returns
+        -------
+            Metadata on all variables in the group.
+        """
         group_variables = self.group_variables(dataset, year, group_name)
 
         def variable_items(variable_dict: Dict) -> Optional[Dict[str, str]]:
@@ -388,6 +487,25 @@ class VariableCache:
         *,
         skip_annotations: bool = True,
     ) -> "VariableCache.GroupTreeNode":
+        """
+        Construct a tree that embodies the parent/child relationships of
+        all the variables in a group.
+
+        Parameters
+        ----------
+        dataset
+            The data set.
+        year
+            The year.
+        group_name
+            The group.
+        skip_annotations
+            If `True`, skip variables that are annotations of others, like
+            margin of error.
+        Returns
+        -------
+            A tree that can be printed or walked.
+        """
         group = self.get_group(dataset, year, group_name)
 
         root = VariableCache.GroupTreeNode()

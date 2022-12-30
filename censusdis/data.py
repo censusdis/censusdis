@@ -9,6 +9,7 @@ it wraps in a pythonic manner.
 import warnings
 from logging import getLogger
 from typing import Dict, Iterable, List, Mapping, Optional, Tuple, Union
+from dataclasses import dataclass
 
 import geopandas as gpd
 import pandas as pd
@@ -78,7 +79,7 @@ def _download_wide_strategy_metrics() -> Dict[str, int]:
 def _download_multiple(
     dataset: str,
     year: int,
-    fields: List[str],
+    download_variables: List[str],
     *,
     key: Optional[str],
     census_variables: "VariableCache",
@@ -120,14 +121,14 @@ def _download_multiple(
         The full results of the query with all columns.
 
     """
-    # Divide the fields into groups.
-    field_groups = [
+    # Divide the variables into groups.
+    variable_groups = [
         # black and flake8 disagree about the whitespace before ':' here...
-        fields[start : start + _MAX_VARIABLES_PER_DOWNLOAD]  # noqa: 203
-        for start in range(0, len(fields), _MAX_VARIABLES_PER_DOWNLOAD)
+        download_variables[start: start + _MAX_VARIABLES_PER_DOWNLOAD]  # noqa: 203
+        for start in range(0, len(download_variables), _MAX_VARIABLES_PER_DOWNLOAD)
     ]
 
-    if len(field_groups) < 2:
+    if len(variable_groups) < 2:
         raise ValueError(
             "_download_multiple expects to be called with at least "
             f"{_MAX_VARIABLES_PER_DOWNLOAD + 1} variables. With fewer,"
@@ -139,21 +140,21 @@ def _download_multiple(
         download(
             dataset,
             year,
-            field_group,
+            variable_group,
             api_key=key,
             variable_cache=census_variables,
             with_geometry=with_geometry and (ii == 0),
             **kwargs,
         )
-        for ii, field_group in enumerate(field_groups)
+        for ii, variable_group in enumerate(variable_groups)
     ]
 
-    # What fields came back in the first df but were not
+    # What variables came back in the first df but were not
     # requested? These are a key to the geography the row
     # represents. For example, 'STATE' amd 'COUNTY' might
     # be these variables if we did a county-level query to
     # the census API.
-    geo_key_variables = [f for f in dfs[0].columns if f not in set(field_groups[0])]
+    geo_key_variables = [f for f in dfs[0].columns if f not in set(variable_groups[0])]
 
     # If we put in the geometry column, it's not part of the
     # key.
@@ -184,8 +185,8 @@ def _download_multiple(
 
     # But if there are any non-unique keys in any df, we can't
     # merge.
-    for df in dfs:
-        if len(df.value_counts(geo_key_variables, sort=False)) != len(df.index):
+    for df_slice in dfs:
+        if len(df_slice.value_counts(geo_key_variables, sort=False)) != len(df_slice.index):
             merge_strategy = False
             break
 
@@ -208,10 +209,10 @@ def _download_multiple(
 
         rows0 = len(dfs[0].index)
 
-        for df in dfs[1:]:
+        for df_slice in dfs[1:]:
             if not (
-                rows0 == len(df.index)
-                and (dfs[0][geo_key_variables] == df[geo_key_variables]).all().all()
+                rows0 == len(df_slice.index)
+                and dfs[0][geo_key_variables].equals(df_slice[geo_key_variables])
             ):
                 # At least one difference. So we cannot use the
                 # concat strategy either.
@@ -228,9 +229,10 @@ def _download_multiple(
         logger.info(
             "Using the concat strategy, which is not guaranteed reliable if "
             "the census API returned data for multiple sub-queries of less than "
-            f"or equal to {_MAX_VARIABLES_PER_DOWNLOAD} in different row orders. "
-            f"It is always safest to query no more than {_MAX_VARIABLES_PER_DOWNLOAD} "
-            "variables at a time. Please do so unless you really need them all."
+            "or equal to %d in different row orders. "
+            "It is always safest to query no more than %d "
+            "variables at a time. Please do so unless you really need them all.",
+            _MAX_VARIABLES_PER_DOWNLOAD, _MAX_VARIABLES_PER_DOWNLOAD
         )
 
         __dw_strategy_metrics["concat"] = __dw_strategy_metrics["concat"] + 1
@@ -243,7 +245,13 @@ def _download_multiple(
     return df_data
 
 
-__shapefile_root: Union[str, None] = None
+@dataclass
+class _ShapefileRoot:
+    """A private class to stash the root we will use to cache shapefiles locally."""
+    shapefile_root: Optional[str] = None
+
+
+__shapefile_root = _ShapefileRoot()
 __shapefile_readers: Dict[int, cmap.ShapeReader] = {}
 
 
@@ -259,9 +267,7 @@ def set_shapefile_path(shapefile_path: Union[str, None]) -> None:
     shapefile_path
         The path to use for caching shapefiles.
     """
-    global __shapefile_root
-
-    __shapefile_root = shapefile_path
+    __shapefile_root.shapefile_root = shapefile_path
 
 
 def get_shapefile_path() -> Union[str, None]:
@@ -275,9 +281,7 @@ def get_shapefile_path() -> Union[str, None]:
     -------
         The path to use for caching shapefiles.
     """
-    global __shapefile_root
-
-    return __shapefile_root
+    return __shapefile_root.shapefile_root
 
 
 def __shapefile_reader(year: int):
@@ -285,7 +289,7 @@ def __shapefile_reader(year: int):
 
     if reader is None:
         reader = cmap.ShapeReader(
-            __shapefile_root,
+            __shapefile_root.shapefile_root,
             year,
         )
 
@@ -369,7 +373,7 @@ def _add_geography(
         raise CensusApiException(
             "The with_geometry=True flag is only allowed if the "
             f"geometry for the data to be loaded ('{geo_level}') is one of "
-            f"{[geo for geo in _GEO_QUERY_FROM_DATA_QUERY_INNER_GEO.keys()]}."
+            f"{list(_GEO_QUERY_FROM_DATA_QUERY_INNER_GEO.keys())}."
         )
 
     (
@@ -402,13 +406,13 @@ def _add_geography(
     return gdf_data
 
 
-def infer_geo_level(df: pd.DataFrame) -> str:
+def infer_geo_level(df_data: pd.DataFrame) -> str:
     """
     Infer the geography level based on columns names.
 
     Parameters
     ----------
-    df
+    df_data
         A dataframe of variables with one or more columns that
         can be used to infer what geometry level the rows represent.
 
@@ -443,12 +447,12 @@ def infer_geo_level(df: pd.DataFrame) -> str:
     partial_match_keys = []
 
     for k, (_, _, df_on, _) in _GEO_QUERY_FROM_DATA_QUERY_INNER_GEO.items():
-        if all(col in df.columns for col in df_on):
+        if all(col in df_data.columns for col in df_on):
             # Full match. We want the longest full match
             # we find.
             if match_key is None or len(df_on) > match_on_len:
                 match_key = k
-        elif df_on[-1] in df.columns:
+        elif df_on[-1] in df_data.columns:
             # Partial match. This could result in us
             # not getting what we expect. Like if we
             # have STATE and TRACT, but not COUNTY, we will
@@ -463,7 +467,7 @@ def infer_geo_level(df: pd.DataFrame) -> str:
             f"Unable to infer geometry. Was not able to locate any of the "
             "known sets of columns "
             f"{tuple(df_on for _, _, df_on, _ in _GEO_QUERY_FROM_DATA_QUERY_INNER_GEO.values())} "
-            f"in the columns {list(df.columns)}."
+            f"in the columns {list(df_data.columns)}."
         )
 
     if partial_match_keys:
@@ -479,7 +483,7 @@ def infer_geo_level(df: pd.DataFrame) -> str:
     return match_key
 
 
-def add_inferred_geography(df: pd.DataFrame, year: int) -> gpd.GeoDataFrame:
+def add_inferred_geography(df_data: pd.DataFrame, year: int) -> gpd.GeoDataFrame:
     """
     Infer the geography level of the given dataframe and
     add geometry to each row for that level.
@@ -490,7 +494,7 @@ def add_inferred_geography(df: pd.DataFrame, year: int) -> gpd.GeoDataFrame:
 
     Parameters
     ----------
-    df
+    df_data
         A dataframe of variables with one or more columns that
         can be used to infer what geometry level the rows represent.
     year
@@ -503,13 +507,13 @@ def add_inferred_geography(df: pd.DataFrame, year: int) -> gpd.GeoDataFrame:
         the appropriate geometry for each row.
     """
 
-    geo_level = infer_geo_level(df)
+    geo_level = infer_geo_level(df_data)
 
     shapefile_scope = _GEO_QUERY_FROM_DATA_QUERY_INNER_GEO[geo_level][0]
 
     if shapefile_scope is not None:
         # The scope is the same across the board.
-        gdf = _add_geography(df, year, shapefile_scope, geo_level)
+        gdf = _add_geography(df_data, year, shapefile_scope, geo_level)
         return gdf
 
     # We have to group by different values of the shapefile
@@ -518,7 +522,7 @@ def add_inferred_geography(df: pd.DataFrame, year: int) -> gpd.GeoDataFrame:
     shapefile_scope_column = _GEO_QUERY_FROM_DATA_QUERY_INNER_GEO[geo_level][2][0]
 
     df_with_geo = (
-        df.groupby(shapefile_scope_column, group_keys=False)
+        df_data.groupby(shapefile_scope_column, group_keys=False)
         .apply(lambda g: _add_geography(g, year, g.name, geo_level))
         .reset_index(drop=True)
     )
@@ -646,6 +650,239 @@ def download(
         cgeo.path_component_from_snake(dataset, year, k): v for k, v in kwargs.items()
     }
 
+    # Parse out the download variables
+    download_variables = _parse_download_variables(
+        dataset, year,
+        download_variables=download_variables,
+        group=group, leaves_of_group=leaves_of_group,
+        skip_annotations=skip_annotations, variable_cache=variable_cache,
+    )
+
+    # Special case if we are trying to get too many fields.
+    if len(download_variables) > _MAX_VARIABLES_PER_DOWNLOAD:
+        return _download_multiple(
+            dataset,
+            year,
+            download_variables,
+            key=api_key,
+            census_variables=variable_cache,
+            with_geometry=with_geometry,
+            **kwargs,
+        )
+
+    # Prefetch all the types before we load the data.
+    # That way we fail fast if a field is not known.
+    _prefetch_variable_types(dataset, year, download_variables, variable_cache)
+
+    # If we were given a list, join it together into
+    # a comma-separated string.
+    string_kwargs = {k: _gf2s(v) for k, v in kwargs.items()}
+
+    return _download_remote(
+        dataset,
+        year,
+        download_variables=download_variables,
+        with_geometry=with_geometry,
+        api_key=api_key,
+        variable_cache=variable_cache,
+        **string_kwargs
+    )
+
+
+def _download_remote(
+    dataset: str,
+    year: int,
+    *,
+    download_variables: List[str],
+    with_geometry: bool,
+    api_key: Optional[str],
+    variable_cache: "VariableCache",
+    **kwargs
+) -> Union[pd.DataFrame, gpd.GeoDataFrame]:
+    """
+    Make the actual remote call to download the data.
+
+    This is the final step after we have parsed out and
+    validated the variables and geometry.
+
+    Parameters
+    ----------
+    dataset
+        The dataset to download from. For example `acs/acs5` or
+        `dec/pl`.
+    year
+        The year to download data for.
+    download_variables
+        The census variables to download, for example `["NAME", "B01001_001E"]`.
+    with_geometry
+        If `True` a :py:class:`gpd.GeoDataFrame` will be returned and each row
+        will have a geometry that is a cartographic boundary suitable for platting
+        a map. See https://www.census.gov/geographies/mapping-files/time-series/geo/cartographic-boundary.2020.html
+        for details of the shapefiles that will be downloaded on your behalf to
+        generate these boundaries.
+    api_key
+        An optional API key. If you don't have or don't use a key, the number
+        of calls you can make will be limited.
+    variable_cache
+        A cache of metadata about variables.
+    kwargs
+        A specification of the geometry that we want data for.
+
+    Returns
+    -------
+        The downloaded variables, with or without added geometry, as
+        either a `pd.DataFrame` or `gpd.GeoDataFrame`.
+    """
+
+    url, params, bound_path = census_table_url(
+        dataset, year, download_variables, api_key=api_key, **kwargs
+    )
+    df_data = data_from_url(url, params)
+
+    # Coerce the types based on metadata about the variables.
+    _coerce_downloaded_variable_types(dataset, year, download_variables, df_data, variable_cache)
+
+    download_variables_upper = [dv.upper() for dv in download_variables]
+
+    # Put the geo fields (STATE, COUNTY, etc...) that came back up front.
+    df_data = df_data[
+        [col for col in df_data.columns if col not in download_variables_upper]
+        + download_variables_upper
+    ]
+
+    if with_geometry:
+        # We need to get the geometry and merge it in.
+        geo_level = bound_path.path_spec.path[-1]
+        shapefile_scope = bound_path.bindings[bound_path.path_spec.path[0]]
+
+        gdf_data = _add_geography(df_data, year, shapefile_scope, geo_level)
+        return gdf_data
+
+    return df_data
+
+
+def _coerce_downloaded_variable_types(
+    dataset: str,
+    year: int,
+    download_variables: List[str],
+    df_data: pd.DataFrame,
+    variable_cache: "VariableCache"
+) -> None:
+    """
+    Coerce the type of each returned variable (column) in a data frame.
+
+    We look up the type in the metadata in `variable_cache`.
+
+    Parameters
+    ----------
+    dataset
+        The dataset to download from. For example `acs/acs5` or
+        `dec/pl`.
+    year
+        The year to download data for.
+    download_variables
+        The census variables to download, for example `["NAME", "B01001_001E"]`.
+    df_data
+        The data that came back in JSON form from the census API.
+    variable_cache
+        A cache of metadata about variables.
+    """
+    for variable in download_variables:
+        # predicateType does not exist in some older data sets like acs/acs3
+        # So in that case we just go with what we got in the JSON. But if we
+        # have it try to set the type.
+        if "predicateType" in variable_cache.get(dataset, year, variable):
+            field_type = variable_cache.get(dataset, year, variable)["predicateType"]
+
+            if field_type == "int":
+                if df_data[variable].isnull().any():
+                    # Some Census data sets put in null in int fields.
+                    # We have to go with a float to make this a NaN.
+                    # Int has no representation for NaN or None.
+                    df_data[variable] = df_data[variable].astype(float, errors="ignore")
+                else:
+                    try:
+                        df_data[variable] = df_data[variable].astype(int)
+                    except ValueError:
+                        # Sometimes census metadata says int, but they
+                        # put in float values anyway, so fall back on
+                        # trying to get them as floats.
+                        df_data[variable] = df_data[variable].astype(float, errors="ignore")
+            elif field_type == "float":
+                df_data[variable] = df_data[variable].astype(float)
+            elif field_type == "string":
+                pass
+            else:
+                # Leave it as an object?
+                pass
+
+
+def _prefetch_variable_types(
+    dataset: str,
+    year: int,
+    download_variables: List[str],
+    variable_cache: "VariableCache",
+) -> None:
+    """
+    Prefetch the types of all the variables we are going to try to download.
+
+    This enables us to fail fast and have a better error message about the
+    root cause of the issue than if we just blindly put in the variable names
+    in the census API request and wait for it to fail.
+
+    Parameters
+    ----------
+    dataset
+        The dataset to download from. For example `acs/acs5` or
+        `dec/pl`.
+    year
+        The year to download data for.
+    download_variables
+        The census variables to download, for example `["NAME", "B01001_001E"]`.
+    variable_cache
+        A cache of metadata about variables.
+    """
+    for variable in download_variables:
+        try:
+            variable_cache.get(dataset, year, variable)
+        except Exception as exc:
+            census_url = CensusApiVariableSource.url(
+                dataset, year, variable, response_format="html"
+            )
+            census_variables_url = CensusApiVariableSource.variables_url(
+                dataset, year, response_format="html"
+            )
+
+            raise CensusApiException(
+                f"Unable to get metadata on the variable {variable} from the "
+                f"dataset {dataset} for year {year} from the census API. "
+                f"Check the census URL for the variable ({census_url}) to ensure it exists. "
+                f"If not found, check {census_variables_url} for all variables in the dataset."
+            ) from exc
+
+
+def _parse_download_variables(
+    dataset: str,
+    year: int,
+    *,
+    download_variables: Optional[Union[str, Iterable[str]]] = None,
+    group: Optional[Union[str, Iterable[str]]] = None,
+    leaves_of_group: Optional[Union[str, Iterable[str]]] = None,
+    skip_annotations: bool = True,
+    variable_cache: Optional["VariableCache"] = None,
+) -> List[str]:
+    """
+    Parse out the full set of download variables.
+
+    These may be encoded in `download_variables`, `group`, and/or `leaves_of_group`.
+
+    See :py:func:`download` for details on the parameters.
+
+    Returns
+    -------
+        The fully expanded list of variables to download.
+    """
+
     # Turn the variables we were given into a list if they are not already.
     if download_variables is None:
         download_variables = []
@@ -670,7 +907,6 @@ def download(
         group_variables = group_variables + variable_cache.group_variables(
             dataset, year, group_name, skip_annotations=skip_annotations
         )
-
     group_leaf_variables: List[str] = []
     for group_name in leaves_of_group:
         group_leaf_variables = group_leaf_variables + variable_cache.group_leaves(
@@ -683,93 +919,7 @@ def download(
     # Dedup and maintain order.
     download_variables = list(dict.fromkeys(download_variables))
 
-    # Special case if we are trying to get too many fields.
-    if len(download_variables) > _MAX_VARIABLES_PER_DOWNLOAD:
-        return _download_multiple(
-            dataset,
-            year,
-            download_variables,
-            key=api_key,
-            census_variables=variable_cache,
-            with_geometry=with_geometry,
-            **kwargs,
-        )
-
-    # Prefetch all the types before we load the data.
-    # That way we fail fast if a field is not known.
-    for variable in download_variables:
-        try:
-            variable_cache.get(dataset, year, variable)
-        except Exception:
-            census_url = CensusApiVariableSource.url(
-                dataset, year, variable, response_format="html"
-            )
-            census_variables_url = CensusApiVariableSource.variables_url(
-                dataset, year, response_format="html"
-            )
-
-            raise CensusApiException(
-                f"Unable to get metadata on the variable {variable} from the "
-                f"dataset {dataset} for year {year} from the census API. "
-                f"Check the census URL for the variable ({census_url}) to ensure it exists. "
-                f"If not found, check {census_variables_url} for all variables in the dataset."
-            )
-
-    # If we were given a list, join it together into
-    # a comma-separated string.
-    string_kwargs = {k: _gf2s(v) for k, v in kwargs.items()}
-
-    url, params, bound_path = census_table_url(
-        dataset, year, download_variables, api_key=api_key, **string_kwargs
-    )
-    df_data = data_from_url(url, params)
-
-    for field in download_variables:
-        # predicateType does not exist in some older data sets like acs/acs3
-        # So in that case we just go with what we got in the JSON. But if we
-        # have it try to set the type.
-        if "predicateType" in variable_cache.get(dataset, year, field):
-            field_type = variable_cache.get(dataset, year, field)["predicateType"]
-
-            if field_type == "int":
-                if df_data[field].isnull().any():
-                    # Some Census data sets put in null in int fields.
-                    # We have to go with a float to make this a NaN.
-                    # Int has no representation for NaN or None.
-                    df_data[field] = df_data[field].astype(float, errors="ignore")
-                else:
-                    try:
-                        df_data[field] = df_data[field].astype(int)
-                    except ValueError:
-                        # Sometimes census metadata says int, but they
-                        # put in float values anyway, so fall back on
-                        # trying to get them as floats.
-                        df_data[field] = df_data[field].astype(float, errors="ignore")
-            elif field_type == "float":
-                df_data[field] = df_data[field].astype(float)
-            elif field_type == "string":
-                pass
-            else:
-                # Leave it as an object?
-                pass
-
-    download_variables_upper = [dv.upper() for dv in download_variables]
-
-    # Put the geo fields (STATE, COUNTY, etc...) that came back up front.
-    df_data = df_data[
-        [col for col in df_data.columns if col not in download_variables_upper]
-        + download_variables_upper
-    ]
-
-    if with_geometry:
-        # We need to get the geometry and merge it in.
-        geo_level = bound_path.path_spec.path[-1]
-        shapefile_scope = bound_path.bindings[bound_path.path_spec.path[0]]
-
-        gdf_data = _add_geography(df_data, year, shapefile_scope, geo_level)
-        return gdf_data
-
-    return df_data
+    return download_variables
 
 
 def census_table_url(

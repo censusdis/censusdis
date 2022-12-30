@@ -20,11 +20,13 @@ from typing import (
 
 import requests
 
+from .impl.exceptions import CensusApiException
+
 InSpecType = Union[str, Iterable[str]]
 
 
-class GeoException(Exception):
-    pass
+class GeoException(CensusApiException):
+    """An exception raised by the `censusdis.geography` module."""
 
 
 class PathSpec:
@@ -62,6 +64,7 @@ class PathSpec:
 
     @property
     def path(self):
+        "The path."
         return self._path
 
     @staticmethod
