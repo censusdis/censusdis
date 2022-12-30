@@ -15,7 +15,6 @@ from zipfile import BadZipFile, ZipFile
 import geopandas as gpd
 import requests
 import shapely.affinity
-from shapely import affinity
 from shapely.geometry import MultiPolygon, Point, Polygon
 from shapely.geometry.base import BaseGeometry
 
@@ -26,7 +25,7 @@ logger = getLogger(__name__)
 
 
 class MapException(CensusApiException):
-    pass
+    """An exception generated from `censusdis.maps` code."""
 
 
 class ShapeReader:
@@ -69,10 +68,12 @@ class ShapeReader:
         """The path at which shapefiles are cached locally."""
         return self._shapefile_root
 
-    def _read_shapefile(self, base_name: str, base_url: str, crs) -> gpd.GeoDataFrame:
+    def _read_shapefile(
+        self, base_name: str, base_url: str, crs, timeout: int
+    ) -> gpd.GeoDataFrame:
         """Helper function to read a shapefile."""
 
-        self._auto_fetch_file(base_name, base_url)
+        self._auto_fetch_file(base_name, base_url, timeout=timeout)
 
         path = self._shapefile_full_path(base_name)
 
@@ -108,7 +109,7 @@ class ShapeReader:
         name = f"{prefix}_{self._year}_{shapefile_scope}_{suffix}"
         return base_url, name
 
-    def _tiger(self, shapefile_scope: str, geography, crs):
+    def _tiger(self, shapefile_scope: str, geography, crs, timeout: int):
         prefix, suffix = ("tl", geography)
 
         if self._year <= 2010:
@@ -116,7 +117,7 @@ class ShapeReader:
         else:
             base_url, name = self._post_2010_tiger(prefix, shapefile_scope, suffix)
 
-        gdf = self._read_shapefile(name, base_url, crs)
+        gdf = self._read_shapefile(name, base_url, crs, timeout=timeout)
 
         # Pull off the extra two digits of year that get tacked
         # on for the older data.
@@ -167,7 +168,7 @@ class ShapeReader:
         return base_url, name
 
     def _cartographic_bound(
-        self, shapefile_scope, geography, resolution, crs
+        self, shapefile_scope, geography, resolution, crs, *, timeout: int
     ) -> gpd.GeoDataFrame:
         if self._year <= 2010:
             base_url, name = self._through_2010_cb(
@@ -176,7 +177,7 @@ class ShapeReader:
         else:
             base_url, name = self._post_2010_cb(shapefile_scope, geography, resolution)
 
-        gdf = self._read_shapefile(name, base_url, crs)
+        gdf = self._read_shapefile(name, base_url, crs, timeout=timeout)
 
         # Some files on the server, like
         # https://www2.census.gov/geo/tiger/GENZ2010/gz_2010_us_050_00_500k.zip
@@ -192,7 +193,9 @@ class ShapeReader:
 
         return gdf
 
-    def read_shapefile(self, shapefile_scope: str, geography: str, crs=None):
+    def read_shapefile(
+        self, shapefile_scope: str, geography: str, crs=None, *, timeout: int = 30
+    ):
         """
         Read the geometries of geographies.
 
@@ -242,16 +245,24 @@ class ShapeReader:
             crs of the shapefile. Setting this is useful if we plan
             to merge the resulting `GeoDataFrame` with another so we
             can make sure they use the same crs.
+        timeout
+            Time out limit (in seconds) for the remote call.
 
         Returns
         -------
             A `gpd.GeoDataFrame` containing the requested
             geometries.
         """
-        return self._tiger(shapefile_scope, geography, crs)
+        return self._tiger(shapefile_scope, geography, crs, timeout=timeout)
 
     def read_cb_shapefile(
-        self, shapefile_scope: str, geography: str, resolution: str = "500k", crs=None
+        self,
+        shapefile_scope: str,
+        geography: str,
+        resolution: str = "500k",
+        crs=None,
+        *,
+        timeout: int = 30,
     ) -> gpd.GeoDataFrame:
         """
         Read the cartographic boundaries of a given geography.
@@ -308,19 +319,23 @@ class ShapeReader:
             crs of the shapefile. Setting this is useful if we plan
             to merge the resulting `GeoDataFrame` with another so we
             can make sure they use the same crs.
+        timeout
+            Time out limit (in seconds) for the remote call.
 
         Returns
         -------
             A `gpd.GeoDataFrame` containing the boundaries of the requested
             geometries.
         """
-        return self._cartographic_bound(shapefile_scope, geography, resolution, crs)
+        return self._cartographic_bound(
+            shapefile_scope, geography, resolution, crs, timeout=timeout
+        )
 
-    def _auto_fetch_file(self, name: str, base_url: str):
+    def _auto_fetch_file(self, name: str, base_url: str, *, timeout: int):
         if not self._auto_fetch:
             return
 
-        self._fetch_file(name, base_url)
+        self._fetch_file(name, base_url, timeout=timeout)
 
     def _url_for_file(self, name: str) -> str:
         if name.startswith("cb_"):
@@ -348,6 +363,8 @@ class ShapeReader:
         self,
         name: str,
         base_url: str,
+        *,
+        timeout: int,
     ) -> None:
         dir_path = os.path.join(self._shapefile_root, name)
 
@@ -376,7 +393,7 @@ class ShapeReader:
         zip_url = f"{base_url}/{name}.zip"
 
         # Fetch the zip file and write it.
-        response = requests.get(zip_url)
+        response = requests.get(zip_url, timeout=timeout)
 
         with open(zip_path, "wb") as file:
             file.write(response.content)
@@ -385,8 +402,8 @@ class ShapeReader:
         try:
             with ZipFile(zip_path) as zip_file:
                 zip_file.extractall(dir_path)
-        except BadZipFile as e:
-            raise MapException(f"Bad zip file retrieved from {zip_url}") from e
+        except BadZipFile as exc:
+            raise MapException(f"Bad zip file retrieved from {zip_url}") from exc
         finally:
             # We don't need the zipfile anymore.
             os.remove(zip_path)
@@ -438,7 +455,7 @@ def _wrap_poly(poly: Union[Polygon, Point]):
         x_coord = [poly.x]
 
     if x_coord[0] > 0:
-        poly = affinity.translate(poly, xoff=-360.0, yoff=0.0)
+        poly = shapely.affinity.translate(poly, xoff=-360.0, yoff=0.0)
     return poly
 
 
@@ -728,7 +745,7 @@ def plot_us(
     """
     if gdf.crs != 4269:
         logger.warning(
-            f"Expected map to have crs epsg:4269, but got {gdf.crs} instead."
+            "Expected map to have crs epsg:4269, but got %s instead.", gdf.crs
         )
 
     if do_relocate_ak_hi_pr:
@@ -739,8 +756,7 @@ def plot_us(
 
     gdf = gdf.to_crs(epsg=epsg)
 
-    ax = gdf.plot(*args, **kwargs)
-    return ax
+    return gdf.plot(*args, **kwargs)
 
 
 def plot_us_boundary(
@@ -782,7 +798,7 @@ def plot_us_boundary(
     """
     if gdf.crs != 4269:
         logger.warning(
-            f"Expected map to have crs epsg:4269, but got {gdf.crs} instead."
+            "Expected map to have crs epsg:4269, but got %d instead.", gdf.crs
         )
 
     if do_relocate_ak_hi_pr:
@@ -794,8 +810,7 @@ def plot_us_boundary(
 
     gdf = gdf.to_crs(epsg=epsg)
 
-    ax = gdf.boundary.plot(*args, **kwargs)
-    return ax
+    return gdf.boundary.plot(*args, **kwargs)
 
 
 def geographic_centroids(gdf: gpd.GeoDataFrame) -> gpd.GeoSeries:

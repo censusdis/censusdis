@@ -136,18 +136,17 @@ class CensusApiVariableSource(VariableSource):
         url = self.group_url(dataset, year, name)
         value = json_from_url(url)
 
-        if True:
-            # Filter out psuedo-variables like 'for' and 'in'.
-            value["variables"] = {
-                k: v
-                for k, v in value["variables"].items()
-                if k not in ["in", "for", "ucgid"]
-            }
+        # Filter out psuedo-variables like 'for' and 'in'.
+        value["variables"] = {
+            k: v
+            for k, v in value["variables"].items()
+            if k not in ["in", "for", "ucgid"]
+        }
 
         # Put the name into the nested dictionaries, so it looks the same is if
         # we had gotten it via the variable API even though that API leaves it out.
-        for k, v in value["variables"].items():
-            v["name"] = k
+        for k, val in value["variables"].items():
+            val["name"] = k
 
         return value
 
