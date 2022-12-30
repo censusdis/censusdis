@@ -665,13 +665,13 @@ def download(
         leaves_of_group = [leaves_of_group]
 
     # Add group variables and leaves as appropriate.
-    group_variables = []
+    group_variables: List[str] = []
     for group_name in group:
         group_variables = group_variables + variable_cache.group_variables(
             dataset, year, group_name, skip_annotations=skip_annotations
         )
 
-    group_leaf_variables = []
+    group_leaf_variables: List[str] = []
     for group_name in leaves_of_group:
         group_leaf_variables = group_leaf_variables + variable_cache.group_leaves(
             dataset, year, group_name, skip_annotations=skip_annotations

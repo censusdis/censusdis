@@ -5,7 +5,18 @@ Utilities for managing hierarchies of geographies.
 
 from collections import defaultdict
 from dataclasses import dataclass
-from typing import Any, ClassVar, Dict, Iterable, List, Mapping, Optional, Tuple, Union
+from typing import (
+    Any,
+    ClassVar,
+    DefaultDict,
+    Dict,
+    Iterable,
+    List,
+    Mapping,
+    Optional,
+    Tuple,
+    Union,
+)
 
 import requests
 
@@ -171,10 +182,16 @@ class PathSpec:
             f"Census API request to {request.url} failed with status {request.status_code}. {request.text}"
         )
 
-    _PATH_SPECS_BY_DATASET_YEAR = defaultdict(dict)
+    _PATH_SPECS_BY_DATASET_YEAR: DefaultDict[
+        str, Dict[int, Dict[str, "PathSpec"]]
+    ] = defaultdict(dict)
 
-    _PATH_SPEC_SNAKE_MAP = defaultdict(dict)
-    _PATH_SPEC_SNAKE_INV_MAP = defaultdict(dict)
+    _PATH_SPEC_SNAKE_MAP: DefaultDict[str, Dict[int, Dict[str, str]]] = defaultdict(
+        dict
+    )
+    _PATH_SPEC_SNAKE_INV_MAP: DefaultDict[str, Dict[int, Dict[str, str]]] = defaultdict(
+        dict
+    )
 
     @staticmethod
     def get_path_specs(dataset: str, year: int) -> Dict[str, "PathSpec"]:
