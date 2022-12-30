@@ -494,6 +494,211 @@ class DownloadWideTestCase(unittest.TestCase):
             self.assertIn(variable, columns)
 
 
+class DownloadGroupTestCase(unittest.TestCase):
+    """
+    Test downloading by group.
+
+    This is more an integration test than a unit test, which
+    calls the census api and downloads real data. Similar to
+    :py:class:`~DownloadTestCase` but with a focus on using
+    the `group` and `leaves_of_group` args.
+    """
+
+    def setUp(self) -> None:
+        """Set up before each test."""
+        self._variable_source = (
+            censusdis.impl.varsource.censusapi.CensusApiVariableSource()
+        )
+        self._dataset = "acs/acs5"
+        self._year = 2019
+        self._group_name_0 = "B19001"
+        self._group_name_1 = "B03002"
+
+    def test_group(self):
+        """Download the whole group."""
+
+        df_group = ced.download(
+            self._dataset,
+            self._year,
+            group=self._group_name_0,
+            state=STATE_NJ,
+            county="*",
+        )
+
+        # Make sure we got the variables we expected.
+        group_variables = ced.variables.group_variables(
+            self._dataset, self._year, self._group_name_0
+        )
+
+        self.assertEqual(["STATE", "COUNTY"] + group_variables, list(df_group.columns))
+
+    def test_leaves_of_group(self):
+        """Download the leaves of the group."""
+
+        df_leaves = ced.download(
+            self._dataset,
+            self._year,
+            leaves_of_group=self._group_name_0,
+            state=STATE_NJ,
+            county="*",
+        )
+
+        # Make sure we got the variables we expected.
+        leaf_variables = ced.variables.group_leaves(
+            self._dataset, self._year, self._group_name_0
+        )
+
+        self.assertEqual(["STATE", "COUNTY"] + leaf_variables, list(df_leaves.columns))
+
+    def test_group_plus(self):
+        """Download the whole group plus another variable."""
+
+        extra_variable = "NAME"
+
+        df_group = ced.download(
+            self._dataset,
+            self._year,
+            [extra_variable, extra_variable],  # should dedup here also
+            group=self._group_name_0,
+            state=STATE_NJ,
+            county="*",
+        )
+
+        # Make sure we got the variables we expected.
+        group_variables = ced.variables.group_variables(
+            self._dataset, self._year, self._group_name_0
+        )
+
+        self.assertEqual(
+            ["STATE", "COUNTY", extra_variable] + group_variables,
+            list(df_group.columns),
+        )
+
+    def test_leaves_of_group_plus(self):
+        """Download the leaves of the group plus another variable."""
+
+        extra_variable = "NAME"
+
+        df_leaves = ced.download(
+            self._dataset,
+            self._year,
+            extra_variable,
+            leaves_of_group=self._group_name_0,
+            state=STATE_NJ,
+            county="*",
+        )
+
+        # Make sure we got the variables we expected.
+        leaf_variables = ced.variables.group_leaves(
+            self._dataset, self._year, self._group_name_0
+        )
+
+        self.assertEqual(
+            ["STATE", "COUNTY", extra_variable] + leaf_variables,
+            list(df_leaves.columns),
+        )
+
+    def test_group_with_dups(self):
+        """Test the case where some variables are double specified."""
+
+        group_variables = ced.variables.group_variables(
+            self._dataset, self._year, self._group_name_0
+        )
+
+        some_group_variables = [
+            group_variables[ii] for ii in range(0, len(group_variables), 2)
+        ]
+        # Be sure we are requesting a few twice.
+        self.assertGreater(len(some_group_variables), 2)
+
+        df_leaves = ced.download(
+            self._dataset,
+            self._year,
+            some_group_variables,
+            group=self._group_name_0,
+            state=STATE_NJ,
+            county="*",
+        )
+
+        # Should be no dups. State and county are the two added.
+        self.assertEqual(len(df_leaves.columns), 2 + len(group_variables))
+
+        # Make sure we got the variables we expected.
+        returned_variables = set(df_leaves.columns)
+
+        self.assertEqual(len(returned_variables), len(df_leaves.columns))
+
+        # State county and the extra are the two added.
+        self.assertEqual(len(returned_variables), 2 + len(group_variables))
+
+        for variable in group_variables:
+            self.assertIn(variable, returned_variables)
+
+        self.assertIn("STATE", returned_variables)
+        self.assertIn("COUNTY", returned_variables)
+
+    def test_leaves_of_group_with_dups(self):
+        """Test the case where some variables are double specified."""
+
+        extra_variable = "NAME"
+        leaf_variables = ced.variables.group_leaves(
+            self._dataset, self._year, self._group_name_0
+        )
+
+        some_leaf_variables = [
+            leaf_variables[ii] for ii in range(0, len(leaf_variables), 2)
+        ]
+        # Be sure we are requesting a few twice.
+        self.assertGreater(len(some_leaf_variables), 2)
+
+        df_leaves = ced.download(
+            self._dataset,
+            self._year,
+            [extra_variable] + some_leaf_variables,
+            leaves_of_group=self._group_name_0,
+            state=STATE_NJ,
+            county="*",
+        )
+
+        # Should be no dups.
+        # State, county, and the extra are the three added.
+        self.assertEqual(len(df_leaves.columns), 3 + len(leaf_variables))
+
+        # Make sure we got the variables we expected.
+        returned_variables = set(df_leaves.columns)
+
+        self.assertEqual(len(returned_variables), len(df_leaves.columns))
+
+        # State county and the extra are the three added.
+        self.assertEqual(len(returned_variables), 3 + len(leaf_variables))
+
+        for variable in leaf_variables:
+            self.assertIn(variable, returned_variables)
+
+        self.assertIn("STATE", returned_variables)
+        self.assertIn("COUNTY", returned_variables)
+        self.assertIn(extra_variable, returned_variables)
+
+    def test_multiple_groups(self):
+        """Download from more than one group."""
+
+        df_group = ced.download(
+            self._dataset,
+            self._year,
+            group=[self._group_name_0, self._group_name_1],
+            leaves_of_group=[self._group_name_0],
+            state=STATE_NJ,
+            county="*",
+        )
+
+        # Make sure we got the variables we expected.
+        group_variables = ced.variables.group_variables(
+            self._dataset, self._year, self._group_name_0
+        ) + ced.variables.group_variables(self._dataset, self._year, self._group_name_1)
+
+        self.assertEqual(["STATE", "COUNTY"] + group_variables, list(df_group.columns))
+
+
 class AcsSubjectTestCase(unittest.TestCase):
     """
     Test on ACS Subject Data that includes null in an int field.

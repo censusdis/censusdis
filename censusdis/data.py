@@ -568,8 +568,11 @@ def download_detail(
 def download(
     dataset: str,
     year: int,
-    download_variables: Iterable[str],
+    download_variables: Optional[Union[str, Iterable[str]]] = None,
     *,
+    group: Optional[Union[str, Iterable[str]]] = None,
+    leaves_of_group: Optional[Union[str, Iterable[str]]] = None,
+    skip_annotations: bool = True,
     with_geometry: bool = False,
     api_key: Optional[str] = None,
     variable_cache: Optional["VariableCache"] = None,
@@ -583,6 +586,13 @@ def download(
     this in the demo notebooks provided with the package at
     https://github.com/vengroff/censusdis/tree/main/notebooks.
 
+    *A note on variables and groups*: there are multiple ways to specify the
+    variables you want to download, either individually in `download_variables`,
+    by one or more groups in `group`, and by the leaves of one or more groups
+    in `leaves_of_group`. Note that these three sources af variables are
+    deduplicated, so you will only get one column for a variable no matter
+    how many times it is specified.
+
     Parameters
     ----------
     dataset
@@ -592,6 +602,21 @@ def download(
         The year to download data for.
     download_variables
         The census variables to download, for example `["NAME", "B01001_001E"]`.
+    group
+        One or more groups (as defined by the U.S. Census for the data set)
+        whose variable values should be downloaded. These are in addition to
+        any specified in `download_variables`.
+    leaves_of_group
+        One or more groups (as defined by the U.S. Census for the data set)
+        whose leaf variable values should be downloaded.These are in addition to
+        any specified in `download_variables` or `group`. See
+        :py:meth:`VariableCache.group_leaves` for more details on the semantics of
+        leaves vs. non-leaf group variables.
+    skip_annotations
+        If `True` try to filter out `group` or `leaves_of_group` variables that are
+        annotations rather than actual values. See :py:meth:`VariableCache.group_variables`
+        for more details. Variable names passed in `download_variables` are not
+        affected by this flag.
     with_geometry
         If `True` a :py:class:`gpd.GeoDataFrame` will be returned and each row
         will have a geometry that is a cartographic boundary suitable for platting
@@ -621,8 +646,42 @@ def download(
         cgeo.path_component_from_snake(dataset, year, k): v for k, v in kwargs.items()
     }
 
-    if not isinstance(download_variables, list):
+    # Turn the variables we were given into a list if they are not already.
+    if download_variables is None:
+        download_variables = []
+    elif isinstance(download_variables, str):
+        download_variables = [download_variables]
+    elif not isinstance(download_variables, list):
         download_variables = list(download_variables)
+
+    if group is None:
+        group = []
+    elif isinstance(group, str):
+        group = [group]
+
+    if leaves_of_group is None:
+        leaves_of_group = []
+    elif isinstance(leaves_of_group, str):
+        leaves_of_group = [leaves_of_group]
+
+    # Add group variables and leaves as appropriate.
+    group_variables = []
+    for group_name in group:
+        group_variables = group_variables + variable_cache.group_variables(
+            dataset, year, group_name, skip_annotations=skip_annotations
+        )
+
+    group_leaf_variables = []
+    for group_name in leaves_of_group:
+        group_leaf_variables = group_leaf_variables + variable_cache.group_leaves(
+            dataset, year, group_name, skip_annotations=skip_annotations
+        )
+
+    # Concatenate them all.
+    download_variables = download_variables + group_variables + group_leaf_variables
+
+    # Dedup and maintain order.
+    download_variables = list(dict.fromkeys(download_variables))
 
     # Special case if we are trying to get too many fields.
     if len(download_variables) > _MAX_VARIABLES_PER_DOWNLOAD:
