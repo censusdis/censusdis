@@ -29,17 +29,17 @@ GeoFilterType = Optional[Union[str, Iterable[str]]]
 """
 The type we accept for geographic filters.
 
-They are used for the values of `kwargs` to 
+They are used for the values of `kwargs` to
 :py:func:`download`.
 
-These filters are either single values as a string, 
-or, if multivalued, then an iterable containing all 
+These filters are either single values as a string,
+or, if multivalued, then an iterable containing all
 the values allowed by the filter. For example::
 
     import censusdis.data as ced
-    
+
     from censusdis.states import STATE_NJ, STATE_NY, STATE_CT
-    
+
     # Two different kinds of kwarg for `state=`, both of
     # which are of `GeoFilterType`:
     df_one_state = ced.download("aca/acs5", 2020, ["NAME"], state=STATE_NJ)
