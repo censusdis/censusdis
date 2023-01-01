@@ -1,4 +1,16 @@
 [[package]]
+name = "adjustText"
+version = "0.7.3"
+description = "Iteratively adjust text position in matplotlib plots to minimize overlaps"
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+matplotlib = "*"
+numpy = "*"
+
+[[package]]
 name = "alabaster"
 version = "0.7.12"
 description = "A configurable sidebar-enabled Sphinx theme"
@@ -1686,9 +1698,12 @@ docs = ["Sphinx", "sphinx-rtd-theme", "sphinx-copybutton", "sphinxcontrib-napole
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "0b5acf0391215064cee96c4be67e297174d4970c3355baff5b23abdc1c214ff4"
+content-hash = "721745adcfb74b98fee519c61699e5b92b71d79ed82013afd5979ae2020973e9"
 
 [metadata.files]
+adjustText = [
+    {file = "adjustText-0.7.3.tar.gz", hash = "sha256:b90e275a95b4d980cbbac7967914b8d66477c09bc346a0b3c9e2125bba664b06"},
+]
 alabaster = [
     {file = "alabaster-0.7.12-py2.py3-none-any.whl", hash = "sha256:446438bdcca0e05bd45ea2de1668c1d9b032e1a9154c2c259092d77031ddd359"},
     {file = "alabaster-0.7.12.tar.gz", hash = "sha256:a661d72d58e6ea8a57f7a86e37d86716863ee5e92788398526d58b26a4e4dc02"},

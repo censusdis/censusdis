@@ -8,7 +8,17 @@ from the U.S. Census API.
 """
 
 from abc import ABC, abstractmethod
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Union, Literal
+
+
+DatasetTimeSpecifierType = Union[int, Literal["timeseries"]]
+"""
+The type we use to specify the time of a dataset.
+
+Most datasets are organized by year, so we pass an integer
+year like 2020. But some datasets are timeseries that cover
+multiple years, so we specify the literal value "timeseries".
+"""
 
 
 class VariableSource(ABC):

@@ -8,7 +8,7 @@ it wraps in a pythonic manner.
 
 import warnings
 from logging import getLogger
-from typing import Dict, Iterable, List, Literal, Mapping, Optional, Tuple, Union
+from typing import Dict, Iterable, List, Mapping, Optional, Tuple, Union
 from dataclasses import dataclass
 
 import geopandas as gpd
@@ -19,6 +19,7 @@ import censusdis.maps as cmap
 from censusdis.impl.exceptions import CensusApiException
 from censusdis.impl.fetch import data_from_url
 from censusdis.impl.varcache import VariableCache
+from censusdis.impl.varsource.base import DatasetTimeSpecifierType
 from censusdis.impl.varsource.censusapi import CensusApiVariableSource
 
 
@@ -44,16 +45,6 @@ the values allowed by the filter. For example::
     # which are of `GeoFilterType`:
     df_one_state = ced.download("aca/acs5", 2020, ["NAME"], state=STATE_NJ)
     df_tri_state = ced.download("aca/acs5", 2020, ["NAME"], state=[STATE_NJ, STATE_NY, STATE_CT])
-"""
-
-
-DatasetTimeSpecifierType = Union[int, Literal["timeseries"]]
-"""
-The type we use to specify the time of a dataset.
-
-Most datasets are organized by year, so we pass an integer
-year like 2020. But some datasets are timeseries that cover
-multiple years, so we specify the literal value "timeseries".
 """
 
 
@@ -120,10 +111,11 @@ def _download_multiple(
     Parameters
     ----------
     dataset
-        The dataset to download from. For example `acs/acs5` or
-        `dec/pl`.
+        The dataset to download from. For example `"acs/acs5"`,
+        `"dec/pl"`, or `"timeseries/poverty/saipe/schdist"`.
     year
-        The year to download data for.
+        The year to download data for. For example, `2020`. Or, for
+        a timeseries data set, the string `'timeseries'`.
     download_variables
         The census variables to download, for example `["NAME", "B01001_001E"]`.
     with_geometry
@@ -361,6 +353,12 @@ _GEO_QUERY_FROM_DATA_QUERY_INNER_GEO: Dict[
         ["STATE", "COUNTY", "TRACT", "BLOCK_GROUP"],
         ["STATEFP", "COUNTYFP", "TRACTCE", "BLKGRPCE"],
     ),
+    "school district (unified)": (
+        None,
+        "unsd",
+        ["STATE", "SCHOOL_DISTRICT_UNIFIED"],
+        ["STATEFP", "UNSDLEA"],
+    ),
 }
 """
 Helper map for the _with_geometry case.
@@ -369,6 +367,10 @@ A map from the innermost level of a geometry specification
 to the arguments we need to pass to `get_cb_shapefile`
 to get the right shapefile for the geography and the columns
 we need to join the data and shapefile on.
+
+We should add everything in
+https://www.census.gov/geographies/mapping-files/time-series/geo/cartographic-boundary.html
+to this map.
 """
 
 
@@ -628,10 +630,11 @@ def download(
     Parameters
     ----------
     dataset
-        The dataset to download from. For example `acs/acs5` or
-        `dec/pl`.
+        The dataset to download from. For example `"acs/acs5"`,
+        `"dec/pl"`, or `"timeseries/poverty/saipe/schdist"`.
     year
-        The year to download data for.
+        The year to download data for. For example, `2020`. Or, for
+        a timeseries data set, the string `'timeseries'`.
     download_variables
         The census variables to download, for example `["NAME", "B01001_001E"]`.
     group
@@ -739,10 +742,11 @@ def _download_remote(
     Parameters
     ----------
     dataset
-        The dataset to download from. For example `acs/acs5` or
-        `dec/pl`.
+        The dataset to download from. For example `"acs/acs5"`,
+        `"dec/pl"`, or `"timeseries/poverty/saipe/schdist"`.
     year
-        The year to download data for.
+        The year to download data for. For example, `2020`. Or, for
+        a timeseries data set, the string `'timeseries'`.
     download_variables
         The census variables to download, for example `["NAME", "B01001_001E"]`.
     with_geometry
@@ -809,10 +813,11 @@ def _coerce_downloaded_variable_types(
     Parameters
     ----------
     dataset
-        The dataset to download from. For example `acs/acs5` or
-        `dec/pl`.
+        The dataset to download from. For example `"acs/acs5"`,
+        `"dec/pl"`, or `"timeseries/poverty/saipe/schdist"`.
     year
-        The year to download data for.
+        The year to download data for. For example, `2020`. Or, for
+        a timeseries data set, the string `'timeseries'`.
     download_variables
         The census variables to download, for example `["NAME", "B01001_001E"]`.
     df_data
@@ -868,10 +873,12 @@ def _prefetch_variable_types(
     Parameters
     ----------
     dataset
-        The dataset to download from. For example `acs/acs5` or
-        `dec/pl`.
+        The dataset to download from. For example `"acs/acs5"`,
+        `"dec/pl"`, or `"timeseries/poverty/saipe/schdist"`.
     year
-        The year to download data for.
+        The year to download data for. For example, `2020`. Or, for
+        a timeseries data set, the string `'timeseries'`.
+
     download_variables
         The census variables to download, for example `["NAME", "B01001_001E"]`.
     variable_cache
@@ -971,10 +978,11 @@ def census_table_url(
     Parameters
     ----------
     dataset
-        The dataset to download from. For example `acs/acs5` or
-        `dec/pl`.
+        The dataset to download from. For example `"acs/acs5"`,
+        `"dec/pl"`, or `"timeseries/poverty/saipe/schdist"`.
     year
-        The year to download data for.
+        The year to download data for. For example, `2020`. Or, for
+        a timeseries data set, the string `'timeseries'`.
     download_variables
         The census variables to download, for example `["NAME", "B01001_001E"]`.
     api_key

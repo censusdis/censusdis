@@ -2,7 +2,7 @@
 """
 Utilities for managing hierarchies of geographies.
 """
-
+import os
 from collections import defaultdict
 from dataclasses import dataclass
 from typing import (
@@ -158,7 +158,10 @@ class PathSpec:
 
     @staticmethod
     def _geo_url(dataset: str, year: int) -> str:
-        return f"https://api.census.gov/data/{year}/{dataset}/geography.json"
+        if isinstance(year, int):
+            return f"https://api.census.gov/data/{year}/{dataset}/geography.json"
+        else:
+            return f"https://api.census.gov/data/{dataset}/geography.json"
 
     @staticmethod
     def _fetch_path_specs(dataset: str, year: int) -> Dict[str, "PathSpec"]:
@@ -243,7 +246,40 @@ class BoundGeographyPath:
         return self._bindings
 
 
-@dataclass(frozen=True)
+class EnvironmentApiKey:
+    """
+    A small class that holds an API key loaded from the environment.
+
+    There are two places it could come from, the environment variable
+    US_CENSUS_API_KEY or a file ~/.censusdis/api_key.txt
+    in the current users home directory. If it is in both, the environment
+    variable value is used.
+    """
+
+    _env_var = "US_CENSUS_API_KEY"
+
+    _api_key = None
+
+    @classmethod
+    def api_key(cls):
+        # Try the env var,
+        if cls._api_key is None:
+            cls._api_key = os.environ.get(cls._env_var, None)
+
+        # Try the file.
+        if cls._api_key is None:
+            path = os.path.abspath(
+                os.path.join(os.path.expanduser("~"), ".censusdis", "api_key.txt")
+            )
+            if os.path.isfile(path):
+                with open(path, "r") as file:
+                    file_key = file.read().splitlines()[0]
+                    cls._api_key = file_key
+
+        return cls._api_key
+
+
+@dataclass(init=False)
 class CensusGeographyQuerySpec:
 
     dataset: str
@@ -253,6 +289,24 @@ class CensusGeographyQuerySpec:
     api_key: Optional[str] = None
 
     _BASE_URL: ClassVar[str] = "https://api.census.gov/data"
+
+    def __init__(
+        self,
+        dataset: str,
+        year: int,
+        variables: List[str],
+        bound_path: BoundGeographyPath,
+        api_key: Optional[str] = None,
+    ):
+        self.dataset = dataset
+        self.year = year
+        self.variables = variables
+        self.bound_path = bound_path
+
+        if api_key is None:
+            api_key = EnvironmentApiKey.api_key()
+
+        self.api_key = api_key
 
     @property
     def for_component(self) -> str:
@@ -281,7 +335,7 @@ class CensusGeographyQuerySpec:
         if isinstance(self.year, int):
             url = "/".join([self._BASE_URL, f"{self.year:04}", self.dataset])
         else:
-            url = "/".join([self._BASE_URL, f"{self.year}", self.dataset])
+            url = "/".join([self._BASE_URL, self.dataset])
 
         params = {
             "get": ",".join(self.variables),
