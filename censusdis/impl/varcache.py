@@ -217,7 +217,8 @@ class VariableCache:
             -------
                 The items
             """
-            return self._children.items()
+            for component, node in self._children.items():
+                yield component, node
 
         def get(
             self, component, default: Optional["VariableCache.GroupTreeNode"] = None
@@ -365,7 +366,10 @@ class VariableCache:
         df_datasets = pd.DataFrame(
             [
                 {
-                    "YEAR": dataset.get("c_vintage", None),
+                    "YEAR": dataset.get(
+                        "c_vintage",
+                        "timeseries" if dataset.get("c_isTimeseries", False) else None,
+                    ),
                     "DATASET": "/".join(dataset["c_dataset"]),
                     "TITLE": dataset.get("title", None),
                     "DESCRIPTION": dataset.get("description", None),

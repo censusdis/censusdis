@@ -8,7 +8,7 @@ it wraps in a pythonic manner.
 
 import warnings
 from logging import getLogger
-from typing import Dict, Iterable, List, Mapping, Optional, Tuple, Union
+from typing import Dict, Iterable, List, Literal, Mapping, Optional, Tuple, Union
 from dataclasses import dataclass
 
 import geopandas as gpd
@@ -25,12 +25,36 @@ from censusdis.impl.varsource.censusapi import CensusApiVariableSource
 logger = getLogger(__name__)
 
 
-# This is the type we can accept for geographic
-# filters. When provided, these filters are either
-# single values as a string, or, if multivalued,
-# then an iterable containing all the values allowed
-# by the filter.
 GeoFilterType = Optional[Union[str, Iterable[str]]]
+"""
+The type we accept for geographic filters.
+
+They are used for the values of `kwargs` to 
+:py:func:`download`.
+
+These filters are either single values as a string, 
+or, if multivalued, then an iterable containing all 
+the values allowed by the filter. For example::
+
+    import censusdis.data as ced
+    
+    from censusdis.states import STATE_NJ, STATE_NY, STATE_CT
+    
+    # Two different kinds of kwarg for `state=`, both of
+    # which are of `GeoFilterType`:
+    df_one_state = ced.download("aca/acs5", 2020, ["NAME"], state=STATE_NJ)
+    df_tri_state = ced.download("aca/acs5", 2020, ["NAME"], state=[STATE_NJ, STATE_NY, STATE_CT])
+"""
+
+
+DatasetTimeSpecifierType = Union[int, Literal["timeseries"]]
+"""
+The type we use to specify the time of a dataset.
+
+Most datasets are organized by year, so we pass an integer
+year like 2020. But some datasets are timeseries that cover
+multiple years, so we specify the literal value "timeseries".
+"""
 
 
 def _gf2s(geo_filter: GeoFilterType) -> Optional[str]:
@@ -78,7 +102,7 @@ def _download_wide_strategy_metrics() -> Dict[str, int]:
 
 def _download_multiple(
     dataset: str,
-    year: int,
+    year: DatasetTimeSpecifierType,
     download_variables: List[str],
     *,
     key: Optional[str],
@@ -538,7 +562,7 @@ def add_inferred_geography(df_data: pd.DataFrame, year: int) -> gpd.GeoDataFrame
 
 def download_detail(
     dataset: str,
-    year: int,
+    year: DatasetTimeSpecifierType,
     download_variables: Iterable[str],
     *,
     with_geometry: bool = False,
@@ -575,7 +599,7 @@ def download_detail(
 
 def download(
     dataset: str,
-    year: int,
+    year: DatasetTimeSpecifierType,
     download_variables: Optional[Union[str, Iterable[str]]] = None,
     *,
     group: Optional[Union[str, Iterable[str]]] = None,
@@ -698,7 +722,7 @@ def download(
 
 def _download_remote(
     dataset: str,
-    year: int,
+    year: DatasetTimeSpecifierType,
     *,
     download_variables: List[str],
     with_geometry: bool,
@@ -772,7 +796,7 @@ def _download_remote(
 
 def _coerce_downloaded_variable_types(
     dataset: str,
-    year: int,
+    year: DatasetTimeSpecifierType,
     download_variables: List[str],
     df_data: pd.DataFrame,
     variable_cache: "VariableCache",
@@ -830,7 +854,7 @@ def _coerce_downloaded_variable_types(
 
 def _prefetch_variable_types(
     dataset: str,
-    year: int,
+    year: DatasetTimeSpecifierType,
     download_variables: List[str],
     variable_cache: "VariableCache",
 ) -> None:
@@ -874,7 +898,7 @@ def _prefetch_variable_types(
 
 def _parse_download_variables(
     dataset: str,
-    year: int,
+    year: DatasetTimeSpecifierType,
     *,
     download_variables: Optional[Union[str, Iterable[str]]] = None,
     group: Optional[Union[str, Iterable[str]]] = None,
@@ -935,7 +959,7 @@ def _parse_download_variables(
 
 def census_table_url(
     dataset: str,
-    year: int,
+    year: DatasetTimeSpecifierType,
     download_variables: Iterable[str],
     *,
     api_key: Optional[str] = None,

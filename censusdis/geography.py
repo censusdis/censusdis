@@ -278,7 +278,10 @@ class CensusGeographyQuerySpec:
         -------
             The URL and the parameters to pass to it.
         """
-        url = "/".join([self._BASE_URL, f"{self.year:04}", self.dataset])
+        if isinstance(self.year, int):
+            url = "/".join([self._BASE_URL, f"{self.year:04}", self.dataset])
+        else:
+            url = "/".join([self._BASE_URL, f"{self.year}", self.dataset])
 
         params = {
             "get": ",".join(self.variables),
