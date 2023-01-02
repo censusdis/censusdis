@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "censusdis"
-version = "0.10.0"
+version = "0.10.1"
 description = "US Census utilities for a variety of data loading and mapping purposes."
 license = "HL3-CL-ECO-EXTR-FFD-LAW-MIL-SV"
 authors = ["Darren Vengroff"]
@@ -27,6 +27,7 @@ nbsphinx = { version = "^0.8.10", optional = true }
 toml = { version = "^0.10.0", optional = true }
 requests = "^2.28.1"
 geopy = "^2.2.0"
+adjustText = "^0.7.3"
 
 [tool.poetry.extras]
 docs = ["Sphinx", "sphinx-rtd-theme", "sphinx-copybutton", "sphinxcontrib-napoleon", "toml"]

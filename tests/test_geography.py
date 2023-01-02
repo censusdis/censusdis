@@ -1,5 +1,7 @@
 import unittest
 
+from typing import Mapping, Optional, Tuple
+
 from censusdis.geography import CensusGeographyQuerySpec, PathSpec
 
 
@@ -158,6 +160,25 @@ class CensusGeographyQuerySpecTestCase(unittest.TestCase):
         self.dataset = "acs/acs5"
         self.year = 2013
 
+    def assertEqualExceptKey(
+        self,
+        t0: Tuple[str, Mapping[str, str]],
+        t1: Tuple[str, Mapping[str, str]],
+        message: Optional[str] = None,
+    ) -> None:
+        """
+        Assert the url and params are equal except for an API key.
+
+        We might have gotten the key from the environment, and it
+        could be different in different environments.
+        """
+        url0, url1 = t0[0], t1[0]
+        params0 = {k: v for k, v in t0[1].items() if k != "key"}
+        params1 = {k: v for k, v in t1[1].items() if k != "key"}
+
+        self.assertEqual(url0, url1, message)
+        self.assertEqual(params0, params1, message)
+
     def test_for(self):
         bound_path = PathSpec.partial_prefix_match(self.dataset, self.year, state="*")
 
@@ -171,7 +192,7 @@ class CensusGeographyQuerySpecTestCase(unittest.TestCase):
         self.assertEqual("state", query_spec.for_component)
         self.assertFalse(query_spec.in_components)
 
-        self.assertEqual(
+        self.assertEqualExceptKey(
             (
                 f"https://api.census.gov/data/{self.year}/{self.dataset}",
                 {"for": "state", "get": "NAME"},
@@ -192,7 +213,7 @@ class CensusGeographyQuerySpecTestCase(unittest.TestCase):
         self.assertEqual("state:36", query_spec.for_component)
         self.assertFalse(query_spec.in_components)
 
-        self.assertEqual(
+        self.assertEqualExceptKey(
             (
                 f"https://api.census.gov/data/{self.year}/{self.dataset}",
                 {"for": "state:36", "get": "NAME"},
@@ -215,7 +236,7 @@ class CensusGeographyQuerySpecTestCase(unittest.TestCase):
         self.assertEqual("tract", query_spec.for_component)
         self.assertEqual("state:36 county:001", query_spec.in_components)
 
-        self.assertEqual(
+        self.assertEqualExceptKey(
             (
                 f"https://api.census.gov/data/{self.year}/{self.dataset}",
                 {"for": "tract", "get": "NAME", "in": "state:36 county:001"},
@@ -231,7 +252,8 @@ class CensusGeographyQuerySpecTestCase(unittest.TestCase):
         self.assertEqual("150", bound_path.num)
         self.assertEqual(
             {"state": "36", "county": "*", "tract": "*", "block group": "*"},
-            bound_path.bindings,
+            # Strip out the environment dependent API key that might be there.
+            {k: v for k, v in bound_path.bindings.items() if k != "key"},
         )
 
         query_spec = CensusGeographyQuerySpec(
@@ -241,7 +263,7 @@ class CensusGeographyQuerySpecTestCase(unittest.TestCase):
         self.assertEqual("block group", query_spec.for_component)
         self.assertEqual("state:36 county:* tract:*", query_spec.in_components)
 
-        self.assertEqual(
+        self.assertEqualExceptKey(
             (
                 f"https://api.census.gov/data/{self.year}/{self.dataset}",
                 {
@@ -270,7 +292,7 @@ class CensusGeographyQuerySpecTestCase(unittest.TestCase):
         self.assertEqual("tract:001802", query_spec.for_component)
         self.assertEqual("state:36 county:001", query_spec.in_components)
 
-        self.assertEqual(
+        self.assertEqualExceptKey(
             (
                 f"https://api.census.gov/data/{self.year}/{self.dataset}",
                 {"for": "tract:001802", "get": "NAME", "in": "state:36 county:001"},

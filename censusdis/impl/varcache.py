@@ -4,6 +4,7 @@ Variable cache code to cache metatada about variables locally.
 """
 
 from collections import defaultdict
+from logging import getLogger
 from typing import Any, DefaultDict, Dict, Generator, Iterable, List, Optional, Tuple
 
 import numpy as np
@@ -11,6 +12,8 @@ import pandas as pd
 
 from censusdis.impl.varsource.base import VariableSource
 from censusdis.impl.varsource.censusapi import CensusApiVariableSource
+
+logger = getLogger(__name__)
 
 
 class VariableCache:
@@ -217,7 +220,8 @@ class VariableCache:
             -------
                 The items
             """
-            return self._children.items()
+            for component, node in self._children.items():
+                yield component, node
 
         def get(
             self, component, default: Optional["VariableCache.GroupTreeNode"] = None
@@ -365,7 +369,10 @@ class VariableCache:
         df_datasets = pd.DataFrame(
             [
                 {
-                    "YEAR": dataset.get("c_vintage", None),
+                    "YEAR": dataset.get(
+                        "c_vintage",
+                        "timeseries" if dataset.get("c_isTimeseries", False) else None,
+                    ),
                     "DATASET": "/".join(dataset["c_dataset"]),
                     "TITLE": dataset.get("title", None),
                     "DESCRIPTION": dataset.get("description", None),

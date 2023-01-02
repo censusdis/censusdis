@@ -19,6 +19,13 @@ class CensusApiVariableSource(VariableSource):
     """
 
     @staticmethod
+    def _url_part(dataset: str, year: int):
+        if not isinstance(year, int):
+            return f"{dataset}"
+
+        return f"{year}/{dataset}"
+
+    @staticmethod
     def variables_url(dataset: str, year: int, response_format: str = "json") -> str:
         """
         Construct the URL to fetch metadata about all variables.
@@ -39,7 +46,8 @@ class CensusApiVariableSource(VariableSource):
 
         """
         return (
-            f"https://api.census.gov/data/{year}/{dataset}/variables.{response_format}"
+            f"https://api.census.gov/data/{CensusApiVariableSource._url_part(dataset, year)}/"
+            f"variables.{response_format}"
         )
 
     @staticmethod
@@ -66,7 +74,10 @@ class CensusApiVariableSource(VariableSource):
         -------
             The URL to fetch the metadata from.
         """
-        return f"https://api.census.gov/data/{year}/{dataset}/variables/{name}.{response_format}"
+        return (
+            f"https://api.census.gov/data/{CensusApiVariableSource._url_part(dataset, year)}/"
+            f"variables/{name}.{response_format}"
+        )
 
     @staticmethod
     def group_url(
@@ -102,9 +113,12 @@ class CensusApiVariableSource(VariableSource):
         """
 
         if group_name is None:
-            return f"https://api.census.gov/data/{year}/{dataset}/variables.json"
+            return f"https://api.census.gov/data/{CensusApiVariableSource._url_part(dataset, year)}/variables.json"
 
-        return f"https://api.census.gov/data/{year}/{dataset}/groups/{group_name}.json"
+        return (
+            f"https://api.census.gov/data/{CensusApiVariableSource._url_part(dataset, year)}/"
+            f"groups/{group_name}.json"
+        )
 
     @staticmethod
     def all_groups_url(dataset: str, year: int) -> str:
@@ -122,7 +136,7 @@ class CensusApiVariableSource(VariableSource):
         -------
             The URL to fetch the metadata from.
         """
-        return f"https://api.census.gov/data/{year}/{dataset}/groups.json"
+        return f"https://api.census.gov/data/{CensusApiVariableSource._url_part(dataset, year)}/groups.json"
 
     def get(self, dataset: str, year: int, name: str) -> Dict[str, Any]:
         url = self.url(dataset, year, name)

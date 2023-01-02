@@ -150,6 +150,12 @@ class ShapeReader:
     def _through_2010_cb(
         self, cartographic_scope: str, geography: str, resolution: str
     ):
+        if geography not in self._CB_SUMMARY_LEVEL_BY_GEOGRAPHY_THROUGH_2010:
+            raise MapException(
+                "Don't know how to interpret geography '%s' for pre-2010 maps.",
+                geography,
+            )
+
         summary_level = self._CB_SUMMARY_LEVEL_BY_GEOGRAPHY_THROUGH_2010[geography]
 
         name = f"gz_{self._year}_{cartographic_scope}_{summary_level}_00_{resolution}"

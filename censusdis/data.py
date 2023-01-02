@@ -19,18 +19,33 @@ import censusdis.maps as cmap
 from censusdis.impl.exceptions import CensusApiException
 from censusdis.impl.fetch import data_from_url
 from censusdis.impl.varcache import VariableCache
+from censusdis.impl.varsource.base import VintageType
 from censusdis.impl.varsource.censusapi import CensusApiVariableSource
 
 
 logger = getLogger(__name__)
 
 
-# This is the type we can accept for geographic
-# filters. When provided, these filters are either
-# single values as a string, or, if multivalued,
-# then an iterable containing all the values allowed
-# by the filter.
 GeoFilterType = Optional[Union[str, Iterable[str]]]
+"""
+The type we accept for geographic filters.
+
+They are used for the values of `kwargs` to
+:py:func:`download`.
+
+These filters are either single values as a string,
+or, if multivalued, then an iterable containing all
+the values allowed by the filter. For example::
+
+    import censusdis.data as ced
+
+    from censusdis.states import STATE_NJ, STATE_NY, STATE_CT
+
+    # Two different kinds of kwarg for `state=`, both of
+    # which are of `GeoFilterType`:
+    df_one_state = ced.download("aca/acs5", 2020, ["NAME"], state=STATE_NJ)
+    df_tri_state = ced.download("aca/acs5", 2020, ["NAME"], state=[STATE_NJ, STATE_NY, STATE_CT])
+"""
 
 
 def _gf2s(geo_filter: GeoFilterType) -> Optional[str]:
@@ -78,7 +93,7 @@ def _download_wide_strategy_metrics() -> Dict[str, int]:
 
 def _download_multiple(
     dataset: str,
-    year: int,
+    vintage: VintageType,
     download_variables: List[str],
     *,
     key: Optional[str],
@@ -96,10 +111,12 @@ def _download_multiple(
     Parameters
     ----------
     dataset
-        The dataset to download from. For example `acs/acs5` or
-        `dec/pl`.
-    year
-        The year to download data for.
+        The dataset to download from. For example `"acs/acs5"`,
+        `"dec/pl"`, or `"timeseries/poverty/saipe/schdist"`.
+    vintage
+        The vintage to download data for. For most data sets this is
+        an integer year, for example, `2020`. But for
+        a timeseries data set, pass the string `'timeseries'`.
     download_variables
         The census variables to download, for example `["NAME", "B01001_001E"]`.
     with_geometry
@@ -139,7 +156,7 @@ def _download_multiple(
     dfs = [
         download(
             dataset,
-            year,
+            vintage,
             variable_group,
             api_key=key,
             variable_cache=census_variables,
@@ -337,6 +354,12 @@ _GEO_QUERY_FROM_DATA_QUERY_INNER_GEO: Dict[
         ["STATE", "COUNTY", "TRACT", "BLOCK_GROUP"],
         ["STATEFP", "COUNTYFP", "TRACTCE", "BLKGRPCE"],
     ),
+    "school district (unified)": (
+        None,
+        "unsd",
+        ["STATE", "SCHOOL_DISTRICT_UNIFIED"],
+        ["STATEFP", "UNSDLEA"],
+    ),
 }
 """
 Helper map for the _with_geometry case.
@@ -345,6 +368,10 @@ A map from the innermost level of a geometry specification
 to the arguments we need to pass to `get_cb_shapefile`
 to get the right shapefile for the geography and the columns
 we need to join the data and shapefile on.
+
+We should add everything in
+https://www.census.gov/geographies/mapping-files/time-series/geo/cartographic-boundary.html
+to this map.
 """
 
 
@@ -391,14 +418,46 @@ def _add_geography(
     if query_shapefile_scope is not None:
         shapefile_scope = query_shapefile_scope
 
-    gdf_shapefile = __shapefile_reader(year).read_cb_shapefile(
-        shapefile_scope,
-        shapefile_geo_level,
-    )
+    # If there is a single defined year then we can load the single
+    # shapefile. If not, then we have to load multiple shapefiles,
+    # one per year, and concatenate them.
+    if isinstance(year, int):
+        gdf_shapefile = __shapefile_reader(year).read_cb_shapefile(
+            shapefile_scope,
+            shapefile_geo_level,
+        )
+        merge_gdf_on = gdf_on
+    else:
+        gdf_shapefiles = []
+
+        for unique_year in df_data["YEAR"].unique():
+            try:
+                gdf_shapefile_for_year = __shapefile_reader(
+                    unique_year
+                ).read_cb_shapefile(
+                    shapefile_scope,
+                    shapefile_geo_level,
+                )
+                gdf_shapefile_for_year["YEAR"] = unique_year
+                gdf_shapefiles.append(gdf_shapefile_for_year)
+            except cmap.MapException:
+                logger.info("Unable to load shapefile for year %d", unique_year)
+
+        if len(gdf_shapefiles) == 0:
+            # None of the years matched, so we add no geometry.
+            return gpd.GeoDataFrame(df_data, geometry=None)
+
+        # gpd.concat does not exist, so we have to pd.concat and
+        # then turn the df into a gdf.
+        gdf_shapefile = pd.concat(gdf_shapefiles)
+        gdf_shapefile = gpd.GeoDataFrame(gdf_shapefile)
+
+        merge_gdf_on = ["YEAR"] + gdf_on
+        df_on = ["YEAR"] + df_on
 
     gdf_data = (
-        gdf_shapefile[gdf_on + ["geometry"]]
-        .merge(df_data, how="right", left_on=gdf_on, right_on=df_on)
+        gdf_shapefile[merge_gdf_on + ["geometry"]]
+        .merge(df_data, how="right", left_on=merge_gdf_on, right_on=df_on)
         .drop(gdf_on, axis="columns")
     )
 
@@ -547,14 +606,16 @@ def download_detail(
     **kwargs: cgeo.InSpecType,
 ) -> Union[pd.DataFrame, gpd.GeoDataFrame]:
     """
-    Deprecated version of :py:ref:`~download`; use `download` instead.
+    Deprecated version of :py:func:`~download`; use `download` instead.
 
-    Same functionality but under the old name. Back in the pre-history
-    of `censusdis`, this function started life as a way to download
-    ACS detail tables. It evolved significantly since then and does much
-    more now. Hence the name change.
+    This function offers a subset of the current functionality of
+    :py:func:`~download` but under the old name.
 
-    This function will disappear completely in a future version.
+    Back in the pre-history of `censusdis`, this function started life as a
+    way to download ACS detail tables. It evolved significantly since then and
+    does much more now. Hence, the name was changed.
+
+    This function will disappear completely no later than version 1.0.0.
     """
     warnings.warn(
         "censusdis.data.download_detail is deprecated. "
@@ -575,7 +636,7 @@ def download_detail(
 
 def download(
     dataset: str,
-    year: int,
+    vintage: VintageType,
     download_variables: Optional[Union[str, Iterable[str]]] = None,
     *,
     group: Optional[Union[str, Iterable[str]]] = None,
@@ -604,10 +665,12 @@ def download(
     Parameters
     ----------
     dataset
-        The dataset to download from. For example `acs/acs5` or
-        `dec/pl`.
-    year
-        The year to download data for.
+        The dataset to download from. For example `"acs/acs5"`,
+        `"dec/pl"`, or `"timeseries/poverty/saipe/schdist"`.
+    vintage
+        The vintage to download data for. For most data sets this is
+        an integer year, for example, `2020`. But for
+        a timeseries data set, pass the string `'timeseries'`.
     download_variables
         The census variables to download, for example `["NAME", "B01001_001E"]`.
     group
@@ -647,17 +710,18 @@ def download(
         variable_cache = variables
 
     # The side effect here is to prime the cache.
-    cgeo.geo_path_snake_specs(dataset, year)
+    cgeo.geo_path_snake_specs(dataset, vintage)
 
     # In case they came to us in py format, as kwargs often do.
     kwargs = {
-        cgeo.path_component_from_snake(dataset, year, k): v for k, v in kwargs.items()
+        cgeo.path_component_from_snake(dataset, vintage, k): v
+        for k, v in kwargs.items()
     }
 
     # Parse out the download variables
     download_variables = _parse_download_variables(
         dataset,
-        year,
+        vintage,
         download_variables=download_variables,
         group=group,
         leaves_of_group=leaves_of_group,
@@ -669,7 +733,7 @@ def download(
     if len(download_variables) > _MAX_VARIABLES_PER_DOWNLOAD:
         return _download_multiple(
             dataset,
-            year,
+            vintage,
             download_variables,
             key=api_key,
             census_variables=variable_cache,
@@ -679,7 +743,7 @@ def download(
 
     # Prefetch all the types before we load the data.
     # That way we fail fast if a field is not known.
-    _prefetch_variable_types(dataset, year, download_variables, variable_cache)
+    _prefetch_variable_types(dataset, vintage, download_variables, variable_cache)
 
     # If we were given a list, join it together into
     # a comma-separated string.
@@ -687,7 +751,7 @@ def download(
 
     return _download_remote(
         dataset,
-        year,
+        vintage,
         download_variables=download_variables,
         with_geometry=with_geometry,
         api_key=api_key,
@@ -698,7 +762,7 @@ def download(
 
 def _download_remote(
     dataset: str,
-    year: int,
+    vintage: VintageType,
     *,
     download_variables: List[str],
     with_geometry: bool,
@@ -715,10 +779,12 @@ def _download_remote(
     Parameters
     ----------
     dataset
-        The dataset to download from. For example `acs/acs5` or
-        `dec/pl`.
-    year
-        The year to download data for.
+        The dataset to download from. For example `"acs/acs5"`,
+        `"dec/pl"`, or `"timeseries/poverty/saipe/schdist"`.
+    vintage
+        The vintage to download data for. For most data sets this is
+        an integer year, for example, `2020`. But for
+        a timeseries data set, pass the string `'timeseries'`.
     download_variables
         The census variables to download, for example `["NAME", "B01001_001E"]`.
     with_geometry
@@ -742,13 +808,13 @@ def _download_remote(
     """
 
     url, params, bound_path = census_table_url(
-        dataset, year, download_variables, api_key=api_key, **kwargs
+        dataset, vintage, download_variables, api_key=api_key, **kwargs
     )
     df_data = data_from_url(url, params)
 
     # Coerce the types based on metadata about the variables.
     _coerce_downloaded_variable_types(
-        dataset, year, download_variables, df_data, variable_cache
+        dataset, vintage, download_variables, df_data, variable_cache
     )
 
     download_variables_upper = [dv.upper() for dv in download_variables]
@@ -764,7 +830,7 @@ def _download_remote(
         geo_level = bound_path.path_spec.path[-1]
         shapefile_scope = bound_path.bindings[bound_path.path_spec.path[0]]
 
-        gdf_data = _add_geography(df_data, year, shapefile_scope, geo_level)
+        gdf_data = _add_geography(df_data, vintage, shapefile_scope, geo_level)
         return gdf_data
 
     return df_data
@@ -772,7 +838,7 @@ def _download_remote(
 
 def _coerce_downloaded_variable_types(
     dataset: str,
-    year: int,
+    vintage: VintageType,
     download_variables: List[str],
     df_data: pd.DataFrame,
     variable_cache: "VariableCache",
@@ -785,10 +851,12 @@ def _coerce_downloaded_variable_types(
     Parameters
     ----------
     dataset
-        The dataset to download from. For example `acs/acs5` or
-        `dec/pl`.
-    year
-        The year to download data for.
+        The dataset to download from. For example `"acs/acs5"`,
+        `"dec/pl"`, or `"timeseries/poverty/saipe/schdist"`.
+    vintage
+        The vintage to download data for. For most data sets this is
+        an integer year, for example, `2020`. But for
+        a timeseries data set, pass the string `'timeseries'`.
     download_variables
         The census variables to download, for example `["NAME", "B01001_001E"]`.
     df_data
@@ -800,8 +868,8 @@ def _coerce_downloaded_variable_types(
         # predicateType does not exist in some older data sets like acs/acs3
         # So in that case we just go with what we got in the JSON. But if we
         # have it try to set the type.
-        if "predicateType" in variable_cache.get(dataset, year, variable):
-            field_type = variable_cache.get(dataset, year, variable)["predicateType"]
+        if "predicateType" in variable_cache.get(dataset, vintage, variable):
+            field_type = variable_cache.get(dataset, vintage, variable)["predicateType"]
 
             if field_type == "int":
                 if df_data[variable].isnull().any():
@@ -830,7 +898,7 @@ def _coerce_downloaded_variable_types(
 
 def _prefetch_variable_types(
     dataset: str,
-    year: int,
+    vintage: VintageType,
     download_variables: List[str],
     variable_cache: "VariableCache",
 ) -> None:
@@ -844,10 +912,13 @@ def _prefetch_variable_types(
     Parameters
     ----------
     dataset
-        The dataset to download from. For example `acs/acs5` or
-        `dec/pl`.
-    year
-        The year to download data for.
+        The dataset to download from. For example `"acs/acs5"`,
+        `"dec/pl"`, or `"timeseries/poverty/saipe/schdist"`.
+    vintage
+        The vintage to download data for. For most data sets this is
+        an integer year, for example, `2020`. But for
+        a timeseries data set, pass the string `'timeseries'`.
+
     download_variables
         The census variables to download, for example `["NAME", "B01001_001E"]`.
     variable_cache
@@ -855,18 +926,18 @@ def _prefetch_variable_types(
     """
     for variable in download_variables:
         try:
-            variable_cache.get(dataset, year, variable)
+            variable_cache.get(dataset, vintage, variable)
         except Exception as exc:
             census_url = CensusApiVariableSource.url(
-                dataset, year, variable, response_format="html"
+                dataset, vintage, variable, response_format="html"
             )
             census_variables_url = CensusApiVariableSource.variables_url(
-                dataset, year, response_format="html"
+                dataset, vintage, response_format="html"
             )
 
             raise CensusApiException(
                 f"Unable to get metadata on the variable {variable} from the "
-                f"dataset {dataset} for year {year} from the census API. "
+                f"dataset {dataset} for year {vintage} from the census API. "
                 f"Check the census URL for the variable ({census_url}) to ensure it exists. "
                 f"If not found, check {census_variables_url} for all variables in the dataset."
             ) from exc
@@ -874,7 +945,7 @@ def _prefetch_variable_types(
 
 def _parse_download_variables(
     dataset: str,
-    year: int,
+    vintage: VintageType,
     *,
     download_variables: Optional[Union[str, Iterable[str]]] = None,
     group: Optional[Union[str, Iterable[str]]] = None,
@@ -887,7 +958,34 @@ def _parse_download_variables(
 
     These may be encoded in `download_variables`, `group`, and/or `leaves_of_group`.
 
-    See :py:func:`download` for details on the parameters.
+    Parameters
+    ----------
+    dataset
+        The dataset to download from. For example `"acs/acs5"`,
+        `"dec/pl"`, or `"timeseries/poverty/saipe/schdist"`.
+    vintage
+        The vintage to download data for. For most data sets this is
+        an integer year, for example, `2020`. But for
+        a timeseries data set, pass the string `'timeseries'`.
+    download_variables
+        The census variables to download, for example `["NAME", "B01001_001E"]`.
+    group
+        One or more groups (as defined by the U.S. Census for the data set)
+        whose variable values should be downloaded. These are in addition to
+        any specified in `download_variables`.
+    leaves_of_group
+        One or more groups (as defined by the U.S. Census for the data set)
+        whose leaf variable values should be downloaded.These are in addition to
+        any specified in `download_variables` or `group`. See
+        :py:meth:`VariableCache.group_leaves` for more details on the semantics of
+        leaves vs. non-leaf group variables.
+    skip_annotations
+        If `True` try to filter out `group` or `leaves_of_group` variables that are
+        annotations rather than actual values. See :py:meth:`VariableCache.group_variables`
+        for more details. Variable names passed in `download_variables` are not
+        affected by this flag.
+    variable_cache
+        A cache of metadata about variables.
 
     Returns
     -------
@@ -916,12 +1014,12 @@ def _parse_download_variables(
     group_variables: List[str] = []
     for group_name in group:
         group_variables = group_variables + variable_cache.group_variables(
-            dataset, year, group_name, skip_annotations=skip_annotations
+            dataset, vintage, group_name, skip_annotations=skip_annotations
         )
     group_leaf_variables: List[str] = []
     for group_name in leaves_of_group:
         group_leaf_variables = group_leaf_variables + variable_cache.group_leaves(
-            dataset, year, group_name, skip_annotations=skip_annotations
+            dataset, vintage, group_name, skip_annotations=skip_annotations
         )
 
     # Concatenate them all.
@@ -935,7 +1033,7 @@ def _parse_download_variables(
 
 def census_table_url(
     dataset: str,
-    year: int,
+    vintage: VintageType,
     download_variables: Iterable[str],
     *,
     api_key: Optional[str] = None,
@@ -947,10 +1045,12 @@ def census_table_url(
     Parameters
     ----------
     dataset
-        The dataset to download from. For example `acs/acs5` or
-        `dec/pl`.
-    year
-        The year to download data for.
+        The dataset to download from. For example `"acs/acs5"`,
+        `"dec/pl"`, or `"timeseries/poverty/saipe/schdist"`.
+    vintage
+        The vintage to download data for. For most data sets this is
+        an integer year, for example, `2020`. But for
+        a timeseries data set, pass the string `'timeseries'`.
     download_variables
         The census variables to download, for example `["NAME", "B01001_001E"]`.
     api_key
@@ -964,20 +1064,20 @@ def census_table_url(
         The URL, parameters and bound path.
 
     """
-    bound_path = cgeo.PathSpec.partial_prefix_match(dataset, year, **kwargs)
+    bound_path = cgeo.PathSpec.partial_prefix_match(dataset, vintage, **kwargs)
 
     if bound_path is None:
         raise CensusApiException(
             f"Unable to match the geography specification {kwargs}.\n"
-            f"Supported geographies for dataset='{dataset}' in year={year} are:\n"
+            f"Supported geographies for dataset='{dataset}' in year={vintage} are:\n"
             + "\n".join(
                 f"{path_spec}"
-                for path_spec in cgeo.geo_path_snake_specs(dataset, year).values()
+                for path_spec in cgeo.geo_path_snake_specs(dataset, vintage).values()
             )
         )
 
     query_spec = cgeo.CensusGeographyQuerySpec(
-        dataset, year, list(download_variables), bound_path, api_key=api_key
+        dataset, vintage, list(download_variables), bound_path, api_key=api_key
     )
 
     url, params = query_spec.table_url()
