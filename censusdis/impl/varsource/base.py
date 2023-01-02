@@ -11,9 +11,9 @@ from abc import ABC, abstractmethod
 from typing import Any, Dict, List, Optional, Union, Literal
 
 
-DatasetTimeSpecifierType = Union[int, Literal["timeseries"]]
+VintageType = Union[int, Literal["timeseries"]]
 """
-The type we use to specify the time of a dataset.
+The type we use to specify the vintage of a dataset.
 
 Most datasets are organized by year, so we pass an integer
 year like 2020. But some datasets are timeseries that cover
