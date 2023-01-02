@@ -417,14 +417,46 @@ def _add_geography(
     if query_shapefile_scope is not None:
         shapefile_scope = query_shapefile_scope
 
-    gdf_shapefile = __shapefile_reader(year).read_cb_shapefile(
-        shapefile_scope,
-        shapefile_geo_level,
-    )
+    # If there is a single defined year then we can load the single
+    # shapefile. If not, then we have to load multiple shapefiles,
+    # one per year, and concatenate them.
+    if isinstance(year, int):
+        gdf_shapefile = __shapefile_reader(year).read_cb_shapefile(
+            shapefile_scope,
+            shapefile_geo_level,
+        )
+        merge_gdf_on = gdf_on
+    else:
+        gdf_shapefiles = []
+
+        for unique_year in df_data["YEAR"].unique():
+            try:
+                gdf_shapefile_for_year = __shapefile_reader(
+                    unique_year
+                ).read_cb_shapefile(
+                    shapefile_scope,
+                    shapefile_geo_level,
+                )
+                gdf_shapefile_for_year["YEAR"] = unique_year
+                gdf_shapefiles.append(gdf_shapefile_for_year)
+            except cmap.MapException:
+                logger.info("Unable to load shapefile for year %d", unique_year)
+
+        if len(gdf_shapefiles) == 0:
+            # None of the years matched, so we add no geometry.
+            return gpd.GeoDataFrame(df_data, geometry=None)
+
+        # gpd.concat does not exist, so we have to pd.concat and
+        # then turn the df into a gdf.
+        gdf_shapefile = pd.concat(gdf_shapefiles)
+        gdf_shapefile = gpd.GeoDataFrame(gdf_shapefile)
+
+        merge_gdf_on = ["YEAR"] + gdf_on
+        df_on = ["YEAR"] + df_on
 
     gdf_data = (
-        gdf_shapefile[gdf_on + ["geometry"]]
-        .merge(df_data, how="right", left_on=gdf_on, right_on=df_on)
+        gdf_shapefile[merge_gdf_on + ["geometry"]]
+        .merge(df_data, how="right", left_on=merge_gdf_on, right_on=df_on)
         .drop(gdf_on, axis="columns")
     )
 
