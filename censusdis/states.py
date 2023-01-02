@@ -66,7 +66,7 @@ STATE_CA = "06"
 """California"""
 
 STATE_CO = "08"
-"""Colordado"""
+"""Colorado"""
 
 STATE_CT = "09"
 """Connecticut"""
@@ -283,7 +283,6 @@ Typically used to iterate over the states, as in::
 """
 
 ALL_STATES_DC_AND_PR = list(STATE_NAMES_FROM_IDS.keys())
-
 """
 All the state FIPS codes and DC and PR.
 
@@ -298,7 +297,6 @@ Typically used to iterate over the states, as in::
 """
 
 ALL_STATES_AND_DC = [state for state in ALL_STATES_DC_AND_PR if state != TERRITORY_PR]
-
 """
 All the state FIPS codes and DC.
 

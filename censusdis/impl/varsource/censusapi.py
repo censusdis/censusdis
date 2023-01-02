@@ -20,8 +20,6 @@ class CensusApiVariableSource(VariableSource):
 
     @staticmethod
     def _url_part(dataset: str, year: int):
-        print("UUU", dataset, year)
-
         if not isinstance(year, int):
             return f"{dataset}"
 
