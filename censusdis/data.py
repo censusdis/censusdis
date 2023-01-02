@@ -714,7 +714,8 @@ def download(
 
     # In case they came to us in py format, as kwargs often do.
     kwargs = {
-        cgeo.path_component_from_snake(dataset, vintage, k): v for k, v in kwargs.items()
+        cgeo.path_component_from_snake(dataset, vintage, k): v
+        for k, v in kwargs.items()
     }
 
     # Parse out the download variables
