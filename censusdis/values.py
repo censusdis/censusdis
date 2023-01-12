@@ -9,11 +9,11 @@ INSUFFICIENT_SAMPLE_OBSERVATIONS = -666666666
 """
 Insufficient number of sample observations.
 
-The estimate could not be computed because there were an insufficient number of sample observations. 
-For a ratio of medians estimate, one or both of the median estimates falls in the lowest interval or 
-highest interval of an open-ended distribution. The estimate could not be computed because there were 
-an insufficient number of sample observations. For a ratio of medians estimate, one or both of the 
-median estimates falls in the lowest interval or highest interval of an open-ended distribution. For 
+The estimate could not be computed because there were an insufficient number of sample observations.
+For a ratio of medians estimate, one or both of the median estimates falls in the lowest interval or
+highest interval of an open-ended distribution. The estimate could not be computed because there were
+an insufficient number of sample observations. For a ratio of medians estimate, one or both of the
+median estimates falls in the lowest interval or highest interval of an open-ended distribution. For
 a 5-year median estimate, the margin of error associated with a median was larger than the median itself.
 """
 
@@ -21,7 +21,7 @@ INSUFFICIENT_SAMPLES_IN_GEOGRAPHY = -999999999
 """
 Insufficient samples in geography.
 
-The estimate or margin of error cannot be displayed because there were an insufficient number of sample 
+The estimate or margin of error cannot be displayed because there were an insufficient number of sample
 cases in the selected geographic area.
 """
 
@@ -43,7 +43,7 @@ MEDIAN_IN_OPEN_INTERVAL = -333333333
 """
 Median falls in an open-ended interval.
 
-The margin of error could not be computed because the median falls in the lowest interval or highest interval 
+The margin of error could not be computed because the median falls in the lowest interval or highest interval
 of an open-ended distribution.
 """
 
@@ -51,8 +51,8 @@ MARGIN_OF_ERROR_NOT_APPROPRIATE = -555555555
 """
 Margin of error not appropriate.
 
-A margin of error is not appropriate because the corresponding estimate is controlled to an independent 
-population or housing estimate. Effectively, the corresponding estimate has no sampling error and the margin 
+A margin of error is not appropriate because the corresponding estimate is controlled to an independent
+population or housing estimate. Effectively, the corresponding estimate has no sampling error and the margin
 of error may be treated as zero.
 """
 
