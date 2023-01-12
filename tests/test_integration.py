@@ -16,11 +16,13 @@ import pandas as pd
 
 import censusdis.impl.exceptions
 import censusdis.impl.varsource.censusapi
-from censusdis import data as ced
-from censusdis import maps as cmp
+import censusdis.data as ced
+import censusdis.values as cev
+import censusdis.maps as cem
 from censusdis.states import (
     ALL_STATES_AND_DC,
     STATE_CA,
+    STATE_GA,
     STATE_NJ,
     STATE_NY,
     TERRITORY_PR,
@@ -109,6 +111,41 @@ class DownloadTestCase(unittest.TestCase):
         self.assertIn(
             "https://api.census.gov/data/2020/acs/acs5/variables.html",
             str(cm.exception),
+        )
+
+    def test_download_with_bad_values(self):
+        """Test replacing bad values with NaN."""
+        median_income_variable = "B19013_001E"
+
+        df_raw = ced.download(
+            self._dataset,
+            self._year,
+            ["NAME", median_income_variable],
+            state=STATE_GA, tract="*",
+        )
+
+        df_nan = ced.download(
+            self._dataset,
+            self._year,
+            ["NAME", median_income_variable],
+            state=STATE_GA, tract="*",
+            set_to_nan=cev.ALL_SPECIAL_VALUES
+        )
+
+        self.assertEqual(df_raw.shape, df_nan.shape)
+
+        self.assertTrue((df_raw[median_income_variable] == cev.INSUFFICIENT_SAMPLE_OBSERVATIONS).any())
+        self.assertFalse((df_nan[median_income_variable] == cev.INSUFFICIENT_SAMPLE_OBSERVATIONS).any())
+
+        self.assertFalse(df_raw[median_income_variable].isna().any())
+        self.assertTrue(df_nan[median_income_variable].isna().any())
+
+        self.assertTrue(
+            (
+                (df_raw[median_income_variable] == cev.INSUFFICIENT_SAMPLE_OBSERVATIONS) ==
+                df_nan[median_income_variable].isna()
+            ).all(),
+            "All locations that were cev.INSUFFICIENT_SAMPLE_OBSERVATIONS should be NaN."
         )
 
     def test_download_with_geometry_county(self):
@@ -742,7 +779,7 @@ class ShapefileTestCase(unittest.TestCase):
     def setUp(self) -> None:
         """Set up before each test."""
         self._year = 2019
-        self.reader = cmp.ShapeReader(self.shapefile_path, self._year)
+        self.reader = cem.ShapeReader(self.shapefile_path, self._year)
 
     def test_county_shapefile(self):
         gdf_counties = self.reader.read_shapefile("us", "county")
@@ -768,7 +805,7 @@ class ShapefileTestCase(unittest.TestCase):
     def test_2010_shapefile(self):
         # Override the normal setup for 2010.
         self._year = 2010
-        self.reader = cmp.ShapeReader(self.shapefile_path, self._year)
+        self.reader = cem.ShapeReader(self.shapefile_path, self._year)
 
         gdf_counties = self.reader.read_shapefile("us", "county")
 
@@ -779,7 +816,7 @@ class ShapefileTestCase(unittest.TestCase):
     def test_2010_cb_shapefile(self):
         # Override the normal setup for 2010.
         self._year = 2010
-        self.reader = cmp.ShapeReader(self.shapefile_path, self._year)
+        self.reader = cem.ShapeReader(self.shapefile_path, self._year)
 
         gdf_counties = self.reader.read_cb_shapefile("us", "county")
 
@@ -801,7 +838,7 @@ class AddInferredGeographyTestCase(unittest.TestCase):
     def setUp(self) -> None:
         """Set up before each test."""
         self._year = 2020
-        self.reader = cmp.ShapeReader(self.shapefile_path, self._year)
+        self.reader = cem.ShapeReader(self.shapefile_path, self._year)
 
     def test_state(self):
         """Test that we can infer state geometries."""

@@ -12,10 +12,12 @@ from typing import Dict, Iterable, List, Mapping, Optional, Tuple, Union
 from dataclasses import dataclass
 
 import geopandas as gpd
+import numpy as np
 import pandas as pd
 
 import censusdis.geography as cgeo
 import censusdis.maps as cmap
+from censusdis.values import ALL_SPECIAL_VALUES
 from censusdis.impl.exceptions import CensusApiException
 from censusdis.impl.fetch import data_from_url
 from censusdis.impl.varcache import VariableCache
@@ -641,6 +643,7 @@ def download(
     *,
     group: Optional[Union[str, Iterable[str]]] = None,
     leaves_of_group: Optional[Union[str, Iterable[str]]] = None,
+    set_to_nan: Optional[Iterable[int]] = None,
     skip_annotations: bool = True,
     with_geometry: bool = False,
     api_key: Optional[str] = None,
@@ -683,6 +686,11 @@ def download(
         any specified in `download_variables` or `group`. See
         :py:meth:`VariableCache.group_leaves` for more details on the semantics of
         leaves vs. non-leaf group variables.
+    set_to_nan
+        If not `None`, this specifies special values that should be replaced with
+        `NaN`. Normally :py:ref:`censusdis.values.ALL_SPECIAL_VALUES` or a subset thereof.
+        The default is `None` so that we never change values without the caller
+        explicitly asking us to.
     skip_annotations
         If `True` try to filter out `group` or `leaves_of_group` variables that are
         annotations rather than actual values. See :py:meth:`VariableCache.group_variables`
@@ -753,6 +761,7 @@ def download(
         dataset,
         vintage,
         download_variables=download_variables,
+        set_to_nan=set_to_nan,
         with_geometry=with_geometry,
         api_key=api_key,
         variable_cache=variable_cache,
@@ -765,6 +774,7 @@ def _download_remote(
     vintage: VintageType,
     *,
     download_variables: List[str],
+    set_to_nan: Optional[Iterable[float]] = None,
     with_geometry: bool,
     api_key: Optional[str],
     variable_cache: "VariableCache",
@@ -787,6 +797,9 @@ def _download_remote(
         a timeseries data set, pass the string `'timeseries'`.
     download_variables
         The census variables to download, for example `["NAME", "B01001_001E"]`.
+    set_to_nan
+        If not `None`, this specifies special values that should be replaced with
+        `NaN`. Normally :py:ref:`censusdis.values.ALL_SPECIAL_VALUES` or a subset thereof.
     with_geometry
         If `True` a :py:class:`gpd.GeoDataFrame` will be returned and each row
         will have a geometry that is a cartographic boundary suitable for platting
@@ -824,6 +837,10 @@ def _download_remote(
         [col for col in df_data.columns if col not in download_variables_upper]
         + download_variables_upper
     ]
+
+    # NaN out as requested.
+    if set_to_nan is not None:
+        df_data = df_data.replace(list(set_to_nan), np.nan)
 
     if with_geometry:
         # We need to get the geometry and merge it in.
