@@ -14,11 +14,11 @@ import geopandas as gpd
 import numpy as np
 import pandas as pd
 
+import censusdis.data as ced
 import censusdis.impl.exceptions
 import censusdis.impl.varsource.censusapi
-import censusdis.data as ced
-import censusdis.values as cev
 import censusdis.maps as cem
+import censusdis.values as cev
 from censusdis.states import (
     ALL_STATES_AND_DC,
     STATE_CA,
