@@ -847,8 +847,8 @@ class AddInferredGeographyTestCase(unittest.TestCase):
 
     def setUp(self) -> None:
         """Set up before each test."""
-        self._year = 2020
-        self.reader = cem.ShapeReader(self.shapefile_path, self._year)
+        self._year0 = 2020
+        self.reader0 = cem.ShapeReader(self.shapefile_path, self._year0)
 
     def test_state(self):
         """Test that we can infer state geometries."""
@@ -857,14 +857,14 @@ class AddInferredGeographyTestCase(unittest.TestCase):
             columns=["STATE", "metric1", "metric2"],
         )
 
-        gdf_inferred = ced.add_inferred_geography(df_state, self._year)
+        gdf_inferred = ced.add_inferred_geography(df_state, self._year0)
 
         self._assert_data_unchanged_in_inference(df_state, gdf_inferred)
 
         # Now get the state shapefile directly and see if we
         # inferred the right geometries.
 
-        gdf_state = self.reader.read_cb_shapefile("us", "state")
+        gdf_state = self.reader0.read_cb_shapefile("us", "state")
 
         for state in df_state["STATE"]:
             self.assertTrue(
@@ -879,14 +879,14 @@ class AddInferredGeographyTestCase(unittest.TestCase):
             columns=["STATE", "COUNTY", "metric1", "metric2"],
         )
 
-        gdf_inferred = ced.add_inferred_geography(df_county, self._year)
+        gdf_inferred = ced.add_inferred_geography(df_county, self._year0)
 
         self._assert_data_unchanged_in_inference(df_county, gdf_inferred)
 
         # Now get the county shapefile directly and see if we
         # inferred the right geometries.
 
-        gdf_county = self.reader.read_cb_shapefile("us", "county")
+        gdf_county = self.reader0.read_cb_shapefile("us", "county")
 
         for row in df_county[["STATE", "COUNTY"]].itertuples():
             state, county = row.STATE, row.COUNTY
@@ -912,15 +912,15 @@ class AddInferredGeographyTestCase(unittest.TestCase):
             columns=["STATE", "COUNTY", "TRACT", "metric1", "metric2"],
         )
 
-        gdf_inferred = ced.add_inferred_geography(df_tract, self._year)
+        gdf_inferred = ced.add_inferred_geography(df_tract, self._year0)
 
         self._assert_data_unchanged_in_inference(df_tract, gdf_inferred)
 
         # Now get the county shapefiles directly and see if we
         # inferred the right geometries.
 
-        gdf_tract_nj = self.reader.read_cb_shapefile(STATE_NJ, "tract")
-        gdf_tract_ny = self.reader.read_cb_shapefile(STATE_NY, "tract")
+        gdf_tract_nj = self.reader0.read_cb_shapefile(STATE_NJ, "tract")
+        gdf_tract_ny = self.reader0.read_cb_shapefile(STATE_NY, "tract")
 
         gdf_tract = gdf_tract_nj.append(gdf_tract_ny)
 
@@ -963,3 +963,114 @@ class AddInferredGeographyTestCase(unittest.TestCase):
 
         # Make sure all the data we had stayed where it was.
         self.assertTrue((gdf_inferred[df.columns] == df).all().all())
+
+    def test_multi_year(self):
+        """Test inferring geometry in a multi-year df."""
+        df_county_multi_year = pd.DataFrame(
+            [
+                [2019, STATE_NJ, "011", 0.5, 0.6],
+                [2019, STATE_NJ, "013", 0.1, 0.2],
+                [2020, STATE_NJ, "011", 1.5, 1.6],
+                [2020, STATE_NJ, "013", 1.1, 1.2],
+                [2021, STATE_NJ, "011", 2.5, 2.6],
+                [2021, STATE_NJ, "013", 2.5, 2.5],
+            ],
+            columns=["YEAR", "STATE", "COUNTY", "metric1", "metric2"],
+        )
+
+        df_county_by_year = {
+            year: df_for_year
+            for year, df_for_year in df_county_multi_year.groupby("YEAR")
+        }
+
+        gdf_inferred_geometry_multi_year = ced.add_inferred_geography(
+            df_county_multi_year
+        )
+
+        self._assert_data_unchanged_in_inference(
+            df_county_multi_year, gdf_inferred_geometry_multi_year
+        )
+
+        gdf_inferred_geometry_by_year = {
+            year: ced.add_inferred_geography(df_for_year)
+            for year, df_for_year in df_county_by_year.items()
+        }
+
+        gdf_inferred_geometry_by_year_all = gpd.GeoDataFrame(
+            pd.concat(gdf_inferred_geometry_by_year.values()).reset_index(drop=True)
+        )
+
+        self._assert_data_unchanged_in_inference(
+            df_county_multi_year, gdf_inferred_geometry_by_year_all
+        )
+
+        self.assertTrue(
+            gdf_inferred_geometry_multi_year.equals(gdf_inferred_geometry_by_year_all)
+        )
+
+    def test_multi_year_missing_map_year(self):
+        """Test inferring geometry when there are no maps for one year."""
+        df_county_multi_year = pd.DataFrame(
+            [
+                # There are no maps for 1999.
+                [1999, STATE_NJ, "011", 0.4, 0.5],
+                [1999, STATE_NJ, "013", 0.0, 0.1],
+                [2019, STATE_NJ, "011", 0.5, 0.6],
+                [2019, STATE_NJ, "013", 0.1, 0.2],
+                [2020, STATE_NJ, "011", 1.5, 1.6],
+                [2020, STATE_NJ, "013", 1.1, 1.2],
+                [2021, STATE_NJ, "011", 2.5, 2.6],
+                [2021, STATE_NJ, "013", 2.5, 2.5],
+            ],
+            columns=["YEAR", "STATE", "COUNTY", "metric1", "metric2"],
+        )
+
+        gdf_inferred_geometry_multi_year = ced.add_inferred_geography(
+            df_county_multi_year
+        )
+
+        self._assert_data_unchanged_in_inference(
+            df_county_multi_year, gdf_inferred_geometry_multi_year
+        )
+
+        # Make sure there is no geometry for 1999, but there is geometry
+        # for other years.
+        self.assertTrue(
+            gdf_inferred_geometry_multi_year[
+                gdf_inferred_geometry_multi_year["YEAR"] == 1999
+            ]["geometry"]
+            .isnull()
+            .all()
+        )
+
+        self.assertFalse(
+            gdf_inferred_geometry_multi_year[
+                gdf_inferred_geometry_multi_year["YEAR"] != 1999
+            ]["geometry"]
+            .isnull()
+            .any()
+        )
+
+    def test_multi_year_no_maps(self):
+        """Test inferring geometry when there are no maps for any year."""
+        df_county_multi_year = pd.DataFrame(
+            [
+                # There are no maps for these years.
+                [1999, STATE_NJ, "011", 0.4, 0.5],
+                [1999, STATE_NJ, "013", 0.0, 0.1],
+                [2000, STATE_NJ, "011", 0.5, 0.6],
+                [2000, STATE_NJ, "013", 0.1, 0.2],
+            ],
+            columns=["YEAR", "STATE", "COUNTY", "metric1", "metric2"],
+        )
+
+        gdf_inferred_geometry_multi_year = ced.add_inferred_geography(
+            df_county_multi_year
+        )
+
+        self._assert_data_unchanged_in_inference(
+            df_county_multi_year, gdf_inferred_geometry_multi_year
+        )
+
+        # Make sure there is no geometry.
+        self.assertTrue(gdf_inferred_geometry_multi_year["geometry"].isnull().all())
