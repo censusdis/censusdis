@@ -376,7 +376,10 @@ to this map.
 
 
 def _add_geography(
-    df_data: pd.DataFrame, year: Optional[VintageType], shapefile_scope: str, geo_level: str
+    df_data: pd.DataFrame,
+    year: Optional[VintageType],
+    shapefile_scope: str,
+    geo_level: str,
 ) -> Union[pd.DataFrame, gpd.GeoDataFrame]:
     """
     Add geography to data.
