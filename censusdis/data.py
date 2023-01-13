@@ -376,7 +376,7 @@ to this map.
 
 
 def _add_geography(
-    df_data: pd.DataFrame, year: int, shapefile_scope: str, geo_level: str
+    df_data: pd.DataFrame, year: Optional[int], shapefile_scope: str, geo_level: str
 ) -> Union[pd.DataFrame, gpd.GeoDataFrame]:
     """
     Add geography to data.
@@ -387,7 +387,9 @@ def _add_geography(
         The data we downloaded from the census API
     year
         The year for which to fetch geometries. We need this
-        because they change over time.
+        because they change over time. If `None`, look for a
+        `'YEAR'` column in `df_data` and possibly add different
+        geometries for different years as needed.
     shapefile_scope
         The scope of the shapefile. This is typically either a state
         such as `STATE_NJ` or the string `"us"`.
@@ -421,7 +423,7 @@ def _add_geography(
     # If there is a single defined year then we can load the single
     # shapefile. If not, then we have to load multiple shapefiles,
     # one per year, and concatenate them.
-    if isinstance(year, int):
+    if year is not None:
         gdf_shapefile = __shapefile_reader(year).read_cb_shapefile(
             shapefile_scope,
             shapefile_geo_level,
@@ -444,8 +446,10 @@ def _add_geography(
                 logger.info("Unable to load shapefile for year %d", unique_year)
 
         if len(gdf_shapefiles) == 0:
-            # None of the years matched, so we add no geometry.
-            return gpd.GeoDataFrame(df_data, geometry=None)
+            # None of the years matched, so we add None for geometry to all.
+            gdf = gpd.GeoDataFrame(df_data, copy=True)
+            gdf["geometry"] = None
+            return gdf
 
         # gpd.concat does not exist, so we have to pd.concat and
         # then turn the df into a gdf.
@@ -546,7 +550,9 @@ def infer_geo_level(df_data: pd.DataFrame) -> str:
     return match_key
 
 
-def add_inferred_geography(df_data: pd.DataFrame, year: int) -> gpd.GeoDataFrame:
+def add_inferred_geography(
+    df_data: pd.DataFrame, year: Optional[int] = None
+) -> gpd.GeoDataFrame:
     """
     Infer the geography level of the given dataframe and
     add geometry to each row for that level.
@@ -562,7 +568,9 @@ def add_inferred_geography(df_data: pd.DataFrame, year: int) -> gpd.GeoDataFrame
         can be used to infer what geometry level the rows represent.
     year
         The year for which to fetch geometries. We need this
-        because they change over time.
+        because they change over time. If `None`, look for a
+        `'YEAR'` column in `df_data` and possibly add different
+        geometries for different years as needed.
 
     Returns
     -------
