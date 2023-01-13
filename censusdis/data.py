@@ -376,7 +376,7 @@ to this map.
 
 
 def _add_geography(
-    df_data: pd.DataFrame, year: Optional[int], shapefile_scope: str, geo_level: str
+    df_data: pd.DataFrame, year: Optional[VintageType], shapefile_scope: str, geo_level: str
 ) -> Union[pd.DataFrame, gpd.GeoDataFrame]:
     """
     Add geography to data.
@@ -423,7 +423,7 @@ def _add_geography(
     # If there is a single defined year then we can load the single
     # shapefile. If not, then we have to load multiple shapefiles,
     # one per year, and concatenate them.
-    if year is not None:
+    if isinstance(year, int):
         gdf_shapefile = __shapefile_reader(year).read_cb_shapefile(
             shapefile_scope,
             shapefile_geo_level,
