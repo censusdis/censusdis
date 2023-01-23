@@ -459,6 +459,10 @@ def _wrap_poly(poly: Union[Polygon, Point]):
         x_coord, _ = poly.exterior.coords.xy
     elif isinstance(poly, Point):
         x_coord = [poly.x]
+    else:
+        # Not sure how to parse it, so leave it
+        # where it is.
+        return poly
 
     if x_coord[0] > 0:
         poly = shapely.affinity.translate(poly, xoff=-360.0, yoff=0.0)
