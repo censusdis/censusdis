@@ -847,3 +847,93 @@ def geographic_centroids(gdf: gpd.GeoDataFrame) -> gpd.GeoSeries:
     centroids = projected_centroids.to_crs(crs)
 
     return centroids
+
+
+def sjoin_mostly_contains(
+    gdf_large_geos: gpd.GeoDataFrame,
+    gdf_small_geos: gpd.GeoDataFrame,
+    large_suffix: str = "large",
+    small_suffix: str = "small",
+    area_threshold: float = 0.8,
+    area_epsg: int = 3857,
+):
+    """
+    Spatial join based on fraction of contained area.
+
+    This function is designed to implement the common case
+    where we have a number of small geo areas like census
+    tracts or block groups in a large area like a CBSA. The
+    reason to use this instead of `gpd.GeoDataFrame.sjoin`
+    directly is that the smaller geos may not all be
+    strictly contained in the bounds of the larger geos.
+    And small geos outside the bounds of the larger one
+    may intersect along the boundary. So instead, this method
+    looks for small geos whose area is at least 80%
+    (or another chosen number) within the larger area,
+
+    Parameters
+    ----------
+    gdf_large_geos
+        A geo data frame of one or more large geo areas like CBSAs.
+    gdf_small_geos
+        A geo data frame of smaller areas like census tracts.
+    large_suffix
+        Suffix to add to column names from the large side when
+        the same name appears in both.
+    small_suffix
+        Suffix to add to column names from the small side when
+        the same name appears in both.
+    area_threshold
+        The fraction of each smaller area that must be covered by
+        one of the large areas to be joined with it.
+    area_epsg
+        The CRS to use project to before doing area calculations.
+        Defaults to 3857. (https://epsg.io/3857),
+
+    Returns
+    -------
+        Geo data frame of the spatially joined results.
+    """
+    if gdf_large_geos.crs != gdf_small_geos.crs:
+        raise ValueError(
+            "Can only join geometries of the same crs. "
+            f"Got {gdf_large_geos.crs} and {gdf_small_geos.crs}"
+        )
+
+    # Keep the original geos around in EPSG 3857 so
+    # we can check intersection areas.
+    gdf_large_geos["_original_large_geos_{area_epsg}"] = gdf_large_geos.geometry.to_crs(
+        epsg=area_epsg
+    )
+    gdf_small_geos["_original_small_geos_{area_epsg}"] = gdf_small_geos.geometry.to_crs(
+        epsg=area_epsg
+    )
+
+    # Do an intersection join.
+    gdf_intersection = gdf_small_geos.sjoin(
+        gdf_large_geos,
+        how="inner",
+        predicate="intersects",
+        lsuffix=small_suffix,
+        rsuffix=large_suffix,
+    )
+
+    # Filter down to only those where the area of the intersection
+    # exceeds the threshold.
+    gdf_results = gdf_intersection[
+        gdf_intersection["_original_small_geos_{area_epsg}"]
+        .intersection(gdf_intersection["_original_large_geos_{area_epsg}"])
+        .area
+        >= area_threshold * gdf_intersection["_original_small_geos_{area_epsg}"].area
+    ]
+
+    gdf_results = gdf_results.drop(
+        ["_original_small_geos_{area_epsg}", "_original_large_geos_{area_epsg}"],
+        axis="columns",
+    ).copy()
+
+    gdf_results = gdf_results[
+        [col for col in gdf_results.columns if col != "geometry"] + ["geometry"]
+    ]
+
+    return gdf_results
