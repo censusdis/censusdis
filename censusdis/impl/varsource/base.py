@@ -8,8 +8,7 @@ from the U.S. Census API.
 """
 
 from abc import ABC, abstractmethod
-from typing import Any, Dict, List, Optional, Union, Literal
-
+from typing import Any, Dict, List, Literal, Optional, Union
 
 VintageType = Union[int, Literal["timeseries"]]
 """

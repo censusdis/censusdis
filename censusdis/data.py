@@ -17,12 +17,12 @@ import pandas as pd
 
 import censusdis.geography as cgeo
 import censusdis.maps as cmap
-from censusdis.values import ALL_SPECIAL_VALUES
 from censusdis.impl.exceptions import CensusApiException
 from censusdis.impl.fetch import data_from_url
 from censusdis.impl.varcache import VariableCache
 from censusdis.impl.varsource.base import VintageType
 from censusdis.impl.varsource.censusapi import CensusApiVariableSource
+from censusdis.values import ALL_SPECIAL_VALUES
 
 logger = getLogger(__name__)
 
