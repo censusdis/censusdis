@@ -22,6 +22,7 @@ from censusdis.impl.fetch import data_from_url
 from censusdis.impl.varcache import VariableCache
 from censusdis.impl.varsource.base import VintageType
 from censusdis.impl.varsource.censusapi import CensusApiVariableSource
+from censusdis.values import ALL_SPECIAL_VALUES
 
 logger = getLogger(__name__)
 
@@ -652,7 +653,7 @@ def download(
     *,
     group: Optional[Union[str, Iterable[str]]] = None,
     leaves_of_group: Optional[Union[str, Iterable[str]]] = None,
-    set_to_nan: Optional[Iterable[int]] = None,
+    set_to_nan: Optional[Union[bool, Iterable[int]]] = None,
     skip_annotations: bool = True,
     with_geometry: bool = False,
     api_key: Optional[str] = None,
@@ -699,7 +700,8 @@ def download(
         If not `None`, this specifies special values that should be replaced with
         `NaN`. Normally :py:ref:`censusdis.values.ALL_SPECIAL_VALUES` or a subset thereof.
         The default is `None` so that we never change values without the caller
-        explicitly asking us to.
+        explicitly asking us to. Setting to `True` is equivalent to
+        :py:ref:`censusdis.values.ALL_SPECIAL_VALUES`.
     skip_annotations
         If `True` try to filter out `group` or `leaves_of_group` variables that are
         annotations rather than actual values. See :py:meth:`VariableCache.group_variables`
@@ -728,6 +730,9 @@ def download(
 
     # The side effect here is to prime the cache.
     cgeo.geo_path_snake_specs(dataset, vintage)
+
+    if set_to_nan is True:
+        set_to_nan = ALL_SPECIAL_VALUES
 
     # In case they came to us in py format, as kwargs often do.
     kwargs = {

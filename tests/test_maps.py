@@ -235,5 +235,136 @@ class GeographicCentroidsTestCase(unittest.TestCase):
         self.assertGreater(centroid_geo.y - centroid_4269.y, 0.03)
 
 
+class MostlyContains(unittest.TestCase):
+    """Test for mostly contains."""
+
+    def setUp(self) -> None:
+        """Set up before each test."""
+        self.gdf_big = gpd.GeoDataFrame(
+            [["BIG"]],
+            columns=["NAME"],
+            geometry=[
+                Polygon(
+                    [[0.0, 0.0], [12.00, 0.0], [12.00, 20.75], [0.0, 20.75], [0.0, 0.0]]
+                )
+            ],
+            crs=4269,
+        )
+
+        self.gdf_small = gpd.GeoDataFrame(
+            [["A"], ["B"], ["C"], ["D"], ["E"]],
+            columns=["NAME"],
+            geometry=[
+                Polygon(
+                    [
+                        [10, 10],
+                        [10, 11],
+                        [11, 11],
+                        [11, 10],
+                        [10, 10],
+                    ]
+                ),
+                Polygon(
+                    [
+                        [20, 10],
+                        [20, 11],
+                        [21, 11],
+                        [21, 10],
+                        [20, 10],
+                    ]
+                ),
+                Polygon(
+                    [
+                        [10, 20],
+                        [10, 21],
+                        [11, 21],
+                        [11, 20],
+                        [10, 20],
+                    ]
+                ),
+                Polygon(
+                    [
+                        [20, 20],
+                        [20, 21],
+                        [21, 21],
+                        [21, 20],
+                        [20, 20],
+                    ]
+                ),
+                Polygon(
+                    [
+                        [15, 15],
+                        [15, 16],
+                        [16, 16],
+                        [16, 15],
+                        [15, 15],
+                    ]
+                ),
+            ],
+            crs=4269,
+        )
+
+    def test_mostly_contains(self):
+        """Test the mostly contains utility."""
+        # At the default 80% threshold only one is contained.
+        gdf_contained = cmap.sjoin_mostly_contains(self.gdf_big, self.gdf_small)
+
+        # At 50%, a second is contained.
+        gdf_contained_05 = cmap.sjoin_mostly_contains(
+            self.gdf_big, self.gdf_small, area_threshold=0.5
+        )
+
+        self.assertEqual((1, 4), gdf_contained.shape)
+        self.assertEqual((2, 4), gdf_contained_05.shape)
+
+        gdf_expected = gpd.GeoDataFrame(
+            [["A", 0, "BIG"]],
+            columns=["NAME_small", "index_large", "NAME_large"],
+            index=[0],
+            geometry=[
+                Polygon(
+                    [
+                        [10, 10],
+                        [10, 11],
+                        [11, 11],
+                        [11, 10],
+                        [10, 10],
+                    ]
+                ),
+            ],
+            crs=4269,
+        )
+
+        gdf_expected_05 = gpd.GeoDataFrame(
+            [["A", 0, "BIG"], ["C", 0, "BIG"]],
+            columns=["NAME_small", "index_large", "NAME_large"],
+            index=[0, 2],
+            geometry=[
+                Polygon(
+                    [
+                        [10, 10],
+                        [10, 11],
+                        [11, 11],
+                        [11, 10],
+                        [10, 10],
+                    ]
+                ),
+                Polygon(
+                    [
+                        [10, 20],
+                        [10, 21],
+                        [11, 21],
+                        [11, 20],
+                        [10, 20],
+                    ]
+                ),
+            ],
+            crs=4269,
+        )
+
+        self.assertTrue(gdf_expected.equals(gdf_contained))
+        self.assertTrue(gdf_expected_05.equals(gdf_contained_05))
+
+
 if __name__ == "__main__":
     unittest.main()

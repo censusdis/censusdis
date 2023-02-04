@@ -1,5 +1,4 @@
 import unittest
-
 from typing import Mapping, Optional, Tuple
 
 from censusdis.geography import CensusGeographyQuerySpec, PathSpec
