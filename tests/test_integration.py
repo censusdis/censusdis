@@ -19,8 +19,15 @@ import censusdis.impl.exceptions
 import censusdis.impl.varsource.censusapi
 import censusdis.maps as cem
 import censusdis.values as cev
-from censusdis.states import (ALL_STATES_AND_DC, STATE_CA, STATE_GA, STATE_NJ,
-                              STATE_NY, TERRITORY_PR)
+from censusdis.states import (
+    ALL_STATES_AND_DC,
+    STATE_CA,
+    STATE_GA,
+    STATE_IN,
+    STATE_NJ,
+    STATE_NY,
+    TERRITORY_PR,
+)
 
 if __name__ == "__main__":
     unittest.main()
@@ -189,6 +196,27 @@ class DownloadTestCase(unittest.TestCase):
 
         self.assertEqual(
             ["STATE", "NAME", "B19001_001E", "geometry"], list(gdf.columns)
+        )
+
+    def test_download_with_geometry_consolidated_city(self):
+        """Download at the consolidated city level with geometry."""
+
+        gdf = ced.download(
+            self._dataset,
+            self._year,
+            ["NAME", self._name],
+            with_geometry=True,
+            state=STATE_IN,
+            consolidated_city="*",
+        )
+
+        self.assertIsInstance(gdf, geopandas.GeoDataFrame)
+
+        self.assertEqual((1, 5), gdf.shape)
+
+        self.assertEqual(
+            ["STATE", "CONSOLIDATED_CITY", "NAME", "B19001_001E", "geometry"],
+            list(gdf.columns),
         )
 
     def test_download_with_geometry_tract(self):

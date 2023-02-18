@@ -662,7 +662,7 @@ def _relocate_ak_hi_pr_group(group):
     return group
 
 
-def relocate_ak_hi_pr(gdf):
+def relocate_ak_hi_pr(gdf: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     """
     Relocate any geometry that is in Alaska or Hawaii for plotting purposes.
 

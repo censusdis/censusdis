@@ -339,6 +339,12 @@ _GEO_QUERY_FROM_DATA_QUERY_INNER_GEO: Dict[
         ["CBSAFP"],
     ),
     "state": ("us", "state", ["STATE"], ["STATEFP"]),
+    "consolidated city": (
+        "us",
+        "concity",
+        ["STATE", "CONSOLIDATED_CITY"],
+        ["STATEFP", "CONCTYFP"],
+    ),
     "county": ("us", "county", ["STATE", "COUNTY"], ["STATEFP", "COUNTYFP"]),
     # For these, the shapefiles are at the state level, so `None`
     # indicates that we have to fill it in based on the geometry
@@ -462,6 +468,9 @@ def _add_geography(
 
         merge_gdf_on = ["YEAR"] + gdf_on
         df_on = ["YEAR"] + df_on
+
+    print("SSS", gdf_shapefile.columns)
+    print("DDD", df_data.columns)
 
     gdf_data = (
         gdf_shapefile[merge_gdf_on + ["geometry"]]
