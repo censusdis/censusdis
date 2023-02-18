@@ -53,6 +53,9 @@ genbadge = {extras = ["all"], version = "^1.1.0"}
 [tool.coverage.report]
 omit = ["tests/*"]
 
+[tool.isort]
+profile = "black"
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
