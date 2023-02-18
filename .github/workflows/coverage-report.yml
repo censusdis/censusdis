@@ -69,10 +69,10 @@ jobs:
           genbadge coverage -n coverage -o ./reports/coverage/coverage-badge.svg
           genbadge tests --name tests -i reports/junit/junit.xml -o ./reports/junit/tests-badge.svg
       #----------------------------------------------
-      #              archive code coverage
+      #              archive failed test artifacts
       #----------------------------------------------
-      - name: Archive code coverage
-        if: always() && (steps.runTests.outcome == 'failure')
+      - name: Archive failed test artifacts
+        if: (steps.runTests.outcome == 'failure')
         uses: actions/upload-artifact@v3
         with:
           name: test_artifacts
