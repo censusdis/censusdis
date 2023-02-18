@@ -52,10 +52,17 @@ jobs:
       #----------------------------------------------
       #              run test suite
       #----------------------------------------------
-      - name: Run tests and coverage
-        run: |
-          source .venv/bin/activate
-          coverage run -m pytest --junitxml=reports/junit/junit.xml
+      - name: Run tests with coverage
+        steps:
+          - name: Run tests
+            run: |
+              source .venv/bin/activate
+              coverage run -m pytest --junitxml=reports/junit/junit.xml
+          - name: Upload test artifacts
+            uses: actions/upload-artifact@v3
+            with:
+              name: test-artifacts
+              path: tests/_test_artifacts
       #----------------------------------------------
       #              generate coverage
       #----------------------------------------------
