@@ -19,15 +19,8 @@ import censusdis.impl.exceptions
 import censusdis.impl.varsource.censusapi
 import censusdis.maps as cem
 import censusdis.values as cev
-from censusdis.states import (
-    ALL_STATES_AND_DC,
-    STATE_CA,
-    STATE_GA,
-    STATE_IN,
-    STATE_NJ,
-    STATE_NY,
-    TERRITORY_PR,
-)
+from censusdis.states import (ALL_STATES_AND_DC, STATE_CA, STATE_GA, STATE_IN,
+                              STATE_NJ, STATE_NY, TERRITORY_PR)
 
 if __name__ == "__main__":
     unittest.main()
