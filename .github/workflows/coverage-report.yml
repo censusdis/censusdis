@@ -53,16 +53,10 @@ jobs:
       #              run test suite
       #----------------------------------------------
       - name: Run tests with coverage
-        steps:
-          - name: Run tests
-            run: |
-              source .venv/bin/activate
-              coverage run -m pytest --junitxml=reports/junit/junit.xml
-          - name: Upload test artifacts
-            uses: actions/upload-artifact@v3
-            with:
-              name: test-artifacts
-              path: tests/_test_artifacts
+        id: runTests
+        run: |
+          source .venv/bin/activate
+          coverage run -m pytest --junitxml=reports/junit/junit.xml
       #----------------------------------------------
       #              generate coverage
       #----------------------------------------------
@@ -78,6 +72,7 @@ jobs:
       #              archive code coverage
       #----------------------------------------------
       - name: Archive code coverage
+        if: always() && (steps.runTests.outcome == 'failure')
         uses: actions/upload-artifact@v3
         with:
           name: test_artifacts
