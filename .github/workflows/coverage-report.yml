@@ -95,8 +95,8 @@ jobs:
           /usr/bin/git pull --rebase
       - name: Query branch name
         run: |
-          echo running on branch ${GITHUB_REF##*/}
-          echo "branch=${GITHUB_REF##*/}" >> $GITHUB_OUTPUT
+          echo running on branch ${GITHUB_REF#refs/heads/}
+          echo "branch=${GITHUB_REF#refs/heads/}" >> $GITHUB_OUTPUT
         id: query_branch
       - name: Push coverage commit
         uses: ad-m/github-push-action@master
