@@ -36,7 +36,6 @@ def data_from_url(url: str, params: Optional[Mapping[str, str]] = None) -> pd.Da
 
 
 def _df_from_census_json(parsed_json):
-
     if (
         isinstance(parsed_json, list)
         and len(parsed_json) >= 1

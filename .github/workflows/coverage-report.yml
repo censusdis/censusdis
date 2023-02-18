@@ -52,7 +52,8 @@ jobs:
       #----------------------------------------------
       #              run test suite
       #----------------------------------------------
-      - name: Run tests and coverage
+      - name: Run tests with coverage
+        id: runTests
         run: |
           source .venv/bin/activate
           coverage run -m pytest --junitxml=reports/junit/junit.xml
@@ -68,9 +69,10 @@ jobs:
           genbadge coverage -n coverage -o ./reports/coverage/coverage-badge.svg
           genbadge tests --name tests -i reports/junit/junit.xml -o ./reports/junit/tests-badge.svg
       #----------------------------------------------
-      #              archive code coverage
+      #              archive failed test artifacts
       #----------------------------------------------
-      - name: Archive code coverage
+      - name: Archive failed test artifacts
+        if: (steps.runTests.outcome == 'failure')
         uses: actions/upload-artifact@v3
         with:
           name: test_artifacts
@@ -93,7 +95,8 @@ jobs:
           /usr/bin/git pull --rebase
       - name: Query branch name
         run: |
-          echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+          echo running on branch ${GITHUB_REF#refs/heads/}
+          echo "branch=${GITHUB_REF#refs/heads/}" >> $GITHUB_OUTPUT
         id: query_branch
       - name: Push coverage commit
         uses: ad-m/github-push-action@master

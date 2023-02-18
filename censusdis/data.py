@@ -339,6 +339,12 @@ _GEO_QUERY_FROM_DATA_QUERY_INNER_GEO: Dict[
         ["CBSAFP"],
     ),
     "state": ("us", "state", ["STATE"], ["STATEFP"]),
+    "consolidated city": (
+        "us",
+        "concity",
+        ["STATE", "CONSOLIDATED_CITY"],
+        ["STATEFP", "CONCTYFP"],
+    ),
     "county": ("us", "county", ["STATE", "COUNTY"], ["STATEFP", "COUNTYFP"]),
     # For these, the shapefiles are at the state level, so `None`
     # indicates that we have to fill it in based on the geometry

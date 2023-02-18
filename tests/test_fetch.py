@@ -8,7 +8,6 @@ from censusdis import CensusApiException
 
 class ParseCensusJsonTestCase(unittest.TestCase):
     def test_parse_json(self):
-
         # This is an example of what comes back in JSON
         # form from the census API.
         parsed_json = [
@@ -33,7 +32,6 @@ class ParseCensusJsonTestCase(unittest.TestCase):
         self.assertTrue((df == expected_df).all().all())
 
     def test_parse_bad_json(self):
-
         with self.assertRaises(CensusApiException):
             censusdis.impl.fetch._df_from_census_json([])
 
