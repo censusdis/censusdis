@@ -281,7 +281,6 @@ class EnvironmentApiKey:
 
 @dataclass(init=False)
 class CensusGeographyQuerySpec:
-
     dataset: str
     year: int
     variables: List[str]

@@ -800,7 +800,6 @@ class AcsSubjectTestCase(unittest.TestCase):
 
 
 class ShapefileTestCase(unittest.TestCase):
-
     PATH_PREFIX = "test_integration_shapefiles_"
 
     @classmethod
