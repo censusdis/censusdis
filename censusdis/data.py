@@ -469,9 +469,6 @@ def _add_geography(
         merge_gdf_on = ["YEAR"] + gdf_on
         df_on = ["YEAR"] + df_on
 
-    print("SSS", gdf_shapefile.columns)
-    print("DDD", df_data.columns)
-
     gdf_data = (
         gdf_shapefile[merge_gdf_on + ["geometry"]]
         .merge(df_data, how="right", left_on=merge_gdf_on, right_on=df_on)
