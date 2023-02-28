@@ -349,6 +349,7 @@ _GEO_QUERY_FROM_DATA_QUERY_INNER_GEO: Dict[
     # For these, the shapefiles are at the state level, so `None`
     # indicates that we have to fill it in based on the geometry
     # being queried.
+    "place": (None, "place", ["STATE", "PLACE"], ["STATEFP", "PLACEFP"]),
     "tract": (
         None,
         "tract",
