@@ -268,6 +268,87 @@ For example, ``STATE_NAMES_FROM_IDS[STATE_NJ]``
 is ``"New Jersey"``.
 """
 
+STATE_ABBREVIATIONS_FROM_IDS = {
+    STATE_AL: "AL",
+    STATE_AK: "AK",
+    STATE_AZ: "AZ",
+    STATE_AR: "AR",
+    STATE_CA: "CA",
+    STATE_CO: "CO",
+    STATE_CT: "CT",
+    STATE_DC: "DC",
+    STATE_DE: "DE",
+    STATE_FL: "FL",
+    STATE_GA: "GA",
+    STATE_HI: "HI",
+    STATE_ID: "ID",
+    STATE_IL: "IL",
+    STATE_IN: "IN",
+    STATE_IA: "IA",
+    STATE_KS: "KS",
+    STATE_KY: "KY",
+    STATE_LA: "LA",
+    STATE_ME: "ME",
+    STATE_MD: "MD",
+    STATE_MA: "MA",
+    STATE_MN: "MN",
+    STATE_MS: "MS",
+    STATE_MI: "MI",
+    STATE_MO: "MO",
+    STATE_MT: "NT",
+    STATE_NE: "NE",
+    STATE_NV: "NV",
+    STATE_NH: "NH",
+    STATE_NJ: "NJ",
+    STATE_NM: "NM",
+    STATE_NY: "NY",
+    STATE_NC: "NC",
+    STATE_ND: "ND",
+    STATE_OH: "OH",
+    STATE_OK: "OK",
+    STATE_OR: "OR",
+    STATE_PA: "PA",
+    STATE_RI: "RI",
+    STATE_SC: "SC",
+    STATE_SD: "SD",
+    STATE_TN: "TN",
+    STATE_TX: "TX",
+    STATE_UT: "UT",
+    STATE_VT: "VT",
+    STATE_VA: "VA",
+    STATE_WA: "WA",
+    STATE_WV: "WV",
+    STATE_WI: "WI",
+    STATE_WY: "WY",
+    TERRITORY_PR: "PR",
+}
+"""
+The postal abbreviation of each state, indexed by FIPS code.
+
+For example, ``STATE_NAMES_FROM_IDS[STATE_NJ]``
+is ``"NJ"``.
+"""
+
+STATE_IDS_FROM_ABBREVIATIONS = {
+    v: k for k, v in STATE_ABBREVIATIONS_FROM_IDS.items()
+}
+"""
+The state FIPS code ID for each state abbreviation.
+
+For example ``STATE_IDS_FROM_ABBREVIATIONS['NJ']``
+is ``34``, which is the value of``STATE_NJ``.
+"""
+
+STATE_IDS_FROM_NAMES = {
+    v: k for k, v in STATE_NAMES_FROM_IDS.items()
+}
+"""
+The state FIPS code ID for each state name.
+
+For example ``STATE_IDS_FROM_ABBREVIATIONS['New Jersey']``
+is ``34``, which is the value of``STATE_NJ``.
+"""
+
 ALL_STATES = [state for state in STATE_NAMES_FROM_IDS if state != STATE_DC]
 """
 All the state FIPS codes.
