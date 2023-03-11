@@ -23,6 +23,23 @@ or `poetry <https://python-poetry.org/>`_ to manage
 your dependencies, then you can add ``censusdis`` the
 same way you would add any other dependency.
 
+Census API Key (Optional Initially)
+-----------------------------------
+
+The Census API that ``censusdis`` calls requires the use of an API
+key unless you are doing only a relatively small number of queries.
+Luckily, the key is free and easy to get, and once you have one in
+a file in the right place on your machine ``censusdis`` will automatically
+use it with every call to the Census API.
+
+To obtain a key, visit `this page <https://api.census.gov/data/key_signup.html>`_.
+The key will be sent to you be email. It will be a long string of numbers 
+and letters. Make a directory called ``.censusdis`` in your home directory,
+then inside that directory create a text file called ``api_key.txt``. The file
+should have just one line, and you should paste the key you got via email
+into it. Once this is done, all ``censusdis`` calls to the Census API will
+use this key.
+
 Making Your First Query
 -----------------------
 
