@@ -11,7 +11,7 @@ from pyproj.crs import CRS
 from shapely.geometry import Polygon
 
 import censusdis.maps as cmap
-from censusdis.states import ALL_STATES_DC_AND_PR, STATE_WY
+from censusdis.states import ALL_STATES_DC_AND_PR, WY
 
 
 class ShapeReaderTestCase(unittest.TestCase):
@@ -215,7 +215,7 @@ class GeographicCentroidsTestCase(unittest.TestCase):
         )
 
         self.gdf_wy = gpd.GeoDataFrame(
-            [STATE_WY],
+            [WY],
             columns=["STATE"],
             geometry=[geometry_wy],
             crs=CRS(4269),  # This is what Census shapefiles are delivered with.

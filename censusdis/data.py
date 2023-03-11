@@ -40,12 +40,12 @@ the values allowed by the filter. For example::
 
     import censusdis.data as ced
 
-    from censusdis.states import STATE_NJ, STATE_NY, STATE_CT
+    from censusdis.states import NJ, NY, CT
 
     # Two different kinds of kwarg for `state=`, both of
     # which are of `GeoFilterType`:
-    df_one_state = ced.download("aca/acs5", 2020, ["NAME"], state=STATE_NJ)
-    df_tri_state = ced.download("aca/acs5", 2020, ["NAME"], state=[STATE_NJ, STATE_NY, STATE_CT])
+    df_one_state = ced.download("aca/acs5", 2020, ["NAME"], state=NJ)
+    df_tri_state = ced.download("aca/acs5", 2020, ["NAME"], state=[NJ, NY, CT])
 """
 
 
@@ -403,7 +403,7 @@ def _add_geography(
         geometries for different years as needed.
     shapefile_scope
         The scope of the shapefile. This is typically either a state
-        such as `STATE_NJ` or the string `"us"`.
+        such as `NJ` or the string `"us"`.
     geo_level
         The geography level we want to add.
 
@@ -1121,6 +1121,33 @@ def census_table_url(
     url, params = query_spec.table_url()
 
     return url, params, bound_path
+
+
+def geographies(dataset: str, vintage: VintageType) -> List[List[str]]:
+    """
+    What geographies are supported for a dataset and vintage?
+
+    This utility gives us a list of the different geography
+    keywords we can use in calls to :py:func:`download` with
+    for the given dataset and vintage.
+
+    Parameters
+    ----------
+    dataset
+        The dataset to download from. For example `"acs/acs5"`,
+        `"dec/pl"`, or `"timeseries/poverty/saipe/schdist"`.
+    vintage
+        The vintage to download data for. For most data sets this is
+        an integer year, for example, `2020`. But for
+        a timeseries data set, pass the string `'timeseries'`.
+
+    Returns
+    -------
+        A list of lists of geography keywords. Each element
+        of the outer list is a list of keywords that can be
+        used together.
+    """
+    return cgeo.geo_path_snake_specs(dataset, vintage).values()
 
 
 variables = VariableCache()
