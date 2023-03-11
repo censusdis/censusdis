@@ -184,18 +184,18 @@ the counties of a particular state, say New Jersey.
 In that case, we can specify this with additional
 arguments to ``ced.download``. For example::
 
-    from censusdis.states import STATE_NJ
+    from censusdis import states
 
     df_counties = ced.download(
         DATASET,
         YEAR,
         VARIABLES,
-        state=STATE_NJ,
+        state=states.NJ,
         county="*",
     )
 
 This code is almost exactly the same as the last query
-except that we changed ``state="*"`` to ``state=STATE_NJ``
+except that we changed ``state="*"`` to ``state=states.NJ``
 and ``county="*"``. So instead of asking for the data aggregated
 at the state level across all states, we are asking for only
 the data from the state of New Jersey, aggregated at the
@@ -284,7 +284,7 @@ a block group query for Essex County, NJ::
         DATASET,
         YEAR,
         VARIABLES,
-        state=STATE_NJ,
+        state=states.NJ,
         county=COUNTY_ESSEX_NJ,
         block_group="*",
     )

@@ -40,12 +40,12 @@ the values allowed by the filter. For example::
 
     import censusdis.data as ced
 
-    from censusdis.states import STATE_NJ, STATE_NY, STATE_CT
+    from censusdis.states import NJ, NY, CT
 
     # Two different kinds of kwarg for `state=`, both of
     # which are of `GeoFilterType`:
-    df_one_state = ced.download("aca/acs5", 2020, ["NAME"], state=STATE_NJ)
-    df_tri_state = ced.download("aca/acs5", 2020, ["NAME"], state=[STATE_NJ, STATE_NY, STATE_CT])
+    df_one_state = ced.download("aca/acs5", 2020, ["NAME"], state=NJ)
+    df_tri_state = ced.download("aca/acs5", 2020, ["NAME"], state=[NJ, NY, CT])
 """
 
 
@@ -403,7 +403,7 @@ def _add_geography(
         geometries for different years as needed.
     shapefile_scope
         The scope of the shapefile. This is typically either a state
-        such as `STATE_NJ` or the string `"us"`.
+        such as `NJ` or the string `"us"`.
     geo_level
         The geography level we want to add.
 

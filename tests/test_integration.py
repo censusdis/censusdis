@@ -19,18 +19,7 @@ import censusdis.impl.exceptions
 import censusdis.impl.varsource.censusapi
 import censusdis.maps as cem
 import censusdis.values as cev
-from censusdis.states import (
-    ALL_STATES_AND_DC,
-    STATE_CA,
-    STATE_GA,
-    STATE_IN,
-    STATE_NJ,
-    STATE_NY,
-    TERRITORY_PR,
-)
-
-if __name__ == "__main__":
-    unittest.main()
+from censusdis import states
 
 
 class DownloadTestCase(unittest.TestCase):
@@ -70,7 +59,7 @@ class DownloadTestCase(unittest.TestCase):
         """Download just a couple of variables."""
 
         df = ced.download(
-            self._dataset, self._year, ["NAME", self._name], state=STATE_NJ, county="*"
+            self._dataset, self._year, ["NAME", self._name], state=states.NJ, county="*"
         )
 
         self.assertEqual((21, 4), df.shape)
@@ -85,7 +74,7 @@ class DownloadTestCase(unittest.TestCase):
                 self._dataset,
                 self._year,
                 ["NAME", self._name],
-                state=STATE_NJ,
+                state=states.NJ,
                 county="*",
             )
 
@@ -101,7 +90,7 @@ class DownloadTestCase(unittest.TestCase):
                 self._dataset,
                 self._year,
                 ["NAME", "I_DONT_EXIST"],
-                state=STATE_NJ,
+                state=states.NJ,
                 county="*",
             )
 
@@ -122,7 +111,7 @@ class DownloadTestCase(unittest.TestCase):
             self._dataset,
             self._year,
             ["NAME", median_income_variable],
-            state=STATE_GA,
+            state=states.GA,
             tract="*",
         )
 
@@ -130,7 +119,7 @@ class DownloadTestCase(unittest.TestCase):
             self._dataset,
             self._year,
             ["NAME", median_income_variable],
-            state=STATE_GA,
+            state=states.GA,
             tract="*",
             set_to_nan=cev.ALL_SPECIAL_VALUES,
         )
@@ -167,7 +156,7 @@ class DownloadTestCase(unittest.TestCase):
             self._year,
             ["NAME", self._name],
             with_geometry=True,
-            state=STATE_NJ,
+            state=states.NJ,
             county="*",
         )
 
@@ -206,7 +195,7 @@ class DownloadTestCase(unittest.TestCase):
             self._year,
             ["NAME", self._name],
             with_geometry=True,
-            state=STATE_IN,
+            state=states.IN,
             consolidated_city="*",
         )
 
@@ -227,7 +216,7 @@ class DownloadTestCase(unittest.TestCase):
             self._year,
             ["NAME", self._name],
             with_geometry=True,
-            state=STATE_NJ,
+            state=states.NJ,
             county="001",
             tract="*",
         )
@@ -249,7 +238,7 @@ class DownloadTestCase(unittest.TestCase):
             self._year,
             ["NAME", self._name],
             with_geometry=True,
-            state=STATE_NJ,
+            state=states.NJ,
             county="001",
             block_group="*",
         )
@@ -282,7 +271,7 @@ class DownloadTestCase(unittest.TestCase):
                 self._year,
                 ["NAME", self._name],
                 with_geometry=True,
-                state=STATE_NJ,
+                state=states.NJ,
                 county_subdivision="*",
             )
 
@@ -299,7 +288,7 @@ class DownloadTestCase(unittest.TestCase):
             self._year,
             ["NAME", self._name],
             with_geometry=False,
-            state=STATE_NJ,
+            state=states.NJ,
             county_subdivision="*",
         )
 
@@ -312,24 +301,27 @@ class DownloadTestCase(unittest.TestCase):
         """
         Test the case where the only geo argument has multiple values.
 
-        As in `state=[STATE_NJ, STATE_NY]`, vs. the more general
+        As in `state=[states.NJ, states.NY]`, vs. the more general
         `state="*"`.
         """
 
         df = ced.download(
-            self._dataset, self._year, ["NAME", self._name], state=[STATE_NJ, STATE_NY]
+            self._dataset,
+            self._year,
+            ["NAME", self._name],
+            state=[states.NJ, states.NY],
         )
 
         self.assertEqual((2, 3), df.shape)
 
-        self.assertIn(STATE_NJ, list(df["STATE"]))
-        self.assertIn(STATE_NY, list(df["STATE"]))
+        self.assertIn(states.NJ, list(df["STATE"]))
+        self.assertIn(states.NY, list(df["STATE"]))
 
-    def test_multi_state_county(self):
+    def test_multi_county(self):
         """
         Test the case where the first geo argument has multiple values.
 
-        As in `state=[STATE_NJ, STATE_NY]`, vs. the more general
+        As in `state=[states.NJ, states.NY]`, vs. the more general
         `state="*"` and `county="*"`.
         """
 
@@ -337,7 +329,7 @@ class DownloadTestCase(unittest.TestCase):
             self._dataset,
             self._year,
             ["NAME", self._name],
-            state=[STATE_NJ, STATE_NY],
+            state=[states.NJ, states.NY],
             county="*",
         )
 
@@ -347,7 +339,7 @@ class DownloadTestCase(unittest.TestCase):
             self._dataset,
             self._year,
             ["NAME", self._name],
-            state=ALL_STATES_AND_DC,
+            state=states.ALL_STATES_AND_DC,
             county="*",
         )
 
@@ -358,15 +350,15 @@ class DownloadTestCase(unittest.TestCase):
         # This will get us some outside the 51.
         self.assertLess(len(df_51.index), len(df_star.index))
 
-        df_star = df_star[df_star.STATE.isin(ALL_STATES_AND_DC)]
+        df_star = df_star[df_star.STATE.isin(states.ALL_STATES_AND_DC)]
 
         self.assertEqual(len(df_51.index), len(df_star.index))
 
-    def test_multi_state_tract(self):
+    def test_multi_tract(self):
         """
         Test the case where the first geo argument has multiple values.
 
-        As in `state=[STATE_NJ, STATE_NY]`, vs. the more general
+        As in `state=[states.NJ, states.NY]`, vs. the more general
         `state="*"` and `tract="*"`.
 
         In this test we also skip a level.
@@ -376,7 +368,7 @@ class DownloadTestCase(unittest.TestCase):
             self._dataset,
             self._year,
             ["NAME", self._name],
-            state=[STATE_NJ, STATE_NY],
+            state=[states.NJ, states.NY],
             tract="*",
         )
 
@@ -388,11 +380,11 @@ class DownloadTestCase(unittest.TestCase):
         self.assertIn("NAME", df.columns)
         self.assertIn(self._name, df.columns)
 
-    def test_multi_state_bg(self):
+    def test_multi_bg(self):
         """
         Test the case where the first geo argument has multiple values.
 
-        As in `state=[STATE_NJ, STATE_NY]`, vs. the more general
+        As in `state=[states.NJ, states.NY]`, vs. the more general
         `state="*"` and `tract="*"`.
 
         In this test we also skip two levels.
@@ -402,7 +394,7 @@ class DownloadTestCase(unittest.TestCase):
             self._dataset,
             self._year,
             ["NAME", self._name],
-            state=[STATE_NJ, STATE_NY],
+            state=[states.NJ, states.NY],
             block_group="*",
         )
 
@@ -531,7 +523,7 @@ class DownloadWideTestCase(unittest.TestCase):
         metrics_0 = ced._download_wide_strategy_metrics()
 
         with self.assertLogs(ced.__name__, level="INFO") as cm:
-            df = ced.download(dataset, year, variables, state=STATE_NJ)
+            df = ced.download(dataset, year, variables, state=states.NJ)
 
         # Make sure we got the log message.
 
@@ -555,7 +547,7 @@ class DownloadWideTestCase(unittest.TestCase):
         self.assertEqual((2109, len(variables) + 1), df.shape)
 
         # All the same state.
-        self.assertTrue((df["STATE"] == STATE_NJ).all())
+        self.assertTrue((df["STATE"] == states.NJ).all())
 
         # One column per variable plus state.
         columns = set(df.columns)
@@ -590,7 +582,7 @@ class DownloadGroupTestCase(unittest.TestCase):
             self._dataset,
             self._year,
             group=self._group_name_0,
-            state=STATE_NJ,
+            state=states.NJ,
             county="*",
         )
 
@@ -608,7 +600,7 @@ class DownloadGroupTestCase(unittest.TestCase):
             self._dataset,
             self._year,
             leaves_of_group=self._group_name_0,
-            state=STATE_NJ,
+            state=states.NJ,
             county="*",
         )
 
@@ -629,7 +621,7 @@ class DownloadGroupTestCase(unittest.TestCase):
             self._year,
             [extra_variable, extra_variable],  # should dedup here also
             group=self._group_name_0,
-            state=STATE_NJ,
+            state=states.NJ,
             county="*",
         )
 
@@ -653,7 +645,7 @@ class DownloadGroupTestCase(unittest.TestCase):
             self._year,
             extra_variable,
             leaves_of_group=self._group_name_0,
-            state=STATE_NJ,
+            state=states.NJ,
             county="*",
         )
 
@@ -685,7 +677,7 @@ class DownloadGroupTestCase(unittest.TestCase):
             self._year,
             some_group_variables,
             group=self._group_name_0,
-            state=STATE_NJ,
+            state=states.NJ,
             county="*",
         )
 
@@ -725,7 +717,7 @@ class DownloadGroupTestCase(unittest.TestCase):
             self._year,
             [extra_variable] + some_leaf_variables,
             leaves_of_group=self._group_name_0,
-            state=STATE_NJ,
+            state=states.NJ,
             county="*",
         )
 
@@ -756,7 +748,7 @@ class DownloadGroupTestCase(unittest.TestCase):
             self._year,
             group=[self._group_name_0, self._group_name_1],
             leaves_of_group=[self._group_name_0],
-            state=STATE_NJ,
+            state=states.NJ,
             county="*",
         )
 
@@ -791,12 +783,8 @@ class AcsSubjectTestCase(unittest.TestCase):
         # the census metadata says the variable is an int.
         self.assertEqual(np.float64, df[self._variable_name].dtype)
 
-        self.assertFalse(
-            df[df.STATE != TERRITORY_PR][self._variable_name].isnull().any()
-        )
-        self.assertTrue(
-            df[df.STATE == TERRITORY_PR][self._variable_name].isnull().all()
-        )
+        self.assertFalse(df[df.STATE != states.PR][self._variable_name].isnull().any())
+        self.assertTrue(df[df.STATE == states.PR][self._variable_name].isnull().all())
 
 
 class ShapefileTestCase(unittest.TestCase):
@@ -874,7 +862,7 @@ class AddInferredGeographyTestCase(unittest.TestCase):
     def test_state(self):
         """Test that we can infer state geometries."""
         df_state = pd.DataFrame(
-            [[STATE_NJ, 0.5, 0.6], [STATE_CA, 0.1, 0.2]],
+            [[states.NJ, 0.5, 0.6], [states.CA, 0.1, 0.2]],
             columns=["STATE", "metric1", "metric2"],
         )
 
@@ -896,7 +884,7 @@ class AddInferredGeographyTestCase(unittest.TestCase):
     def test_county(self):
         """Test that we can infer a county geometries."""
         df_county = pd.DataFrame(
-            [[STATE_NJ, "011", 0.5, 0.6], [STATE_NJ, "013", 0.1, 0.2]],
+            [[states.NJ, "011", 0.5, 0.6], [states.NJ, "013", 0.1, 0.2]],
             columns=["STATE", "COUNTY", "metric1", "metric2"],
         )
 
@@ -924,11 +912,11 @@ class AddInferredGeographyTestCase(unittest.TestCase):
         """Test that we can infer census tract geometries."""
         df_tract = pd.DataFrame(
             [
-                [STATE_NJ, "013", "019000", 0.1, 0.2],
-                [STATE_NJ, "013", "019100", 0.3, 0.4],
-                [STATE_NJ, "013", "019200", 0.5, 0.6],
-                [STATE_NY, "061", "021600", 1.0, 1.1],
-                [STATE_NY, "061", "021800", 1.2, 1.3],
+                [states.NJ, "013", "019000", 0.1, 0.2],
+                [states.NJ, "013", "019100", 0.3, 0.4],
+                [states.NJ, "013", "019200", 0.5, 0.6],
+                [states.NY, "061", "021600", 1.0, 1.1],
+                [states.NY, "061", "021800", 1.2, 1.3],
             ],
             columns=["STATE", "COUNTY", "TRACT", "metric1", "metric2"],
         )
@@ -940,8 +928,8 @@ class AddInferredGeographyTestCase(unittest.TestCase):
         # Now get the county shapefiles directly and see if we
         # inferred the right geometries.
 
-        gdf_tract_nj = self.reader0.read_cb_shapefile(STATE_NJ, "tract")
-        gdf_tract_ny = self.reader0.read_cb_shapefile(STATE_NY, "tract")
+        gdf_tract_nj = self.reader0.read_cb_shapefile(states.NJ, "tract")
+        gdf_tract_ny = self.reader0.read_cb_shapefile(states.NY, "tract")
 
         gdf_tract = gdf_tract_nj.append(gdf_tract_ny)
 
@@ -989,12 +977,12 @@ class AddInferredGeographyTestCase(unittest.TestCase):
         """Test inferring geometry in a multi-year df."""
         df_county_multi_year = pd.DataFrame(
             [
-                [2019, STATE_NJ, "011", 0.5, 0.6],
-                [2019, STATE_NJ, "013", 0.1, 0.2],
-                [2020, STATE_NJ, "011", 1.5, 1.6],
-                [2020, STATE_NJ, "013", 1.1, 1.2],
-                [2021, STATE_NJ, "011", 2.5, 2.6],
-                [2021, STATE_NJ, "013", 2.5, 2.5],
+                [2019, states.NJ, "011", 0.5, 0.6],
+                [2019, states.NJ, "013", 0.1, 0.2],
+                [2020, states.NJ, "011", 1.5, 1.6],
+                [2020, states.NJ, "013", 1.1, 1.2],
+                [2021, states.NJ, "011", 2.5, 2.6],
+                [2021, states.NJ, "013", 2.5, 2.5],
             ],
             columns=["YEAR", "STATE", "COUNTY", "metric1", "metric2"],
         )
@@ -1034,14 +1022,14 @@ class AddInferredGeographyTestCase(unittest.TestCase):
         df_county_multi_year = pd.DataFrame(
             [
                 # There are no maps for 1999.
-                [1999, STATE_NJ, "011", 0.4, 0.5],
-                [1999, STATE_NJ, "013", 0.0, 0.1],
-                [2019, STATE_NJ, "011", 0.5, 0.6],
-                [2019, STATE_NJ, "013", 0.1, 0.2],
-                [2020, STATE_NJ, "011", 1.5, 1.6],
-                [2020, STATE_NJ, "013", 1.1, 1.2],
-                [2021, STATE_NJ, "011", 2.5, 2.6],
-                [2021, STATE_NJ, "013", 2.5, 2.5],
+                [1999, states.NJ, "011", 0.4, 0.5],
+                [1999, states.NJ, "013", 0.0, 0.1],
+                [2019, states.NJ, "011", 0.5, 0.6],
+                [2019, states.NJ, "013", 0.1, 0.2],
+                [2020, states.NJ, "011", 1.5, 1.6],
+                [2020, states.NJ, "013", 1.1, 1.2],
+                [2021, states.NJ, "011", 2.5, 2.6],
+                [2021, states.NJ, "013", 2.5, 2.5],
             ],
             columns=["YEAR", "STATE", "COUNTY", "metric1", "metric2"],
         )
@@ -1077,10 +1065,10 @@ class AddInferredGeographyTestCase(unittest.TestCase):
         df_county_multi_year = pd.DataFrame(
             [
                 # There are no maps for these years.
-                [1999, STATE_NJ, "011", 0.4, 0.5],
-                [1999, STATE_NJ, "013", 0.0, 0.1],
-                [2000, STATE_NJ, "011", 0.5, 0.6],
-                [2000, STATE_NJ, "013", 0.1, 0.2],
+                [1999, states.NJ, "011", 0.4, 0.5],
+                [1999, states.NJ, "013", 0.0, 0.1],
+                [2000, states.NJ, "011", 0.5, 0.6],
+                [2000, states.NJ, "013", 0.1, 0.2],
             ],
             columns=["YEAR", "STATE", "COUNTY", "metric1", "metric2"],
         )
@@ -1095,3 +1083,7 @@ class AddInferredGeographyTestCase(unittest.TestCase):
 
         # Make sure there is no geometry.
         self.assertTrue(gdf_inferred_geometry_multi_year["geometry"].isnull().all())
+
+
+if __name__ == "__main__":
+    unittest.main()

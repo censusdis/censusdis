@@ -19,7 +19,7 @@ from shapely.geometry import MultiPolygon, Point, Polygon
 from shapely.geometry.base import BaseGeometry
 
 from censusdis.impl.exceptions import CensusApiException
-from censusdis.states import STATE_AK, STATE_HI, TERRITORY_PR
+from censusdis.states import AK, HI, PR
 
 logger = getLogger(__name__)
 
@@ -234,7 +234,7 @@ class ShapeReader:
         ----------
         shapefile_scope
             The geography that is covered by the entire shapefile. In some
-            cases, this is a state, e.g. `STATE_NJ`. For cases where files
+            cases, this is a state, e.g. `NJ`. For cases where files
             are available for the entire country, the string `"us"` is typically
             used. In some rare cases, like for the Alaska Native Regional Corporations
             (``"anrc"``) geography, other strings like ``"02"`` are used.
@@ -304,7 +304,7 @@ class ShapeReader:
         ----------
         shapefile_scope
             The geography that is covered by the entire shapefile. In some
-            cases, this is a state, e.g. `STATE_NJ`. For cases where files
+            cases, this is a state, e.g. `NJ`. For cases where files
             are available for the entire country, the string `"us"` is typically
             used. In some rare cases, like for the Alaska Native Regional Corporations
             (``"anrc"``) geography, other strings like ``"02"`` are used.
@@ -415,7 +415,7 @@ class ShapeReader:
             os.remove(zip_path)
 
 
-def clip_to_states(gdf, gdf_state_bounds):
+def clip_to_states(gdf, gdf_bounds):
     """
     Clip every geometry in a gdf to the state it
     belongs to, from the states in the state bounds.
@@ -433,7 +433,7 @@ def clip_to_states(gdf, gdf_state_bounds):
     ----------
     gdf
         The input geometries.
-    gdf_state_bounds
+    gdf_bounds
         The state bounds.
     Returns
     -------
@@ -442,9 +442,7 @@ def clip_to_states(gdf, gdf_state_bounds):
     """
     return (
         gdf.groupby(gdf.STATEFP)
-        .apply(
-            lambda s: gpd.clip(s, gdf_state_bounds[gdf_state_bounds.STATEFP == s.name])
-        )
+        .apply(lambda s: gpd.clip(s, gdf_bounds[gdf_bounds.STATEFP == s.name]))
         .droplevel("STATEFP")
     )
 
@@ -649,14 +647,14 @@ def _relocate_ak_hi_pr_group(group):
     They are relocated if they belong to AK, HI or PR, otherwise
     they are left alone.
     """
-    if group.name == STATE_AK:
+    if group.name == AK:
         # Deal with the Aleutian islands wrapping at -180/180 longitude.
         group.geometry = group.geometry.apply(_wrap_polys)
         # Relocate
         group.geometry = group.geometry.apply(_relocate_ak)
-    elif group.name == STATE_HI:
+    elif group.name == HI:
         group.geometry = group.geometry.apply(_relocate_hi)
-    elif group.name == TERRITORY_PR:
+    elif group.name == PR:
         group.geometry = group.geometry.apply(_relocate_pr)
 
     return group
@@ -668,7 +666,7 @@ def relocate_ak_hi_pr(gdf: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
 
     We first try an optimization. If there is a `STATEFP`
     column then we relocate rows where that column has a value of
-    `STATE_AK`, `STATE_HI` or `TERRITORY_PR`. If there is not a
+    `AK`, `HI` or `PR`. If there is not a
     `STATEFP` column we check for a `STATE` column and do the same. If neither
     column exists then we dig down into the geometries themselves
     and relocate those that intersect bounding rectangles of the
@@ -691,11 +689,11 @@ def relocate_ak_hi_pr(gdf: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
         # There is a column idenfyig the state of each geometry
         # so use that to decide what to relocate.
         if "STATEFP" in gdf.columns:
-            state_group_column = "STATEFP"
+            group_column = "STATEFP"
         else:
-            state_group_column = "STATE"
+            group_column = "STATE"
 
-        gdf = gdf.groupby(gdf[state_group_column], group_keys=False).apply(
+        gdf = gdf.groupby(gdf[group_column], group_keys=False).apply(
             _relocate_ak_hi_pr_group
         )
     else:

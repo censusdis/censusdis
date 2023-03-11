@@ -4,19 +4,18 @@
 This module defines state FIPS codes and some utilities for using them.
 
 The US Census identifies states by their
-`FIPS Codes <https://en.wikipedia.org/wiki/Federal_Information_Processing_Standard_state_code#FIPS_state_codes>`_,
+`FIPS Codes <https://en.wikipedia.org/wiki/Federal_Information_Processing_Standard_code#FIPS_codes>`_,
 which are two-digit numeric strings. For convenience, we
 define identifiers for them.
 
-Each identifier
-has a name of the form ``STATE_XX`` where ``XX`` is the two
+Each identifier correseponds to the two
 letter abbreviation for the state. For example, NJ
 is the two letter abbreviation for New Jersey, and the
 Census state identifier for New Jersey is 34, so::
 
-    import censusdis.states as cds
+    from censusdis import states
 
-    state = cds.STATE_NJ
+    state = states.NJ
 
 would set the value of `state` to the string `"34"`.
 We can use these values in any of the APIs in
@@ -27,329 +26,327 @@ FIPS codes and whose values are strings naming
 the states. It is typically used when we want a
 more human-friendly name for each state. As in::
 
-    import censusdis.states as cds
+    from censusdis import states
 
-    state = cds.STATE_CA
+    state = states.CA
 
     print(
         f"The name of the state with ID '{state}' "
-        f"is '{cds.STATE_NAMES_FROM_IDS[state]}'."
+        f"is '{states.NAMES_FROM_IDS[state]}'."
     )
 
 Finally, there is a list of all states. It is often useful
 if we want to perform an operation on all states. For
 example::
 
-    import censusdis.states as cds
+    from censusdis import states
 
-    for state in cds.ALL_STATES:
+    for state in states.ALL_STATES:
         do_something_with_a_state(state)
 
 There is also a list that includes all states and the
-District of Columbia. It is called ``cds.ALL_STATES_AND_DC``.
+District of Columbia. It is called ``ALL_STATES_AND_DC``.
+And finally, ``ALL_STATES_AND_DC_AND_PR`` includes
+Puerto Rico as well.
 """
 
 
-STATE_AL = "01"
+AL = "01"
 """Alabama"""
 
-STATE_AK = "02"
+AK = "02"
 """Alaska"""
 
-STATE_AZ = "04"
+AZ = "04"
 """Arizona"""
 
-STATE_AR = "05"
+AR = "05"
 """Arkansas"""
 
-STATE_CA = "06"
+CA = "06"
 """California"""
 
-STATE_CO = "08"
+CO = "08"
 """Colorado"""
 
-STATE_CT = "09"
+CT = "09"
 """Connecticut"""
 
-STATE_DE = "10"
+DE = "10"
 """Delaware"""
 
-STATE_DC = "11"
+DC = "11"
 """District of Columbia"""
 
-STATE_FL = "12"
+FL = "12"
 """Florida"""
 
-STATE_GA = "13"
+GA = "13"
 """Georgia"""
 
-STATE_HI = "15"
+HI = "15"
 """Hawaii"""
 
-STATE_ID = "16"
+ID = "16"
 """Idaho"""
 
-STATE_IL = "17"
+IL = "17"
 """Illinois"""
 
-STATE_IN = "18"
+IN = "18"
 """Indiana"""
 
-STATE_IA = "19"
+IA = "19"
 """Iowa"""
 
-STATE_KS = "20"
+KS = "20"
 """Kansas"""
 
-STATE_KY = "21"
+KY = "21"
 """Kentucky"""
 
-STATE_LA = "22"
+LA = "22"
 """Louisiana"""
 
-STATE_ME = "23"
+ME = "23"
 """Maine"""
 
-STATE_MD = "24"
+MD = "24"
 """Maryland"""
 
-STATE_MA = "25"
+MA = "25"
 """Massachusetts"""
 
-STATE_MI = "26"
+MI = "26"
 """Michigan"""
 
-STATE_MN = "27"
+MN = "27"
 """Minnesota"""
 
-STATE_MS = "28"
+MS = "28"
 """Mississippi"""
 
-STATE_MO = "29"
+MO = "29"
 """Missouri"""
 
-STATE_MT = "30"
+MT = "30"
 """Montana"""
 
-STATE_NE = "31"
+NE = "31"
 """Nebraska"""
 
-STATE_NV = "32"
+NV = "32"
 """Nevada"""
 
-STATE_NH = "33"
+NH = "33"
 """New Hampshire"""
 
-STATE_NJ = "34"
+NJ = "34"
 """New Jersey--The Garden State"""
 
-STATE_NM = "35"
+NM = "35"
 """New Mexico"""
 
-STATE_NY = "36"
+NY = "36"
 """New York"""
 
-STATE_NC = "37"
+NC = "37"
 """North Carolina"""
 
-STATE_ND = "38"
+ND = "38"
 """North Dakota"""
 
-STATE_OH = "39"
+OH = "39"
 """Ohio"""
 
-STATE_OK = "40"
+OK = "40"
 """Oklahoma"""
 
-STATE_OR = "41"
+OR = "41"
 """Oregon"""
 
-STATE_PA = "42"
+PA = "42"
 """Pennsylvania"""
 
-STATE_RI = "44"
+RI = "44"
 """Rhode Island"""
 
-STATE_SC = "45"
+SC = "45"
 """South Carolina"""
 
-STATE_SD = "46"
+SD = "46"
 """South Dakota"""
 
-STATE_TN = "47"
+TN = "47"
 """Tennessee"""
 
-STATE_TX = "48"
+TX = "48"
 """Texas"""
 
-STATE_UT = "49"
+UT = "49"
 """Utah"""
 
-STATE_VT = "50"
+VT = "50"
 """Vermont"""
 
-STATE_VA = "51"
+VA = "51"
 """Virginia"""
 
-STATE_WA = "53"
+WA = "53"
 """Washington"""
 
-STATE_WV = "54"
+WV = "54"
 """West Virginia"""
 
-STATE_WI = "55"
+WI = "55"
 """Wisconsin"""
 
-STATE_WY = "56"
+WY = "56"
 """Wyoming"""
 
-TERRITORY_PR = "72"
+PR = "72"
 """Puerto Rico"""
 
 
-STATE_NAMES_FROM_IDS = {
-    STATE_AL: "Alabama",
-    STATE_AK: "Alaska",
-    STATE_AZ: "Arizona",
-    STATE_AR: "Arkansas",
-    STATE_CA: "California",
-    STATE_CO: "Colorado",
-    STATE_CT: "Connecticut",
-    STATE_DC: "District of Columbia",
-    STATE_DE: "Delaware",
-    STATE_FL: "Florida",
-    STATE_GA: "Georgia",
-    STATE_HI: "Hawaii",
-    STATE_ID: "Idaho",
-    STATE_IL: "Illinois",
-    STATE_IN: "Indiana",
-    STATE_IA: "Iowa",
-    STATE_KS: "Kansas",
-    STATE_KY: "Kentucky",
-    STATE_LA: "Louisiana",
-    STATE_ME: "Maine",
-    STATE_MD: "Maryland",
-    STATE_MA: "Massachusetts",
-    STATE_MN: "Minnesota",
-    STATE_MS: "Mississippi",
-    STATE_MI: "Michigan",
-    STATE_MO: "Missouri",
-    STATE_MT: "Montana",
-    STATE_NE: "Nebraska",
-    STATE_NV: "Nevada",
-    STATE_NH: "New Hampshire",
-    STATE_NJ: "New Jersey",
-    STATE_NM: "New Mexico",
-    STATE_NY: "New York",
-    STATE_NC: "North Carolina",
-    STATE_ND: "North Dakota",
-    STATE_OH: "Ohio",
-    STATE_OK: "Oklahoma",
-    STATE_OR: "Oregon",
-    STATE_PA: "Pennsylvania",
-    STATE_RI: "Rhode Island",
-    STATE_SC: "South Carolina",
-    STATE_SD: "South Dakota",
-    STATE_TN: "Tennessee",
-    STATE_TX: "Texas",
-    STATE_UT: "Utah",
-    STATE_VT: "Vermont",
-    STATE_VA: "Virginia",
-    STATE_WA: "Washington",
-    STATE_WV: "West Virginia",
-    STATE_WI: "Wisconsin",
-    STATE_WY: "Wyoming",
-    TERRITORY_PR: "Puerto Rico",
+NAMES_FROM_IDS = {
+    AL: "Alabama",
+    AK: "Alaska",
+    AZ: "Arizona",
+    AR: "Arkansas",
+    CA: "California",
+    CO: "Colorado",
+    CT: "Connecticut",
+    DC: "District of Columbia",
+    DE: "Delaware",
+    FL: "Florida",
+    GA: "Georgia",
+    HI: "Hawaii",
+    ID: "Idaho",
+    IL: "Illinois",
+    IN: "Indiana",
+    IA: "Iowa",
+    KS: "Kansas",
+    KY: "Kentucky",
+    LA: "Louisiana",
+    ME: "Maine",
+    MD: "Maryland",
+    MA: "Massachusetts",
+    MN: "Minnesota",
+    MS: "Mississippi",
+    MI: "Michigan",
+    MO: "Missouri",
+    MT: "Montana",
+    NE: "Nebraska",
+    NV: "Nevada",
+    NH: "New Hampshire",
+    NJ: "New Jersey",
+    NM: "New Mexico",
+    NY: "New York",
+    NC: "North Carolina",
+    ND: "North Dakota",
+    OH: "Ohio",
+    OK: "Oklahoma",
+    OR: "Oregon",
+    PA: "Pennsylvania",
+    RI: "Rhode Island",
+    SC: "South Carolina",
+    SD: "South Dakota",
+    TN: "Tennessee",
+    TX: "Texas",
+    UT: "Utah",
+    VT: "Vermont",
+    VA: "Virginia",
+    WA: "Washington",
+    WV: "West Virginia",
+    WI: "Wisconsin",
+    WY: "Wyoming",
+    PR: "Puerto Rico",
 }
 """
 The names of each state, indexed by FIPS code.
 
-For example, ``STATE_NAMES_FROM_IDS[STATE_NJ]``
+For example, ``NAMES_FROM_IDS[NJ]``
 is ``"New Jersey"``.
 """
 
-STATE_ABBREVIATIONS_FROM_IDS = {
-    STATE_AL: "AL",
-    STATE_AK: "AK",
-    STATE_AZ: "AZ",
-    STATE_AR: "AR",
-    STATE_CA: "CA",
-    STATE_CO: "CO",
-    STATE_CT: "CT",
-    STATE_DC: "DC",
-    STATE_DE: "DE",
-    STATE_FL: "FL",
-    STATE_GA: "GA",
-    STATE_HI: "HI",
-    STATE_ID: "ID",
-    STATE_IL: "IL",
-    STATE_IN: "IN",
-    STATE_IA: "IA",
-    STATE_KS: "KS",
-    STATE_KY: "KY",
-    STATE_LA: "LA",
-    STATE_ME: "ME",
-    STATE_MD: "MD",
-    STATE_MA: "MA",
-    STATE_MN: "MN",
-    STATE_MS: "MS",
-    STATE_MI: "MI",
-    STATE_MO: "MO",
-    STATE_MT: "NT",
-    STATE_NE: "NE",
-    STATE_NV: "NV",
-    STATE_NH: "NH",
-    STATE_NJ: "NJ",
-    STATE_NM: "NM",
-    STATE_NY: "NY",
-    STATE_NC: "NC",
-    STATE_ND: "ND",
-    STATE_OH: "OH",
-    STATE_OK: "OK",
-    STATE_OR: "OR",
-    STATE_PA: "PA",
-    STATE_RI: "RI",
-    STATE_SC: "SC",
-    STATE_SD: "SD",
-    STATE_TN: "TN",
-    STATE_TX: "TX",
-    STATE_UT: "UT",
-    STATE_VT: "VT",
-    STATE_VA: "VA",
-    STATE_WA: "WA",
-    STATE_WV: "WV",
-    STATE_WI: "WI",
-    STATE_WY: "WY",
-    TERRITORY_PR: "PR",
+ABBREVIATIONS_FROM_IDS = {
+    AL: "AL",
+    AK: "AK",
+    AZ: "AZ",
+    AR: "AR",
+    CA: "CA",
+    CO: "CO",
+    CT: "CT",
+    DC: "DC",
+    DE: "DE",
+    FL: "FL",
+    GA: "GA",
+    HI: "HI",
+    ID: "ID",
+    IL: "IL",
+    IN: "IN",
+    IA: "IA",
+    KS: "KS",
+    KY: "KY",
+    LA: "LA",
+    ME: "ME",
+    MD: "MD",
+    MA: "MA",
+    MN: "MN",
+    MS: "MS",
+    MI: "MI",
+    MO: "MO",
+    MT: "MT",
+    NE: "NE",
+    NV: "NV",
+    NH: "NH",
+    NJ: "NJ",
+    NM: "NM",
+    NY: "NY",
+    NC: "NC",
+    ND: "ND",
+    OH: "OH",
+    OK: "OK",
+    OR: "OR",
+    PA: "PA",
+    RI: "RI",
+    SC: "SC",
+    SD: "SD",
+    TN: "TN",
+    TX: "TX",
+    UT: "UT",
+    VT: "VT",
+    VA: "VA",
+    WA: "WA",
+    WV: "WV",
+    WI: "WI",
+    WY: "WY",
+    PR: "PR",
 }
 """
 The postal abbreviation of each state, indexed by FIPS code.
 
-For example, ``STATE_NAMES_FROM_IDS[STATE_NJ]``
+For example, ``NAMES_FROM_IDS[NJ]``
 is ``"NJ"``.
 """
 
-STATE_IDS_FROM_ABBREVIATIONS = {
-    v: k for k, v in STATE_ABBREVIATIONS_FROM_IDS.items()
-}
+IDS_FROM_ABBREVIATIONS = {v: k for k, v in ABBREVIATIONS_FROM_IDS.items()}
 """
 The state FIPS code ID for each state abbreviation.
 
-For example ``STATE_IDS_FROM_ABBREVIATIONS['NJ']``
-is ``34``, which is the value of``STATE_NJ``.
+For example ``IDS_FROM_ABBREVIATIONS['NJ']``
+is ``34``, which is the value of``NJ``.
 """
 
-STATE_IDS_FROM_NAMES = {
-    v: k for k, v in STATE_NAMES_FROM_IDS.items()
-}
+IDS_FROM_NAMES = {v: k for k, v in NAMES_FROM_IDS.items()}
 """
 The state FIPS code ID for each state name.
 
-For example ``STATE_IDS_FROM_ABBREVIATIONS['New Jersey']``
-is ``34``, which is the value of``STATE_NJ``.
+For example ``IDS_FROM_ABBREVIATIONS['New Jersey']``
+is ``34``, which is the value of``NJ``.
 """
 
-ALL_STATES = [state for state in STATE_NAMES_FROM_IDS if state != STATE_DC]
+ALL_STATES = [state for state in NAMES_FROM_IDS if state != DC and state != DC]
 """
 All the state FIPS codes.
 
@@ -363,7 +360,7 @@ Typically used to iterate over the states, as in::
         process_state(state)
 """
 
-ALL_STATES_DC_AND_PR = list(STATE_NAMES_FROM_IDS.keys())
+ALL_STATES_DC_AND_PR = list(NAMES_FROM_IDS.keys())
 """
 All the state FIPS codes and DC and PR.
 
@@ -377,7 +374,7 @@ Typically used to iterate over the states, as in::
         process_state(state)
 """
 
-ALL_STATES_AND_DC = [state for state in ALL_STATES_DC_AND_PR if state != TERRITORY_PR]
+ALL_STATES_AND_DC = [state for state in ALL_STATES_DC_AND_PR if state != PR]
 """
 All the state FIPS codes and DC.
 
@@ -390,3 +387,58 @@ Typically used to iterate over the states, as in::
     for state in ALL_STATES_AND_DC:
         process_state(state)
 """
+
+# Legacy names. These will go away some time before the 1.0.0 release.
+
+STATE_AL = AL
+STATE_AK = AK
+STATE_AZ = AZ
+STATE_AR = AR
+STATE_CA = CA
+STATE_CO = CO
+STATE_CT = CT
+STATE_DC = DC
+STATE_DE = DE
+STATE_FL = FL
+STATE_GA = GA
+STATE_HI = HI
+STATE_ID = ID
+STATE_IL = IL
+STATE_IN = IN
+STATE_IA = IA
+STATE_KS = KS
+STATE_KY = KY
+STATE_LA = LA
+STATE_ME = ME
+STATE_MD = MD
+STATE_MA = MA
+STATE_MN = MN
+STATE_MS = MS
+STATE_MI = MI
+STATE_MO = MO
+STATE_MT = MT
+STATE_NE = NE
+STATE_NV = NV
+STATE_NH = NH
+STATE_NJ = NJ
+STATE_NM = NM
+STATE_NY = NY
+STATE_NC = NC
+STATE_ND = ND
+STATE_OH = OH
+STATE_OK = OK
+STATE_OR = OR
+STATE_PA = PA
+STATE_RI = RI
+STATE_SC = SC
+STATE_SD = SD
+STATE_TN = TN
+STATE_TX = TX
+STATE_UT = UT
+STATE_VT = VT
+STATE_VA = VA
+STATE_WA = WA
+STATE_WV = WV
+STATE_WI = WI
+STATE_WY = WY
+TERRITORY_PR = PR
