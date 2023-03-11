@@ -58,6 +58,16 @@ jobs:
           source .venv/bin/activate
           coverage run -m pytest --junitxml=reports/junit/junit.xml
       #----------------------------------------------
+      #              archive test artifacts
+      #----------------------------------------------
+      - name: Archive test artifacts
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: test_artifacts
+          path: tests/_test_artifacts
+          retention-days: 7
+      #----------------------------------------------
       #              generate coverage
       #----------------------------------------------
       - name: Generate coverage reports and badges
@@ -68,16 +78,6 @@ jobs:
           coverage html -d ./reports/coverage 
           genbadge coverage -n coverage -o ./reports/coverage/coverage-badge.svg
           genbadge tests --name tests -i reports/junit/junit.xml -o ./reports/junit/tests-badge.svg
-      #----------------------------------------------
-      #              archive failed test artifacts
-      #----------------------------------------------
-      - name: Archive failed test artifacts
-        if: (steps.runTests.outcome == 'failure')
-        uses: actions/upload-artifact@v3
-        with:
-          name: test_artifacts
-          path: tests/_test_artifacts
-          retention-days: 7
       #----------------------------------------------
       #              commit coverage
       #----------------------------------------------
