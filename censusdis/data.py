@@ -1123,4 +1123,34 @@ def census_table_url(
     return url, params, bound_path
 
 
+def geographies(
+    dataset: str,
+    vintage: VintageType
+) -> List[List[str]]:
+    """
+    What geographies are supported for a dataset and vintage?
+
+    This utility gives us a list of the different geography
+    keywords we can use in calls to :py:func:`download` with
+    for the given dataset and vintage.
+
+    Parameters
+    ----------
+    dataset
+        The dataset to download from. For example `"acs/acs5"`,
+        `"dec/pl"`, or `"timeseries/poverty/saipe/schdist"`.
+    vintage
+        The vintage to download data for. For most data sets this is
+        an integer year, for example, `2020`. But for
+        a timeseries data set, pass the string `'timeseries'`.
+
+    Returns
+    -------
+        A list of lists of geography keywords. Each element
+        of the outer list is a list of keywords that can be
+        used together.
+    """
+    return cgeo.geo_path_snake_specs(dataset, vintage).values()
+
+
 variables = VariableCache()

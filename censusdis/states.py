@@ -8,7 +8,7 @@ The US Census identifies states by their
 which are two-digit numeric strings. For convenience, we
 define identifiers for them.
 
-Each identifier correseponds to the two
+Each identifier corresponds to the two
 letter abbreviation for the state. For example, NJ
 is the two letter abbreviation for New Jersey, and the
 Census state identifier for New Jersey is 34, so::
