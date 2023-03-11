@@ -1123,10 +1123,7 @@ def census_table_url(
     return url, params, bound_path
 
 
-def geographies(
-    dataset: str,
-    vintage: VintageType
-) -> List[List[str]]:
+def geographies(dataset: str, vintage: VintageType) -> List[List[str]]:
     """
     What geographies are supported for a dataset and vintage?
 
