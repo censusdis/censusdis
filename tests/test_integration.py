@@ -113,6 +113,7 @@ class DownloadTestCase(unittest.TestCase):
             ["NAME", median_income_variable],
             state=states.GA,
             tract="*",
+            set_to_nan=False,
         )
 
         df_nan = ced.download(
@@ -260,8 +261,8 @@ class DownloadTestCase(unittest.TestCase):
             list(gdf.columns),
         )
 
-    def test_download_with_geometry_cousub(self):
-        """Download at the county level with geometry."""
+    def test_download_with_geometry_not_available(self):
+        """Download at a geography level that has no geometry available."""
 
         with self.assertRaises(
             censusdis.impl.exceptions.CensusApiException
@@ -272,7 +273,7 @@ class DownloadTestCase(unittest.TestCase):
                 ["NAME", self._name],
                 with_geometry=True,
                 state=states.NJ,
-                county_subdivision="*",
+                combined_statistical_area_or_part="*",
             )
 
         self.assertTrue(
@@ -289,13 +290,13 @@ class DownloadTestCase(unittest.TestCase):
             ["NAME", self._name],
             with_geometry=False,
             state=states.NJ,
-            county_subdivision="*",
+            combined_statistical_area_or_part="*",
         )
 
         self.assertIsInstance(df, pd.DataFrame)
         self.assertNotIsInstance(df, gpd.GeoDataFrame)
 
-        self.assertEqual((570, 5), df.shape)
+        self.assertEqual((2, 4), df.shape)
 
     def test_multi_state(self):
         """

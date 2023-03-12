@@ -346,6 +346,12 @@ _GEO_QUERY_FROM_DATA_QUERY_INNER_GEO: Dict[
         ["STATEFP", "CONCTYFP"],
     ),
     "county": ("us", "county", ["STATE", "COUNTY"], ["STATEFP", "COUNTYFP"]),
+    "county subdivision": (
+        None,
+        "cousub",
+        ["STATE", "COUNTY_SUBDIVISION"],
+        ["STATEFP", "COUSUBFP"],
+    ),
     # For these, the shapefiles are at the state level, so `None`
     # indicates that we have to fill it in based on the geometry
     # being queried.
@@ -660,7 +666,7 @@ def download(
     *,
     group: Optional[Union[str, Iterable[str]]] = None,
     leaves_of_group: Optional[Union[str, Iterable[str]]] = None,
-    set_to_nan: Optional[Union[bool, Iterable[int]]] = None,
+    set_to_nan: Union[bool, Iterable[int]] = True,
     skip_annotations: bool = True,
     with_geometry: bool = False,
     api_key: Optional[str] = None,
@@ -704,11 +710,10 @@ def download(
         :py:meth:`VariableCache.group_leaves` for more details on the semantics of
         leaves vs. non-leaf group variables.
     set_to_nan
-        If not `None`, this specifies special values that should be replaced with
-        `NaN`. Normally :py:ref:`censusdis.values.ALL_SPECIAL_VALUES` or a subset thereof.
-        The default is `None` so that we never change values without the caller
-        explicitly asking us to. Setting to `True` is equivalent to
-        :py:ref:`censusdis.values.ALL_SPECIAL_VALUES`.
+        A list of values that should be set to NaN. Normally these are special
+        values that the U.S. Census API sometimes returns. If `True`, then all
+        values in :py:ref:`censusdis.values.ALL_SPECIAL_VALUES` will be replaced.
+        If `False`, no replacements will be made.
     skip_annotations
         If `True` try to filter out `group` or `leaves_of_group` variables that are
         annotations rather than actual values. See :py:meth:`VariableCache.group_variables`
@@ -795,7 +800,7 @@ def _download_remote(
     vintage: VintageType,
     *,
     download_variables: List[str],
-    set_to_nan: Optional[Iterable[float]] = None,
+    set_to_nan: Union[bool, Iterable[float]] = True,
     with_geometry: bool,
     api_key: Optional[str],
     variable_cache: "VariableCache",
@@ -819,8 +824,10 @@ def _download_remote(
     download_variables
         The census variables to download, for example `["NAME", "B01001_001E"]`.
     set_to_nan
-        If not `None`, this specifies special values that should be replaced with
-        `NaN`. Normally :py:ref:`censusdis.values.ALL_SPECIAL_VALUES` or a subset thereof.
+        A list of values that should be set to NaN. Normally these are special
+        values that the U.S. Census API sometimes returns. If `True`, then all
+        values in :py:ref:`censusdis.values.ALL_SPECIAL_VALUES` will be replaced.
+        If `False`, no replacements will be made.
     with_geometry
         If `True` a :py:class:`gpd.GeoDataFrame` will be returned and each row
         will have a geometry that is a cartographic boundary suitable for platting
@@ -860,7 +867,9 @@ def _download_remote(
     ]
 
     # NaN out as requested.
-    if set_to_nan is not None:
+    if set_to_nan is True:
+        set_to_nan = ALL_SPECIAL_VALUES
+    if set_to_nan:
         df_data = df_data.replace(list(set_to_nan), np.nan)
 
     if with_geometry:
@@ -1147,7 +1156,7 @@ def geographies(dataset: str, vintage: VintageType) -> List[List[str]]:
         of the outer list is a list of keywords that can be
         used together.
     """
-    return cgeo.geo_path_snake_specs(dataset, vintage).values()
+    return list(cgeo.geo_path_snake_specs(dataset, vintage).values())
 
 
 variables = VariableCache()
