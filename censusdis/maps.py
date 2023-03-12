@@ -819,7 +819,7 @@ def plot_us_boundary(
         *args,
         do_relocate_ak_hi_pr=do_relocate_ak_hi_pr,
         epsg=epsg,
-        **kwargs
+        **kwargs,
     )
 
 
