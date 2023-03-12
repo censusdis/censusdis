@@ -764,7 +764,17 @@ def plot_us(
 
     gdf = gdf.to_crs(epsg=epsg)
 
-    return gdf.plot(*args, **kwargs)
+    ax = gdf.plot(*args, **kwargs)
+
+    ax.tick_params(
+        left=False,
+        right=False,
+        bottom=False,
+        labelleft=False,
+        labelbottom=False,
+    )
+
+    return ax
 
 
 def plot_us_boundary(
@@ -804,21 +814,13 @@ def plot_us_boundary(
     -------
         ax of the plot.
     """
-    if gdf.crs != 4269:
-        logger.warning(
-            "Expected map to have crs epsg:4269, but got %d instead.", gdf.crs
-        )
-
-    if do_relocate_ak_hi_pr:
-        gdf = relocate_ak_hi_pr(gdf)
-    else:
-        # At least wrap the Aleutian islands.
-        gdf = gdf.copy()
-        gdf.geometry = gdf.geometry.map(_wrap_polys)
-
-    gdf = gdf.to_crs(epsg=epsg)
-
-    return gdf.boundary.plot(*args, **kwargs)
+    return plot_us(
+        gpd.GeoDataFrame(geometry=gdf.boundary),
+        *args,
+        do_relocate_ak_hi_pr=do_relocate_ak_hi_pr,
+        epsg=epsg,
+        **kwargs
+    )
 
 
 def geographic_centroids(gdf: gpd.GeoDataFrame) -> gpd.GeoSeries:
