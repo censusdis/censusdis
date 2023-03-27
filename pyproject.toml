@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "censusdis"
-version = "0.12.0"
+version = "0.12.1"
 description = "US Census utilities for a variety of data loading and mapping purposes."
 license = "HL3-CL-ECO-EXTR-FFD-LAW-MIL-SV"
 authors = ["Darren Vengroff"]
@@ -15,7 +15,7 @@ classifiers = [
 
 [tool.poetry.dependencies]
 python = "^3.9"
-divintseg = "^0.3.0"
+divintseg = "^0.4.1"
 geopandas = "^0.12.2"
 Rtree = "^1.0.0"
 matplotlib = "^3.5.3"
