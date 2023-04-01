@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "censusdis"
-version = "0.12.1"
+version = "0.12.2"
 description = "US Census utilities for a variety of data loading and mapping purposes."
 license = "HL3-CL-ECO-EXTR-FFD-LAW-MIL-SV"
 authors = ["Darren Vengroff"]
@@ -17,6 +17,11 @@ classifiers = [
 python = "^3.9"
 divintseg = "^0.4.1"
 geopandas = "^0.12.2"
+# pyproj is used by geopandas to project from one crs to another
+# version 3.5.0 seems to be well over an order of magnitude slower
+# than 3.4.1 so we don't want to use it. If 3.5.x fixes this then
+# we can remove this ~ versioned pyproj line.
+pyproj = "~3.4.1"
 Rtree = "^1.0.0"
 matplotlib = "^3.5.3"
 Sphinx = { version = "^6.1.3", optional = true }
