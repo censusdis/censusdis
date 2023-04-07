@@ -30,7 +30,7 @@ More specifically, our goals were:
 3. Mapping should be a first class concern. Often the most
    compelling presentations of census data or data derived
    from it are in the form of maps. It should be easy and
-   obvious how to add geographic geometry to data. For 
+   obvious how to add geographic geometry to data. For
    example, adding a `with_geometry=True` argument to a query
    should get you not just the census data you want but
    also the geometry of the geographic regions in a format
@@ -39,11 +39,11 @@ More specifically, our goals were:
    with Alaska and Hawaii moved to the lower left corner
    of the continental United States so as to produce more
    compact maps.
-4. The implementation should be fast enough to be used  
+4. The implementation should be fast enough to be used
    interactively. It should be possible
-   to download nationwide data at the block group level 
+   to download nationwide data at the block group level
    (approximately 240,000 rows) in under a minute with
-   typical high-speed internet. Most manipulation and 
+   typical high-speed internet. Most manipulation and
    mapping operations on data at that scale should be 
    doable in seconds.
 
