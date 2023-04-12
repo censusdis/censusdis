@@ -180,9 +180,6 @@ class MapPlotTestCase(unittest.TestCase):
     def test_plot_us_boundary(self):
         """
         Test calling plot_us_boundary.
-
-        Temporily disabled due to a difference in output
-        on Linux vs. OS X.
         """
 
         png_file_name = "plot_us_boundary.png"
