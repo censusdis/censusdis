@@ -6,12 +6,15 @@ This module relies on shapefiles from the US Census,
 which it downloads as needed and caches locally.
 """
 
+import importlib.resources
 import os
 import shutil
 from logging import getLogger
 from typing import Optional, Union
 from zipfile import BadZipFile, ZipFile
 
+import contextily as cx
+from haversine import haversine
 import geopandas as gpd
 import requests
 import shapely.affinity
@@ -706,6 +709,128 @@ def relocate_ak_hi_pr(gdf: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
         gdf.geometry = gdf.geometry.map(_wrap_and_relocate_geos)
 
     return gdf
+
+
+__gdf_crs_bounds: Optional[gpd.GeoDataFrame] = None
+"""The bounds of the all CRSs we might use in `plot_map`."""
+
+
+def _gdf_crs_bounds() -> gpd.GeoDataFrame:
+    """
+    A dataframe wit the bound of all the CRSs we might use in `plot_map`.
+
+    Returns
+    -------
+        The dataframe. It is a singleton you should not modify.
+    """
+    global __gdf_crs_bounds
+
+    if __gdf_crs_bounds is None:
+        with importlib.resources.path(
+            f"{__package__}.resources", "crs_bounds.geojson"
+        ) as path:
+            __gdf_crs_bounds = gpd.GeoDataFrame.from_file(path)
+
+    return __gdf_crs_bounds
+
+
+def _closest_epsg(
+    gdf: gpd.GeoDataFrame,
+) -> int:
+    """
+    Find the EPSG to use by choosing the one closest to the center of the bounds of the gdf.
+
+    We do this by looking at haversine distance between the
+    centers. I am sure we could do this more efficiently
+    than a linear scan using a data structure optimized for
+    nearest neighbor queries on the surface of a sphere.
+    But we only have about 100 candidates, so the linear scan is
+    simple and not terrible.
+
+    Parameters
+    ----------
+    gdf
+        The gdf we want to plot.
+    Returns
+    -------
+        The EPSG number.
+    """
+    gdf_crs_bounds = _gdf_crs_bounds()
+
+    if gdf.crs != gdf_crs_bounds.crs:
+        gdf = gdf.copy(deep=True).to_crs(gdf_crs_bounds.crs)
+
+    total_bounds = gdf.total_bounds
+
+    # Wrap the end of the Aleutian island chain.
+    if total_bounds[0] > 0:
+        total_bounds[0] = total_bounds[0] - 360.0
+    if total_bounds[2] > 0:
+        total_bounds[2] = total_bounds[2] - 360.0
+
+    lon, lat = (
+        (total_bounds[0] + total_bounds[2]) / 2,
+        (total_bounds[1] + total_bounds[3]) / 2,
+    )
+
+    centers = gdf_crs_bounds.representative_point()
+
+    epsg = gdf_crs_bounds["epsg"].iloc[centers.map(
+        lambda center: haversine((center.y, center.x), (lat, lon))
+    ).argmin()]
+
+    return epsg
+
+
+def plot_map(
+    gdf: gpd.GeoDataFrame,
+    *args,
+    with_background: bool = False,
+    epsg: Optional[int] = None,  # 3309, # 4269,
+    **kwargs,
+):
+    """
+    Plot a map, optionally with a background.
+
+    Parameters
+    ----------
+    gdf
+        The geo data frame to plot
+    args
+        Optional args to matplotlib
+    with_background
+        Should we put in a background map from Open Street maps?
+    epsg
+        The EPSG to project to. Otherwise a suitable one for the
+        geometry will be inferred.
+    kwargs
+        keyword args to pass on to matplotlib
+
+    Returns
+    -------
+        The ax of the resulting plot.
+    """
+    if epsg is None:
+        epsg = _closest_epsg(gdf)
+
+    gdf = gdf.to_crs(epsg=epsg)
+
+    ax = gdf.plot(*args, **kwargs)
+
+    ax.tick_params(
+        left=False,
+        right=False,
+        bottom=False,
+        labelleft=False,
+        labelbottom=False,
+    )
+
+    if with_background:
+        provider = cx.providers.OpenStreetMap.Mapnik
+
+        cx.add_basemap(ax, crs=gdf.crs.to_string(), source=provider)
+
+    return ax
 
 
 def plot_us(

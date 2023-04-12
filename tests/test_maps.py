@@ -11,7 +11,20 @@ from pyproj.crs import CRS
 from shapely.geometry import Polygon
 
 import censusdis.maps as cmap
-from censusdis.states import ALL_STATES_DC_AND_PR, WY
+from censusdis.states import (
+    ABBREVIATIONS_FROM_IDS,
+    ALL_STATES_DC_AND_PR,
+    WA,
+    CA,
+    TX,
+    ND,
+    ME,
+    FL,
+    AK,
+    HI,
+    PR,
+    WY,
+)
 
 
 class ShapeReaderTestCase(unittest.TestCase):
@@ -46,6 +59,14 @@ class ShapeReaderTestCase(unittest.TestCase):
         )
 
 
+class GdfCrsBoundsTestCase(unittest.TestCase):
+    def test_load_resource(self):
+        """Make sure we can load the resource file."""
+        gdf_crs_bounds = cmap._gdf_crs_bounds()
+        self.assertEqual((123, 2), gdf_crs_bounds.shape)
+        self.assertEqual(["epsg", "geometry"], list(gdf_crs_bounds.columns))
+
+
 class MapPlotTestCase(unittest.TestCase):
     """
     Test the plotting utilities.
@@ -78,6 +99,66 @@ class MapPlotTestCase(unittest.TestCase):
 
         plt.rcParams["figure.figsize"] = (8, 5)
 
+    def test_closest_epsg(self):
+        """Test finding the right epsg to plot each of several states."""
+
+        # See https://wiki.spatialmanager.com/index.php/Coordinate_Systems_objects_list
+        epsg_wa_s = 32149
+        epsg_ca_4 = 26944
+        epsg_nd_s = 32121
+        epsg_tx_c = 32139
+        epsg_me_e = 26983
+        epsg_fl_w = 26959
+        epsg_ak_9 = 26939
+        epsg_hi_2 = 26962
+        epsg_pr_usvi = 32161
+
+        for state, expected_epsg in [
+            (WA, epsg_wa_s),
+            (CA, epsg_ca_4),
+            (ND, epsg_nd_s),
+            (TX, epsg_tx_c),
+            (ME, epsg_me_e),
+            (FL, epsg_fl_w),
+            (AK, epsg_ak_9),
+            (HI, epsg_hi_2),
+            (PR, epsg_pr_usvi),
+        ]:
+            gdf_state = self.gdf[self.gdf["STATEFP"] == state]
+
+            epsg = cmap._closest_epsg(gdf_state)
+
+            self.assertEqual(expected_epsg, epsg)
+
+    def test_plot_map(self):
+        """Plot some states around the country with background maps."""
+        states = [WA, CA, ND, TX, ME, FL, AK, HI, PR]
+
+        # Generate them all first. That way if they fail on a
+        # new platform we have them all to visually examine before
+        # copying them over to expected and checking them in.
+        for state in states:
+            gdf_state = self.gdf[self.gdf["STATEFP"] == state].boundary
+
+            png_file_name = f"plot_{ABBREVIATIONS_FROM_IDS[state].lower()}.png"
+
+            output_file = os.path.join(self.output_dir, png_file_name)
+
+            ax = cmap.plot_map(gdf_state, with_background=True)
+            ax.axis("off")
+            fig = ax.get_figure()
+            fig.savefig(output_file)
+
+        for state in states:
+            png_file_name = f"plot_{ABBREVIATIONS_FROM_IDS[state].lower()}.png"
+            expected_file = os.path.join(self.expected_dir, png_file_name)
+            output_file = os.path.join(self.output_dir, png_file_name)
+
+            self.assertTrue(
+                filecmp.cmp(expected_file, output_file, shallow=False),
+                f"Expected newly generated file {output_file} to match {expected_file}",
+            )
+
     def test_plot_us(self):
         """Test calling plot_us."""
 
@@ -92,7 +173,7 @@ class MapPlotTestCase(unittest.TestCase):
         fig.savefig(output_file)
 
         self.assertTrue(
-            True or filecmp.cmp(expected_file, output_file, shallow=False),
+            filecmp.cmp(expected_file, output_file, shallow=False),
             f"Expected newly generated file {output_file} to match {expected_file}",
         )
 
@@ -115,7 +196,7 @@ class MapPlotTestCase(unittest.TestCase):
         fig.savefig(output_file)
 
         self.assertTrue(
-            True or filecmp.cmp(expected_file, output_file, shallow=False),
+            filecmp.cmp(expected_file, output_file, shallow=False),
             f"Expected newly generated file {output_file} to match {expected_file}",
         )
 
@@ -137,7 +218,7 @@ class MapPlotTestCase(unittest.TestCase):
         fig.savefig(output_file)
 
         self.assertTrue(
-            True or filecmp.cmp(expected_file, output_file, shallow=False),
+            filecmp.cmp(expected_file, output_file, shallow=False),
             f"Expected newly generated file {output_file} to match {expected_file}",
         )
 
@@ -161,7 +242,7 @@ class MapPlotTestCase(unittest.TestCase):
         fig.savefig(output_file)
 
         self.assertTrue(
-            True or filecmp.cmp(expected_file, output_file, shallow=False),
+            filecmp.cmp(expected_file, output_file, shallow=False),
             f"Expected newly generated file {output_file} to match {expected_file}",
         )
 
