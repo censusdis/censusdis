@@ -13,16 +13,16 @@ from shapely.geometry import Polygon
 import censusdis.maps as cmap
 from censusdis.states import (
     ABBREVIATIONS_FROM_IDS,
-    ALL_STATES_DC_AND_PR,
-    WA,
-    CA,
-    TX,
-    ND,
-    ME,
-    FL,
     AK,
+    ALL_STATES_DC_AND_PR,
+    CA,
+    FL,
     HI,
+    ME,
+    ND,
     PR,
+    TX,
+    WA,
     WY,
 )
 

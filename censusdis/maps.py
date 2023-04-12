@@ -14,10 +14,10 @@ from typing import Optional, Union
 from zipfile import BadZipFile, ZipFile
 
 import contextily as cx
-from haversine import haversine
 import geopandas as gpd
 import requests
 import shapely.affinity
+from haversine import haversine
 from shapely.geometry import MultiPolygon, Point, Polygon
 from shapely.geometry.base import BaseGeometry
 
