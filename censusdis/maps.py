@@ -775,9 +775,9 @@ def _closest_epsg(
 
     centers = gdf_crs_bounds.representative_point()
 
-    epsg = gdf_crs_bounds["epsg"].iloc[centers.map(
-        lambda center: haversine((center.y, center.x), (lat, lon))
-    ).argmin()]
+    epsg = gdf_crs_bounds["epsg"].iloc[
+        centers.map(lambda center: haversine((center.y, center.x), (lat, lon))).argmin()
+    ]
 
     return epsg
 
