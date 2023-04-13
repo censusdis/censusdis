@@ -218,6 +218,62 @@ class MapPlotTestCase(unittest.TestCase):
             f"Expected newly generated file {output_file} to match {expected_file}",
         )
 
+    def test_plot_us_boundary_with_background(self):
+        """
+        Test calling plot_us_boundary.
+        """
+
+        png_file_name = "plot_us_boundary_with_background.png"
+        expected_file = os.path.join(self.expected_dir, png_file_name)
+
+        output_file = os.path.join(self.output_dir, png_file_name)
+
+        ax = cmap.plot_us_boundary(
+            self.gdf[~self.gdf["STATEFP"].isin([AK, HI, PR])],
+            do_relocate_ak_hi_pr=False,
+            edgecolor="blue",
+            linewidth=0.5,
+            with_background=True,
+        )
+
+        ax.axis("off")
+        fig = ax.get_figure()
+        fig.savefig(output_file)
+
+        self.assertTrue(
+            self._filecmp_skip(expected_file, output_file, shallow=False),
+            f"Expected newly generated file {output_file} to match {expected_file}",
+        )
+
+    def test_plot_us_boundary_with_background_no_relocate(self):
+        """
+        Test calling plot_us_boundary.
+        """
+
+        png_file_name = "plot_us_boundary_with_background_no_relocate.png"
+        expected_file = os.path.join(self.expected_dir, png_file_name)
+
+        output_file = os.path.join(self.output_dir, png_file_name)
+
+        ax = cmap.plot_us_boundary(
+            self.gdf,
+            do_relocate_ak_hi_pr=False,
+            edgecolor="blue",
+            linewidth=0.5,
+            with_background=True,
+            figsize=(20, 6),
+            epsg=6893,  # 6893 is Mercator. 4544 is another option that is fun.
+        )
+
+        ax.axis("off")
+        fig = ax.get_figure()
+        fig.savefig(output_file)
+
+        self.assertTrue(
+            self._filecmp_skip(expected_file, output_file, shallow=False),
+            f"Expected newly generated file {output_file} to match {expected_file}",
+        )
+
     def test_plot_us_no_relocate(self):
         """
         Test calling plot_us without relocating AK and HI.
