@@ -837,6 +837,7 @@ def plot_us(
     gdf: gpd.GeoDataFrame,
     *args,
     do_relocate_ak_hi_pr: bool = True,
+    with_background: bool = False,
     epsg: int = 9311,
     **kwargs,
 ):
@@ -866,6 +867,8 @@ def plot_us(
         the Aleutian islands west of -180° longitude if present.
     args
         Args to pass to the plot.
+    with_background
+        Should we put in a background map from Open Street maps?
     epsg:
         The EPSG CRS to project to before plotting. Default is 9311, which
         is equal area. See https://epsg.io/9311.
@@ -891,6 +894,11 @@ def plot_us(
 
     ax = gdf.plot(*args, **kwargs)
 
+    if with_background:
+        provider = cx.providers.OpenStreetMap.Mapnik
+
+        cx.add_basemap(ax, crs=gdf.crs.to_string(), source=provider)
+
     ax.tick_params(
         left=False,
         right=False,
@@ -906,6 +914,7 @@ def plot_us_boundary(
     gdf: gpd.GeoDataFrame,
     *args,
     do_relocate_ak_hi_pr: bool = True,
+    with_background: bool = False,
     epsg: int = 9311,
     **kwargs,
 ):
@@ -929,6 +938,8 @@ def plot_us_boundary(
     do_relocate_ak_hi_pr
         If `True` try to relocate AK, HI, and PR. Otherwise, still wrap
         the Aleutian islands west of -180° longitude if present.
+    with_background
+        Should we put in a background map from Open Street maps?
     epsg:
         The EPSG CRS to project to before plotting. Default is 9311, which
         is equal area. See https://epsg.io/9311.
@@ -944,6 +955,12 @@ def plot_us_boundary(
             "Expected map to have crs epsg:4269, but got %d instead.", gdf.crs
         )
 
+    if do_relocate_ak_hi_pr and with_background:
+        logger.warning(
+            "do_relocate_ak_hi_pr and with_background should not be used together. "
+            "Undesired results are likely."
+        )
+
     if do_relocate_ak_hi_pr:
         gdf = relocate_ak_hi_pr(gdf)
     else:
@@ -953,7 +970,14 @@ def plot_us_boundary(
 
     gdf = gdf.to_crs(epsg=epsg)
 
-    return gdf.boundary.plot(*args, **kwargs)
+    ax = gdf.boundary.plot(*args, **kwargs)
+
+    if with_background:
+        provider = cx.providers.OpenStreetMap.Mapnik
+
+        cx.add_basemap(ax, crs=gdf.crs.to_string(), source=provider)
+
+    return ax
 
 
 def geographic_centroids(gdf: gpd.GeoDataFrame) -> gpd.GeoSeries:
