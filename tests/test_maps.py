@@ -86,7 +86,7 @@ class MapPlotTestCase(unittest.TestCase):
         cls.output_dir = Path(__file__).parent / "_test_artifacts" / sys.platform
 
         rmtree(cls.output_dir, ignore_errors=True)
-        cls.output_dir.mkdir()
+        cls.output_dir.mkdir(parents=True)
 
     def setUp(self) -> None:
         """Set up before each test."""
