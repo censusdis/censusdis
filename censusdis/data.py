@@ -9,6 +9,7 @@ it wraps in a pythonic manner.
 import warnings
 from dataclasses import dataclass
 from logging import getLogger
+from pathlib import Path
 from typing import Dict, Iterable, List, Mapping, Optional, Tuple, Union
 
 import geopandas as gpd
@@ -270,14 +271,14 @@ def _download_multiple(
 class _ShapefileRoot:
     """A private class to stash the root we will use to cache shapefiles locally."""
 
-    shapefile_root: Optional[str] = None
+    shapefile_root: Optional[Path] = None
 
 
 __shapefile_root = _ShapefileRoot()
 __shapefile_readers: Dict[int, cmap.ShapeReader] = {}
 
 
-def set_shapefile_path(shapefile_path: Union[str, None]) -> None:
+def set_shapefile_path(shapefile_path: Union[Path, None]) -> None:
     """
     Set the path to the directory to cache shapefiles.
 
@@ -292,7 +293,7 @@ def set_shapefile_path(shapefile_path: Union[str, None]) -> None:
     __shapefile_root.shapefile_root = shapefile_path
 
 
-def get_shapefile_path() -> Union[str, None]:
+def get_shapefile_path() -> Union[Path, None]:
     """
     Get the path to the directory to cache shapefiles.
 

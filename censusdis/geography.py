@@ -3,6 +3,7 @@
 Utilities for managing hierarchies of geographies.
 """
 import os
+from pathlib import Path
 from collections import defaultdict
 from dataclasses import dataclass
 from typing import (
@@ -268,11 +269,10 @@ class EnvironmentApiKey:
 
         # Try the file.
         if cls._api_key is None:
-            path = os.path.abspath(
-                os.path.join(os.path.expanduser("~"), ".censusdis", "api_key.txt")
-            )
-            if os.path.isfile(path):
-                with open(path, "r") as file:
+            path = Path.home() / ".censusdis" / "api_key.txt"
+
+            if path.is_file():
+                with path.open("r") as file:
                     file_key = file.read().splitlines()[0]
                     cls._api_key = file_key
 
