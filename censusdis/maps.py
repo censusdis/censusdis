@@ -59,8 +59,7 @@ class ShapeReader:
     ):
         if shapefile_root is None:
             shapefile_root = Path.home() / ".censusdis" / "data" / "shapefiles"
-            shapefile_root.mkdir(exist_ok=True)
-            os.makedirs(shapefile_root, exist_ok=True)
+            shapefile_root.mkdir(exist_ok=True, parents=True)
         else:
             shapefile_root = Path(shapefile_root)
 
