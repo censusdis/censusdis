@@ -8,9 +8,9 @@ which it downloads as needed and caches locally.
 
 import importlib.resources
 import os
-from pathlib import Path
 import shutil
 from logging import getLogger
+from pathlib import Path
 from typing import Optional, Union
 from zipfile import BadZipFile, ZipFile
 

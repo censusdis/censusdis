@@ -3,9 +3,9 @@
 Utilities for managing hierarchies of geographies.
 """
 import os
-from pathlib import Path
 from collections import defaultdict
 from dataclasses import dataclass
+from pathlib import Path
 from typing import (
     Any,
     ClassVar,

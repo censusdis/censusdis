@@ -77,7 +77,9 @@ class MapPlotTestCase(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         """Global set up once."""
-        cls.shapefile_path = Path(__file__).parent / "data" / "shapefiles" / "cb_2020_us_state_20m"
+        cls.shapefile_path = (
+            Path(__file__).parent / "data" / "shapefiles" / "cb_2020_us_state_20m"
+        )
         cls.expected_dir = Path(__file__).parent / "expected" / sys.platform
 
         # Create a clean output directory

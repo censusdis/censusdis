@@ -7,7 +7,6 @@ immediately around those calls.
 """
 import tempfile
 import unittest
-
 from pathlib import Path
 
 import geopandas
