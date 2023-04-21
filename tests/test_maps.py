@@ -1,7 +1,7 @@
-import os.path
 import sys
 import tempfile
 import unittest
+from pathlib import Path
 from shutil import rmtree
 
 import geopandas as gpd
@@ -28,7 +28,7 @@ from censusdis.states import (
 
 class ShapeReaderTestCase(unittest.TestCase):
     def setUp(self) -> None:
-        root = tempfile.TemporaryDirectory()
+        root = Path(tempfile.TemporaryDirectory().name)
 
         self.reader09 = cmap.ShapeReader(root, 2009)
         self.reader20 = cmap.ShapeReader(root, 2020)
@@ -77,19 +77,16 @@ class MapPlotTestCase(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         """Global set up once."""
-        cls.shapefile_path = os.path.join(
-            os.path.dirname(__file__), "data", "shapefiles", "cb_2020_us_state_20m"
+        cls.shapefile_path = (
+            Path(__file__).parent / "data" / "shapefiles" / "cb_2020_us_state_20m"
         )
-        cls.expected_dir = os.path.join(
-            os.path.dirname(__file__), "expected", sys.platform
-        )
+        cls.expected_dir = Path(__file__).parent / "expected" / sys.platform
 
         # Create a clean output directory
-        cls.output_dir = os.path.join(
-            os.path.dirname(__file__), "_test_artifacts", sys.platform
-        )
+        cls.output_dir = Path(__file__).parent / "_test_artifacts" / sys.platform
+
         rmtree(cls.output_dir, ignore_errors=True)
-        os.makedirs(cls.output_dir)
+        cls.output_dir.mkdir(parents=True)
 
     def setUp(self) -> None:
         """Set up before each test."""
@@ -163,7 +160,7 @@ class MapPlotTestCase(unittest.TestCase):
 
             png_file_name = f"plot_{ABBREVIATIONS_FROM_IDS[state].lower()}.png"
 
-            output_file = os.path.join(self.output_dir, png_file_name)
+            output_file = self.output_dir / png_file_name
 
             ax = cmap.plot_map(gdf_state, with_background=True)
             ax.axis("off")
@@ -172,8 +169,8 @@ class MapPlotTestCase(unittest.TestCase):
 
         for state in states:
             png_file_name = f"plot_{ABBREVIATIONS_FROM_IDS[state].lower()}.png"
-            expected_file = os.path.join(self.expected_dir, png_file_name)
-            output_file = os.path.join(self.output_dir, png_file_name)
+            expected_file = self.expected_dir / png_file_name
+            output_file = self.output_dir / png_file_name
 
             self.assertTrue(
                 self._filecmp_skip(expected_file, output_file, shallow=False),
@@ -184,9 +181,9 @@ class MapPlotTestCase(unittest.TestCase):
         """Test calling plot_us."""
 
         png_file_name = "plot_us.png"
-        expected_file = os.path.join(self.expected_dir, png_file_name)
+        expected_file = self.expected_dir / png_file_name
 
-        output_file = os.path.join(self.output_dir, png_file_name)
+        output_file = self.output_dir / png_file_name
 
         ax = cmap.plot_us(self.gdf, color="green")
         ax.axis("off")
@@ -204,9 +201,9 @@ class MapPlotTestCase(unittest.TestCase):
         """
 
         png_file_name = "plot_us_boundary.png"
-        expected_file = os.path.join(self.expected_dir, png_file_name)
+        expected_file = self.expected_dir / png_file_name
 
-        output_file = os.path.join(self.output_dir, png_file_name)
+        output_file = self.output_dir / png_file_name
 
         ax = cmap.plot_us_boundary(self.gdf, edgecolor="blue", linewidth=0.5)
         ax.axis("off")
@@ -224,9 +221,9 @@ class MapPlotTestCase(unittest.TestCase):
         """
 
         png_file_name = "plot_us_boundary_with_background.png"
-        expected_file = os.path.join(self.expected_dir, png_file_name)
+        expected_file = self.expected_dir / png_file_name
 
-        output_file = os.path.join(self.output_dir, png_file_name)
+        output_file = self.output_dir / png_file_name
 
         ax = cmap.plot_us_boundary(
             self.gdf[~self.gdf["STATEFP"].isin([AK, HI, PR])],
@@ -251,9 +248,9 @@ class MapPlotTestCase(unittest.TestCase):
         """
 
         png_file_name = "plot_us_boundary_with_background_no_relocate.png"
-        expected_file = os.path.join(self.expected_dir, png_file_name)
+        expected_file = self.expected_dir / png_file_name
 
-        output_file = os.path.join(self.output_dir, png_file_name)
+        output_file = self.output_dir / png_file_name
 
         ax = cmap.plot_us_boundary(
             self.gdf,
@@ -282,9 +279,9 @@ class MapPlotTestCase(unittest.TestCase):
         """
 
         png_file_name = "plot_us_no_relocate.png"
-        expected_file = os.path.join(self.expected_dir, png_file_name)
+        expected_file = self.expected_dir / png_file_name
 
-        output_file = os.path.join(self.output_dir, png_file_name)
+        output_file = self.output_dir / png_file_name
 
         ax = cmap.plot_us(self.gdf, do_relocate_ak_hi_pr=False, color="purple")
         ax.axis("off")
@@ -304,9 +301,9 @@ class MapPlotTestCase(unittest.TestCase):
         """
 
         png_file_name = "plot_us_boundary_no_relocate.png"
-        expected_file = os.path.join(self.expected_dir, png_file_name)
+        expected_file = self.expected_dir / png_file_name
 
-        output_file = os.path.join(self.output_dir, png_file_name)
+        output_file = self.output_dir / png_file_name
 
         ax = cmap.plot_us_boundary(
             self.gdf, do_relocate_ak_hi_pr=False, edgecolor="red", linewidth=0.5
@@ -338,9 +335,9 @@ class MapPlotTestCase(unittest.TestCase):
         self.assertNotIn("STATEFP", self.gdf.columns)
 
         png_file_name = "plot_us.png"
-        expected_file = os.path.join(self.expected_dir, png_file_name)
+        expected_file = self.expected_dir / png_file_name
 
-        output_file = os.path.join(self.output_dir, png_file_name)
+        output_file = self.output_dir / png_file_name
 
         ax = cmap.plot_us(self.gdf, color="green")
         ax.axis("off")

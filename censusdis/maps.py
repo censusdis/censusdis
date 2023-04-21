@@ -7,9 +7,9 @@ which it downloads as needed and caches locally.
 """
 
 import importlib.resources
-import os
 import shutil
 from logging import getLogger
+from pathlib import Path
 from typing import Optional, Union
 from zipfile import BadZipFile, ZipFile
 
@@ -52,22 +52,22 @@ class ShapeReader:
 
     def __init__(
         self,
-        shapefile_root: Optional[str] = None,
+        shapefile_root: Optional[Union[str, Path]] = None,
         year: int = 2020,
         auto_fetch: bool = True,
     ):
         if shapefile_root is None:
-            shapefile_root = os.path.join(
-                os.environ["HOME"], ".censusdis", "data", "shapefiles"
-            )
-            os.makedirs(shapefile_root, exist_ok=True)
+            shapefile_root = Path.home() / ".censusdis" / "data" / "shapefiles"
+            shapefile_root.mkdir(exist_ok=True, parents=True)
+        else:
+            shapefile_root = Path(shapefile_root)
 
         self._shapefile_root = shapefile_root
         self._year = year
         self._auto_fetch = auto_fetch
 
     @property
-    def shapefile_root(self) -> str:
+    def shapefile_root(self) -> Path:
         """The path at which shapefiles are cached locally."""
         return self._shapefile_root
 
@@ -85,9 +85,9 @@ class ShapeReader:
             gdf.to_crs(crs, inplace=True)
         return gdf
 
-    def _shapefile_full_path(self, basename):
+    def _shapefile_full_path(self, basename: str) -> Path:
         """Helper function to construct the full path to a shapefile."""
-        path = os.path.join(self._shapefile_root, basename, basename + ".shp")
+        path = self._shapefile_root / basename / f"{basename}.shp"
         return path
 
     def _through_2010_tiger(self, prefix, shapefile_scope: str, suffix):
@@ -375,15 +375,15 @@ class ShapeReader:
         *,
         timeout: int,
     ) -> None:
-        dir_path = os.path.join(self._shapefile_root, name)
+        dir_path = self._shapefile_root / name
 
-        if os.path.isdir(dir_path):
+        if dir_path.is_dir():
             # Does it have the .shp file? If not maybe something
             # random went wrong in the previous attempt, or someone
             # deleted some stuff by mistake. So delete it and
             # reload.
-            shp_path = os.path.join(dir_path, f"{name}.shp")
-            if os.path.isfile(shp_path):
+            shp_path = dir_path / f"{name}.shp"
+            if shp_path.is_file():
                 # Looks like the shapefile is there.
                 return
 
@@ -392,10 +392,10 @@ class ShapeReader:
             shutil.rmtree(dir_path)
 
         # Make the directory
-        os.mkdir(dir_path)
+        dir_path.mkdir()
 
         # We will put the zip file in the dir we just created.
-        zip_path = os.path.join(dir_path, f"{name}.zip")
+        zip_path = dir_path / f"{name}.zip"
 
         # Construct the URL to get the zip file.
         # url = self._url_for_file(name)
@@ -404,7 +404,7 @@ class ShapeReader:
         # Fetch the zip file and write it.
         response = requests.get(zip_url, timeout=timeout)
 
-        with open(zip_path, "wb") as file:
+        with zip_path.open("wb") as file:
             file.write(response.content)
 
         # Unzip the file and extract all contents.
@@ -415,7 +415,7 @@ class ShapeReader:
             raise MapException(f"Bad zip file retrieved from {zip_url}") from exc
         finally:
             # We don't need the zipfile anymore.
-            os.remove(zip_path)
+            zip_path.unlink()
 
 
 def clip_to_states(gdf, gdf_bounds):

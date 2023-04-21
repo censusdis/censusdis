@@ -5,9 +5,9 @@ Most of the functionality can be unit tested elsewhere or with mocks, but
 these tests actually call the census API itself to cover the bits of code
 immediately around those calls.
 """
-import os.path
 import tempfile
 import unittest
+from pathlib import Path
 
 import geopandas
 import geopandas as gpd
@@ -37,7 +37,7 @@ class DownloadTestCase(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         """Set up our shapefile path once at class load time."""
-        ced.set_shapefile_path(tempfile.mkdtemp(prefix=cls.PATH_PREFIX))
+        ced.set_shapefile_path(Path(tempfile.mkdtemp(prefix=cls.PATH_PREFIX)))
 
     def setUp(self) -> None:
         """Set up before each test."""
@@ -52,7 +52,8 @@ class DownloadTestCase(unittest.TestCase):
     def test_path(self):
         """Are we using the right cache path for shapefiles?"""
         path = ced.get_shapefile_path()
-        filename = os.path.basename(path)
+
+        filename = path.name
         self.assertTrue(filename.startswith(self.PATH_PREFIX))
 
     def test_download(self):
