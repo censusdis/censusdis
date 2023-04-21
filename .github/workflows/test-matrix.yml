@@ -1,6 +1,6 @@
 # Based on https://github.com/marketplace/actions/install-poetry-action#running-on-windows
 
-name: test
+name: test-os-latest
 
 on: pull_request
 
@@ -20,7 +20,7 @@ jobs:
         id: setup-python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.11'
+          python-version: '3.9'
       - name: Install Poetry
         uses: snok/install-poetry@v1
         with:
@@ -36,6 +36,14 @@ jobs:
         run: poetry install --no-interaction --no-root
       - name: Install library
         run: poetry install --no-interaction
-      - run: |
+      - name: Run tests
+        run: |
           source $VENV
           pytest
+      - name: Archive test artifacts
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: test_artifacts
+          path: tests/_test_artifacts
+          retention-days: 7
