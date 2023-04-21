@@ -7,7 +7,6 @@ which it downloads as needed and caches locally.
 """
 
 import importlib.resources
-import os
 import shutil
 from logging import getLogger
 from pathlib import Path
