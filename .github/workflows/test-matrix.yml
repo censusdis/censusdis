@@ -5,7 +5,7 @@ name: test
 on: pull_request
 
 jobs:
-  test-windows:
+  test:
     strategy:
       matrix:
         os: [ "ubuntu-latest", "macos-latest", "windows-latest" ]
@@ -38,4 +38,4 @@ jobs:
         run: poetry install --no-interaction
       - run: |
           source $VENV
-          pytest --version
+          pytest
