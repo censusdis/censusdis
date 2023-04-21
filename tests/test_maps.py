@@ -166,6 +166,7 @@ class MapPlotTestCase(unittest.TestCase):
             ax.axis("off")
             fig = ax.get_figure()
             fig.savefig(output_file)
+            plt.close(fig)
 
         for state in states:
             png_file_name = f"plot_{ABBREVIATIONS_FROM_IDS[state].lower()}.png"
