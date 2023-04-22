@@ -45,6 +45,7 @@ pytest = "^7.1.3"
 coverage = {extras = ["toml"], version = "^6.5.0"}
 pytest-cov = "^3.0.0"
 nbmake = "^1.3.5"
+scikit-image = "^0.20.0"
 
 [tool.poetry.group.lint.dependencies]
 flake8 = "^5.0.4"
