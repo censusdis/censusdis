@@ -149,8 +149,8 @@ class MapPlotTestCase(unittest.TestCase):
         return True  # filecmp.cmp(file0, file1, shallow=shallow)
 
     @unittest.skipIf(
-        sys.platform == 'windows',
-        reason="GitHub Actions hosts don't have enough RAM to run this."
+        sys.platform == "windows",
+        reason="GitHub Actions hosts don't have enough RAM to run this.",
     )
     def test_plot_map(self):
         """Plot some states around the country with background maps."""
