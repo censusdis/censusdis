@@ -149,7 +149,7 @@ class MapPlotTestCase(unittest.TestCase):
         return True  # filecmp.cmp(file0, file1, shallow=shallow)
 
     @unittest.skipIf(
-        sys.platform == "windows",
+        sys.platform.startswith("win"),
         reason="GitHub Actions hosts don't have enough RAM to run this.",
     )
     def test_plot_map(self):
