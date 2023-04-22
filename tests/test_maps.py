@@ -6,8 +6,10 @@ from shutil import rmtree
 
 import geopandas as gpd
 import matplotlib.pyplot as plt
+import skimage.io
 from pyproj.crs import CRS
 from shapely.geometry import Polygon
+from skimage.metrics import structural_similarity as ssim
 
 import censusdis.maps as cmap
 from censusdis.states import (
@@ -126,28 +128,35 @@ class MapPlotTestCase(unittest.TestCase):
 
             self.assertEqual(expected_epsg, epsg)
 
-    @staticmethod
-    def _filecmp_skip(file0, file1, shallow) -> bool:
+    def assert_structurally_similar(self, file0, file1, threshold: float = 0.99):
         """
-        Compare files, not really.
-
-        There seem to be some small differences in some cases even
-        when visually the files are identical.
+        Assert that the images stored in two files are structurally similar.
 
         Parameters
         ----------
         file0
-            one file
+            An image file
         file1
-            the other file
-        shallow
-            Shallow or not?
+            Another image file
+        threshold
+            Minimum structural similarity threshold.
+
         Returns
         -------
-            `True`
+            None
         """
-        return True  # filecmp.cmp(file0, file1, shallow=shallow)
+        image0 = skimage.io.imread(file0)
+        image1 = skimage.io.imread(file1)
 
+        for ii in range(len(image0[0, 0, :])):
+            similarity = ssim(image0[:, :, ii], image1[:, :, ii])
+
+            self.assertGreater(similarity, threshold)
+
+    @unittest.skipIf(
+        sys.platform.startswith("win"),
+        reason="GitHub Actions hosts don't have enough RAM to run this.",
+    )
     def test_plot_map(self):
         """Plot some states around the country with background maps."""
         states = [WA, CA, ND, TX, ME, FL, AK, HI, PR]
@@ -166,16 +175,14 @@ class MapPlotTestCase(unittest.TestCase):
             ax.axis("off")
             fig = ax.get_figure()
             fig.savefig(output_file)
+            plt.close(fig)
 
         for state in states:
             png_file_name = f"plot_{ABBREVIATIONS_FROM_IDS[state].lower()}.png"
             expected_file = self.expected_dir / png_file_name
             output_file = self.output_dir / png_file_name
 
-            self.assertTrue(
-                self._filecmp_skip(expected_file, output_file, shallow=False),
-                f"Expected newly generated file {output_file} to match {expected_file}",
-            )
+            self.assert_structurally_similar(expected_file, output_file)
 
     def test_plot_us(self):
         """Test calling plot_us."""
@@ -190,10 +197,7 @@ class MapPlotTestCase(unittest.TestCase):
         fig = ax.get_figure()
         fig.savefig(output_file)
 
-        self.assertTrue(
-            self._filecmp_skip(expected_file, output_file, shallow=False),
-            f"Expected newly generated file {output_file} to match {expected_file}",
-        )
+        self.assert_structurally_similar(expected_file, output_file)
 
     def test_plot_us_boundary(self):
         """
@@ -210,10 +214,7 @@ class MapPlotTestCase(unittest.TestCase):
         fig = ax.get_figure()
         fig.savefig(output_file)
 
-        self.assertTrue(
-            self._filecmp_skip(expected_file, output_file, shallow=False),
-            f"Expected newly generated file {output_file} to match {expected_file}",
-        )
+        self.assert_structurally_similar(expected_file, output_file)
 
     def test_plot_us_boundary_with_background(self):
         """
@@ -237,10 +238,7 @@ class MapPlotTestCase(unittest.TestCase):
         fig = ax.get_figure()
         fig.savefig(output_file)
 
-        self.assertTrue(
-            self._filecmp_skip(expected_file, output_file, shallow=False),
-            f"Expected newly generated file {output_file} to match {expected_file}",
-        )
+        self.assert_structurally_similar(expected_file, output_file)
 
     def test_plot_us_boundary_with_background_no_relocate(self):
         """
@@ -266,10 +264,7 @@ class MapPlotTestCase(unittest.TestCase):
         fig = ax.get_figure()
         fig.savefig(output_file)
 
-        self.assertTrue(
-            self._filecmp_skip(expected_file, output_file, shallow=False),
-            f"Expected newly generated file {output_file} to match {expected_file}",
-        )
+        self.assert_structurally_similar(expected_file, output_file)
 
     def test_plot_us_no_relocate(self):
         """
@@ -288,10 +283,7 @@ class MapPlotTestCase(unittest.TestCase):
         fig = ax.get_figure()
         fig.savefig(output_file)
 
-        self.assertTrue(
-            self._filecmp_skip(expected_file, output_file, shallow=False),
-            f"Expected newly generated file {output_file} to match {expected_file}",
-        )
+        self.assert_structurally_similar(expected_file, output_file)
 
     def test_plot_us_boundary_no_relocate(self):
         """
@@ -312,10 +304,7 @@ class MapPlotTestCase(unittest.TestCase):
         fig = ax.get_figure()
         fig.savefig(output_file)
 
-        self.assertTrue(
-            self._filecmp_skip(expected_file, output_file, shallow=False),
-            f"Expected newly generated file {output_file} to match {expected_file}",
-        )
+        self.assert_structurally_similar(expected_file, output_file)
 
     def test_plot_us_without_statefp(self):
         """
@@ -344,10 +333,7 @@ class MapPlotTestCase(unittest.TestCase):
         fig = ax.get_figure()
         fig.savefig(output_file)
 
-        self.assertTrue(
-            self._filecmp_skip(expected_file, output_file, shallow=False),
-            f"Expected newly generated file {output_file} to match {expected_file}",
-        )
+        self.assert_structurally_similar(expected_file, output_file)
 
 
 class GeographicCentroidsTestCase(unittest.TestCase):
