@@ -18,6 +18,13 @@ that generated it.
 [<img src="docs/_static/images/sample03.png" alt="White Alone Population as a Percent of County Population" height=160>](notebooks/Seeing%20White.ipynb)
 [<img src="docs/_static/images/sample04.png" alt="Average Age by Public Use Microdata Area in Massachusetts" height=160>](notebooks/PUMS%20Demo.ipynb)
 
+## Tutorial (A Great Place to Start!)
+
+If you are interested in a tutorial, please see the [censusdis-tutorial](https://github.com/vengroff/censusdis-tutorial) repository.
+This tutorial was presented at [PyData Seattle 2023](https://pydata.org/seattle2023/). If you want to try it out for yourself, the README.md
+contains links that let you run the tutorial notebooks live on [mybinder.org](https://mybinder.org/) in your browser without needing to set up a
+local development environment or download or install any code.
+
 ## Introduction 
 
 `censusdis` is a package for discovering, loading, analyzing, and computing
