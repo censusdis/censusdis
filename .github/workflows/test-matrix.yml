@@ -1,6 +1,6 @@
 # Based on https://github.com/marketplace/actions/install-poetry-action#running-on-windows
 
-name: test-os-latest
+name: test-matrix
 
 on: pull_request
 
@@ -8,7 +8,7 @@ jobs:
   test:
     strategy:
       matrix:
-        python-version: ["3.9", "3.10"]
+        python-version: ["3.9", "3.10", "3.11"]
         os: [ "ubuntu-latest", "macos-latest", "windows-latest" ]
     defaults:
       run:
