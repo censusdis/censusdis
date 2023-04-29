@@ -1,12 +1,16 @@
 # censusdis
 
 [![Hippocratic License HL3-CL-ECO-EXTR-FFD-LAW-MIL-SV](https://img.shields.io/static/v1?label=Hippocratic%20License&message=HL3-CL-ECO-EXTR-FFD-LAW-MIL-SV&labelColor=5e2751&color=bc8c3d)](https://firstdonoharm.dev/version/3/0/cl-eco-extr-ffd-law-mil-sv.html)
-[![Documentation Status](https://readthedocs.org/projects/censusdis/badge/?version=latest)](https://censusdis.readthedocs.io/en/latest/?badge=latest)
+![PyPI - Python Version](https://img.shields.io/pypi/pyversions/censusdis)
+![PyPI](https://img.shields.io/pypi/v/censusdis)
+
+![PyPI - Downloads](https://img.shields.io/pypi/dm/censusdis)
+
 ![Tests Badge](reports/junit/tests-badge.svg)
 ![Coverage Badge](reports/coverage/coverage-badge.svg)
 ![Notebook Tests Badge](reports/nbmake/nbmake-notebook-badge.svg)
 ![Dataset Tests Badge](reports/nbmake/nbmake-dataset-badge.svg)
-![PyPI - Downloads](https://img.shields.io/pypi/dm/censusdis)
+[![Documentation Status](https://readthedocs.org/projects/censusdis/badge/?version=latest)](https://censusdis.readthedocs.io/en/latest/?badge=latest)
 
 Click any of the thumbnails below to see the notebook
 that generated it.
