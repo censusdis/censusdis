@@ -19,7 +19,6 @@ MOCK_MODULES = [
     "matplotlib",
     "matplotlib.pyplot",
     "pandas",
-    "numpy",
     "scipy",
     "shapely",
     "shapely.affinity",
