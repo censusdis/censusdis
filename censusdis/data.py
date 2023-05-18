@@ -740,7 +740,7 @@ def download(
         A cache of metadata about variables.
     kwargs
         A specification of the geometry that we want data for. For example,
-        `state = ["*"], county = ["*"]` will download county-level data for
+        `state = "*", county = "*"` will download county-level data for
         the entire US.
 
     Returns
