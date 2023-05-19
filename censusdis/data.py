@@ -689,6 +689,13 @@ def download(
     deduplicated, so you will only get one column for a variable no matter
     how many times it is specified.
 
+    *Specifying census geographies*: censusdis provides access to many
+    census datasets, each of which can be retrieved at a particular set of
+    geographic grains. To accomodate this, `download()` takes a set
+    of kwargs to define the geographic level of the returned data. You can check
+    which geographies are available for a particular dataset with the
+    `geographies()`.
+
     Parameters
     ----------
     dataset
@@ -728,11 +735,13 @@ def download(
         generate these boundaries.
     api_key
         An optional API key. If you don't have or don't use a key, the number
-        of calls you can make will be limited.
+        of calls you can make will be limited to 500 per day.
     variable_cache
         A cache of metadata about variables.
     kwargs
-        A specification of the geometry that we want data for.
+        A specification of the geometry that we want data for. For example,
+        `state = "*", county = "*"` will download county-level data for
+        the entire US.
 
     Returns
     -------
