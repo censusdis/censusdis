@@ -944,6 +944,9 @@ def _coerce_downloaded_variable_types(
                         df_data[variable] = df_data[variable].astype(
                             float, errors="ignore"
                         )
+                    except OverflowError:
+                        # Some long IDs are actually better handled as strings.
+                        df_data[variable] = df_data[variable].astype(str)
             elif field_type == "float":
                 df_data[variable] = df_data[variable].astype(float)
             elif field_type == "string":

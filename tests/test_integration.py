@@ -5,6 +5,8 @@ Most of the functionality can be unit tested elsewhere or with mocks, but
 these tests actually call the census API itself to cover the bits of code
 immediately around those calls.
 """
+from typing import Union
+
 import tempfile
 import unittest
 from pathlib import Path
@@ -13,6 +15,7 @@ import geopandas
 import geopandas as gpd
 import numpy as np
 import pandas as pd
+import shapely
 
 import censusdis.data as ced
 import censusdis.impl.exceptions
@@ -1085,6 +1088,25 @@ class AddInferredGeographyTestCase(unittest.TestCase):
 
         # Make sure there is no geometry.
         self.assertTrue(gdf_inferred_geometry_multi_year["geometry"].isnull().all())
+
+
+class LongIdTestCase(unittest.TestCase):
+    """
+    This is a test of long IDs.
+
+    Sometimes the metadata says a variable is an int, but it is
+    too long to fit into one. So we fall back on treating it like
+    a string.
+
+    We used to fail to do this as described in issue #98.
+    """
+
+    def test_cps_asec_mar(self):
+        df_cps_asec_mar = ced.download("cps/asec/mar", 2020, "H_IDNUM", state="*")
+
+        self.assertEqual(2, len(df_cps_asec_mar.columns))
+        self.assertIn("STATE", df_cps_asec_mar.columns)
+        self.assertIn("H_IDNUM", df_cps_asec_mar.columns)
 
 
 if __name__ == "__main__":
