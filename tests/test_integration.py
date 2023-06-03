@@ -5,7 +5,6 @@ Most of the functionality can be unit tested elsewhere or with mocks, but
 these tests actually call the census API itself to cover the bits of code
 immediately around those calls.
 """
-from typing import Union
 
 import tempfile
 import unittest
@@ -15,7 +14,6 @@ import geopandas
 import geopandas as gpd
 import numpy as np
 import pandas as pd
-import shapely
 
 import censusdis.data as ced
 import censusdis.impl.exceptions
