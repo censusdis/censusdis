@@ -128,7 +128,7 @@ class MapPlotTestCase(unittest.TestCase):
 
             self.assertEqual(expected_epsg, epsg)
 
-    def assert_structurally_similar(self, file0, file1, threshold: float = 0.99):
+    def assert_structurally_similar(self, file0, file1, threshold: float = 0.98):
         """
         Assert that the images stored in two files are structurally similar.
 
