@@ -172,7 +172,7 @@ class DownloadTestCase(unittest.TestCase):
         )
 
     def test_download_with_geometry_state(self):
-        """Download at the county level with geometry."""
+        """Download at the state level with geometry."""
 
         gdf = ced.download(
             self._dataset,
@@ -188,6 +188,33 @@ class DownloadTestCase(unittest.TestCase):
 
         self.assertEqual(
             ["STATE", "NAME", "B19001_001E", "geometry"], list(gdf.columns)
+        )
+
+    def test_download_with_geometry_multi_state(self):
+        """
+        Download at the tract level for multiplle states with geometry.
+
+        The point of this test is that tract-level shapefiles exist
+        only on a per-state basis, so inside the call we have to
+        recognize this and download and concatenate several shapefiles
+        before merging with our data.
+        """
+        gdf = ced.download(
+            self._dataset,
+            self._year,
+            ["NAME", self._name],
+            with_geometry=True,
+            state=["01", "02"],  # Two specific states.
+            tract="*",
+        )
+
+        self.assertIsInstance(gdf, geopandas.GeoDataFrame)
+
+        self.assertEqual((1614, 6), gdf.shape)
+
+        self.assertEqual(
+            ["STATE", "COUNTY", "TRACT", "NAME", "B19001_001E", "geometry"],
+            list(gdf.columns),
         )
 
     def test_download_with_geometry_consolidated_city(self):
