@@ -441,6 +441,11 @@ def _add_geography(
     # If there is a single defined year then we can load the single
     # shapefile. If not, then we have to load multiple shapefiles,
     # one per year, and concatenate them.
+    #
+    # Whether there is a single or multiple years, there could also
+    # me mutliple scopes, e.g. states, for which we have to download
+    # shapefiles. If so, by the time we get here, they are encoded in
+    # one string with comma seperators.
     if isinstance(year, int):
         gdf_shapefile = gpd.GeoDataFrame()
 
