@@ -101,6 +101,7 @@ def _download_multiple(
     key: Optional[str],
     census_variables: "VariableCache",
     with_geometry: bool = False,
+    row_keys: Optional[Union[str, Iterable[str]]] = None,
     **kwargs: cgeo.InSpecType,
 ) -> pd.DataFrame:
     """
@@ -132,6 +133,10 @@ def _download_multiple(
         of calls you can make will be limited.
     variable_cache
         A cache of metadata about variables.
+    row_keys
+        An optional set of identifier keys to help merge together requests for more than the census API limit of
+        50 variables per query. These keys are useful for census datasets such as the Current Population Survey
+        where the geographic identifiers do not uniquely identify each row.
     kwargs
         A specification of the geometry that we want data for.
 
@@ -140,12 +145,23 @@ def _download_multiple(
         The full results of the query with all columns.
 
     """
-    # Divide the variables into groups.
-    variable_groups = [
-        # black and flake8 disagree about the whitespace before ':' here...
-        download_variables[start : start + _MAX_VARIABLES_PER_DOWNLOAD]  # noqa: 203
-        for start in range(0, len(download_variables), _MAX_VARIABLES_PER_DOWNLOAD)
-    ]
+
+    # Divide the variables into groups. If row keys are provided, include them in each chunk of variables,
+    # while respecting the variable max
+    if row_keys:
+        chunk_size = _MAX_VARIABLES_PER_DOWNLOAD - len(row_keys)
+        variable_groups = [
+            # black and flake8 disagree about the whitespace before ':' here...
+            # Take the set since the row_key variables might already be present in one of the chunks
+            list(set(row_keys + download_variables[start : start + chunk_size]))  # noqa: 203
+            for start in range(0, len(download_variables), chunk_size)
+        ]
+    else:
+        variable_groups = [
+            # black and flake8 disagree about the whitespace before ':' here...
+            download_variables[start : start + _MAX_VARIABLES_PER_DOWNLOAD]  # noqa: 203
+            for start in range(0, len(download_variables), _MAX_VARIABLES_PER_DOWNLOAD)
+        ]
 
     if len(variable_groups) < 2:
         raise ValueError(
@@ -199,13 +215,17 @@ def _download_multiple(
     # horizontally and hope that the rows came back in the same order
     # for each of them.
 
-    # We hope to be able to merge. It is safer.
+    # We hope to be able to merge. It is safer. If row_keys is supplied, they are included in
+    # merge keys
     merge_strategy = True
-
+    if row_keys:
+        merge_keys = geo_key_variables + row_keys
+    else:
+        merge_keys = geo_key_variables
     # But if there are any non-unique keys in any df, we can't
     # merge.
     for df_slice in dfs:
-        if len(df_slice.value_counts(geo_key_variables, sort=False)) != len(
+        if len(df_slice.value_counts(merge_keys, sort=False)) != len(
             df_slice.index
         ):
             merge_strategy = False
@@ -219,7 +239,7 @@ def _download_multiple(
         df_data = dfs[0]
 
         for df_right in dfs[1:]:
-            df_data = df_data.merge(df_right, on=geo_key_variables)
+            df_data = df_data.merge(df_right, on=merge_keys)
     else:
         # We are going to have to fall back on the concat
         # strategy. Before we do the concat, however, let's
@@ -237,13 +257,23 @@ def _download_multiple(
             ):
                 # At least one difference. So we cannot use the
                 # concat strategy either.
-                raise CensusApiException(
-                    "Neither the merge nor the concat strategy is viable. "
-                    "We made multiple queries to the census API because more than "
-                    f"{_MAX_VARIABLES_PER_DOWNLOAD} variables were requested. "
-                    "If you don't need all the variables, it is always safer to "
-                    f"download less than {_MAX_VARIABLES_PER_DOWNLOAD} variables. "
-                )
+                if not row_keys:
+                    raise CensusApiException(
+                        "Neither the merge nor the concat strategy is viable. "
+                        "We made multiple queries to the census API because more than "
+                        f"{_MAX_VARIABLES_PER_DOWNLOAD} variables were requested. "
+                        "If you don't need all the variables, it is always safer to "
+                        f"download less than {_MAX_VARIABLES_PER_DOWNLOAD} variables. "
+                        f"If you need more than {_MAX_VARIABLES_PER_DOWNLOAD}, you can supply the `row_keys`"
+                        "arguement with a set of variables that uniquely identify each row."
+                        )
+                else:
+                    raise CensusApiException(
+                        f"Neither the merge nor the concat strategy is viable using row_keys: {row_keys}. "
+                        "The supplied keys should uniquely identify every row in the dataset to work. "
+                        "If you don't need all the variables, it is always safer to "
+                        f"download less than {_MAX_VARIABLES_PER_DOWNLOAD} variables. "
+                        )
 
         # Concat strategy is as safe as it will ever be. We hope the server
         # side did not reorder the results across queries.
@@ -672,6 +702,7 @@ def download(
     with_geometry: bool = False,
     api_key: Optional[str] = None,
     variable_cache: Optional["VariableCache"] = None,
+    row_keys: Optional[Union[str, Iterable[str]]] = None,
     **kwargs: cgeo.InSpecType,
 ) -> Union[pd.DataFrame, gpd.GeoDataFrame]:
     """
@@ -738,6 +769,10 @@ def download(
         of calls you can make will be limited to 500 per day.
     variable_cache
         A cache of metadata about variables.
+    row_keys
+        An optional set of identifier keys to help merge together requests for more than the census API limit of
+        50 variables per query. These keys are useful for census datasets such as the Current Population Survey
+        where the geographic identifiers do not uniquely identify each row.
     kwargs
         A specification of the geometry that we want data for. For example,
         `state = ["*"], county = ["*"]` will download county-level data for
@@ -749,6 +784,10 @@ def download(
     """
     if variable_cache is None:
         variable_cache = variables
+
+    # Ensure list operations work
+    if row_keys:
+        row_keys = list(row_keys)
 
     # The side effect here is to prime the cache.
     cgeo.geo_path_snake_specs(dataset, vintage)
@@ -773,6 +812,13 @@ def download(
         variable_cache=variable_cache,
     )
 
+    if len(download_variables) <= _MAX_VARIABLES_PER_DOWNLOAD and row_keys:
+        warnings.warn(
+            "\n The row_keys arguement is intended to be used only when the number of requested"
+            "\n variables exceeds the Census defined limit of 50"
+            "\n The supplied value(s) will be ignored",
+            UserWarning
+        )
     # Special case if we are trying to get too many fields.
     if len(download_variables) > _MAX_VARIABLES_PER_DOWNLOAD:
         return _download_multiple(
@@ -782,12 +828,16 @@ def download(
             key=api_key,
             census_variables=variable_cache,
             with_geometry=with_geometry,
+            row_keys=row_keys,
             **kwargs,
         )
 
     # Prefetch all the types before we load the data.
     # That way we fail fast if a field is not known.
     _prefetch_variable_types(dataset, vintage, download_variables, variable_cache)
+    # Also check that the row_keys, if supplied, are present in the dataset
+    if row_keys:
+        _prefetch_variable_types(dataset, vintage, row_keys, variable_cache)
 
     # If we were given a list, join it together into
     # a comma-separated string.
