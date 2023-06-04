@@ -444,7 +444,7 @@ def _add_geography(
     if isinstance(year, int):
         gdf_shapefile = gpd.GeoDataFrame()
 
-        for sub_scope in shapefile_scope.split(','):
+        for sub_scope in shapefile_scope.split(","):
             gdf_shapefile = gdf_shapefile.append(
                 __shapefile_reader(year).read_cb_shapefile(
                     sub_scope,
@@ -458,11 +458,9 @@ def _add_geography(
         for unique_year in df_data["YEAR"].unique():
             try:
                 gdf_shapefile_for_year = gpd.GeoDataFrame()
-                for sub_scope in shapefile_scope.split(','):
+                for sub_scope in shapefile_scope.split(","):
                     gdf_shapefile_for_year = gdf_shapefile_for_year.append(
-                        __shapefile_reader(
-                            unique_year
-                        ).read_cb_shapefile(
+                        __shapefile_reader(unique_year).read_cb_shapefile(
                             sub_scope,
                             shapefile_geo_level,
                         )

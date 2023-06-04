@@ -205,7 +205,7 @@ class DownloadTestCase(unittest.TestCase):
             ["NAME", self._name],
             with_geometry=True,
             state=["01", "02"],  # Two specific states.
-            tract="*"
+            tract="*",
         )
 
         self.assertIsInstance(gdf, geopandas.GeoDataFrame)
@@ -213,7 +213,8 @@ class DownloadTestCase(unittest.TestCase):
         self.assertEqual((1614, 6), gdf.shape)
 
         self.assertEqual(
-            ["STATE", "COUNTY", "TRACT", "NAME", "B19001_001E", "geometry"], list(gdf.columns)
+            ["STATE", "COUNTY", "TRACT", "NAME", "B19001_001E", "geometry"],
+            list(gdf.columns),
         )
 
     def test_download_with_geometry_consolidated_city(self):
