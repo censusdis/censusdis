@@ -6,16 +6,21 @@ on:
       - main
 
 jobs:
+  # List the notebooks
+  list-notebooks:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.notebook-matrix.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v2
+      - id: notebook-matrix
+        run: echo "::set-output name=matrix::$(ls notebooks/*/*.ipynb | jq -R -s -c 'split("\n")[:-1]')"
   nbmake:
+    needs: list-notebooks
+    runs-on: ubuntu-latest
     strategy:
       matrix:
-        notebook-type: [notebook, dataset]
-        include:
-          - notebook-type: notebook
-            notebook-dir: notebooks
-          - notebook-type: dataset
-            notebook-dir: notebooks/datasets
-    runs-on: ubuntu-latest
+        notebook: ${{ fromJson(needs.list-notebooks.outputs.matrix) }}
     steps:
       #----------------------------------------------
       #       check-out repo and set-up python
@@ -60,27 +65,9 @@ jobs:
       #----------------------------------------------
       #              test run notebooks
       #----------------------------------------------
-      - name: Test run notebooks
+      - name: Test run notebook
         run: |
           source .venv/bin/activate
-          pytest --junitxml=reports/nbmake/${{matrix.notebook-type}}/junit.xml --nbmake ${{matrix.notebook-dir}}/*.ipynb
-          genbadge tests --name "${{matrix.notebook-type}} tests" -i reports/nbmake/${{matrix.notebook-type}}/junit.xml -o reports/nbmake/nbmake-${{matrix.notebook-type}}-badge.svg
-      #----------------------------------------------
-      #              commit badge
-      #----------------------------------------------
-      - name: Commit badge
-        run: |
-          /usr/bin/git config --local user.email "action@github.com"
-          /usr/bin/git config --local user.name "GitHub Action"
-          /usr/bin/git add ./reports/nbmake/nbmake-${{matrix.notebook-type}}-badge.svg
-          /usr/bin/git diff --staged --quiet || /usr/bin/git commit -m "Update badge [github action]"
-          /usr/bin/git pull --rebase
-      - name: Query branch name
-        run: |
-          echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
-        id: query_branch
-      - name: Push coverage commit
-        uses: ad-m/github-push-action@master
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: ${{ steps.query_branch.outputs.branch }}
+          # pytest --junitxml=reports/nbmake/${{matrix.notebook-type}}/junit.xml --nbmake ${{matrix.notebook-dir}}/*.ipynb
+          # genbadge tests --name "${{matrix.notebook-type}} tests" -i reports/nbmake/${{matrix.notebook-type}}/junit.xml -o reports/nbmake/nbmake-${{matrix.notebook-type}}-badge.svg
+          pytest --nbmake ${{matrix.notebook}}
