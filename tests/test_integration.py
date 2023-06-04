@@ -5,6 +5,7 @@ Most of the functionality can be unit tested elsewhere or with mocks, but
 these tests actually call the census API itself to cover the bits of code
 immediately around those calls.
 """
+
 import tempfile
 import unittest
 from pathlib import Path
@@ -171,7 +172,7 @@ class DownloadTestCase(unittest.TestCase):
         )
 
     def test_download_with_geometry_state(self):
-        """Download at the county level with geometry."""
+        """Download at the state level with geometry."""
 
         gdf = ced.download(
             self._dataset,
@@ -187,6 +188,33 @@ class DownloadTestCase(unittest.TestCase):
 
         self.assertEqual(
             ["STATE", "NAME", "B19001_001E", "geometry"], list(gdf.columns)
+        )
+
+    def test_download_with_geometry_multi_state(self):
+        """
+        Download at the tract level for multiplle states with geometry.
+
+        The point of this test is that tract-level shapefiles exist
+        only on a per-state basis, so inside the call we have to
+        recognize this and download and concatenate several shapefiles
+        before merging with our data.
+        """
+        gdf = ced.download(
+            self._dataset,
+            self._year,
+            ["NAME", self._name],
+            with_geometry=True,
+            state=["01", "02"],  # Two specific states.
+            tract="*",
+        )
+
+        self.assertIsInstance(gdf, geopandas.GeoDataFrame)
+
+        self.assertEqual((1614, 6), gdf.shape)
+
+        self.assertEqual(
+            ["STATE", "COUNTY", "TRACT", "NAME", "B19001_001E", "geometry"],
+            list(gdf.columns),
         )
 
     def test_download_with_geometry_consolidated_city(self):
@@ -1085,6 +1113,25 @@ class AddInferredGeographyTestCase(unittest.TestCase):
 
         # Make sure there is no geometry.
         self.assertTrue(gdf_inferred_geometry_multi_year["geometry"].isnull().all())
+
+
+class LongIdTestCase(unittest.TestCase):
+    """
+    This is a test of long IDs.
+
+    Sometimes the metadata says a variable is an int, but it is
+    too long to fit into one. So we fall back on treating it like
+    a string.
+
+    We used to fail to do this as described in issue #98.
+    """
+
+    def test_cps_asec_mar(self):
+        df_cps_asec_mar = ced.download("cps/asec/mar", 2020, "H_IDNUM", state="*")
+
+        self.assertEqual(2, len(df_cps_asec_mar.columns))
+        self.assertIn("STATE", df_cps_asec_mar.columns)
+        self.assertIn("H_IDNUM", df_cps_asec_mar.columns)
 
 
 if __name__ == "__main__":
