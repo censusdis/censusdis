@@ -442,22 +442,31 @@ def _add_geography(
     # shapefile. If not, then we have to load multiple shapefiles,
     # one per year, and concatenate them.
     if isinstance(year, int):
-        gdf_shapefile = __shapefile_reader(year).read_cb_shapefile(
-            shapefile_scope,
-            shapefile_geo_level,
-        )
+        gdf_shapefile = gpd.GeoDataFrame()
+
+        for sub_scope in shapefile_scope.split(','):
+            gdf_shapefile = gdf_shapefile.append(
+                __shapefile_reader(year).read_cb_shapefile(
+                    sub_scope,
+                    shapefile_geo_level,
+                ),
+            )
         merge_gdf_on = gdf_on
     else:
         gdf_shapefiles = []
 
         for unique_year in df_data["YEAR"].unique():
             try:
-                gdf_shapefile_for_year = __shapefile_reader(
-                    unique_year
-                ).read_cb_shapefile(
-                    shapefile_scope,
-                    shapefile_geo_level,
-                )
+                gdf_shapefile_for_year = gpd.GeoDataFrame()
+                for sub_scope in shapefile_scope.split(','):
+                    gdf_shapefile_for_year = gdf_shapefile_for_year.append(
+                        __shapefile_reader(
+                            unique_year
+                        ).read_cb_shapefile(
+                            sub_scope,
+                            shapefile_geo_level,
+                        )
+                    )
                 gdf_shapefile_for_year["YEAR"] = unique_year
                 gdf_shapefiles.append(gdf_shapefile_for_year)
             except cmap.MapException:
