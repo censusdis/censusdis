@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "censusdis"
-version = "0.13.4"
+version = "0.13.5"
 description = "US Census utilities for a variety of data loading and mapping purposes."
 license = "HL3-CL-ECO-EXTR-FFD-LAW-MIL-SV"
 authors = ["Darren Vengroff"]
