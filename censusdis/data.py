@@ -230,7 +230,9 @@ def _download_multiple(
     # But if there are any non-unique keys in any df, we can't
     # merge.
     for df_slice in dfs:
-        if len(df_slice.value_counts(merge_keys, sort=False)) != len(df_slice.index):
+        if len(df_slice.value_counts(merge_keys, sort=False)) != len(
+            df_slice.index
+        ):
             merge_strategy = False
             break
 
@@ -269,7 +271,7 @@ def _download_multiple(
                         f"download less than {_MAX_VARIABLES_PER_DOWNLOAD} variables. "
                         f"If you need more than {_MAX_VARIABLES_PER_DOWNLOAD}, you can supply the `row_keys`"
                         "arguement with a set of variables that uniquely identify each row."
-                    )
+                        )
                 else:
                     raise CensusApiException(
                         f"Neither the merge nor the concat strategy is viable using row_keys: {row_keys}. "
