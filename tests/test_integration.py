@@ -793,21 +793,23 @@ class DownloadGroupTestCase(unittest.TestCase):
     def test_download_wide_survey(self):
         """Test case where row_keys are required to download more than 50 variables"""
 
-        all_vars = ced.variables.all_variables('cps/internet/nov', 2021, None)
+        all_vars = ced.variables.all_variables("cps/internet/nov", 2021, None)
 
         df = ced.download(
-            'cps/internet/nov',
+            "cps/internet/nov",
             2021,
-            download_variables=all_vars['VARIABLE'],
+            download_variables=all_vars["VARIABLE"],
             row_keys=["QSTNUM", "OCCURNUM"],
-            state=WA
+            state=WA,
         )
 
         self.assertIsInstance(df, pd.DataFrame)
 
         self.assertEqual(df.shape, (1836, 500))
         # Need to use sets because the row keys will have moved to the front of the dataframe
-        self.assertEqual(set(["STATE"] + all_vars['VARIABLE'].to_list()), set(df.columns.to_list()))
+        self.assertEqual(
+            set(["STATE"] + all_vars["VARIABLE"].to_list()), set(df.columns.to_list())
+        )
 
 
 class AcsSubjectTestCase(unittest.TestCase):

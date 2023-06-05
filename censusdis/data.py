@@ -154,9 +154,15 @@ def _download_multiple(
             # black and flake8 disagree about the whitespace before ':' here...
             # We need to drop duplicates in each chunk of variables
             # since the row_key variables might already be present in one of the chunks
-            [item for item in row_keys + download_variables[start: start + chunk_size]
-             if item not in row_keys or
-             row_keys.index(item) == (row_keys + download_variables[start: start + chunk_size]).index(item)]
+            [
+                item
+                for item in row_keys + download_variables[start: start + chunk_size]
+                if item not in row_keys
+                or row_keys.index(item)
+                == (row_keys + download_variables[start: start + chunk_size]).index(
+                    item
+                )
+            ]
             for start in range(0, len(download_variables), chunk_size)
         ]
     else:
@@ -228,9 +234,7 @@ def _download_multiple(
     # But if there are any non-unique keys in any df, we can't
     # merge.
     for df_slice in dfs:
-        if len(df_slice.value_counts(merge_keys, sort=False)) != len(
-            df_slice.index
-        ):
+        if len(df_slice.value_counts(merge_keys, sort=False)) != len(df_slice.index):
             merge_strategy = False
             break
 
@@ -269,14 +273,14 @@ def _download_multiple(
                         f"download less than {_MAX_VARIABLES_PER_DOWNLOAD} variables. "
                         f"If you need more than {_MAX_VARIABLES_PER_DOWNLOAD}, you can supply the `row_keys`"
                         "arguement with a set of variables that uniquely identify each row."
-                        )
+                    )
                 else:
                     raise CensusApiException(
                         f"Neither the merge nor the concat strategy is viable using row_keys: {row_keys}. "
                         "The supplied keys should uniquely identify every row in the dataset to work. "
                         "If you don't need all the variables, it is always safer to "
                         f"download less than {_MAX_VARIABLES_PER_DOWNLOAD} variables. "
-                        )
+                    )
 
         # Concat strategy is as safe as it will ever be. We hope the server
         # side did not reorder the results across queries.
@@ -832,7 +836,7 @@ def download(
             "\n The row_keys arguement is intended to be used only when the number of requested"
             "\n variables exceeds the Census defined limit of 50"
             "\n The supplied value(s) will be ignored",
-            UserWarning
+            UserWarning,
         )
     # Special case if we are trying to get too many fields.
     if len(download_variables) > _MAX_VARIABLES_PER_DOWNLOAD:
