@@ -4,7 +4,9 @@
 ![PyPI](https://img.shields.io/pypi/v/censusdis)
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/censusdis)
 
-![PyPI - Downloads](https://img.shields.io/pypi/dm/censusdis)
+![PyPI - Status](https://img.shields.io/pypi/status/censusdis?label=PyPI%20Status)
+![PyPI - Format](https://img.shields.io/pypi/format/censusdis?label=PyPI%20Format)
+![PyPI - Downloads](https://img.shields.io/pypi/dw/censusdis?label=PyPI%20Downloads)
 
 ![GitHub last commit](https://img.shields.io/github/last-commit/vengroff/censusdis)
 ![Tests Badge](reports/junit/tests-badge.svg)
