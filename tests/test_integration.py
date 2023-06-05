@@ -21,6 +21,7 @@ import censusdis.impl.varsource.censusapi
 import censusdis.maps as cem
 import censusdis.values as cev
 from censusdis import states
+from censusdis.states import WA
 
 
 class DownloadTestCase(unittest.TestCase):
@@ -788,6 +789,25 @@ class DownloadGroupTestCase(unittest.TestCase):
         ) + ced.variables.group_variables(self._dataset, self._year, self._group_name_1)
 
         self.assertEqual(["STATE", "COUNTY"] + group_variables, list(df_group.columns))
+
+    def test_download_wide_survey(self):
+        """Test case where row_keys are required to download more than 50 variables"""
+
+        all_vars = ced.variables.all_variables('cps/internet/nov', 2021, None)
+
+        df = ced.download(
+            'cps/internet/nov',
+            2021,
+            download_variables=all_vars['VARIABLE'],
+            row_keys=["QSTNUM", "OCCURNUM"],
+            state=WA
+        )
+
+        self.assertIsInstance(df, pd.DataFrame)
+
+        self.assertEqual(df.shape, (1836, 500))
+        # Need to use sets because the row keys will have moved to the front of the dataframe
+        self.assertEqual(set(["STATE"] + all_vars['VARIABLE'].to_list()), set(df.columns.to_list()))
 
 
 class AcsSubjectTestCase(unittest.TestCase):
