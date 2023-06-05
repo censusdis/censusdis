@@ -156,12 +156,14 @@ def _download_multiple(
             # since the row_key variables might already be present in one of the chunks
             [
                 item
-                for item in row_keys + download_variables[start : start + chunk_size] # noqa: 203
+                for item in row_keys
+                + download_variables[start : start + chunk_size]  # noqa: 203
                 if item not in row_keys
                 or row_keys.index(item)
-                == (row_keys + download_variables[start : start + chunk_size]).index( # noqa: 203
-                    item
-                )
+                == (
+                    row_keys
+                    + download_variables[start : start + chunk_size]  # noqa: 203
+                ).index(item)
             ]
             for start in range(0, len(download_variables), chunk_size)
         ]
