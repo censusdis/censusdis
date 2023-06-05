@@ -152,13 +152,11 @@ def _download_multiple(
         chunk_size = _MAX_VARIABLES_PER_DOWNLOAD - len(row_keys)
         variable_groups = [
             # black and flake8 disagree about the whitespace before ':' here...
-            # Take the set since the row_key variables might already be present in one of the chunks
-            list(
-                set(
-                    row_keys
-                    + (download_variables[start : start + chunk_size])  # noqa: 203
-                )
-            )
+            # We need to drop duplicates in each chunk of variables
+            # since the row_key variables might already be present in one of the chunks
+            [item for item in row_keys + download_variables[start: start + chunk_size]
+             if item not in row_keys or
+             row_keys.index(item) == (row_keys + download_variables[start: start + chunk_size]).index(item)]
             for start in range(0, len(download_variables), chunk_size)
         ]
     else:
@@ -278,7 +276,7 @@ def _download_multiple(
                         "The supplied keys should uniquely identify every row in the dataset to work. "
                         "If you don't need all the variables, it is always safer to "
                         f"download less than {_MAX_VARIABLES_PER_DOWNLOAD} variables. "
-                    )
+                        )
 
         # Concat strategy is as safe as it will ever be. We hope the server
         # side did not reorder the results across queries.
@@ -834,7 +832,7 @@ def download(
             "\n The row_keys arguement is intended to be used only when the number of requested"
             "\n variables exceeds the Census defined limit of 50"
             "\n The supplied value(s) will be ignored",
-            UserWarning,
+            UserWarning
         )
     # Special case if we are trying to get too many fields.
     if len(download_variables) > _MAX_VARIABLES_PER_DOWNLOAD:
