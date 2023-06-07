@@ -20,6 +20,8 @@ jobs:
         id: setup-python
         uses: actions/setup-python@v2
         with:
+          ssh-key:
+            ${{secrets.DEPLOY_ACTION_SECRET}}
           python-version: 3.9
       #----------------------------------------------
       #  -----  install & configure poetry  -----
