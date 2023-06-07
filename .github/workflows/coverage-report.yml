@@ -1,12 +1,14 @@
 name: coverage-report
 
 on:
-  push:
-    branches-ignore:
+  pull_request:
+    branches:
       - main
+    types: [closed]
 
 jobs:
   test:
+    if: ${{ github.event.pull_request.merged }}
     runs-on: ubuntu-latest
     steps:
       #----------------------------------------------
