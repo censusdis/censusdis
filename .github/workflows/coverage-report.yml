@@ -104,4 +104,4 @@ jobs:
         uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: ${{ steps.query_branch.outputs.branch }}
+          force_with_lease: true
