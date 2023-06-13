@@ -96,14 +96,7 @@ jobs:
           /usr/bin/git add ./reports/coverage/coverage-badge.svg
           /usr/bin/git add ./reports/junit/tests-badge.svg
           /usr/bin/git diff --staged --quiet || /usr/bin/git commit -m "Update badge(s) [github action]"
-          /usr/bin/git pull --rebase
-      - name: Query branch name
+      - name: Update git
         run: |
-          echo running on branch ${GITHUB_REF#refs/heads/}
-          echo "branch=${GITHUB_REF#refs/heads/}" >> $GITHUB_OUTPUT
-        id: query_branch
-      - name: Push coverage commit
-        uses: ad-m/github-push-action@master
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          force_with_lease: true
+          git push
+          git push --tags
