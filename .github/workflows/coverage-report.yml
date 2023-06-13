@@ -98,6 +98,4 @@ jobs:
           /usr/bin/git diff --staged --quiet || /usr/bin/git commit -m "Update badge(s) [github action]"
       - name: Update git
         run: |
-          git push
-          git push --tags
-          
+          git push -f 
