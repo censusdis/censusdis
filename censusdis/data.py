@@ -1246,3 +1246,124 @@ def geographies(dataset: str, vintage: VintageType) -> List[List[str]]:
 
 
 variables = VariableCache()
+
+
+def _identify_counties(geo_df: gpd.GeoDataFrame, year: int):
+    """
+    Takes a geodataframe and identifies which US counties the supplied geography overlaps.
+
+    Parameters
+    ----------
+    geo_df
+        A GeoDataFrame containing polygons within the United States
+    year
+        The year for which to fetch geometries. We need this
+        because they change over time.
+
+    Returns
+    -------
+        A list of five digit county FIPS codes.
+    """
+
+    # Some dataframes will contain the county column already
+    if "STATE" in geo_df and "COUNTY" in geo_df:
+        geo_df["FIPS"] = geo_df["STATE"] + geo_df["COUNTY"]
+
+        return geo_df.FIPS.unique().tolist()
+    # Otherwise, we load all the US counties and perform an overlap operation
+    else:
+        reader = __shapefile_readers.get(year)
+        us_counties = reader.read_cb_shapefile("us", "county")
+        us_counties["FIPS"] = us_counties["STATEFP"] + us_counties["COUNTYFP"]
+
+        county_overlap_list = us_counties.overlay(geo_df).FIPS.unique().tolist()
+
+        return county_overlap_list
+
+
+def _retrieve_water(county_FIPS_codes: list[str], year: int):
+    """
+    Loads `AREAWATER` files from tiger for specified counties.
+
+    Parameters
+    ----------
+    county_FIPS_codes
+        A list of five digit county FIPS codes
+
+    Returns
+    -------
+        A GeoDataFrame containing the census defined water in the supplied counties
+    """
+    reader = __shapefile_readers.get(year)
+    water_gdfs = []
+
+    for county in county_FIPS_codes:
+        water_gdfs.append(
+            reader.read_shapefile(shapefile_scope=county, geography="areawater")
+        )
+
+    # Geo pandas has no concat method, so we convert from a pandas df
+    water_gdf = pd.concat(water_gdfs)
+    water_gdf = gpd.GeoDataFrame(water_gdf)
+    return water_gdf
+
+
+def _water_difference(
+    geo_df: gpd.GeoDataFrame, water_gdf: gpd.GeoDataFrame, minimum_area_sq_meters: int
+):
+    """
+    Removes water polygons exceeding minimum size from supplied GeoDataFrame
+
+    Parameters
+    ----------
+    geo_df
+        A GeoDataFrame containing polygons within the United States
+    water_gdf
+        A GeoDataFrame containing census AREAWATER polygons
+    minimum_area_sq_meters
+        The smallest water polygon to be removed, specified in square meters
+
+    Returns
+    -------
+        A version of geo_df with the water areas removed
+    """
+    return geo_df.overlay(
+        water_gdf.query("AWATER > @minimum_area_sq_meters"),
+        "difference",
+        keep_geom_type=False,
+    )
+
+
+def clip_water(
+    geo_df: gpd.GeoDataFrame, year: int, minimum_area_sq_meters: int = 10000
+):
+    """
+    Removes water from input geodataframe.
+
+    Parameters
+    ----------
+    geo_df
+        The GeoDataFrame from which we want to remove water
+    year
+        The year for which to fetch geometries. We need this
+        because they change over time. If `None`, look for a
+        `'YEAR'` column in `df_data` and possibly add different
+        geometries for different years as needed.
+    shapefile_scope
+        The scope of the shapefile. This is typically either a state
+        such as `NJ` or the string `"us"`.
+    geo_level
+        The geography level we want to add.
+
+    Returns
+    -------
+        A GeoDataFrame with the original data and an
+        added geometry column for each row.
+
+    """
+
+    counties = _identify_counties(geo_df, year)
+    water_gdf = _retrieve_water(counties, year)
+    gdf_without_water = _water_difference(geo_df, water_gdf, minimum_area_sq_meters)
+
+    return gdf_without_water
