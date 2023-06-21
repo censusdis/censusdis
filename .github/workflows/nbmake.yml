@@ -14,7 +14,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - id: notebook-matrix
-        run: echo "::set-output name=matrix::$(find notebooks -name "*.ipynb" | jq -R -s -c 'split("\n")[:-1]')"
+        run: echo "matrix=$(find notebooks -name "*.ipynb" | jq -R -s -c 'split("\n")[:-1]')" >> $GITHUB_OUTPUT
   nbmake:
     needs: list-notebooks
     runs-on: ubuntu-latest
