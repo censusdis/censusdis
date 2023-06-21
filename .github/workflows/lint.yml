@@ -1,3 +1,6 @@
+# Run various link checks, like flake8 and black, to make sure
+# our code remains in good shape, avoids common bugs, and follows
+# common coding  conventions.
 name: lint
 
 on:

@@ -1,36 +1,36 @@
-# Test that all the notebooks run properly. This is a sort of simple
-# unit test. We don't assert that the notebooks produce any particuler
-# expected results, but we at least know they keep running as we make
-# changes to the underlying library.
-name: nbmake
+# Run unit tests every time a branch is pushed. This is the simplest
+# version of unit testing, just on a single platform.
+#
+# See also:
+#    test-matrix.yml: run on all platforms for each pull request
+#    coverage-report.yml: runs on merge to main to generate coverage reports
+
+name: unit-test
 
 on:
   push:
     branches-ignore:
       - main
 
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
 jobs:
-  # List the notebooks
-  list-notebooks:
+  unit-test:
+    if: ${{ github.event.pull_request.merged }}
     runs-on: ubuntu-latest
-    outputs:
-      matrix: ${{ steps.notebook-matrix.outputs.matrix }}
-    steps:
-      - uses: actions/checkout@v2
-      - id: notebook-matrix
-        run: echo "matrix=$(find notebooks -name "*.ipynb" | jq -R -s -c 'split("\n")[:-1]')" >> $GITHUB_OUTPUT
-  nbmake:
-    needs: list-notebooks
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        notebook: ${{ fromJson(needs.list-notebooks.outputs.matrix) }}
     steps:
       #----------------------------------------------
-      #       check-out repo and set-up python
+      #       check out repo
       #----------------------------------------------
       - name: Check out repository
         uses: actions/checkout@v2
+        with:
+          ssh-key:
+            ${{secrets.DEPLOY_ACTION_SECRET}}
+      #----------------------------------------------
+      #       set up python
+      #----------------------------------------------
       - name: Set up python
         id: setup-python
         uses: actions/setup-python@v2
@@ -67,11 +67,20 @@ jobs:
       - name: Install library
         run: poetry install --no-interaction
       #----------------------------------------------
-      #              test run notebooks
+      #              run test suite
       #----------------------------------------------
-      - name: Test run notebook
+      - name: Run tests
+        id: runTests
         run: |
           source .venv/bin/activate
-          # pytest --junitxml=reports/nbmake/${{matrix.notebook-type}}/junit.xml --nbmake ${{matrix.notebook-dir}}/*.ipynb
-          # genbadge tests --name "${{matrix.notebook-type}} tests" -i reports/nbmake/${{matrix.notebook-type}}/junit.xml -o reports/nbmake/nbmake-${{matrix.notebook-type}}-badge.svg
-          pytest --nbmake "${{matrix.notebook}}"
+          python -m pytest
+      #----------------------------------------------
+      #              archive test artifacts
+      #----------------------------------------------
+      - name: Archive test artifacts
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: test_artifacts
+          path: tests/_test_artifacts
+          retention-days: 7
