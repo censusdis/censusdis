@@ -1,3 +1,11 @@
+# Run a matrix of tests across different platforms and python versions.
+# This is run on each pull request so we get a complete picture of any
+# platform-specific issues not caught earlier.
+#
+# See also:
+#    unit-test.yml: run on a single platform every time a branch is pushed
+#    coverage-report.yml: runs on merge to main to generate coverage reports
+
 # Based on https://github.com/marketplace/actions/install-poetry-action#running-on-windows
 
 name: test-matrix
@@ -5,7 +13,7 @@ name: test-matrix
 on: pull_request
 
 jobs:
-  test:
+  test-matrix:
     strategy:
       matrix:
         python-version: ["3.9", "3.10", "3.11"]

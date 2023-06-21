@@ -1,3 +1,12 @@
+# Generate a test coverage report and commit it back to the repo
+# and push. This is run after a PR is merged so that the coverage
+# report is kept up to date with respect to what is on the main
+# branch.
+#
+# See also:
+#    unit-test.yml: run on a single platform every time a branch is pushed
+#    test-matrix.yml: run on all platforms for each pull request
+
 name: coverage-report
 
 on:
