@@ -495,12 +495,12 @@ def _add_geography(
         )
         merge_gdf_on = gdf_on
     else:
+
         def individual_shapefile(sub_scope: str, query_year: int) -> gpd.GeoDataFrame:
             """Read the relevant shapefile and add a YEAR column to it."""
             try:
                 gdf = __shapefile_reader(query_year).read_cb_shapefile(
-                    sub_scope,
-                    shapefile_geo_level
+                    sub_scope, shapefile_geo_level
                 )
                 gdf["YEAR"] = query_year
                 return gdf
@@ -508,7 +508,11 @@ def _add_geography(
                 # If there are some years where we can't find a shapefile,
                 # skip over it and those rows will not have geometry in the
                 # final result.
-                logger.info("Unable to load shapefile for scope %s for year %d", sub_scope, query_year)
+                logger.info(
+                    "Unable to load shapefile for scope %s for year %d",
+                    sub_scope,
+                    query_year,
+                )
                 return gpd.GeoDataFrame()
 
         gdf_shapefile = pd.concat(
