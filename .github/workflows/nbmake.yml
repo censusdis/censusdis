@@ -25,6 +25,7 @@ jobs:
     strategy:
       matrix:
         notebook: ${{ fromJson(needs.list-notebooks.outputs.matrix) }}
+      fail-fast: false
     steps:
       #----------------------------------------------
       #       check-out repo and set-up python
