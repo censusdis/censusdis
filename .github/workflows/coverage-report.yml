@@ -15,10 +15,6 @@ on:
       - main
     types: [closed]
 
-concurrency:
-   group: 'coverage-pages'
-   cancel-in-progress: true
-
 jobs:
   test-coverage:
     if: ${{ github.event.pull_request.merged }}
