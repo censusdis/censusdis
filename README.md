@@ -10,7 +10,7 @@
 
 ![GitHub last commit](https://img.shields.io/github/last-commit/vengroff/censusdis)
 ![Tests Badge](reports/junit/tests-badge.svg)
-![Coverage Badge](reports/coverage/coverage-badge.svg)
+[![Coverage Badge](reports/coverage/coverage-badge.svg)](https://vengroff.github.io/censusdis/)
 [![Documentation Status](https://readthedocs.org/projects/censusdis/badge/?version=latest)](https://censusdis.readthedocs.io/en/latest/?badge=latest)
 
 Click any of the thumbnails below to see the notebook
