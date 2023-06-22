@@ -9,7 +9,7 @@
 ![PyPI - Downloads](https://img.shields.io/pypi/dw/censusdis?label=PyPI%20Downloads)
 
 ![GitHub last commit](https://img.shields.io/github/last-commit/vengroff/censusdis)
-![Tests Badge](reports/junit/tests-badge.svg)
+[![Tests Badge](reports/junit/tests-badge.svg)](https://vengroff.github.io/censusdis/)
 [![Coverage Badge](reports/coverage/coverage-badge.svg)](https://vengroff.github.io/censusdis/)
 [![Documentation Status](https://readthedocs.org/projects/censusdis/badge/?version=latest)](https://censusdis.readthedocs.io/en/latest/?badge=latest)
 
