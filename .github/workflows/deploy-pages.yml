@@ -2,7 +2,7 @@
 # Based on https://dev.to/mbarzeev/auto-publish-your-test-coverage-report-on-github-pages-35be
 
 # Simple workflow for deploying static content to GitHub Pages
-name: push coverage report to pages
+name: deploy-pages
 
 on:
   # Runs on pushes targeting the default branch
