@@ -21,7 +21,7 @@ geopandas = "^0.12.2"
 # version 3.5.0 seems to be well over an order of magnitude slower
 # than 3.4.1 so we don't want to use it. If 3.5.x fixes this then
 # we can remove this ~ versioned pyproj line.
-pyproj = "~3.4.1"
+pyproj = "^3.6.0"
 Rtree = "^1.0.0"
 matplotlib = "^3.5.3"
 Sphinx = { version = "^6.1.3", optional = true }
