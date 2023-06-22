@@ -15,9 +15,16 @@ on:
       - main
     types: [closed]
 
+concurrency:
+   group: 'coverage-pages'
+   cancel-in-progress: true
+
 jobs:
-  test:
+  test-coverage:
     if: ${{ github.event.pull_request.merged }}
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
       #----------------------------------------------
@@ -37,7 +44,7 @@ jobs:
         with:
           python-version: 3.9
       #----------------------------------------------
-      #  -----  install & configure poetry  -----
+      #      install & configure poetry
       #----------------------------------------------
       - name: Install Poetry
         uses: snok/install-poetry@v1
@@ -111,4 +118,16 @@ jobs:
           /usr/bin/git diff --staged --quiet || /usr/bin/git commit -m "Update badge(s) [github action]"
       - name: Update git
         run: |
-          git push -f 
+          git push -f
+      #----------------------------------------------
+      #              push to pages
+      #----------------------------------------------
+      - name: Setup Pages
+        uses: actions/configure-pages@v2
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v1
+        with:
+          path: './reports/coverage'
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v1
