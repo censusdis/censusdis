@@ -486,44 +486,46 @@ def _add_geography(
     # shapefiles. If so, by the time we get here, they are encoded in
     # one string with comma seperators.
     if isinstance(year, int):
-        gdf_shapefile = gpd.GeoDataFrame()
-
-        for sub_scope in shapefile_scope.split(","):
-            gdf_shapefile = gdf_shapefile.append(
-                __shapefile_reader(year).read_cb_shapefile(
-                    sub_scope,
-                    shapefile_geo_level,
-                ),
+        gdf_shapefile = pd.concat(
+            __shapefile_reader(year).read_cb_shapefile(
+                sub_scope,
+                shapefile_geo_level,
             )
+            for sub_scope in shapefile_scope.split(",")
+        )
         merge_gdf_on = gdf_on
     else:
-        gdf_shapefiles = []
 
-        for unique_year in df_data["YEAR"].unique():
+        def individual_shapefile(sub_scope: str, query_year: int) -> gpd.GeoDataFrame:
+            """Read the relevant shapefile and add a YEAR column to it."""
             try:
-                gdf_shapefile_for_year = gpd.GeoDataFrame()
-                for sub_scope in shapefile_scope.split(","):
-                    gdf_shapefile_for_year = gdf_shapefile_for_year.append(
-                        __shapefile_reader(unique_year).read_cb_shapefile(
-                            sub_scope,
-                            shapefile_geo_level,
-                        )
-                    )
-                gdf_shapefile_for_year["YEAR"] = unique_year
-                gdf_shapefiles.append(gdf_shapefile_for_year)
+                gdf = __shapefile_reader(query_year).read_cb_shapefile(
+                    sub_scope, shapefile_geo_level
+                )
+                gdf["YEAR"] = query_year
+                return gdf
             except cmap.MapException:
-                logger.info("Unable to load shapefile for year %d", unique_year)
+                # If there are some years where we can't find a shapefile,
+                # skip over it and those rows will not have geometry in the
+                # final result.
+                logger.info(
+                    "Unable to load shapefile for scope %s for year %d",
+                    sub_scope,
+                    query_year,
+                )
+                return gpd.GeoDataFrame()
 
-        if len(gdf_shapefiles) == 0:
+        gdf_shapefile = pd.concat(
+            individual_shapefile(sub_scope, unique_year)
+            for unique_year in df_data["YEAR"].unique()
+            for sub_scope in shapefile_scope.split(",")
+        )
+
+        if len(gdf_shapefile.index) == 0:
             # None of the years matched, so we add None for geometry to all.
             gdf = gpd.GeoDataFrame(df_data, copy=True)
             gdf["geometry"] = None
             return gdf
-
-        # gpd.concat does not exist, so we have to pd.concat and
-        # then turn the df into a gdf.
-        gdf_shapefile = pd.concat(gdf_shapefiles)
-        gdf_shapefile = gpd.GeoDataFrame(gdf_shapefile)
 
         merge_gdf_on = ["YEAR"] + gdf_on
         df_on = ["YEAR"] + df_on
