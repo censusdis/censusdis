@@ -118,16 +118,4 @@ jobs:
           /usr/bin/git diff --staged --quiet || /usr/bin/git commit -m "Update badge(s) [github action]"
       - name: Update git
         run: |
-          git push -f
-      #----------------------------------------------
-      #              push to pages
-      #----------------------------------------------
-      - name: Setup Pages
-        uses: actions/configure-pages@v2
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v1
-        with:
-          path: './reports/coverage'
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v1
+          git push -f 
