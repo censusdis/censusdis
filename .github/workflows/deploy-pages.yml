@@ -12,9 +12,8 @@ on:
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
-# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+# permission to deploy to pages
 permissions:
-  contents: read
   pages: write
   id-token: write
 
@@ -38,7 +37,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
         with:
-          # Upload entire repository
+          # Upload just the coverage report
           path: './reports/coverage'
       - name: Deploy to GitHub Pages
         id: deployment
