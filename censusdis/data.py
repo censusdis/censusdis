@@ -24,6 +24,7 @@ from censusdis.impl.varcache import VariableCache
 from censusdis.impl.varsource.base import VintageType
 from censusdis.impl.varsource.censusapi import CensusApiVariableSource
 from censusdis.values import ALL_SPECIAL_VALUES
+from numbers import Number
 
 logger = getLogger(__name__)
 
@@ -723,6 +724,7 @@ def download(
     set_to_nan: Union[bool, Iterable[int]] = True,
     skip_annotations: bool = True,
     with_geometry: bool = False,
+    remove_water: bool = False,
     api_key: Optional[str] = None,
     variable_cache: Optional["VariableCache"] = None,
     row_keys: Optional[Union[str, Iterable[str]]] = None,
@@ -787,6 +789,9 @@ def download(
         a map. See https://www.census.gov/geographies/mapping-files/time-series/geo/cartographic-boundary.2020.html
         for details of the shapefiles that will be downloaded on your behalf to
         generate these boundaries.
+    remove_water
+        If `True` and if with_geometry=True, will query TIGER for AREAWATER shapefiles and
+        remove water areas from returned geometry.
     api_key
         An optional API key. If you don't have or don't use a key, the number
         of calls you can make will be limited to 500 per day.
@@ -872,6 +877,7 @@ def download(
         download_variables=download_variables,
         set_to_nan=set_to_nan,
         with_geometry=with_geometry,
+        remove_water=remove_water,
         api_key=api_key,
         variable_cache=variable_cache,
         **string_kwargs,
@@ -885,6 +891,7 @@ def _download_remote(
     download_variables: List[str],
     set_to_nan: Union[bool, Iterable[float]] = True,
     with_geometry: bool,
+    remove_water: bool,
     api_key: Optional[str],
     variable_cache: "VariableCache",
     **kwargs,
@@ -961,6 +968,10 @@ def _download_remote(
         shapefile_scope = bound_path.bindings[bound_path.path_spec.path[0]]
 
         gdf_data = _add_geography(df_data, vintage, shapefile_scope, geo_level)
+
+        if remove_water:
+            gdf_data = clip_water(gdf_data, vintage)
+
         return gdf_data
 
     return df_data
@@ -1248,13 +1259,13 @@ def geographies(dataset: str, vintage: VintageType) -> List[List[str]]:
 variables = VariableCache()
 
 
-def _identify_counties(geo_df: gpd.GeoDataFrame, year: int):
+def _identify_counties(gdf_geo: gpd.GeoDataFrame, year: int):
     """
     Takes a geodataframe and identifies which US counties the supplied geography overlaps.
 
     Parameters
     ----------
-    geo_df
+    gdf_geo
         A GeoDataFrame containing polygons within the United States
     year
         The year for which to fetch geometries. We need this
@@ -1266,22 +1277,23 @@ def _identify_counties(geo_df: gpd.GeoDataFrame, year: int):
     """
 
     # Some dataframes will contain the county column already
-    if "STATE" in geo_df and "COUNTY" in geo_df:
-        geo_df["FIPS"] = geo_df["STATE"] + geo_df["COUNTY"]
+    if "STATE" in gdf_geo and "COUNTY" in gdf_geo:
+        fips_codes = gdf_geo["STATE"] + gdf_geo["COUNTY"]
 
-        return geo_df.FIPS.unique().tolist()
+        return fips_codes.unique().tolist()
     # Otherwise, we load all the US counties and perform an overlap operation
     else:
         reader = __shapefile_readers.get(year)
         us_counties = reader.read_cb_shapefile("us", "county")
         us_counties["FIPS"] = us_counties["STATEFP"] + us_counties["COUNTYFP"]
 
-        county_overlap_list = us_counties.overlay(geo_df).FIPS.unique().tolist()
+        county_overlap = us_counties.overlay(gdf_geo, keep_geom_type=False)
+        fips_codes = county_overlap["STATEFP"] + county_overlap["COUNTYFP"]
 
-        return county_overlap_list
+        return fips_codes.unique().tolist()
 
 
-def _retrieve_water(county_FIPS_codes: list[str], year: int):
+def _retrieve_water(county_fips_codes: list[str], year: int):
     """
     Loads `AREAWATER` files from tiger for specified counties.
 
@@ -1295,75 +1307,129 @@ def _retrieve_water(county_FIPS_codes: list[str], year: int):
         A GeoDataFrame containing the census defined water in the supplied counties
     """
     reader = __shapefile_readers.get(year)
-    water_gdfs = []
 
-    for county in county_FIPS_codes:
-        water_gdfs.append(
-            reader.read_shapefile(shapefile_scope=county, geography="areawater")
-        )
-
+    gdf_water = pd.concat(
+        reader.read_shapefile(shapefile_scope=county, geography="areawater")
+        for county in county_fips_codes
+    )
     # Geo pandas has no concat method, so we convert from a pandas df
-    water_gdf = pd.concat(water_gdfs)
-    water_gdf = gpd.GeoDataFrame(water_gdf)
-    return water_gdf
+    gdf_water = gpd.GeoDataFrame(gdf_water)
+    return gdf_water
 
 
 def _water_difference(
-    geo_df: gpd.GeoDataFrame, water_gdf: gpd.GeoDataFrame, minimum_area_sq_meters: int
+    gdf_geo: gpd.GeoDataFrame, gdf_water: gpd.GeoDataFrame, minimum_area_sq_meters: int
 ):
     """
     Removes water polygons exceeding minimum size from supplied GeoDataFrame
 
     Parameters
     ----------
-    geo_df
+    gdf_geo
         A GeoDataFrame containing polygons within the United States
-    water_gdf
+    gdf_water
         A GeoDataFrame containing census AREAWATER polygons
     minimum_area_sq_meters
         The smallest water polygon to be removed, specified in square meters
 
     Returns
     -------
-        A version of geo_df with the water areas removed
+        A version of gdf_geo with the water areas removed
     """
-    return geo_df.overlay(
-        water_gdf.query("AWATER > @minimum_area_sq_meters"),
+
+    # Combining polygons speeds up the overlay operation
+    geo_combined_water = gdf_water[
+        gdf_water["AWATER"] >= minimum_area_sq_meters
+    ].unary_union
+    gdf_combined_water = gpd.GeoDataFrame(geometry=[geo_combined_water])
+    gdf_combined_water = gdf_combined_water.set_crs(gdf_water.crs)
+
+    return gdf_geo.overlay(
+        gdf_combined_water,
         "difference",
         keep_geom_type=False,
     )
 
 
+def remove_slivers(gdf_geo: gpd.GeoDataFrame, threshhold: Number):
+    """
+    Removes slivers by identifying components of geometries that have a low area
+    relative to the full geometry. First, separates multipolygon and geometry
+    collections into component pieces. Then calculates area proportion of each
+    component. Components falling below a specified threshold are dropped.
+
+    Parameters
+    ----------
+    gdf_geo
+        A GeoDataFrame containing polygons within the United States
+    threshold
+        The minimum proportion of the full geometry area that each component must
+        have to be preserved.
+
+    Returns
+    -------
+        A version of gdf_geo that has the small components removed
+    """
+
+    # We need to convert between the input CRS and a planar crs to calculate area
+    input_crs = gdf_geo.crs
+    gdf_geo = gdf_geo.to_crs(5070)  # Albers Equal Area
+
+    # Any slivers will be found in geometries of type 'Multipolygon' or 'Geometry Collection'
+    # After exploding the geomtries we'll need to re-assemble them using these columns
+    group_columns = gdf_geo.columns.to_list()
+    group_columns.remove("geometry")
+
+    # We split these non-polygon geometries up and identify the area of each component
+    gdf_geo.loc[:, "full_area"] = gdf_geo.area
+    gdf_exploded = gdf_geo.explode(index_parts=True)
+    gdf_exploded.loc[:, "component_area"] = gdf_exploded.area
+    gdf_exploded.loc[:, "area_pct"] = (
+        gdf_exploded.component_area / gdf_exploded.full_area
+    )
+
+    # Component geometry that make up a percentage of the full geometry area below the
+    # specified threshold are removed
+    geometries_to_include = gdf_exploded[gdf_exploded.area_pct >= threshhold]
+
+    # Back to original crs
+    geometries_to_include = geometries_to_include.to_crs(input_crs)
+
+    # Geopandas.dissolve doesn't like missing values. We need to replace them to perform the operation
+    geometries_to_include[group_columns] = geometries_to_include[group_columns].fillna(
+        -9999
+    )
+    gdf_out = geometries_to_include.dissolve(group_columns).reset_index()
+
+    # Revert to NaN
+    gdf_out[group_columns] = gdf_out[group_columns].replace(-9999, np.nan)
+
+    return gdf_out.drop(["full_area", "component_area", "area_pct"], axis=1)
+
+
 def clip_water(
-    geo_df: gpd.GeoDataFrame, year: int, minimum_area_sq_meters: int = 10000
+    gdf_geo: gpd.GeoDataFrame, year: int, minimum_area_sq_meters: int = 10000
 ):
     """
     Removes water from input geodataframe.
 
     Parameters
     ----------
-    geo_df
+    gdf_geo
         The GeoDataFrame from which we want to remove water
     year
         The year for which to fetch geometries. We need this
-        because they change over time. If `None`, look for a
-        `'YEAR'` column in `df_data` and possibly add different
-        geometries for different years as needed.
-    shapefile_scope
-        The scope of the shapefile. This is typically either a state
-        such as `NJ` or the string `"us"`.
-    geo_level
-        The geography level we want to add.
+        because they change over time.
+    minimum_area_sq_meters
+        The minimimum size of a water area to be removed
 
     Returns
     -------
-        A GeoDataFrame with the original data and an
-        added geometry column for each row.
-
+        A GeoDataFrame with the water areas larger than
+        the specified threshold removed.
     """
 
-    counties = _identify_counties(geo_df, year)
-    water_gdf = _retrieve_water(counties, year)
-    gdf_without_water = _water_difference(geo_df, water_gdf, minimum_area_sq_meters)
-
+    counties = _identify_counties(gdf_geo, year)
+    gdf_water = _retrieve_water(counties, year)
+    gdf_without_water = _water_difference(gdf_geo, gdf_water, minimum_area_sq_meters)
     return gdf_without_water
