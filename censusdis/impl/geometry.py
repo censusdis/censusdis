@@ -6,7 +6,6 @@ Utilities for geometric operations.
 import math
 from typing import Optional, TypeVar, Union
 import geopandas as gpd
-from geopandas.base import GeoPandasBase
 from shapely import Polygon, MultiPolygon
 
 
