@@ -17,7 +17,7 @@ Click any of the thumbnails below to see the notebook
 that generated it.
 
 [<img src="docs/_static/images/sample00.png" alt="Integration in SoMa Tracts" height=160>](notebooks/SoMa%20DIS%20Demo.ipynb)
-[<img src="docs/_static/images/sample01.png" alt="Diversity in New Jersey" height=160>](notebooks/Data%20With%20Geometry.ipynb)
+[<img src="docs/_static/images/sample01.png" alt="Diversity in New Jersey" height=160>](notebooks/ACS%20Demo.ipynb)
 [<img src="docs/_static/images/sample02.png" alt="2020 Median Income by County in Georgia" height=160>](notebooks/Data%20With%20Geometry.ipynb)
 [<img src="docs/_static/images/sample05.png" alt="Nationwide Integration at the Census Tract over Block Group Level" height=160>](notebooks/Nationwide%20Diversity%20and%20Integration.ipynb)
 [<img src="docs/_static/images/sample03.png" alt="White Alone Population as a Percent of County Population" height=160>](notebooks/Seeing%20White.ipynb)
@@ -126,7 +126,7 @@ The demo notebooks include
 | [ACS Demo.ipynb](./notebooks/ACS%20Demo.ipynb)                                                              | Load American Community Survey (ACS) Detail Table data for New Jersey and plot diversity statewide at the census block group level.                                                  |
 | [ACS Subject Table.ipynb](./notebooks/ACS%20Subject%20Table.ipynb)                                          | Load and plot American Community Survey (ACS) Subject Table data at the state level.                                                                                                 |
 | [Block Groups in CBSAs.ipynb](./notebooks/Block%20Groups%20in%20CBSAs.ipynb)                                | Load and spatially join on-spine and off-spine geographies and plot the results on a map.                                                                                            |
-| [Data With Geometry.ipynb](./notebooks/Data%20With%Geometry.ipynb)                                          | Load American Community Survey (ACS) data for New Jersey and plot diversity statewide at the census block group level.                                                               |
+| [Data With Geometry.ipynb](./notebooks/Data%20With%20Geometry.ipynb)                                          | Load American Community Survey (ACS) data for New Jersey and plot diversity statewide at the census block group level.                                                               |
 | [Exploring Variables.ipynb](./notebooks/Exploring%20Variables.ipynb)                                        | Load metatdata on a group of variables, visualize the tree hierarchy of variables in the group, and load data from the leaves of the tree.                                           |
 | [Getting Started Examples.ipynb](./notebooks/Getting%20Started%20Examples.ipynb)                            | Sample code from the [Getting Started](https://censusdis.readthedocs.io/en/latest/intro.html) guide.                                                                                 |                                                         |
 | [Nationwide Diversity and Integration.ipynb](./notebooks/Nationwide%20Diversity%20and%20Integration.ipynb)  | Load nationwide demographic data, compute diversity and integration, and plot.                                                                                                       |
