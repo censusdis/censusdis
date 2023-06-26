@@ -171,6 +171,36 @@ class DropSliversTestCase(unittest.TestCase):
             self.geometry.geometry.iloc[3].equals(remaining.geometry.iloc[3])
         )
 
+    def test_drop_slivers_from_gdf(self):
+        gdf_geo = gpd.GeoDataFrame(
+            [
+                ["Square and Line"],
+                ["Line"],
+                ["Triangle"],
+                ["Two Triangles"],
+            ],
+            columns=["description"],
+            geometry=self.geometry,
+        )
+
+        remaining = drop_slivers(gdf_geo)
+
+        self.assertEqual(len(gdf_geo.index), len(remaining))
+
+        self.assertTrue(remaining["description"].equals(gdf_geo["description"]))
+
+        self.assertEqual(
+            Polygon(((0, 0), (1, 0), (1, 1), (0, 1), (0, 0))),
+            remaining.geometry.iloc[0],
+            "The square should be left as a single polygon.",
+        )
+
+        self.assertIsNone(remaining.geometry.iloc[1], "Line is dropped.")
+
+        # The others don't change.
+        self.assertTrue(gdf_geo.geometry.iloc[2].equals(remaining.geometry.iloc[2]))
+        self.assertTrue(gdf_geo.geometry.iloc[3].equals(remaining.geometry.iloc[3]))
+
 
 if __name__ == "__main__":
     unittest.main()

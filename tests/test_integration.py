@@ -22,6 +22,7 @@ import censusdis.maps as cem
 import censusdis.values as cev
 from censusdis import states
 from censusdis.states import WA
+from censusdis.datasets import ACS5
 
 
 class DownloadTestCase(unittest.TestCase):
@@ -1154,6 +1155,62 @@ class LongIdTestCase(unittest.TestCase):
         self.assertEqual(2, len(df_cps_asec_mar.columns))
         self.assertIn("STATE", df_cps_asec_mar.columns)
         self.assertIn("H_IDNUM", df_cps_asec_mar.columns)
+
+
+class RemoveWaterTestCase(unittest.TestCase):
+    """Test removing water."""
+
+    def test_remove_water_nyc(self):
+        """Test census tracts in NYC."""
+
+        nyc_counties = [
+            "061",
+            "081",
+        ]  # "005", "047", "085"]
+
+        # We usse EPSG 3857 since we will be computing areas.
+
+        gdf_tracts = ced.download(
+            ACS5,
+            2020,
+            "NAME",
+            state=states.NY,
+            county=nyc_counties,
+            tract="*",
+            with_geometry=True,
+            remove_water=False,
+        ).to_crs(epsg=3857)
+
+        gdf_tracts_no_water = ced.download(
+            ACS5,
+            2020,
+            "NAME",
+            state=states.NY,
+            county=nyc_counties,
+            tract="*",
+            with_geometry=True,
+            remove_water=True,
+        ).to_crs(epsg=3857)
+
+        # We should not lose any tracts.
+        self.assertEqual(gdf_tracts.shape, gdf_tracts_no_water.shape)
+
+        # The names should be the same.
+        self.assertTrue(gdf_tracts.NAME.equals(gdf_tracts_no_water.NAME))
+
+        # The areas of the tracts without water should be smaller than or
+        # equal to those of the original.
+        self.assertTrue(
+            (gdf_tracts_no_water.geometry.area < gdf_tracts.geometry.area).any()
+        )
+        self.assertTrue(
+            (gdf_tracts_no_water.geometry.area == gdf_tracts.geometry.area).any()
+        )
+
+        # But there are some rare cases when they get distorted to be a little bigger.
+        self.assertFalse(
+            (gdf_tracts_no_water.geometry.area / gdf_tracts.geometry.area >= 1.01).any()
+        )
 
 
 if __name__ == "__main__":

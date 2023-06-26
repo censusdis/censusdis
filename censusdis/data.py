@@ -1352,62 +1352,6 @@ def _water_difference(
     )
 
 
-def remove_slivers(gdf_geo: gpd.GeoDataFrame, threshhold: Number):
-    """
-    Removes slivers by identifying components of geometries that have a low area
-    relative to the full geometry. First, separates multipolygon and geometry
-    collections into component pieces. Then calculates area proportion of each
-    component. Components falling below a specified threshold are dropped.
-
-    Parameters
-    ----------
-    gdf_geo
-        A GeoDataFrame containing polygons within the United States
-    threshold
-        The minimum proportion of the full geometry area that each component must
-        have to be preserved.
-
-    Returns
-    -------
-        A version of gdf_geo that has the small components removed
-    """
-
-    # We need to convert between the input CRS and a planar crs to calculate area
-    input_crs = gdf_geo.crs
-    gdf_geo = gdf_geo.to_crs(5070)  # Albers Equal Area
-
-    # Any slivers will be found in geometries of type 'Multipolygon' or 'Geometry Collection'
-    # After exploding the geomtries we'll need to re-assemble them using these columns
-    group_columns = gdf_geo.columns.to_list()
-    group_columns.remove("geometry")
-
-    # We split these non-polygon geometries up and identify the area of each component
-    gdf_geo.loc[:, "full_area"] = gdf_geo.area
-    gdf_exploded = gdf_geo.explode(index_parts=True)
-    gdf_exploded.loc[:, "component_area"] = gdf_exploded.area
-    gdf_exploded.loc[:, "area_pct"] = (
-        gdf_exploded.component_area / gdf_exploded.full_area
-    )
-
-    # Component geometry that make up a percentage of the full geometry area below the
-    # specified threshold are removed
-    geometries_to_include = gdf_exploded[gdf_exploded.area_pct >= threshhold]
-
-    # Back to original crs
-    geometries_to_include = geometries_to_include.to_crs(input_crs)
-
-    # Geopandas.dissolve doesn't like missing values. We need to replace them to perform the operation
-    geometries_to_include[group_columns] = geometries_to_include[group_columns].fillna(
-        -9999
-    )
-    gdf_out = geometries_to_include.dissolve(group_columns).reset_index()
-
-    # Revert to NaN
-    gdf_out[group_columns] = gdf_out[group_columns].replace(-9999, np.nan)
-
-    return gdf_out.drop(["full_area", "component_area", "area_pct"], axis=1)
-
-
 def clip_water(
     gdf_geo: gpd.GeoDataFrame, year: int, minimum_area_sq_meters: int = 10000
 ):
@@ -1433,5 +1377,8 @@ def clip_water(
     counties = _identify_counties(gdf_geo, year)
     gdf_water = _retrieve_water(counties, year)
     gdf_without_water = _water_difference(gdf_geo, gdf_water, minimum_area_sq_meters)
-    gdf_without_water = drop_slivers_from_gdf(gdf_without_water, threshold=0.1)
+    original_crs = gdf_without_water.crs
+    gdf_without_water = drop_slivers_from_gdf(
+        gdf_without_water.to_crs(epsg=3857), threshold=0.1
+    ).to_crs(original_crs)
     return gdf_without_water
