@@ -25,7 +25,6 @@ from censusdis.impl.varcache import VariableCache
 from censusdis.impl.varsource.base import VintageType
 from censusdis.impl.varsource.censusapi import CensusApiVariableSource
 from censusdis.values import ALL_SPECIAL_VALUES
-from numbers import Number
 
 logger = getLogger(__name__)
 
