@@ -20,6 +20,7 @@ import censusdis.geography as cgeo
 import censusdis.maps as cmap
 from censusdis.impl.exceptions import CensusApiException
 from censusdis.impl.fetch import data_from_url
+from censusdis.impl.geometry import drop_slivers_from_gdf
 from censusdis.impl.varcache import VariableCache
 from censusdis.impl.varsource.base import VintageType
 from censusdis.impl.varsource.censusapi import CensusApiVariableSource
@@ -1432,4 +1433,5 @@ def clip_water(
     counties = _identify_counties(gdf_geo, year)
     gdf_water = _retrieve_water(counties, year)
     gdf_without_water = _water_difference(gdf_geo, gdf_water, minimum_area_sq_meters)
+    gdf_without_water = drop_slivers_from_gdf(gdf_without_water, threshold=0.1)
     return gdf_without_water
