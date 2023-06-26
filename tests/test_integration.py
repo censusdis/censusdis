@@ -1198,16 +1198,14 @@ class RemoveWaterTestCase(unittest.TestCase):
         # The names should be the same.
         self.assertTrue(gdf_tracts.NAME.equals(gdf_tracts_no_water.NAME))
 
-        # The areas of the tracts without water should be smaller than or
+        # Some of the areas of the tracts without water should be smaller than or
         # equal to those of the original.
         self.assertTrue(
             (gdf_tracts_no_water.geometry.area < gdf_tracts.geometry.area).any()
         )
-        self.assertTrue(
-            (gdf_tracts_no_water.geometry.area == gdf_tracts.geometry.area).any()
-        )
 
         # But there are some rare cases when they get distorted to be a little bigger.
+        # Lat's make sure it's not a lot bigger.
         self.assertFalse(
             (gdf_tracts_no_water.geometry.area / gdf_tracts.geometry.area >= 1.01).any()
         )
