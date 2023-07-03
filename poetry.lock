@@ -1950,7 +1950,7 @@ docs = ["Sphinx", "sphinx-rtd-theme", "sphinx-copybutton", "sphinxcontrib-napole
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "ce28dd921426657f977534863b93ee6a8adfcc9b0efe1fd03d9c7c45632e6a4e"
+content-hash = "5517caf555bcfe13bbd4f4f1011a46463af1391c7103b9724f92c4c8b1a1b2cc"
 
 [metadata.files]
 adjustText = [
