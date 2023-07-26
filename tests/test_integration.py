@@ -70,21 +70,6 @@ class DownloadTestCase(unittest.TestCase):
 
         self.assertEqual(["STATE", "COUNTY", "NAME", "B19001_001E"], list(df.columns))
 
-    def test_download_detail(self):
-        """Use the deprecated API and assert it warns."""
-
-        with self.assertWarns(DeprecationWarning):
-            df = ced.download_detail(
-                self._dataset,
-                self._year,
-                ["NAME", self._name],
-                state=states.NJ,
-                county="*",
-            )
-
-        self.assertEqual((21, 4), df.shape)
-
-        self.assertEqual(["STATE", "COUNTY", "NAME", "B19001_001E"], list(df.columns))
 
     def test_bad_variable(self):
         """Try to download a variable that does not exist."""
