@@ -675,45 +675,6 @@ def add_inferred_geography(
     return gdf
 
 
-def download_detail(
-    dataset: str,
-    year: int,
-    download_variables: Iterable[str],
-    *,
-    with_geometry: bool = False,
-    api_key: Optional[str] = None,
-    variable_cache: Optional["VariableCache"] = None,
-    **kwargs: cgeo.InSpecType,
-) -> Union[pd.DataFrame, gpd.GeoDataFrame]:
-    """
-    Deprecated version of :py:func:`~download`; use `download` instead.
-
-    This function offers a subset of the current functionality of
-    :py:func:`~download` but under the old name.
-
-    Back in the pre-history of `censusdis`, this function started life as a
-    way to download ACS detail tables. It evolved significantly since then and
-    does much more now. Hence, the name was changed.
-
-    This function will disappear completely no later than version 1.0.0.
-    """
-    warnings.warn(
-        "censusdis.data.download_detail is deprecated. "
-        "Please use censusdis.data.download instead.",
-        DeprecationWarning,
-        2,
-    )
-    return download(
-        dataset,
-        year,
-        download_variables,
-        with_geometry=with_geometry,
-        api_key=api_key,
-        variable_cache=variable_cache,
-        **kwargs,
-    )
-
-
 def download(
     dataset: str,
     vintage: VintageType,
