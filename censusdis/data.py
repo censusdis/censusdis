@@ -351,7 +351,10 @@ def __shapefile_reader(year: int):
     reader = __shapefile_readers.get(year, None)
 
     if reader is None:
-        reader = cmap.ShapeReader(__shapefile_root.shapefile_root, year,)
+        reader = cmap.ShapeReader(
+            __shapefile_root.shapefile_root,
+            year,
+        )
 
         __shapefile_readers[year] = reader
 
@@ -485,7 +488,10 @@ def _add_geography(
     # one string with comma seperators.
     if isinstance(year, int):
         gdf_shapefile = pd.concat(
-            __shapefile_reader(year).read_cb_shapefile(sub_scope, shapefile_geo_level,)
+            __shapefile_reader(year).read_cb_shapefile(
+                sub_scope,
+                shapefile_geo_level,
+            )
             for sub_scope in shapefile_scope.split(",")
         )
         merge_gdf_on = gdf_on
@@ -1338,7 +1344,11 @@ def _water_difference(
     gdf_combined_water = gpd.GeoDataFrame(geometry=[geo_combined_water])
     gdf_combined_water = gdf_combined_water.set_crs(gdf_water.crs)
 
-    return gdf_geo.overlay(gdf_combined_water, "difference", keep_geom_type=False,)
+    return gdf_geo.overlay(
+        gdf_combined_water,
+        "difference",
+        keep_geom_type=False,
+    )
 
 
 def clip_water(

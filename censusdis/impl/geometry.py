@@ -97,7 +97,10 @@ def drop_slivers_from_gdf(
 T = TypeVar("T", Polygon, MultiPolygon, gpd.GeoSeries, gpd.GeoDataFrame)
 
 
-def drop_slivers(geo: T, threshold: float = 0.01,) -> Union[None, T]:
+def drop_slivers(
+    geo: T,
+    threshold: float = 0.01,
+) -> Union[None, T]:
     if isinstance(geo, MultiPolygon):
         return drop_slivers_multi_polygon(geo, threshold=threshold)
     elif isinstance(geo, Polygon):
