@@ -78,7 +78,7 @@ def drop_slivers_from_geo_series(
     return gs_geo.map(
         lambda s: drop_slivers_multi_polygon(s, threshold)
         if isinstance(s, MultiPolygon)
-        else drop_polygon_if_sliver(s)
+        else drop_polygon_if_sliver(s, threshold)
         if isinstance(s, Polygon)
         else s
     )
@@ -97,10 +97,7 @@ def drop_slivers_from_gdf(
 T = TypeVar("T", Polygon, MultiPolygon, gpd.GeoSeries, gpd.GeoDataFrame)
 
 
-def drop_slivers(
-    geo: T,
-    threshold: float = 0.01,
-) -> Union[None, T]:
+def drop_slivers(geo: T, threshold: float = 0.01,) -> Union[None, T]:
     if isinstance(geo, MultiPolygon):
         return drop_slivers_multi_polygon(geo, threshold=threshold)
     elif isinstance(geo, Polygon):
