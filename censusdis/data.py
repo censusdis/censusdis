@@ -1379,11 +1379,6 @@ def clip_water(
     counties = _identify_counties(gdf_geo, year)
     gdf_water = _retrieve_water(counties, year)
 
-    water_crs = gdf_water.crs
-    gdf_water = drop_slivers_from_gdf(
-        gdf_water.to_crs(epsg=3857), threshold=sliver_threshold
-    ).to_crs(water_crs)
-
     gdf_without_water = _water_difference(gdf_geo, gdf_water, minimum_area_sq_meters)
 
     original_crs = gdf_without_water.crs
