@@ -1313,7 +1313,10 @@ def _water_difference(
 
 
 def clip_water(
-    gdf_geo: gpd.GeoDataFrame, year: int, minimum_area_sq_meters: int = 10000
+    gdf_geo: gpd.GeoDataFrame,
+    year: int,
+    minimum_area_sq_meters: int = 10000,
+    sliver_threshold=0.01,
 ):
     """
     Removes water from input geodataframe.
@@ -1336,9 +1339,12 @@ def clip_water(
 
     counties = _identify_counties(gdf_geo, year)
     gdf_water = _retrieve_water(counties, year)
+
     gdf_without_water = _water_difference(gdf_geo, gdf_water, minimum_area_sq_meters)
+
     original_crs = gdf_without_water.crs
     gdf_without_water = drop_slivers_from_gdf(
-        gdf_without_water.to_crs(epsg=3857), threshold=0.1
+        gdf_without_water.to_crs(epsg=3857), threshold=sliver_threshold
     ).to_crs(original_crs)
+
     return gdf_without_water
