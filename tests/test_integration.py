@@ -5,7 +5,7 @@ Most of the functionality can be unit tested elsewhere or with mocks, but
 these tests actually call the census API itself to cover the bits of code
 immediately around those calls.
 """
-
+import os
 import tempfile
 import unittest
 from pathlib import Path
@@ -23,6 +23,7 @@ import censusdis.values as cev
 from censusdis import states
 from censusdis.states import WA
 from censusdis.datasets import ACS5
+import censusdis.symbolic as sym
 
 
 class DownloadTestCase(unittest.TestCase):
@@ -69,7 +70,6 @@ class DownloadTestCase(unittest.TestCase):
         self.assertEqual((21, 4), df.shape)
 
         self.assertEqual(["STATE", "COUNTY", "NAME", "B19001_001E"], list(df.columns))
-
 
     def test_bad_variable(self):
         """Try to download a variable that does not exist."""
@@ -1153,7 +1153,7 @@ class RemoveWaterTestCase(unittest.TestCase):
             "081",
         ]  # "005", "047", "085"]
 
-        # We usse EPSG 3857 since we will be computing areas.
+        # We use EPSG 3857 since we will be computing areas.
 
         gdf_tracts = ced.download(
             ACS5,
@@ -1194,6 +1194,41 @@ class RemoveWaterTestCase(unittest.TestCase):
         self.assertFalse(
             (gdf_tracts_no_water.geometry.area / gdf_tracts.geometry.area >= 1.01).any()
         )
+
+
+class SymbolicInsertTestCase(unittest.TestCase):
+    """Test our ability to add symbolic names."""
+
+    def setUp(self) -> None:
+        self.df_datasets = ced.variables.all_data_sets()
+        self.dataset_names = self.df_datasets["DATASET"].to_list()
+        self.dataset_url = self.df_datasets["API BASE URL"].to_list()
+        self.create_symbolic = sym.symbolic()
+        self.symbolic_names = self.create_symbolic.store_dataset(
+            self.dataset_names, self.dataset_url
+        )
+
+    def test_insert_name_link(self):
+        """Test that we can insert symbolic name and reference link of datasetsto datasets.py."""
+        file_path = os.path.realpath(__file__)
+        file_directory = os.path.dirname(file_path)
+        file_directory = file_directory.replace("tests", "censusdis")
+        os.chdir(file_directory)
+
+        with open("datasets.py", "r") as file:
+            file_check = file.read()
+            for key in self.symbolic_names.keys():
+                value = self.symbolic_names[key]
+                if not key.startswith("DEC") and not key.startswith("PUBS"):
+                    self.assertTrue(key in file_check)
+                    self.assertTrue(value[0] in file_check)
+                    self.assertTrue(value[1] in file_check)
+                elif key.startswith("DEC") or key.startswith("PUBS"):
+                    self.assertTrue(value[0] in file_check)
+                    self.assertTrue(value[1] in file_check)
+                else:
+                    self.assertTrue(value[0] in file_check)
+                    self.assertTrue(value[1] in file_check)
 
 
 if __name__ == "__main__":
