@@ -23,6 +23,7 @@ import censusdis.values as cev
 from censusdis import states
 from censusdis.states import WA
 from censusdis.datasets import ACS5
+from censusdis.datasets import ACS3
 import censusdis.symbolic as sym
 
 
@@ -1207,9 +1208,12 @@ class SymbolicInsertTestCase(unittest.TestCase):
         self.symbolic_names = self.create_symbolic.store_dataset(
             self.dataset_names, self.dataset_url
         )
+        self._variable_source = (
+            censusdis.impl.varsource.censusapi.CensusApiVariableSource()
+        )
 
     def test_insert_name_link(self):
-        """Test that we can insert symbolic name and reference link of datasetsto datasets.py."""
+        """Test that we can insert symbolic name and reference link of datasets to datasets.py."""
         file_path = os.path.realpath(__file__)
         file_directory = os.path.dirname(file_path)
         file_directory = file_directory.replace("tests", "censusdis")
@@ -1230,6 +1234,16 @@ class SymbolicInsertTestCase(unittest.TestCase):
                     self.assertTrue(value[0] in file_check)
                     self.assertTrue(value[1] in file_check)
 
+    def test_use_symbolic_name(self):
+        """Test that we can use symbolic name to download datasets."""
+        dataset = ACS3
+        year = 2011
+        group_name = "B19001"
+        name = f"{group_name}_001E"
+        df = ced.download(
+            dataset, year, ["NAME", name], state=states.NJ, county="*"
+        )
+        self.assertEqual(["STATE", "COUNTY", "NAME", "B19001_001E"], list(df.columns))
 
 if __name__ == "__main__":
     unittest.main()
