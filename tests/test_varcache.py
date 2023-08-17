@@ -380,8 +380,6 @@ class VariableCacheTestCase(unittest.TestCase):
 
         self.assertTrue((df_datasets_first_time == df_datasets_cached).all().all())
 
-        print(df_datasets_cached)
-
         self.assertEqual(
             ["YEAR", "DATASET", "TITLE", "DESCRIPTION", "API BASE URL"],
             list(df_datasets_cached.columns),

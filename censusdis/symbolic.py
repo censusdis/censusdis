@@ -8,28 +8,48 @@ and their respective symbolic names for
 documentation purposes.
 """
 
-import os
+import argparse
 import censusdis.data as ced
-import censusdis.datasets
+from pathlib import Path
 
 class symbolic:
+    """
+    A generator of datasets' symbolic names file.
+
+    This creates symbolic names for datasets based on
+    dataset names. The symbolic names are stored as 
+    dictionary keys with values of the dataset names
+    and url.
+
+    Users will use this to generate most up to date
+    dataset documentation file.
+    """
     def __init__(self):
         self.dictionary = {}
-        self.module_message = [
-            "# Copyright (c) 2022 Darren Erik Vengroff\n",'"""\n'
-            "This module contains abbreviated names for commonly used data sets.\n",
-            "These are typically used as the first argument to :py:func:`censudis.data.download`.\n",
-            "There are a lot more data sets available than there are symbolic names here.\n",
-            "But you can always use raw strings. For example, even for `ACS5` you can use\n",
-            "`acs/acs5` instead.\n", '"""\n' 
-        ]
+        self.module_message = "# Copyright (c) 2022 Darren Erik Vengroff\n" + '\n"""\n' + "This module contains abbreviated names for commonly used data sets.\n" + "\nThese are typically used as the first argument to :py:func:`censudis.data.download`.\n" + "\nThere are a lot more data sets available than there are symbolic names here.\n" + "\nBut you can always use raw strings. For example, even for `ACS5` you can use\n" + "\n`acs/acs5` instead.\n" + '"""\n'
 
     def store_dataset(self, dataset_list: list, url_list: list):
-        for item in dataset_list:
+        """
+        Construct symbolic names and store as keys mapping to values of dataset and url.
+
+        Parameters
+        ----------
+        dataset_list
+            List of dataset names. Used to construct symbolic
+            names and stored as value of symbolic name.
+
+        url_list
+            List of dataset urls. Stored as value of symbolic name.
+
+        Returns
+        -------
+            A dictionary storing the symbolic names of unique data sets 
+            that are available.
+        """
+        for item, link in zip(dataset_list, url_list):
             if item not in self.dictionary.values():
-                index = dataset_list.index(item)
-                link = url_list[index]
                 temp = item.split("/")
+                # Different cases of naming according to dataset names like 'acs/acs5' and special cases for clearer names
                 if len(temp) == 1:
                     if temp[0][:3] == "ecn" or temp[0][:3] == "abs":
                         name = temp[0][:3].upper() + "_" + temp[0][3:].upper()
@@ -61,12 +81,17 @@ class symbolic:
         return self.dictionary
 
     def write_file(self, destination_file: str):
-        os.chdir("censusdis")
+        """
+        Write symbolic names dictionary content into destination file.
+
+        Parameters
+        ----------
+        destination_file
+            The target file for storing the datasets' symbolic names.
+        """
         with open(destination_file, "w") as destfile:
-            for string in self.module_message:
-                destfile.write(string)
-                if string != '"""':
-                    destfile.write("\n")
+            destfile.write(self.module_message)
+            destfile.write("\n")
 
             for key in sorted(self.dictionary.keys()):
                 destfile.write("\n")
@@ -88,8 +113,16 @@ def main():
     dataset_url = df_datasets["API BASE URL"].to_list()
     create_symbolic = symbolic()
     symbolic_names = create_symbolic.store_dataset(dataset_names, dataset_url)
-    create_symbolic.write_file("datasets.py")
-    print("Updated datasets.py successfully.")
+
+    parser = argparse.ArgumentParser(description='Get destination file name.')
+    parser.add_argument('filename', metavar='filename', type=str,
+                        help='a file name for the symbolic name destination file')
+    args = parser.parse_args()
+    path_directory = Path.cwd()
+    target_directory = Path(path_directory, args.filename)
+
+    create_symbolic.write_file(target_directory)
+    print("Generated " + args.filename + " file successfully.")
 
 if __name__ == "__main__":
     main()
