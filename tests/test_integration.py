@@ -1243,6 +1243,7 @@ class SymbolicInsertTestCase(unittest.TestCase):
         df = ced.download(
             dataset, year, ["NAME", name], state=states.NJ, county="*"
         )
+        self.assertGreaterEqual(len(df.index), 1)
         self.assertEqual(["STATE", "COUNTY", "NAME", "B19001_001E"], list(df.columns))
 
 if __name__ == "__main__":
