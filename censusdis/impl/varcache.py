@@ -376,6 +376,9 @@ class VariableCache:
                     "DATASET": "/".join(dataset["c_dataset"]),
                     "TITLE": dataset.get("title", None),
                     "DESCRIPTION": dataset.get("description", None),
+                    "API BASE URL": dataset["distribution"][0].get("accessURL", None)
+                    if dataset.get("distribution")
+                    else None,
                 }
                 for dataset in datasets
             ]
