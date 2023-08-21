@@ -61,7 +61,7 @@ jobs:
       #----------------------------------------------
       - name: Run symbolic.py to update datasets file
         run: |
-          poetry run python censusdis/symbolic.py
+          poetry run python censusdis/symbolic.py datasets.py
       #----------------------------------------------
       #           commit updated datasets
       #----------------------------------------------
