@@ -1240,11 +1240,10 @@ class SymbolicInsertTestCase(unittest.TestCase):
         year = 2011
         group_name = "B19001"
         name = f"{group_name}_001E"
-        df = ced.download(
-            dataset, year, ["NAME", name], state=states.NJ, county="*"
-        )
+        df = ced.download(dataset, year, ["NAME", name], state=states.NJ, county="*")
         self.assertGreaterEqual(len(df.index), 1)
         self.assertEqual(["STATE", "COUNTY", "NAME", "B19001_001E"], list(df.columns))
+
 
 if __name__ == "__main__":
     unittest.main()
