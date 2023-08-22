@@ -1,3 +1,9 @@
+# Automates running symbolic.py to generate a 
+# dataset documentation file and commit it back 
+# to the repo and push. This is run after 
+# a PR is merged so that the datasets file has 
+# the updated datasets documentation.
+
 name: automate
 
 on:
