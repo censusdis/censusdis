@@ -9,7 +9,7 @@ There are a lot more data sets available than there are symbolic names here.
 
 But you can always use raw strings. For example, even for `ACS5` you can use
 
-`acs/acs5` instead. x
+`acs/acs5` instead.
 """
 
 
