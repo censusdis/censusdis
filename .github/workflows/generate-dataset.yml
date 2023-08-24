@@ -1,5 +1,10 @@
+# Automates running symbolic.py to generate a 
+# dataset documentation file and commit it back 
+# to the repo and push. This is run after 
+# a PR is merged so that the datasets file has 
+# the updated datasets documentation.
 
-name: automate
+name: generate-dataset
 
 on:
   pull_request:
@@ -8,7 +13,7 @@ on:
     types: [closed]
 
 jobs:
-  test-coverage:
+  generate-dataset:
     if: ${{ github.event.pull_request.merged }}
     runs-on: ubuntu-latest
     steps:
@@ -37,7 +42,6 @@ jobs:
           virtualenvs-create: true
           virtualenvs-in-project: true
           installer-parallel: true
-
       #----------------------------------------------
       #       load cached venv if cache exists
       #----------------------------------------------
@@ -59,20 +63,20 @@ jobs:
       - name: Install library
         run: poetry install --no-interaction
       #----------------------------------------------
-      #      run symbolic to update datasets
+      #         automates updating datasets
       #----------------------------------------------
-      - name: Run symbolic
+      - name: Run symbolic.py to update datasets file
         run: |
-          poetry run python censusdis/symbolic.py
+          poetry run python censusdis/symbolic.py datasets.py
       #----------------------------------------------
-      #              commit automate
+      #           commit updated datasets
       #----------------------------------------------
-      - name: Commit automate
+      - name: Commit newly generated datasets file
         run: |
           /usr/bin/git config --local user.email "action@github.com"
           /usr/bin/git config --local user.name "GitHub Action"
-          /usr/bin/git add ./censusdis/datasets.py
-          /usr/bin/git diff --staged --quiet || /usr/bin/git commit -m "Update badge(s) [github action]"
+          /usr/bin/git add censusdis/datasets.py
+          /usr/bin/git diff --staged --quiet || /usr/bin/git commit -m "Update datasets [github action]"
       - name: Update git
         run: |
-          git push -f 
+          git push -f
