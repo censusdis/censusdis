@@ -12,21 +12,23 @@ import argparse
 import censusdis.data as ced
 from pathlib import Path
 
+
 class symbolic:
     """
     A generator of datasets' symbolic names file.
 
     This creates symbolic names for datasets based on
-    dataset names. The symbolic names are stored as 
+    dataset names. The symbolic names are stored as
     dictionary keys with values of the dataset names
     and url.
 
     Users will use this to generate most up to date
     dataset documentation file.
     """
+
     def __init__(self):
         self.dictionary = {}
-        self.module_message = "# Copyright (c) 2022 Darren Erik Vengroff\n" + '\n"""\n' + "This module contains abbreviated names for commonly used data sets.\n" + "\nThese are typically used as the first argument to :py:func:`censudis.data.download`.\n" + "\nThere are a lot more data sets available than there are symbolic names here.\n" + "\nBut you can always use raw strings. For example, even for `ACS5` you can use\n" + "\n`acs/acs5` instead.\n" + '"""\n'
+        self.module_message = '# Copyright (c) 2022 Darren Erik Vengroff\n\n"""\nThis module contains abbreviated names for commonly used data sets.\n\nThese are typically used as the first argument to :py:func:`censudis.data.download`.\n\nThere are a lot more data sets available than there are symbolic names here.\n\nBut you can always use raw strings. For example, even for `ACS5` you can use\n\n`acs/acs5` instead.\n"""\n'
 
     def store_dataset(self, dataset_list: list, url_list: list):
         """
@@ -43,13 +45,14 @@ class symbolic:
 
         Returns
         -------
-            A dictionary storing the symbolic names of unique data sets 
+            A dictionary storing the symbolic names of unique data sets
             that are available.
         """
         for item, link in zip(dataset_list, url_list):
             if item not in self.dictionary.values():
                 temp = item.split("/")
-                # Different cases of naming according to dataset names like 'acs/acs5' and special cases for clearer names
+                # Different cases of naming according to dataset names like 'acs/acs5'
+                # and special cases for clearer names
                 if len(temp) == 1:
                     if temp[0][:3] == "ecn" or temp[0][:3] == "abs":
                         name = temp[0][:3].upper() + "_" + temp[0][3:].upper()
@@ -107,6 +110,7 @@ class symbolic:
                 destfile.write("\t%s: %s,\n" % (key, value))
             destfile.write("}")
 
+
 def main():
     df_datasets = ced.variables.all_data_sets()
     dataset_names = df_datasets["DATASET"].to_list()
@@ -114,15 +118,21 @@ def main():
     create_symbolic = symbolic()
     symbolic_names = create_symbolic.store_dataset(dataset_names, dataset_url)
 
-    parser = argparse.ArgumentParser(description='Get destination file name.')
-    parser.add_argument('filename', metavar='filename', type=str,
-                        help='a file name for the symbolic name destination file')
+    parser = argparse.ArgumentParser(description="Get destination file name.")
+    parser.add_argument(
+        "filename",
+        metavar="filename",
+        type=str,
+        help="a file name for the symbolic name destination file",
+    )
     args = parser.parse_args()
-    path_directory = Path.cwd()
-    target_directory = Path(path_directory, args.filename)
 
+    path_directory = "censusdis/"
+    target_directory = Path(path_directory, args.filename)
     create_symbolic.write_file(target_directory)
+
     print("Generated " + args.filename + " file successfully.")
+
 
 if __name__ == "__main__":
     main()

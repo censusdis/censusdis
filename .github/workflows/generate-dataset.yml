@@ -1,22 +1,20 @@
-# Generate a test coverage report and commit it back to the repo
-# and push. This is run after a PR is merged so that the coverage
-# report is kept up to date with respect to what is on the main
-# branch.
-#
-# See also:
-#    unit-test.yml: run on a single platform every time a branch is pushed
-#    test-matrix.yml: run on all platforms for each pull request
+# Automates running symbolic.py to generate a 
+# dataset documentation file and commit it back 
+# to the repo and push. This is run after 
+# a PR is merged so that the datasets file has 
+# the updated datasets documentation.
 
-name: coverage-report
+name: generate-dataset
 
 on:
-  workflow_run:
-    workflows: [generate-dataset]
-    types: [completed]
+  pull_request:
+    branches:
+      - main
+    types: [closed]
 
 jobs:
-  test-coverage:
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+  generate-dataset:
+    if: ${{ github.event.pull_request.merged }}
     runs-on: ubuntu-latest
     steps:
       #----------------------------------------------
@@ -44,7 +42,6 @@ jobs:
           virtualenvs-create: true
           virtualenvs-in-project: true
           installer-parallel: true
-
       #----------------------------------------------
       #       load cached venv if cache exists
       #----------------------------------------------
@@ -66,48 +63,20 @@ jobs:
       - name: Install library
         run: poetry install --no-interaction
       #----------------------------------------------
-      #              run test suite
+      #         automates updating datasets
       #----------------------------------------------
-      - name: Run tests with coverage
-        id: runTests
+      - name: Run symbolic.py to update datasets file
         run: |
-          source .venv/bin/activate
-          coverage run -m pytest --junitxml=reports/junit/junit.xml
+          poetry run python censusdis/symbolic.py datasets.py
       #----------------------------------------------
-      #              archive test artifacts
+      #           commit updated datasets
       #----------------------------------------------
-      - name: Archive test artifacts
-        if: always()
-        uses: actions/upload-artifact@v3
-        with:
-          name: test_artifacts
-          path: tests/_test_artifacts
-          retention-days: 7
-      #----------------------------------------------
-      #              generate coverage
-      #----------------------------------------------
-      - name: Generate coverage reports and badges
-        run: |
-          source .venv/bin/activate
-          coverage report 
-          coverage xml -o ./reports/coverage/coverage.xml
-          coverage html -d ./reports/coverage 
-          genbadge coverage -n coverage -o ./reports/coverage/coverage-badge.svg
-          genbadge tests --name tests -i reports/junit/junit.xml -o ./reports/junit/tests-badge.svg
-      #----------------------------------------------
-      #              commit coverage
-      #----------------------------------------------
-      - name: Commit coverage reports and badge
+      - name: Commit newly generated datasets file
         run: |
           /usr/bin/git config --local user.email "action@github.com"
           /usr/bin/git config --local user.name "GitHub Action"
-          /usr/bin/git add ./reports/coverage/*.html
-          /usr/bin/git add ./reports/coverage/*.png
-          /usr/bin/git add ./reports/coverage/*.js
-          /usr/bin/git add ./reports/coverage/*.css
-          /usr/bin/git add ./reports/coverage/coverage-badge.svg
-          /usr/bin/git add ./reports/junit/tests-badge.svg
-          /usr/bin/git diff --staged --quiet || /usr/bin/git commit -m "Update badge(s) [github action]"
+          /usr/bin/git add censusdis/datasets.py
+          /usr/bin/git diff --staged --quiet || /usr/bin/git commit -m "Update datasets [github action]"
       - name: Update git
         run: |
           git push -f
