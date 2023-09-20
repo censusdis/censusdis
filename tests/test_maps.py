@@ -188,7 +188,9 @@ class MapPlotTestCase(unittest.TestCase):
             output_file = self.output_dir / png_file_name
 
             self.assert_structurally_similar(
-                expected_file, output_file, msg=f"Maps for {ABBREVIATIONS_FROM_IDS[state]} should be similar."
+                expected_file,
+                output_file,
+                msg=f"Maps for {ABBREVIATIONS_FROM_IDS[state]} should be similar.",
             )
 
     def test_plot_us(self):
