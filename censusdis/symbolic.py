@@ -28,7 +28,23 @@ class symbolic:
 
     def __init__(self):
         self.dictionary = {}
-        self.module_message = '# Copyright (c) 2022 Darren Erik Vengroff\n\n"""\nThis module contains abbreviated names for commonly used data sets.\n\nThese are typically used as the first argument to :py:func:`censudis.data.download`.\n\nThere are a lot more data sets available than there are symbolic names here.\n\nBut you can always use raw strings. For example, even for `ACS5` you can use\n\n`acs/acs5` instead.\n"""\n'
+        self.module_message = """# Copyright (c) 2022 Darren Erik Vengroff
+\"\"\"
+This module is auto-generated. It should not be edited directly.
+
+This module contains abbreviated names for commonly used data sets.
+
+These are typically used as the first argument to :py:func:`censudis.data.download`.
+
+The Census Bureau routinely adds new datasets, so there many be more data sets available
+than there are symbolic names here. However, we have automated the process of generating
+these symbolic names so they should almost always be very close to up to date.
+
+But you can always use raw strings. For example, even for `ACS5` you can use
+
+`acs/acs5` instead.
+\"\"\"
+"""
 
     def store_dataset(self, dataset_list: list, url_list: list):
         """
@@ -103,12 +119,12 @@ class symbolic:
                 destfile.write("\n")
 
             destfile.write("\n")
-            destfile.write("\nDATASET_REFERENCE_URLS = { \n")
+            destfile.write("\nDATASET_REFERENCE_URLS = {\n")
 
             for key in sorted(self.dictionary.keys()):
                 value = self.dictionary[key][1]
-                destfile.write("\t%s: %s,\n" % (key, value))
-            destfile.write("}")
+                destfile.write("    %s: %s,\n" % (key, value))
+            destfile.write("}\n")
 
 
 def main():
@@ -116,7 +132,7 @@ def main():
     dataset_names = df_datasets["DATASET"].to_list()
     dataset_url = df_datasets["API BASE URL"].to_list()
     create_symbolic = symbolic()
-    symbolic_names = create_symbolic.store_dataset(dataset_names, dataset_url)
+    create_symbolic.store_dataset(dataset_names, dataset_url)
 
     parser = argparse.ArgumentParser(description="Get destination file name.")
     parser.add_argument(
