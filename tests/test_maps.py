@@ -1,6 +1,7 @@
 import sys
 import tempfile
 import unittest
+from typing import Any
 from pathlib import Path
 from shutil import rmtree
 
@@ -128,7 +129,9 @@ class MapPlotTestCase(unittest.TestCase):
 
             self.assertEqual(expected_epsg, epsg)
 
-    def assert_structurally_similar(self, file0, file1, threshold: float = 0.98):
+    def assert_structurally_similar(
+        self, file0, file1, threshold: float = 0.98, msg: Any = None
+    ):
         """
         Assert that the images stored in two files are structurally similar.
 
@@ -140,6 +143,8 @@ class MapPlotTestCase(unittest.TestCase):
             Another image file
         threshold
             Minimum structural similarity threshold.
+        msg
+            A message to log on test failure.
 
         Returns
         -------
@@ -151,7 +156,7 @@ class MapPlotTestCase(unittest.TestCase):
         for ii in range(len(image0[0, 0, :])):
             similarity = ssim(image0[:, :, ii], image1[:, :, ii])
 
-            self.assertGreater(similarity, threshold)
+            self.assertGreater(similarity, threshold, msg=msg)
 
     @unittest.skipIf(
         sys.platform.startswith("win"),
@@ -182,7 +187,9 @@ class MapPlotTestCase(unittest.TestCase):
             expected_file = self.expected_dir / png_file_name
             output_file = self.output_dir / png_file_name
 
-            self.assert_structurally_similar(expected_file, output_file)
+            self.assert_structurally_similar(
+                expected_file, output_file, msg=f"Maps for {ABBREVIATIONS_FROM_IDS[state]} should be similar."
+            )
 
     def test_plot_us(self):
         """Test calling plot_us."""
