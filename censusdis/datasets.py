@@ -178,6 +178,8 @@ DECENNIAL_CD118 = "dec/cd118"
 
 DECENNIAL_CQR = "dec/cqr"
 
+DECENNIAL_DDHCA = "dec/ddhca"
+
 DECENNIAL_DHC = "dec/dhc"
 
 DECENNIAL_DHCAS = "dec/dhcas"
@@ -597,6 +599,7 @@ DATASET_REFERENCE_URLS = {
     DECENNIAL_CD116: "http://api.census.gov/data/2010/dec/cd116",
     DECENNIAL_CD118: "http://api.census.gov/data/2020/dec/cd118",
     DECENNIAL_CQR: "http://api.census.gov/data/2000/dec/cqr",
+    DECENNIAL_DDHCA: "http://api.census.gov/data/2020/dec/ddhca",
     DECENNIAL_DHC: "http://api.census.gov/data/2020/dec/dhc",
     DECENNIAL_DHCAS: "http://api.census.gov/data/2020/dec/dhcas",
     DECENNIAL_DHCGU: "http://api.census.gov/data/2020/dec/dhcgu",
