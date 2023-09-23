@@ -20,14 +20,16 @@ More specifically, our goals were:
    should be true of census data sets, groups, variable, and
    geographies. These tend to change in small ways that
    are difficult to keep track of and up to date. For example,
-   different groups and variables are available in different
+   entirely new data sets are published from time to time,
+   like the DHC-A, which was first published in September 2023.
+   Different groups and variables are available in different
    data sets, and their IDs can change from year to year.
    Different data sets support different geographic level
    data aggregations. If a python package hard-codes these
    then it is a never ending battle to keep them up to date.
    Instead, metadata should be queried at run time whenever
    possible.
-3. Mapping should be a first class concern. Often the most
+4. Mapping should be a first class concern. Often the most
    compelling presentations of census data or data derived
    from it are in the form of maps. It should be easy and
    obvious how to add geographic geometry to data. For
@@ -39,7 +41,7 @@ More specifically, our goals were:
    with Alaska and Hawaii moved to the lower left corner
    of the continental United States so as to produce more
    compact maps.
-4. The implementation should be fast enough to be used
+5. The implementation should be fast enough to be used
    interactively. It should be possible
    to download nationwide data at the block group level
    (approximately 240,000 rows) in under a minute with
