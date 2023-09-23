@@ -1,11 +1,14 @@
 # Copyright (c) 2022 Darren Erik Vengroff
-
 """
+This module is auto-generated. It should not be edited directly.
+
 This module contains abbreviated names for commonly used data sets.
 
 These are typically used as the first argument to :py:func:`censudis.data.download`.
 
-There are a lot more data sets available than there are symbolic names here.
+The Census Bureau routinely adds new datasets, so there many be more data sets available
+than there are symbolic names here. However, we have automated the process of generating
+these symbolic names so they should almost always be very close to up to date.
 
 But you can always use raw strings. For example, even for `ACS5` you can use
 
@@ -171,7 +174,11 @@ DECENNIAL_CD115PROFILE = "dec/cd115profile"
 
 DECENNIAL_CD116 = "dec/cd116"
 
+DECENNIAL_CD118 = "dec/cd118"
+
 DECENNIAL_CQR = "dec/cqr"
+
+DECENNIAL_DDHCA = "dec/ddhca"
 
 DECENNIAL_DHC = "dec/dhc"
 
@@ -518,15 +525,15 @@ DATASET_REFERENCE_URLS = {
     ABS_NESD: "http://api.census.gov/data/2019/absnesd",
     ABS_NESDO: "http://api.census.gov/data/2019/absnesdo",
     ABS_TCB: "http://api.census.gov/data/2018/abstcb",
-    ACS1: "http://api.census.gov/data/2021/acs/acs1",
+    ACS1: "http://api.census.gov/data/2022/acs/acs1",
     ACS1_CD113: "http://api.census.gov/data/2011/acs1/cd113",
     ACS1_CD115: "http://api.census.gov/data/2015/acs1/cd115",
-    ACS1_CPROFILE: "http://api.census.gov/data/2021/acs/acs1/cprofile",
-    ACS1_PROFILE: "http://api.census.gov/data/2021/acs/acs1/profile",
+    ACS1_CPROFILE: "http://api.census.gov/data/2022/acs/acs1/cprofile",
+    ACS1_PROFILE: "http://api.census.gov/data/2022/acs/acs1/profile",
     ACS1_PUMS: "http://api.census.gov/data/2021/acs/acs1/pums",
     ACS1_PUMSPR: "http://api.census.gov/data/2021/acs/acs1/pumspr",
-    ACS1_SPP: "http://api.census.gov/data/2021/acs/acs1/spp",
-    ACS1_SUBJECT: "http://api.census.gov/data/2021/acs/acs1/subject",
+    ACS1_SPP: "http://api.census.gov/data/2022/acs/acs1/spp",
+    ACS1_SUBJECT: "http://api.census.gov/data/2022/acs/acs1/subject",
     ACS3: "http://api.census.gov/data/2013/acs/acs3",
     ACS3_CPROFILE: "http://api.census.gov/data/2013/acs/acs3/cprofile",
     ACS3_PROFILE: "http://api.census.gov/data/2013/acs/acs3/profile",
@@ -555,7 +562,7 @@ DATASET_REFERENCE_URLS = {
     CFSPRELIM: "http://api.census.gov/data/2017/cfsprelim",
     CFSTEMP: "http://api.census.gov/data/2017/cfstemp",
     CPS_ARTS: "http://api.census.gov/data/2020/cps/arts/feb",
-    CPS_ASEC: "http://api.census.gov/data/2022/cps/asec/mar",
+    CPS_ASEC: "http://api.census.gov/data/2023/cps/asec/mar",
     CPS_BASIC: "http://api.census.gov/data/2023/cps/basic/may",
     CPS_CIVIC: "http://api.census.gov/data/2013/cps/civic/nov",
     CPS_CONTWORKER: "http://api.census.gov/data/2017/cps/contworker/may",
@@ -590,7 +597,9 @@ DATASET_REFERENCE_URLS = {
     DECENNIAL_CD115: "http://api.census.gov/data/2010/dec/cd115",
     DECENNIAL_CD115PROFILE: "http://api.census.gov/data/2010/dec/cd115profile",
     DECENNIAL_CD116: "http://api.census.gov/data/2010/dec/cd116",
+    DECENNIAL_CD118: "http://api.census.gov/data/2020/dec/cd118",
     DECENNIAL_CQR: "http://api.census.gov/data/2000/dec/cqr",
+    DECENNIAL_DDHCA: "http://api.census.gov/data/2020/dec/ddhca",
     DECENNIAL_DHC: "http://api.census.gov/data/2020/dec/dhc",
     DECENNIAL_DHCAS: "http://api.census.gov/data/2020/dec/dhcas",
     DECENNIAL_DHCGU: "http://api.census.gov/data/2020/dec/dhcgu",
