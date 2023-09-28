@@ -514,6 +514,18 @@ TIMESERIES_PSEO = "timeseries/pseo/flows"
 
 TIMESERIES_QWI = "timeseries/qwi/se"
 
+VIUSA = "viusa"
+
+VIUSB = "viusb"
+
+VIUSC = "viusc"
+
+VIUSD = "viusd"
+
+VIUSE = "viuse"
+
+VIUSF = "viusf"
+
 ZBP = "zbp"
 
 
@@ -576,7 +588,7 @@ DATASET_REFERENCE_URLS = {
     CPS_MARITAL: "http://api.census.gov/data/1995/cps/marital/jun",
     CPS_PUBARTS: "http://api.census.gov/data/2017/cps/pubarts/jul",
     CPS_RACE: "http://api.census.gov/data/1995/cps/race/may",
-    CPS_SCHOOL: "http://api.census.gov/data/2021/cps/school/oct",
+    CPS_SCHOOL: "http://api.census.gov/data/2022/cps/school/oct",
     CPS_TOBACCO: "http://api.census.gov/data/2019/cps/tobacco/may",
     CPS_UNBANK: "http://api.census.gov/data/2021/cps/unbank/jun",
     CPS_VETS: "http://api.census.gov/data/2022/cps/vets/aug",
@@ -767,5 +779,11 @@ DATASET_REFERENCE_URLS = {
     TIMESERIES_POVERTY: "http://api.census.gov/data/timeseries/poverty/saipe/schdist",
     TIMESERIES_PSEO: "http://api.census.gov/data/timeseries/pseo/flows",
     TIMESERIES_QWI: "http://api.census.gov/data/timeseries/qwi/se",
+    VIUSA: "http://api.census.gov/data/2021/viusa",
+    VIUSB: "http://api.census.gov/data/2021/viusb",
+    VIUSC: "http://api.census.gov/data/2021/viusc",
+    VIUSD: "http://api.census.gov/data/2021/viusd",
+    VIUSE: "http://api.census.gov/data/2021/viuse",
+    VIUSF: "http://api.census.gov/data/2021/viusf",
     ZBP: "http://api.census.gov/data/2018/zbp",
 }
