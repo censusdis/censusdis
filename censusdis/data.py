@@ -430,6 +430,29 @@ to this map.
 """
 
 
+def _gdf_fix_columns_for_year(year: Optional[int], gdf_on: Iterable[str]) -> List[str]:
+    """
+    This is is a little helper function to deal with an idosynvracy of column names in shapefiles.
+    
+    In 2010 and earlier, the column name `'TRACT'` was used, whereas 2011 and
+    later, `'TRACTCE'` is used.
+    
+    Parameters
+    ----------
+    year
+        The year a shapefile is from.
+    gdf_on
+        Column names from the shapefile.
+
+    Returns
+    -------
+        A list of the columns with any necessary changes.
+    """
+    if year is None or year > 2010:
+        return list(gdf_on)
+
+    return [col if col != 'TRACTCE' else 'TRACT' for col in gdf_on]
+
 def _add_geography(
     df_data: pd.DataFrame,
     year: Optional[VintageType],
@@ -473,6 +496,8 @@ def _add_geography(
         df_on,
         gdf_on,
     ) = _GEO_QUERY_FROM_DATA_QUERY_INNER_GEO[geo_level]
+
+    gdf_on = _gdf_fix_columns_for_year(year, gdf_on)
 
     # If the query spec has a hard-coded value then we use it.
     if query_shapefile_scope is not None:
@@ -534,8 +559,11 @@ def _add_geography(
     gdf_data = (
         gdf_shapefile[merge_gdf_on + ["geometry"]]
         .merge(df_data, how="right", left_on=merge_gdf_on, right_on=df_on)
-        .drop(gdf_on, axis="columns")
     )
+
+    # Get the columns we want in a reasonable order matching
+    # how they are in the data, with geometry at the end.
+    gdf_data = gdf_data[list(df_data.columns) + ['geometry']]
 
     # Rearrange columns so geometry is at the end.
     gdf_data = gdf_data[
