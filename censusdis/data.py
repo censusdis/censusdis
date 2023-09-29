@@ -430,7 +430,9 @@ to this map.
 """
 
 
-def _gdf_fix_columns_for_year(year: Optional[int], gdf_on: Iterable[str]) -> List[str]:
+def _gdf_fix_columns_for_year(
+    year: Optional[Union[int, str]], gdf_on: Iterable[str]
+) -> List[str]:
     """
     This is is a little helper function to deal with an idosynvracy of column names in shapefiles.
 
@@ -448,7 +450,7 @@ def _gdf_fix_columns_for_year(year: Optional[int], gdf_on: Iterable[str]) -> Lis
     -------
         A list of the columns with any necessary changes.
     """
-    if year is None or year > 2010:
+    if year is None or isinstance(year, str) or year > 2010:
         return list(gdf_on)
 
     return [col if col != "TRACTCE" else "TRACT" for col in gdf_on]
