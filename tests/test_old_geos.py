@@ -35,8 +35,8 @@ class OlderGeometryTestCase(unittest.TestCase):
             )
 
             self.assertEqual(
-                ['STATE', 'COUNTY', 'TRACT', 'NAME', 'geometry'],
-                list(gdf_tract.columns)
+                ["STATE", "COUNTY", "TRACT", "NAME", "geometry"],
+                list(gdf_tract.columns),
             )
 
 
