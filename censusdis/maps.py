@@ -172,7 +172,12 @@ class ShapeReader:
             geography = "puma10"
 
         name = f"cb_{self._year}_{cartographic_scope}_{geography}_{resolution}"
-        base_url = f"https://www2.census.gov/geo/tiger/GENZ{self._year}/shp"
+
+        # The shp subdirectory did not appear until 2014.
+        if self._year >= 2014:
+            base_url = f"https://www2.census.gov/geo/tiger/GENZ{self._year}/shp"
+        else:
+            base_url = f"https://www2.census.gov/geo/tiger/GENZ{self._year}"
 
         return base_url, name
 
@@ -403,6 +408,22 @@ class ShapeReader:
 
         # Fetch the zip file and write it.
         response = requests.get(zip_url, timeout=timeout)
+
+        if response.status_code == 404:
+            raise MapException(
+                f"{zip_url} was not found. "
+                "The Census Bureau may not publish the shapefile you are looking for for the given year. "
+                "Or the file you are looking for may be from a year where a naming convention that censusdis "
+                "does not recognize was used."
+            )
+
+        headers = response.headers
+        content_type = headers.get("Content-Type", None)
+
+        if content_type != "application/zip":
+            raise MapException(
+                f"Expected content type application/zip' from {zip_url}, but got '{content_type}' instead."
+            )
 
         with zip_path.open("wb") as file:
             file.write(response.content)
