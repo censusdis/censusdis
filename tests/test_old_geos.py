@@ -52,7 +52,7 @@ class OlderGeometryTestCase(unittest.TestCase):
         """
         for missing_year in range(2011, 2013):
             with self.assertRaises(MapException):
-                gdf_tract = ced.download(
+                ced.download(
                     "acs/acs5",
                     missing_year,
                     ["NAME"],
