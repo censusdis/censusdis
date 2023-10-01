@@ -429,6 +429,7 @@ https://www.census.gov/geographies/mapping-files/time-series/geo/cartographic-bo
 to this map.
 """
 
+
 def _add_geography(
     df_data: pd.DataFrame,
     year: Optional[VintageType],
