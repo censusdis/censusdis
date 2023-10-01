@@ -200,6 +200,8 @@ class ShapeReader:
             {
                 "STATE": "STATEFP",
                 "COUNTY": "COUNTYFP",
+                "TRACT" : "TRACTCE",
+                "BLKGRP" : "BLKGRPCE"
             },
             axis="columns",
             inplace=True,
