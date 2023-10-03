@@ -970,7 +970,7 @@ class AddInferredGeographyTestCase(unittest.TestCase):
         gdf_tract_nj = self.reader0.read_cb_shapefile(states.NJ, "tract")
         gdf_tract_ny = self.reader0.read_cb_shapefile(states.NY, "tract")
 
-        gdf_tract = gdf_tract_nj.append(gdf_tract_ny)
+        gdf_tract = gpd.GeoDataFrame(pd.concat([gdf_tract_nj, gdf_tract_ny]))
 
         for row in df_tract[["STATE", "COUNTY", "TRACT"]].itertuples():
             state, county, tract = row.STATE, row.COUNTY, row.TRACT
