@@ -531,11 +531,13 @@ def _add_geography(
         merge_gdf_on = ["YEAR"] + gdf_on
         df_on = ["YEAR"] + df_on
 
-    gdf_data = (
-        gdf_shapefile[merge_gdf_on + ["geometry"]]
-        .merge(df_data, how="right", left_on=merge_gdf_on, right_on=df_on)
-        .drop(gdf_on, axis="columns")
+    gdf_data = gdf_shapefile[merge_gdf_on + ["geometry"]].merge(
+        df_data, how="right", left_on=merge_gdf_on, right_on=df_on
     )
+
+    # Get the columns we want in a reasonable order matching
+    # how they are in the data, with geometry at the end.
+    gdf_data = gdf_data[list(df_data.columns) + ["geometry"]]
 
     # Rearrange columns so geometry is at the end.
     gdf_data = gdf_data[

@@ -227,7 +227,7 @@ class DownloadTestCase(unittest.TestCase):
         )
 
     def test_download_with_geometry_tract(self):
-        """Download at the county level with geometry."""
+        """Download at the tract level with geometry."""
 
         gdf = ced.download(
             self._dataset,
