@@ -102,12 +102,13 @@ class ShapeReader:
         return base_url, name
 
     def _post_2010_tiger(self, prefix, shapefile_scope: str, suffix):
+        # Special case for whatever reason the US Census decided.
+        if self._year == 2020 and suffix in ["puma", "tabblock"]:
+            suffix = f"{suffix}20"
+
         base_url = (
             f"https://www2.census.gov/geo/tiger/TIGER{self._year}/{suffix.upper()}"
         )
-        # Special case for whatever reason the US Census decided.
-        if self._year == 2020 and suffix in ["puma", "tabblock"]:
-            suffix = f"{suffix}10"
 
         name = f"{prefix}_{self._year}_{shapefile_scope}_{suffix}"
         return base_url, name
@@ -123,16 +124,15 @@ class ShapeReader:
         gdf = self._read_shapefile(name, base_url, crs, timeout=timeout)
 
         # Pull off the extra two digits of year that get tacked
-        # on for the older data.
-        if self._year <= 2010:
+        # on for the older data and in 2020 blocks.
 
-            def mapper(col: str) -> str:
-                col_suffix = str(self._year)[-2:]
-                if col.endswith(col_suffix):
-                    return col[:-2]
-                return col
+        def mapper(col: str) -> str:
+            col_suffix = str(self._year)[-2:]
+            if col.endswith(col_suffix):
+                return col[:-2]
+            return col
 
-            gdf.rename(mapper, axis="columns", inplace=True)
+        gdf.rename(mapper, axis="columns", inplace=True)
 
         if "STATEFP" not in gdf.columns:
             gdf["STATEFP"] = shapefile_scope
@@ -346,6 +346,31 @@ class ShapeReader:
         return self._cartographic_bound(
             shapefile_scope, geography, resolution, crs, timeout=timeout
         )
+
+    def try_cb_tiger_shapefile(
+        self,
+        shapefile_scope: str,
+        geography: str,
+        resolution: str = "500k",
+        crs=None,
+        *,
+        timeout: int = 30,
+    ) -> gpd.GeoDataFrame:
+        """
+        Wraps read_cb_shapefile and read_shapefile to try to retreive CB file, and if unable to find,
+        attempts to find the full tiger file.
+
+        Returns
+        -------
+            A `gpd.GeoDataFrame` containing the boundaries of the requested
+            geometries.
+        """
+        try:
+            return self._cartographic_bound(
+                shapefile_scope, geography, resolution, crs, timeout=timeout
+            )
+        except MapException:
+            return self._tiger(shapefile_scope, geography, crs, timeout=timeout)
 
     def _auto_fetch_file(self, name: str, base_url: str, *, timeout: int):
         if not self._auto_fetch:
