@@ -1,7 +1,6 @@
 import unittest
 import itertools
 import censusdis.data as ced
-from censusdis.maps import MapException
 
 
 class OlderGeometryTestCase(unittest.TestCase):
