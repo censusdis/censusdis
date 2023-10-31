@@ -103,12 +103,16 @@ class ShapeReader:
 
     def _post_2010_tiger(self, prefix, shapefile_scope: str, suffix):
         # Special case for whatever reason the US Census decided.
-        if self._year == 2020 and suffix in ["puma", "tabblock"]:
-            suffix = f"{suffix}20"
-
         base_url = (
             f"https://www2.census.gov/geo/tiger/TIGER{self._year}/{suffix.upper()}"
         )
+
+        if self._year == 2020 and suffix == "tabblock":
+            base_url = f"{base_url}20"
+            suffix = f"{suffix}20"
+
+        if self._year in [2020, 2021] and suffix == "puma":
+            suffix = f"{suffix}10"
 
         name = f"{prefix}_{self._year}_{shapefile_scope}_{suffix}"
         return base_url, name
@@ -124,11 +128,10 @@ class ShapeReader:
         gdf = self._read_shapefile(name, base_url, crs, timeout=timeout)
 
         # Pull off the extra two digits of year that get tacked
-        # on for the older data and in 2020 blocks.
+        # on in some cases.
 
         def mapper(col: str) -> str:
-            col_suffix = str(self._year)[-2:]
-            if col.endswith(col_suffix):
+            if col.endswith(("20", "10")):
                 return col[:-2]
             return col
 
@@ -168,8 +171,10 @@ class ShapeReader:
 
     def _post_2010_cb(self, cartographic_scope: str, geography, resolution: str):
         # May need to revise when 2020 PUMA is published.
-        if geography == "puma" and 2010 <= self._year < 2020:
+        if geography == "puma" and 2010 <= self._year < 2022:
             geography = "puma10"
+        elif geography == "puma" and self._year >= 2022:
+            geography = "puma20"
 
         name = f"cb_{self._year}_{cartographic_scope}_{geography}_{resolution}"
 
@@ -366,11 +371,13 @@ class ShapeReader:
             geometries.
         """
         try:
-            return self._cartographic_bound(
+            gdf = self._cartographic_bound(
                 shapefile_scope, geography, resolution, crs, timeout=timeout
             )
         except MapException:
-            return self._tiger(shapefile_scope, geography, crs, timeout=timeout)
+            gdf = self._tiger(shapefile_scope, geography, crs, timeout=timeout)
+
+        return gdf
 
     def _auto_fetch_file(self, name: str, base_url: str, *, timeout: int):
         if not self._auto_fetch:
