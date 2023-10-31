@@ -537,8 +537,6 @@ def _add_geography(
         merge_gdf_on = ["YEAR"] + gdf_on
         df_on = ["YEAR"] + df_on
 
-    print(df_data.columns)
-
     if "TRACT" in df_data.columns:
         df_data["TRACT"] = df_data["TRACT"].str.ljust(
             6, "0"
