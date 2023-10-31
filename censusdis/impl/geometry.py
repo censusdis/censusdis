@@ -5,8 +5,9 @@ Utilities for geometric operations.
 
 import math
 from typing import Optional, TypeVar, Union
+
 import geopandas as gpd
-from shapely import Polygon, MultiPolygon
+from shapely import MultiPolygon, Polygon
 
 
 def isoperimetric_quotient(

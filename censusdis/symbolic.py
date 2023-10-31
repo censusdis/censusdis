@@ -9,8 +9,9 @@ documentation purposes.
 """
 
 import argparse
-import censusdis.data as ced
 from pathlib import Path
+
+import censusdis.data as ced
 
 
 class symbolic:

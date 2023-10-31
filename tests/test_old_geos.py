@@ -1,5 +1,5 @@
 import unittest
-import itertools
+
 import censusdis.data as ced
 
 
