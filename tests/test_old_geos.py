@@ -21,9 +21,7 @@ class OlderGeometryTestCase(unittest.TestCase):
         'TRACT' vs. 'TRACTCE'.
         """
         # These are the years for which the shape files exist.
-        for year in itertools.chain(range(2010, 2022)):
-            print()
-            print(f"Year: {year}")
+        for year in range(2010, 2022):
             gdf_tract = ced.download(
                 "acs/acs5",
                 year,
