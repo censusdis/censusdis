@@ -1,10 +1,11 @@
 # Copyright (c) 2023 Darren Erik Vengroff
+import math
 import unittest
 
-import math
-from censusdis.impl.geometry import isoperimetric_quotient, drop_slivers
-from shapely import Polygon, Point, MultiPolygon
 import geopandas as gpd
+from shapely import MultiPolygon, Point, Polygon
+
+from censusdis.impl.geometry import drop_slivers, isoperimetric_quotient
 
 
 class IsoperimetricQuotientTestCase(unittest.TestCase):

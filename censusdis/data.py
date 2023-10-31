@@ -409,6 +409,12 @@ _GEO_QUERY_FROM_DATA_QUERY_INNER_GEO: Dict[
         ["STATE", "COUNTY", "TRACT", "BLOCK_GROUP"],
         ["STATEFP", "COUNTYFP", "TRACTCE", "BLKGRPCE"],
     ),
+    "block": (
+        None,
+        "tabblock",
+        ["STATE", "COUNTY", "TRACT", "BLOCK"],
+        ["STATEFP", "COUNTYFP", "TRACTCE", "BLOCKCE"],
+    ),
     "school district (unified)": (
         None,
         "unsd",
@@ -488,7 +494,7 @@ def _add_geography(
     # one string with comma seperators.
     if isinstance(year, int):
         gdf_shapefile = pd.concat(
-            __shapefile_reader(year).read_cb_shapefile(
+            __shapefile_reader(year).try_cb_tiger_shapefile(
                 sub_scope,
                 shapefile_geo_level,
             )
@@ -530,6 +536,11 @@ def _add_geography(
 
         merge_gdf_on = ["YEAR"] + gdf_on
         df_on = ["YEAR"] + df_on
+
+    if "TRACT" in df_data.columns:
+        df_data["TRACT"] = df_data["TRACT"].str.ljust(
+            6, "0"
+        )  # Pre 2010 data has inconsistencies in TRACT string length
 
     gdf_data = gdf_shapefile[merge_gdf_on + ["geometry"]].merge(
         df_data, how="right", left_on=merge_gdf_on, right_on=df_on

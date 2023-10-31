@@ -19,12 +19,11 @@ import censusdis.data as ced
 import censusdis.impl.exceptions
 import censusdis.impl.varsource.censusapi
 import censusdis.maps as cem
+import censusdis.symbolic as sym
 import censusdis.values as cev
 from censusdis import states
+from censusdis.datasets import ACS3, ACS5
 from censusdis.states import WA
-from censusdis.datasets import ACS5
-from censusdis.datasets import ACS3
-import censusdis.symbolic as sym
 
 
 class DownloadTestCase(unittest.TestCase):

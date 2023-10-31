@@ -1,9 +1,9 @@
 import sys
 import tempfile
 import unittest
-from typing import Any
 from pathlib import Path
 from shutil import rmtree
+from typing import Any
 
 import geopandas as gpd
 import matplotlib.pyplot as plt
