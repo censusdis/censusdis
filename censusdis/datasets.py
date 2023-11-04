@@ -595,7 +595,7 @@ DATASET_REFERENCE_URLS = {
     CPS_VOLUNTEER: "http://api.census.gov/data/2021/cps/volunteer/sep",
     CPS_VOTING: "http://api.census.gov/data/2022/cps/voting/nov",
     CPS_WORKSCHED: "http://api.census.gov/data/2004/cps/worksched/may",
-    CRE: "http://api.census.gov/data/2019/cre",
+    CRE: "http://api.census.gov/data/2021/cre",
     DECENNIAL_AIAN: "http://api.census.gov/data/2010/dec/aian",
     DECENNIAL_AIANPROFILE: "http://api.census.gov/data/2000/dec/aianprofile",
     DECENNIAL_AS: "http://api.census.gov/data/2010/dec/as",

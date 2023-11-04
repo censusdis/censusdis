@@ -19,6 +19,9 @@ class OlderGeometryTestCase(unittest.TestCase):
         data changed between 2013 and 2014. They changed both
         the directory structure and the name of some columns, e.g.
         'TRACT' vs. 'TRACTCE'.
+
+        For some cases we will automatically fall back on TIGER
+        files instead of CB files.
         """
         # These are the years for which the shape files exist.
         for year in range(2010, 2022):
