@@ -24,7 +24,7 @@ class OlderGeometryTestCase(unittest.TestCase):
         files instead of CB files.
         """
         # These are the years for which the shape files exist.
-        for year in range(2010, 2022):
+        for year in range(2009, 2022):
             gdf_tract = ced.download(
                 "acs/acs5",
                 year,
