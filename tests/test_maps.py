@@ -16,12 +16,14 @@ import censusdis.maps as cmap
 from censusdis.states import (
     ABBREVIATIONS_FROM_IDS,
     AK,
+    AL,
     ALL_STATES_DC_AND_PR,
     CA,
     FL,
     HI,
     ME,
     ND,
+    NJ,
     PR,
     TX,
     WA,
@@ -59,6 +61,21 @@ class ShapeReaderTestCase(unittest.TestCase):
             "https://www2.census.gov/geo/tiger/TIGER2020/SOMETHING/tl_something.zip",
             url,
         )
+
+    def test_tiger_url(self):
+        base_url, name = self.reader09.tiger_url("tl", NJ, "tract")
+
+        self.assertEqual(
+            "https://www2.census.gov/geo/tiger/TIGER2009/34_NEW_JERSEY", base_url
+        )
+        self.assertEqual("tl_2009_34_tract00", name)
+
+        base_url, name = self.reader09.tiger_url("tl", AL, "tract")
+
+        self.assertEqual(
+            "https://www2.census.gov/geo/tiger/TIGER2009/01_ALABAMA", base_url
+        )
+        self.assertEqual("tl_2009_01_tract00", name)
 
 
 class GdfCrsBoundsTestCase(unittest.TestCase):

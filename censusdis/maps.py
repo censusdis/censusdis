@@ -10,7 +10,7 @@ import importlib.resources
 import shutil
 from logging import getLogger
 from pathlib import Path
-from typing import Optional, Union
+from typing import Optional, Tuple, Union
 from zipfile import BadZipFile, ZipFile
 
 import contextily as cx
@@ -22,7 +22,7 @@ from shapely.geometry import MultiPolygon, Point, Polygon
 from shapely.geometry.base import BaseGeometry
 
 from censusdis.impl.exceptions import CensusApiException
-from censusdis.states import AK, HI, PR
+from censusdis.states import AK, HI, PR, NAMES_FROM_IDS
 
 logger = getLogger(__name__)
 
@@ -90,6 +90,21 @@ class ShapeReader:
         path = self._shapefile_root / basename / f"{basename}.shp"
         return path
 
+    def _2008_2009_tiger(self, prefix, shapefile_scope: str, suffix) -> Tuple[str, str]:
+        # Sometimes we have to do down into a named
+        # state directory.
+        if suffix in ["cosub", "tract", "bg"]:
+            state = shapefile_scope
+            state_name = NAMES_FROM_IDS[state].upper().replace(" ", "_")
+
+            base_url = f"https://www2.census.gov/geo/tiger/TIGER{self._year}/{state}_{state_name}"
+            name = f"{prefix}_{self._year}_{state}_{suffix}00"
+        else:
+            # TODO - what to do here?
+            base_url, name = self._through_2010_tiger(prefix, shapefile_scope, suffix)
+
+        return base_url, name
+
     def _through_2010_tiger(self, prefix, shapefile_scope: str, suffix):
         # Curiously, the server side puts the 2000 files under
         # the TIGER2010 directory early in the path and early
@@ -117,13 +132,19 @@ class ShapeReader:
         name = f"{prefix}_{self._year}_{shapefile_scope}_{suffix}"
         return base_url, name
 
+    def tiger_url(self, prefix, shapefile_scope, suffix) -> Tuple[str, str]:
+        """Construct a URL for a TIGER file."""
+        if self._year == 2010 or self._year < 2008:
+            return self._through_2010_tiger(prefix, shapefile_scope, suffix)
+        elif 2008 <= self._year <= 2009:
+            return self._2008_2009_tiger(prefix, shapefile_scope, suffix)
+        else:
+            return self._post_2010_tiger(prefix, shapefile_scope, suffix)
+
     def _tiger(self, shapefile_scope: str, geography, crs, timeout: int):
         prefix, suffix = ("tl", geography)
 
-        if self._year <= 2010:
-            base_url, name = self._through_2010_tiger(prefix, shapefile_scope, suffix)
-        else:
-            base_url, name = self._post_2010_tiger(prefix, shapefile_scope, suffix)
+        base_url, name = self.tiger_url(prefix, shapefile_scope, suffix)
 
         gdf = self._read_shapefile(name, base_url, crs, timeout=timeout)
 
@@ -131,7 +152,7 @@ class ShapeReader:
         # on in some cases.
 
         def mapper(col: str) -> str:
-            if col.endswith(("20", "10")):
+            if col.endswith(("20", "10", "00")):
                 return col[:-2]
             return col
 
