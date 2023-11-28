@@ -798,6 +798,21 @@ class DownloadGroupTestCase(unittest.TestCase):
         )
 
 
+class GeoNameTestCase(unittest.TestCase):
+    """
+    Test the ability to download geography names.
+    """
+
+    def test_county(self):
+        df_name = ced.geography_names(ACS5, 2020, state=states.NJ, county="017")
+
+        self.assertEqual((1, 3), df_name.shape)
+
+        self.assertEqual(["STATE", "COUNTY", "NAME"], list(df_name.columns))
+
+        self.assertEqual("Hudson County, New Jersey", df_name["NAME"].iloc[0])
+
+
 class AcsSubjectTestCase(unittest.TestCase):
     """
     Test on ACS Subject Data that includes null in an int field.

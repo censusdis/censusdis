@@ -1203,6 +1203,16 @@ def census_table_url(
     return url, params, bound_path
 
 
+def geography_names(
+    dataset: str,
+    vintage: VintageType,
+    **kwargs: cgeo.InSpecType,
+) -> pd.DataFrame:
+    df = download(dataset, vintage, ["NAME"], **kwargs)
+
+    return df
+
+
 def geographies(dataset: str, vintage: VintageType) -> List[List[str]]:
     """
     What geographies are supported for a dataset and vintage?
