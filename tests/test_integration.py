@@ -779,23 +779,23 @@ class DownloadGroupTestCase(unittest.TestCase):
     def test_download_wide_survey(self):
         """Test case where row_keys are required to download more than 50 variables"""
 
-        all_vars = ced.variables.all_variables("cps/internet/nov", 2021, None)
+        df_all_vars = ced.variables.all_variables("cps/internet/nov", 2021, None)
+        all_vars = df_all_vars["VARIABLE"].to_list()
 
-        df = ced.download(
+        df_wide = ced.download(
             "cps/internet/nov",
             2021,
-            download_variables=all_vars["VARIABLE"],
+            download_variables=all_vars,
             row_keys=["QSTNUM", "OCCURNUM"],
             state=WA,
         )
 
-        self.assertIsInstance(df, pd.DataFrame)
+        self.assertIsInstance(df_wide, pd.DataFrame)
 
-        self.assertEqual(df.shape, (1836, 500))
+        self.assertEqual(df_wide.shape, (1836, 500))
+
         # Need to use sets because the row keys will have moved to the front of the dataframe
-        self.assertEqual(
-            set(["STATE"] + all_vars["VARIABLE"].to_list()), set(df.columns.to_list())
-        )
+        self.assertEqual(set(["STATE"] + all_vars), set(df_wide.columns.to_list()))
 
 
 class GeoNameTestCase(unittest.TestCase):
