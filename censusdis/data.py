@@ -1208,6 +1208,29 @@ def geography_names(
     vintage: VintageType,
     **kwargs: cgeo.InSpecType,
 ) -> pd.DataFrame:
+    """
+    Get the name of a specific geography.
+
+    The arguments are a subset of those to :py:func:`~download`. This
+    function is designed to make it easy to fetch the name of a geography
+    when we know the FIPS code but want a human-readable name or label for
+    display.
+
+    Parameters
+    ----------
+    dataset
+        The dataset to download from. For example `censusdis.datasets.ACS5`.
+    vintage
+        The vintage to download data for. For example, `2020`.
+    kwargs
+        A specification of the geometry that we want data for. For example,
+        `state = "34", county = "017"` will download the name of Hudson County,
+        New Jersey.
+    Returns
+    -------
+        A dataframe with columns specifying the geography and one for the name.
+        All column names will be in ALL CAPS.
+    """
     df = download(dataset, vintage, ["NAME"], **kwargs)
 
     return df
