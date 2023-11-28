@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>Coverage for censusdis/data.py: 94%</title>
+    <title>Coverage for censusdis/data.py: 96%</title>
     <link rel="icon" sizes="32x32" href="favicon_32.png">
     <link rel="stylesheet" href="style.css" type="text/css">
     <script type="text/javascript" src="coverage_html.js" defer></script>
@@ -12,7 +12,7 @@
     <div class="content">
         <h1>
             <span class="text">Coverage for </span><b>censusdis/data.py</b>:
-            <span class="pc_cov">94%</span>
+            <span class="pc_cov">96%</span>
         </h1>
         <aside id="help_panel_wrapper">
             <input id="help_panel_state" type="checkbox">
@@ -55,8 +55,8 @@
         </aside>
         <h2>
             <span class="text">260 statements &nbsp;</span>
-            <button type="button" class="run button_toggle_run" value="run" data-shortcut="r" title="Toggle lines run">244<span class="text"> run</span></button>
-            <button type="button" class="mis show_mis button_toggle_mis" value="mis" data-shortcut="m" title="Toggle lines missing">16<span class="text"> missing</span></button>
+            <button type="button" class="run button_toggle_run" value="run" data-shortcut="r" title="Toggle lines run">250<span class="text"> run</span></button>
+            <button type="button" class="mis show_mis button_toggle_mis" value="mis" data-shortcut="m" title="Toggle lines missing">10<span class="text"> missing</span></button>
             <button type="button" class="exc show_exc button_toggle_exc" value="exc" data-shortcut="x" title="Toggle lines excluded">0<span class="text"> excluded</span></button>
         </h2>
         <p class="text">
@@ -65,7 +65,7 @@
             <a id="nextFileLink" class="nav" href="d_5a366ca900b21d9c_datasets_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io">coverage.py v6.5.0</a>,
-            created at 2023-11-28 14:07 +0000
+            created at 2023-11-28 15:34 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"/>
@@ -1372,14 +1372,14 @@
     <p class="run"><span class="n"><a id="t1290" href="#t1290">1290</a></span><span class="t">        <span class="key">return</span> <span class="nam">fips_codes</span><span class="op">.</span><span class="nam">unique</span><span class="op">(</span><span class="op">)</span><span class="op">.</span><span class="nam">tolist</span><span class="op">(</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t1291" href="#t1291">1291</a></span><span class="t">    <span class="com"># Otherwise, we load all the US counties and perform an overlap operation</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t1292" href="#t1292">1292</a></span><span class="t">    <span class="key">else</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t1293" href="#t1293">1293</a></span><span class="t">        <span class="nam">reader</span> <span class="op">=</span> <span class="nam">__shapefile_readers</span><span class="op">.</span><span class="nam">get</span><span class="op">(</span><span class="nam">year</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t1294" href="#t1294">1294</a></span><span class="t">        <span class="nam">us_counties</span> <span class="op">=</span> <span class="nam">reader</span><span class="op">.</span><span class="nam">read_cb_shapefile</span><span class="op">(</span><span class="str">"us"</span><span class="op">,</span> <span class="str">"county"</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t1295" href="#t1295">1295</a></span><span class="t">        <span class="nam">us_counties</span><span class="op">[</span><span class="str">"FIPS"</span><span class="op">]</span> <span class="op">=</span> <span class="nam">us_counties</span><span class="op">[</span><span class="str">"STATEFP"</span><span class="op">]</span> <span class="op">+</span> <span class="nam">us_counties</span><span class="op">[</span><span class="str">"COUNTYFP"</span><span class="op">]</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t1293" href="#t1293">1293</a></span><span class="t">        <span class="nam">reader</span> <span class="op">=</span> <span class="nam">__shapefile_readers</span><span class="op">.</span><span class="nam">get</span><span class="op">(</span><span class="nam">year</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t1294" href="#t1294">1294</a></span><span class="t">        <span class="nam">us_counties</span> <span class="op">=</span> <span class="nam">reader</span><span class="op">.</span><span class="nam">read_cb_shapefile</span><span class="op">(</span><span class="str">"us"</span><span class="op">,</span> <span class="str">"county"</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t1295" href="#t1295">1295</a></span><span class="t">        <span class="nam">us_counties</span><span class="op">[</span><span class="str">"FIPS"</span><span class="op">]</span> <span class="op">=</span> <span class="nam">us_counties</span><span class="op">[</span><span class="str">"STATEFP"</span><span class="op">]</span> <span class="op">+</span> <span class="nam">us_counties</span><span class="op">[</span><span class="str">"COUNTYFP"</span><span class="op">]</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t1296" href="#t1296">1296</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t1297" href="#t1297">1297</a></span><span class="t">        <span class="nam">county_overlap</span> <span class="op">=</span> <span class="nam">us_counties</span><span class="op">.</span><span class="nam">overlay</span><span class="op">(</span><span class="nam">gdf_geo</span><span class="op">,</span> <span class="nam">keep_geom_type</span><span class="op">=</span><span class="key">False</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t1298" href="#t1298">1298</a></span><span class="t">        <span class="nam">fips_codes</span> <span class="op">=</span> <span class="nam">county_overlap</span><span class="op">[</span><span class="str">"STATEFP"</span><span class="op">]</span> <span class="op">+</span> <span class="nam">county_overlap</span><span class="op">[</span><span class="str">"COUNTYFP"</span><span class="op">]</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t1297" href="#t1297">1297</a></span><span class="t">        <span class="nam">county_overlap</span> <span class="op">=</span> <span class="nam">us_counties</span><span class="op">.</span><span class="nam">overlay</span><span class="op">(</span><span class="nam">gdf_geo</span><span class="op">,</span> <span class="nam">keep_geom_type</span><span class="op">=</span><span class="key">False</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t1298" href="#t1298">1298</a></span><span class="t">        <span class="nam">fips_codes</span> <span class="op">=</span> <span class="nam">county_overlap</span><span class="op">[</span><span class="str">"STATEFP"</span><span class="op">]</span> <span class="op">+</span> <span class="nam">county_overlap</span><span class="op">[</span><span class="str">"COUNTYFP"</span><span class="op">]</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t1299" href="#t1299">1299</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t1300" href="#t1300">1300</a></span><span class="t">        <span class="key">return</span> <span class="nam">fips_codes</span><span class="op">.</span><span class="nam">unique</span><span class="op">(</span><span class="op">)</span><span class="op">.</span><span class="nam">tolist</span><span class="op">(</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t1300" href="#t1300">1300</a></span><span class="t">        <span class="key">return</span> <span class="nam">fips_codes</span><span class="op">.</span><span class="nam">unique</span><span class="op">(</span><span class="op">)</span><span class="op">.</span><span class="nam">tolist</span><span class="op">(</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t1301" href="#t1301">1301</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t1302" href="#t1302">1302</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t1303" href="#t1303">1303</a></span><span class="t"><span class="key">def</span> <span class="nam">_retrieve_water</span><span class="op">(</span><span class="nam">county_fips_codes</span><span class="op">:</span> <span class="nam">list</span><span class="op">[</span><span class="nam">str</span><span class="op">]</span><span class="op">,</span> <span class="nam">year</span><span class="op">:</span> <span class="nam">int</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
@@ -1485,7 +1485,7 @@
             <a id="nextFileLink" class="nav" href="d_5a366ca900b21d9c_datasets_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io">coverage.py v6.5.0</a>,
-            created at 2023-11-28 14:07 +0000
+            created at 2023-11-28 15:34 +0000
         </p>
     </div>
 </footer>
