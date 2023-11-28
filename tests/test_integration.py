@@ -795,9 +795,7 @@ class DownloadGroupTestCase(unittest.TestCase):
         self.assertEqual(df_wide.shape, (1836, 500))
 
         # Need to use sets because the row keys will have moved to the front of the dataframe
-        self.assertEqual(
-            set(["STATE"] + all_vars), set(df_wide.columns.to_list())
-        )
+        self.assertEqual(set(["STATE"] + all_vars), set(df_wide.columns.to_list()))
 
 
 class GeoNameTestCase(unittest.TestCase):
