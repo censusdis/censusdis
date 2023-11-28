@@ -292,6 +292,32 @@ class MapPlotTestCase(unittest.TestCase):
 
         self.assert_structurally_similar(expected_file, output_file)
 
+    def test_plot_us_with_background_no_relocate(self):
+        """
+        Test calling plot_us_boundary.
+        """
+
+        png_file_name = "plot_us_with_background_no_relocate.png"
+        expected_file = self.expected_dir / png_file_name
+
+        output_file = self.output_dir / png_file_name
+
+        ax = cmap.plot_us(
+            self.gdf,
+            do_relocate_ak_hi_pr=False,
+            color="darkgreen",
+            linewidth=0.5,
+            with_background=True,
+            figsize=(20, 6),
+            epsg=6893,  # 6893 is Mercator. 4544 is another option that is fun.
+        )
+
+        ax.axis("off")
+        fig = ax.get_figure()
+        fig.savefig(output_file)
+
+        self.assert_structurally_similar(expected_file, output_file)
+
     def test_plot_us_no_relocate(self):
         """
         Test calling plot_us without relocating AK and HI.
