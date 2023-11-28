@@ -1235,7 +1235,9 @@ class RemoveWaterTestCase(unittest.TestCase):
         self.assertEqual(1, len(df_nj_remove_water.index))
 
         # Geometry should be a little different.
-        self.assertNotEqual(df_nj['geometry'].iloc[0], df_nj_remove_water['geometry'].iloc[0])
+        self.assertNotEqual(
+            df_nj["geometry"].iloc[0], df_nj_remove_water["geometry"].iloc[0]
+        )
 
 
 class SymbolicInsertTestCase(unittest.TestCase):
