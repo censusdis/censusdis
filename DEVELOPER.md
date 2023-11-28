@@ -130,3 +130,23 @@ add `# noqa` comments to the code unless they are
 absolutely necessary, e.g. because you stumbled upon
 one of the rare cases where `flake8` and `black`
 disagree.
+
+## Maintaining `datasets.py`
+
+Over time, the U.S. Census adds new data sets. While
+`censusdis` can access any of them as they are added,
+it can be convenient to be able to access them with 
+symbolic names like `ACS5`. We maintain there is the 
+file `datasets.py` using a utility called `symbolic.py`.
+
+You can be a good citizen by running
+
+```shell
+ poetry run python censusdis/symbolic.py datasets.py
+```
+
+from the root directory of your clone of the repository
+and commiting any resulting changes before you submit
+a pull request. The changes are likely unrelated to what
+you are doing, but will catch any late-breaking new 
+data sets the U.S. Census has published.
