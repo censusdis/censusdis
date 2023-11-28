@@ -539,6 +539,7 @@ def _wrap_poly(poly: Union[Polygon, Point]):
     else:
         # Not sure how to parse it, so leave it
         # where it is.
+        logger.warning(f"Unrecognized type {type(poly)} can't be wrapped.")
         return poly
 
     if x_coord[0] > 0:

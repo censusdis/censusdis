@@ -100,7 +100,7 @@ But you can always use raw strings. For example, even for `ACS5` you can use
                 self.dictionary[name] = [item, link]
         return self.dictionary
 
-    def write_file(self, destination_file: str):
+    def write_file(self, destination_file: str):  # pragma: no cover
         """
         Write symbolic names dictionary content into destination file.
 
@@ -128,7 +128,10 @@ But you can always use raw strings. For example, even for `ACS5` you can use
             destfile.write("}\n")
 
 
-def main():
+def main():  # pragma: no cover
+    """
+    Main function to generate a new version of datasets.py.
+    """
     df_datasets = ced.variables.all_data_sets()
     dataset_names = df_datasets["DATASET"].to_list()
     dataset_url = df_datasets["API BASE URL"].to_list()

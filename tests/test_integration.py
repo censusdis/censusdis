@@ -1210,6 +1210,35 @@ class RemoveWaterTestCase(unittest.TestCase):
             (gdf_tracts_no_water.geometry.area / gdf_tracts.geometry.area >= 1.01).any()
         )
 
+    def test_remove_water_nj(self):
+        """Test in which we don't have explicit counties to fetch water and join on."""
+        df_nj = ced.download(
+            ACS5,
+            2020,
+            "NAME",
+            state=states.NJ,
+            with_geometry=True,
+            remove_water=False,
+        ).to_crs(epsg=3857)
+
+        df_nj_remove_water = ced.download(
+            ACS5,
+            2020,
+            "NAME",
+            state=states.NJ,
+            with_geometry=True,
+            remove_water=True,
+        ).to_crs(epsg=3857)
+
+        # All we have is the state boundary.
+        self.assertEqual(1, len(df_nj.index))
+        self.assertEqual(1, len(df_nj_remove_water.index))
+
+        # Geometry should be a little different.
+        self.assertNotEqual(
+            df_nj["geometry"].iloc[0], df_nj_remove_water["geometry"].iloc[0]
+        )
+
 
 class SymbolicInsertTestCase(unittest.TestCase):
     """Test our ability to add symbolic names."""
