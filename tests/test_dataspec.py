@@ -314,7 +314,7 @@ class DataSpecTestCase(unittest.TestCase):
 
         # The raw version of each is in there.
         for variable in frac_variables:
-            self.assertIn(variable[5:], gdf_data.columns)
+            self.assertIn('_'.join(variable.split('_')[-2:]), gdf_data.columns)
 
         # The fractions of this group should add up to 1.0.
         group = "B03002"
@@ -322,7 +322,7 @@ class DataSpecTestCase(unittest.TestCase):
         group_frac_variables = [
             variable
             for variable in frac_variables
-            if variable.startswith(f"frac_{group}")
+            if variable.startswith(f"frac_pop_{group}")
         ]
 
         sum_of_group_fracs = gdf_data[group_frac_variables].sum(axis="columns")

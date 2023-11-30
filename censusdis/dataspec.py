@@ -11,12 +11,26 @@ from censusdis.impl.varsource.base import VintageType
 
 
 class VariableSpec:
-    def __init__(self, *, denominator: Union[str, bool] = False):
+    def __init__(
+            self,
+            *,
+            denominator: Union[str, bool] = False,
+            frac_prefix: Optional[str] = None
+    ):
         self._denominator = denominator
+
+        if frac_prefix is None:
+            frac_prefix = 'frac_'
+
+        self._frac_prefix = frac_prefix
 
     @property
     def denominator(self) -> Union[str, bool]:
         return self._denominator
+
+    @property
+    def frac_prefix(self) -> str:
+        return self._frac_prefix
 
     def variables_to_download(self) -> List[str]:
         if isinstance(self._denominator, str):
@@ -96,8 +110,9 @@ class VariableList(VariableSpec):
         variables: Union[str, Iterable[str]],
         *,
         denominator: Union[str, bool] = False,
+        frac_prefix: Optional[str] = None
     ):
-        super().__init__(denominator=denominator)
+        super().__init__(denominator=denominator, frac_prefix=frac_prefix)
         if isinstance(variables, str):
             self._variables = [variables]
         else:
@@ -121,13 +136,13 @@ class VariableList(VariableSpec):
 
         if isinstance(self.denominator, str):
             for variable in self._variables:
-                df_downloaded[f"frac_{variable}"] = (
+                df_downloaded[f"{self.frac_prefix}{variable}"] = (
                     df_downloaded[variable] / df_downloaded[self.denominator]
                 )
         elif self.denominator:
             denominator = df_downloaded[self._variables].sum(axis="columns")
             for variable in self._variables:
-                df_downloaded[f"frac_{variable}"] = (
+                df_downloaded[f"{self.frac_prefix}{variable}"] = (
                     df_downloaded[variable] / denominator
                 )
 
@@ -148,11 +163,12 @@ class CensusGroup(VariableSpec):
         *,
         leaves_only: bool = False,
         denominator: Optional[str] = None,
+        frac_prefix: Optional[str] = None
     ):
         if denominator is None:
             denominator = False
 
-        super().__init__(denominator=denominator)
+        super().__init__(denominator=denominator, frac_prefix=frac_prefix)
         self._group = [group] if isinstance(group, str) else list(group)
         self._leaves_only = leaves_only
 
@@ -164,7 +180,7 @@ class CensusGroup(VariableSpec):
             for group in self._group:
                 for variable in df_downloaded.columns:
                     if variable.startswith(group):
-                        df_downloaded[f"frac_{variable}"] = (
+                        df_downloaded[f"{self.frac_prefix}{variable}"] = (
                             df_downloaded[variable] / df_downloaded[self.denominator]
                         )
         elif self.denominator:
@@ -178,7 +194,7 @@ class CensusGroup(VariableSpec):
                 ].sum(axis="columns")
                 for variable in df_downloaded.columns:
                     if variable.startswith(group):
-                        df_downloaded[f"frac_{variable}"] = (
+                        df_downloaded[f"{self.frac_prefix}{variable}"] = (
                             df_downloaded[variable] / denominator
                         )
 

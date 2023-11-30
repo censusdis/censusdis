@@ -14,6 +14,7 @@ specs:
     group: B03002
     leaves_only: true
     denominator: true
+    frac_prefix: frac_pop_
   # This spec is a list of variables. We will also
   # compute fractions for them, but with a
   # denominator taken from another variable.
@@ -22,5 +23,6 @@ specs:
       - B25003I_002E
       - B25003I_003E
     denominator: B25003I_001E
+    frac_prefix: frac_of_lh_
 # And let's get geometry too!
 with_geometry: true
