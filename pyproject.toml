@@ -16,6 +16,7 @@ classifiers = [
 [tool.poetry.dependencies]
 python = "^3.9"
 divintseg = "^0.6.1"
+logargparser = "^0.1.1"
 geopandas = "^0.14.1"
 Rtree = "^1.0.0"
 matplotlib = "^3.8.2"
