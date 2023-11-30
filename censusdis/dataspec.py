@@ -38,7 +38,7 @@ class VariableSpec:
         with_geometry: bool = False,
         remove_water: bool = False,
         api_key: Optional[str] = None,
-        variable_cache: Optional["VariableCache"] = None,
+        variable_cache: Optional[ced.VariableCache] = None,
         row_keys: Optional[Union[str, Iterable[str]]] = None,
         **kwargs: InSpecType,
     ) -> Union[pd.DataFrame, gpd.GeoDataFrame]:
@@ -69,7 +69,9 @@ class VariableSpec:
             **kwargs,
         )
 
-        return self.synthesize(df_or_gdf)
+        self.synthesize(df_or_gdf)
+
+        return df_or_gdf
 
 
 class VariableList(VariableSpec):
@@ -103,10 +105,9 @@ class VariableList(VariableSpec):
 
         if isinstance(self.denominator, str):
             for variable in self._variables:
-                if variable != self.denominator:
-                    df_downloaded[f"frac_{variable}"] = (
-                        df_downloaded[variable] / df_downloaded[self.denominator]
-                    )
+                df_downloaded[f"frac_{variable}"] = (
+                    df_downloaded[variable] / df_downloaded[self.denominator]
+                )
         elif self.denominator:
             denominator = df_downloaded[self._variables].sum(axis="columns")
             for variable in self._variables:
@@ -132,6 +133,15 @@ class CensusGroup(VariableSpec):
 
     def groups_to_download(self) -> List[Tuple[str, bool]]:
         return [(group, self._leaves_only) for group in self._group]
+
+    def synthesize(self, df_downloaded: Union[pd.DataFrame, gpd.GeoDataFrame]):
+        if isinstance(self.denominator, str):
+            for group in self._group:
+                for variable in df_downloaded.columns:
+                    if variable.startswith(group):
+                        df_downloaded[f"frac_{variable}"] = (
+                            df_downloaded[variable] / df_downloaded[self.denominator]
+                        )
 
 
 class VariableSpecCollection(VariableSpec):
