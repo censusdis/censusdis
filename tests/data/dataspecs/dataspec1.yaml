@@ -1,0 +1,12 @@
+# This dataspec has a single group.
+!DataSpec
+dataset: ACS5
+vintage: 2020
+geography:
+  state: '*'
+# The single spec here is a group, leaves only, with a denominator.
+specs:
+  !Group
+  group: B03002
+  leaves_only: true
+  denominator: B03002_001E

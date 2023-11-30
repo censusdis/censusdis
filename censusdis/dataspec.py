@@ -1,10 +1,11 @@
-from typing import ClassVar, List, Iterable, Optional, Tuple, Union
+from typing import ClassVar, Dict, List, Iterable, Optional, Tuple, Union
 import itertools
 import pandas as pd
 import geopandas as gpd
 import yaml
 from pathlib import Path
 import censusdis.data as ced
+import censusdis.datasets
 from censusdis.geography import InSpecType
 from censusdis.impl.varsource.base import VintageType
 
@@ -39,7 +40,6 @@ class VariableSpec:
         with_geometry: bool = False,
         remove_water: bool = False,
         api_key: Optional[str] = None,
-        variable_cache: Optional[ced.VariableCache] = None,
         row_keys: Optional[Union[str, Iterable[str]]] = None,
         **kwargs: InSpecType,
     ) -> Union[pd.DataFrame, gpd.GeoDataFrame]:
@@ -65,7 +65,6 @@ class VariableSpec:
             with_geometry=with_geometry,
             remove_water=remove_water,
             api_key=api_key,
-            variable_cache=variable_cache,
             row_keys=row_keys,
             **kwargs,
         )
@@ -75,11 +74,16 @@ class VariableSpec:
         return df_or_gdf
 
     @classmethod
-    def load_yaml(cls, path: Union[str, Path]):
+    def yaml_loader(cls):
         loader = yaml.SafeLoader
         loader.add_constructor("!VariableList", _class_constructor(VariableList))
         loader.add_constructor("!Group", _class_constructor(CensusGroup))
         loader.add_constructor("!SpecCollection", _variable_spec_collection_constructor)
+        return loader
+
+    @classmethod
+    def load_yaml(cls, path: Union[str, Path]):
+        loader = cls.yaml_loader()
 
         loaded = yaml.load(open(path, "rb"), Loader=loader)
 
@@ -163,6 +167,20 @@ class CensusGroup(VariableSpec):
                         df_downloaded[f"frac_{variable}"] = (
                             df_downloaded[variable] / df_downloaded[self.denominator]
                         )
+        elif self.denominator:
+            for group in self._group:
+                denominator = df_downloaded[
+                    [
+                        variable
+                        for variable in df_downloaded.columns
+                        if variable.startswith(group)
+                    ]
+                ].sum(axis="columns")
+                for variable in df_downloaded.columns:
+                    if variable.startswith(group):
+                        df_downloaded[f"frac_{variable}"] = (
+                            df_downloaded[variable] / denominator
+                        )
 
     def __eq__(self, other) -> bool:
         if not isinstance(other, CensusGroup):
@@ -240,7 +258,7 @@ def _class_constructor(clazz: ClassVar):
 
 
 def _variable_spec_collection_constructor(
-        loader: yaml.SafeLoader, node: yaml.nodes.SequenceNode
+    loader: yaml.SafeLoader, node: yaml.nodes.SequenceNode
 ) -> VariableSpecCollection:
     """Construct a variable spec collection."""
     variable_specs = loader.construct_sequence(node, deep=True)
@@ -248,4 +266,69 @@ def _variable_spec_collection_constructor(
 
 
 class DataSpec:
-    pass
+    def __init__(
+        self,
+        dataset: str,
+        vintage: VintageType,
+        specs: Union[VariableSpec, Iterable[VariableSpec]],
+        geography: Dict[str, str],
+        *,
+        with_geometry: bool = False,
+        remove_water: bool = False,
+    ):
+        # Map symbolic names or use what we are given if there is no mapping.
+        self._dataset = getattr(censusdis.datasets, dataset, dataset)
+        self._vintage = vintage
+        self._variable_spec = (
+            specs if isinstance(specs, VariableSpec) else VariableSpecCollection(specs)
+        )
+        self._geography = geography
+        self._with_geometry = with_geometry
+        self._remove_water = remove_water
+
+    @property
+    def dataset(self) -> str:
+        return self._dataset
+
+    @property
+    def vintage(self) -> VintageType:
+        return self._vintage
+
+    @property
+    def with_geometry(self) -> bool:
+        return self._with_geometry
+
+    @property
+    def remove_water(self) -> bool:
+        return self._remove_water
+
+    @property
+    def variable_spec(self) -> VariableSpec:
+        return self._variable_spec
+
+    def download(
+        self,
+        api_key: Optional[str] = None,
+    ) -> Union[pd.DataFrame, gpd.GeoDataFrame]:
+        return self._variable_spec.download(
+            dataset=self.dataset,
+            vintage=self._vintage,
+            with_geometry=self._with_geometry,
+            remove_water=self._remove_water,
+            api_key=api_key,
+            **self._geography,
+        )
+
+    @classmethod
+    def yaml_loader(cls):
+        loader = VariableSpec.yaml_loader()
+        loader.add_constructor("!DataSpec", _class_constructor(cls))
+        return loader
+
+    @classmethod
+    def load_yaml(cls, path: Union[str, Path]):
+        loader = cls.yaml_loader()
+
+        loaded = yaml.load(open(path, "rb"), Loader=loader)
+
+        return loaded

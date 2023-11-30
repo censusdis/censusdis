@@ -259,12 +259,75 @@ class YamlTestCase(unittest.TestCase):
 
         expected = cds.VariableSpecCollection(
             [
-                cds.VariableList(["B03002_002E", "B03002_012E"], denominator="B03002_001E"),
-                cds.CensusGroup("B03002", leaves_only=True, denominator="B03002_001E")
+                cds.VariableList(
+                    ["B03002_002E", "B03002_012E"], denominator="B03002_001E"
+                ),
+                cds.CensusGroup("B03002", leaves_only=True, denominator="B03002_001E"),
             ]
         )
 
         self.assertEqual(expected, spec)
+
+
+class DataSpecTestCase(unittest.TestCase):
+    def setUp(self) -> None:
+        self.directory = Path(__file__).parent / "data" / "dataspecs"
+
+    def test_load_yaml1(self):
+        dataspec = cds.DataSpec.load_yaml(self.directory / "dataspec1.yaml")
+
+        self.assertIsInstance(dataspec, cds.DataSpec)
+
+        self.assertEqual(ACS5, dataspec.dataset)
+        self.assertEqual(2020, dataspec.vintage)
+        self.assertFalse(dataspec.with_geometry)
+
+        self.assertIsInstance(dataspec.variable_spec, cds.CensusGroup)
+
+    def test_load_yaml2(self):
+        dataspec = cds.DataSpec.load_yaml(self.directory / "dataspec2.yaml")
+
+        self.assertIsInstance(dataspec, cds.DataSpec)
+
+        self.assertEqual(ACS5, dataspec.dataset)
+        self.assertEqual(2021, dataspec.vintage)
+        self.assertTrue(dataspec.with_geometry)
+
+        self.assertIsInstance(dataspec.variable_spec, cds.VariableSpecCollection)
+
+    def test_download_from_yaml_dataspec(self):
+        dataspec = cds.DataSpec.load_yaml(self.directory / "dataspec2.yaml")
+
+        self.assertIsInstance(dataspec, cds.DataSpec)
+
+        gdf_data = dataspec.download()
+
+        # 50 states + DC + PR = 52
+        # Columns and frac_ columns add up to 39.
+        self.assertEqual((52, 39), gdf_data.shape)
+
+        frac_variables = set(
+            variable for variable in gdf_data.columns if variable.startswith("frac")
+        )
+
+        self.assertEqual(18, len(frac_variables))
+
+        # The raw version of each is in there.
+        for variable in frac_variables:
+            self.assertIn(variable[5:], gdf_data.columns)
+
+        # The fractions of this group should add up to 1.0.
+        group = "B03002"
+
+        group_frac_variables = [
+            variable
+            for variable in frac_variables
+            if variable.startswith(f"frac_{group}")
+        ]
+
+        sum_of_group_fracs = gdf_data[group_frac_variables].sum(axis="columns")
+
+        sum_of_group_fracs.apply(lambda s: self.assertAlmostEqual(1.0, s, places=10))
 
 
 if __name__ == "__main__":

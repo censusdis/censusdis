@@ -1,0 +1,26 @@
+# This dataspec has a single group.
+!DataSpec
+dataset: ACS5
+vintage: 2021
+geography:
+  state: '*'
+# In this example we have a list of specs.
+specs:
+  # This spec is a group. We will download all
+  # leaves of the group and then compute fractional
+  # values for them using a denominator that is their
+  # sum.
+  - !Group
+    group: B03002
+    leaves_only: true
+    denominator: true
+  # This spec is a list of variables. We will also
+  # compute fractions for them, but with a
+  # denominator taken from another variable.
+  - !VariableList
+    variables:
+      - B25003I_002E
+      - B25003I_003E
+    denominator: B25003I_001E
+# And let's get geometry too!
+with_geometry: true
