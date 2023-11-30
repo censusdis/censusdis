@@ -8,9 +8,8 @@
 
 import os
 import sys
-from typing import MutableMapping
-
 import unittest.mock as mock
+from typing import MutableMapping
 
 # We have to mock out certain modules that are not pure
 # python because RTD will not import them.

@@ -2,6 +2,7 @@ import argparse
 import logging
 import sys
 from logging import getLogger
+
 from logargparser import LoggingArgumentParser
 
 from censusdis.dataspec import DataSpec
@@ -53,7 +54,8 @@ def main():
 
     if output.endswith(".geojson") and not dataspec.with_geometry:
         logger.critical(
-            f"Specification {args.dataspec} does no have `with_geometry: true`, so .geojson output to {output} is not possible."
+            f"Specification {args.dataspec} does no have `with_geometry: true`, so .geojson output to {output} "
+            "is not possible."
         )
         sys.exit(2)
 

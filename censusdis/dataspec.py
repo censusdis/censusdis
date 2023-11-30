@@ -1,9 +1,11 @@
-from typing import ClassVar, Dict, List, Iterable, Optional, Tuple, Union
 import itertools
-import pandas as pd
-import geopandas as gpd
-import yaml
 from pathlib import Path
+from typing import ClassVar, Dict, Iterable, List, Optional, Tuple, Union
+
+import geopandas as gpd
+import pandas as pd
+import yaml
+
 import censusdis.data as ced
 import censusdis.datasets
 from censusdis.geography import InSpecType
