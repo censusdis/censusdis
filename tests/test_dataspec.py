@@ -1,4 +1,6 @@
 import unittest
+from pathlib import Path
+
 import censusdis.dataspec as cds
 from censusdis.datasets import ACS5
 from censusdis.states import NJ, NY
@@ -225,6 +227,44 @@ class DownloadTestCase(unittest.TestCase):
         self.assertEqual((1, 43), df.shape)
 
         print(df.shape)
+
+
+class YamlTestCase(unittest.TestCase):
+    def setUp(self) -> None:
+        self.directory = Path(__file__).parent / "data" / "dataspecs"
+
+    def test_load_variables(self):
+        spec = cds.VariableSpec.load_yaml(self.directory / "variable_list.yaml")
+
+        self.assertIsInstance(spec, cds.VariableList)
+
+        self.assertEqual(
+            cds.VariableList(["B03002_002E", "B03002_012E"], denominator="B03002_001E"),
+            spec,
+        )
+
+    def test_load_group(self):
+        spec = cds.VariableSpec.load_yaml(self.directory / "group.yaml")
+
+        self.assertIsInstance(spec, cds.CensusGroup)
+
+        self.assertEqual(
+            cds.CensusGroup("B03002", leaves_only=True, denominator="B03002_001E"), spec
+        )
+
+    def test_load_spec_collection(self):
+        spec = cds.VariableSpec.load_yaml(self.directory / "collection.yaml")
+
+        self.assertIsInstance(spec, cds.VariableSpecCollection)
+
+        expected = cds.VariableSpecCollection(
+            [
+                cds.VariableList(["B03002_002E", "B03002_012E"], denominator="B03002_001E"),
+                cds.CensusGroup("B03002", leaves_only=True, denominator="B03002_001E")
+            ]
+        )
+
+        self.assertEqual(expected, spec)
 
 
 if __name__ == "__main__":

@@ -1,8 +1,9 @@
-from typing import List, Iterable, Optional, Tuple, Union
+from typing import ClassVar, List, Iterable, Optional, Tuple, Union
 import itertools
 import pandas as pd
 import geopandas as gpd
-
+import yaml
+from pathlib import Path
 import censusdis.data as ced
 from censusdis.geography import InSpecType
 from censusdis.impl.varsource.base import VintageType
@@ -73,6 +74,17 @@ class VariableSpec:
 
         return df_or_gdf
 
+    @classmethod
+    def load_yaml(cls, path: Union[str, Path]):
+        loader = yaml.SafeLoader
+        loader.add_constructor("!VariableList", _class_constructor(VariableList))
+        loader.add_constructor("!Group", _class_constructor(CensusGroup))
+        loader.add_constructor("!SpecCollection", _variable_spec_collection_constructor)
+
+        loaded = yaml.load(open(path, "rb"), Loader=loader)
+
+        return loaded
+
 
 class VariableList(VariableSpec):
     def __init__(
@@ -115,6 +127,15 @@ class VariableList(VariableSpec):
                     df_downloaded[variable] / denominator
                 )
 
+    def __eq__(self, other) -> bool:
+        if not isinstance(other, VariableList):
+            return False
+
+        return (
+            sorted(self._variables) == sorted(other._variables)
+            and self.denominator == other.denominator
+        )
+
 
 class CensusGroup(VariableSpec):
     def __init__(
@@ -142,6 +163,16 @@ class CensusGroup(VariableSpec):
                         df_downloaded[f"frac_{variable}"] = (
                             df_downloaded[variable] / df_downloaded[self.denominator]
                         )
+
+    def __eq__(self, other) -> bool:
+        if not isinstance(other, CensusGroup):
+            return False
+
+        return (
+            sorted(self._group) == sorted(other._group)
+            and self.denominator == other.denominator
+            and self._leaves_only == other._leaves_only
+        )
 
 
 class VariableSpecCollection(VariableSpec):
@@ -171,6 +202,49 @@ class VariableSpecCollection(VariableSpec):
         df = df_downloaded
         for spec in self._variable_specs:
             spec.synthesize(df)
+
+    def __eq__(self, other) -> bool:
+        if not isinstance(other, VariableSpecCollection):
+            return False
+
+        if len(self._variable_specs) != len(other._variable_specs):
+            return False
+
+        matched = set()
+
+        # Does every spec in self have a unique match in other?
+        for self_spec in self._variable_specs:
+            match = False
+            # We use ii to record those in other that have been
+            # matched so we don't try to match again.
+            for ii, other_spec in enumerate(self._variable_specs):
+                if ii not in matched and self_spec == other_spec:
+                    match = True
+                    matched.add(ii)
+                    break
+            if not match:
+                return False
+
+        return True
+
+
+def _class_constructor(clazz: ClassVar):
+    def constructor(
+        loader: yaml.SafeLoader, node: yaml.nodes.MappingNode
+    ) -> VariableSpec:
+        """Construct a new object of the given class."""
+        kwargs = loader.construct_mapping(node, deep=True)
+        return clazz(**kwargs)
+
+    return constructor
+
+
+def _variable_spec_collection_constructor(
+        loader: yaml.SafeLoader, node: yaml.nodes.SequenceNode
+) -> VariableSpecCollection:
+    """Construct a variable spec collection."""
+    variable_specs = loader.construct_sequence(node, deep=True)
+    return VariableSpecCollection(variable_specs)
 
 
 class DataSpec:
