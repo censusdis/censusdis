@@ -13,7 +13,9 @@ def main():
     parser = LoggingArgumentParser(logger)
 
     subparsers = parser.add_subparsers(parser_class=argparse.ArgumentParser)
-    download_parser = subparsers.add_parser("download", help="Download data from the U.S. Census API.")
+    download_parser = subparsers.add_parser(
+        "download", help="Download data from the U.S. Census API."
+    )
 
     download_parser.add_argument(
         "--api-key",
@@ -49,7 +51,7 @@ def main():
 
     output = args.output
 
-    if output.endswith('.geojson') and not dataspec.with_geometry:
+    if output.endswith(".geojson") and not dataspec.with_geometry:
         logger.critical(
             f"Specification {args.dataspec} does no have `with_geometry: true`, so .geojson output to {output} is not possible."
         )
@@ -63,14 +65,18 @@ def main():
 
     logger.info(f"Writing data to {output}.")
 
-    if output.endswith('.csv'):
+    if output.endswith(".csv"):
         if dataspec.with_geometry:
-            logger.warning("Data with geometry being written to a csv file. You might prefer .geojson.")
+            logger.warning(
+                "Data with geometry being written to a csv file. You might prefer .geojson."
+            )
         df_or_gdf.to_csv(output, index=False)
-    elif output.endswith('.geojson'):
+    elif output.endswith(".geojson"):
         df_or_gdf.to_file(output, driver="GeoJson")
     else:
-        logger.warning(f"Unrecognized file type {output}. This might or might not work.")
+        logger.warning(
+            f"Unrecognized file type {output}. This might or might not work."
+        )
         df_or_gdf.to_file(output)
 
     logger.info("Writing complete.")

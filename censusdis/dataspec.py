@@ -12,15 +12,15 @@ from censusdis.impl.varsource.base import VintageType
 
 class VariableSpec:
     def __init__(
-            self,
-            *,
-            denominator: Union[str, bool] = False,
-            frac_prefix: Optional[str] = None
+        self,
+        *,
+        denominator: Union[str, bool] = False,
+        frac_prefix: Optional[str] = None,
     ):
         self._denominator = denominator
 
         if frac_prefix is None:
-            frac_prefix = 'frac_'
+            frac_prefix = "frac_"
 
         self._frac_prefix = frac_prefix
 
@@ -110,7 +110,7 @@ class VariableList(VariableSpec):
         variables: Union[str, Iterable[str]],
         *,
         denominator: Union[str, bool] = False,
-        frac_prefix: Optional[str] = None
+        frac_prefix: Optional[str] = None,
     ):
         super().__init__(denominator=denominator, frac_prefix=frac_prefix)
         if isinstance(variables, str):
@@ -163,7 +163,7 @@ class CensusGroup(VariableSpec):
         *,
         leaves_only: bool = False,
         denominator: Optional[str] = None,
-        frac_prefix: Optional[str] = None
+        frac_prefix: Optional[str] = None,
     ):
         if denominator is None:
             denominator = False

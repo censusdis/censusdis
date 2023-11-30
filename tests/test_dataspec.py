@@ -314,7 +314,7 @@ class DataSpecTestCase(unittest.TestCase):
 
         # The raw version of each is in there.
         for variable in frac_variables:
-            self.assertIn('_'.join(variable.split('_')[-2:]), gdf_data.columns)
+            self.assertIn("_".join(variable.split("_")[-2:]), gdf_data.columns)
 
         # The fractions of this group should add up to 1.0.
         group = "B03002"
