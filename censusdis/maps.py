@@ -22,7 +22,7 @@ from shapely.geometry import MultiPolygon, Point, Polygon
 from shapely.geometry.base import BaseGeometry
 
 from censusdis.impl.exceptions import CensusApiException
-from censusdis.states import AK, HI, PR, NAMES_FROM_IDS
+from censusdis.states import AK, HI, NAMES_FROM_IDS, PR
 
 logger = getLogger(__name__)
 

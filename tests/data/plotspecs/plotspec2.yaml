@@ -1,0 +1,9 @@
+# A plot spec with bells and whistles.
+!PlotSpec
+variable: B25003I_002E
+boundary: false
+with_background: false
+projection: US
+plot_kwargs:
+  figsize: [12, 8]
+  cmap: Greens

@@ -3,7 +3,7 @@
 import unittest
 from typing import Union
 
-from shapely import Polygon, MultiPolygon
+from shapely import MultiPolygon, Polygon
 
 import censusdis.data as ced
 

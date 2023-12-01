@@ -1,0 +1,10 @@
+!SpecCollection
+- !Group
+  group: B03002
+  leaves_only: true
+  denominator: B03002_001E
+- !VariableList
+  variables:
+    - B03002_002E
+    - B03002_012E
+  denominator: B03002_001E
