@@ -355,19 +355,19 @@ class DataSpec:
 
 class PlotSpec:
     def __init__(
-            self,
-            variable: str,
-            *,
-            boundary: bool = False,
-            with_background: bool = False,
-            plot_kwargs: Optional[Dict[str, Any]] = None,
-            projection: Optional[str] = None,
+        self,
+        variable: str,
+        *,
+        boundary: bool = False,
+        with_background: bool = False,
+        plot_kwargs: Optional[Dict[str, Any]] = None,
+        projection: Optional[str] = None,
     ):
         self._variable = variable
         self._boundary = boundary
         self._with_background = with_background
         if plot_kwargs is None:
-            plot_kwargs : Dict[str, Any] = {}
+            plot_kwargs: Dict[str, Any] = {}
         self._plot_kwargs = plot_kwargs
         self._projection = projection
 
@@ -404,14 +404,14 @@ class PlotSpec:
         )
 
     def plot(self, gdf: gpd.GeoDataFrame):
-        if self._projection in ['US', 'us', 'U.S.']:
+        if self._projection in ["US", "us", "U.S."]:
             if self._boundary:
                 ax = cem.plot_us_boundary(
                     gdf,
                     self._variable,
                     with_background=self._with_background,
                     do_relocate_ak_hi_pr=True,
-                    **self._plot_kwargs
+                    **self._plot_kwargs,
                 )
             else:
                 ax = cem.plot_us(
@@ -419,7 +419,7 @@ class PlotSpec:
                     self._variable,
                     with_background=self._with_background,
                     do_relocate_ak_hi_pr=True,
-                    **self._plot_kwargs
+                    **self._plot_kwargs,
                 )
         else:
             if self._projection is not None:
@@ -432,7 +432,7 @@ class PlotSpec:
                 gdf,
                 self._variable,
                 with_background=self._with_background,
-                **self.plot_kwargs
+                **self.plot_kwargs,
             )
 
         return ax
@@ -450,5 +450,3 @@ class PlotSpec:
         loaded = yaml.load(open(path, "rb"), Loader=loader)
 
         return loaded
-
-

@@ -15,7 +15,6 @@ from censusdis.cli.yamlspec import PlotSpec, DataSpec
 
 
 class PlotSpecTestCase(unittest.TestCase):
-
     @classmethod
     def setUpClass(cls) -> None:
         cls.plot_spec_directory = Path(__file__).parent / "data" / "plotspecs"
@@ -27,7 +26,6 @@ class PlotSpecTestCase(unittest.TestCase):
         cls.output_dir = output_dir
 
         cls.expected_dir = Path(__file__).parent / "expected" / sys.platform
-
 
     def test_load_plotspec1(self):
         spec = PlotSpec.load_yaml(self.plot_spec_directory / "plotspec1.yaml")
@@ -49,9 +47,9 @@ class PlotSpecTestCase(unittest.TestCase):
                 boundary=False,
                 with_background=False,
                 projection="US",
-                plot_kwargs={"figsize": [12, 8], "cmap": "Greens"}
+                plot_kwargs={"figsize": [12, 8], "cmap": "Greens"},
             ),
-            spec
+            spec,
         )
 
     def assert_structurally_similar(
@@ -85,7 +83,9 @@ class PlotSpecTestCase(unittest.TestCase):
 
     def test_plot(self):
         plot_spec = PlotSpec.load_yaml(self.plot_spec_directory / "plotspec2.yaml")
-        data_spec : DataSpec = DataSpec.load_yaml(self.data_spec_directory / "dataspec2.yaml")
+        data_spec: DataSpec = DataSpec.load_yaml(
+            self.data_spec_directory / "dataspec2.yaml"
+        )
 
         png_file_name = "plot_spec.png"
         expected_file = self.expected_dir / png_file_name
@@ -102,5 +102,5 @@ class PlotSpecTestCase(unittest.TestCase):
         self.assert_structurally_similar(expected_file, output_file)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

@@ -1,7 +1,13 @@
 import unittest
 from pathlib import Path
 
-from censusdis.cli.yamlspec import CensusGroup, DataSpec, VariableSpec, VariableList, VariableSpecCollection
+from censusdis.cli.yamlspec import (
+    CensusGroup,
+    DataSpec,
+    VariableSpec,
+    VariableList,
+    VariableSpecCollection,
+)
 from censusdis.datasets import ACS5
 from censusdis.states import NJ, NY
 
@@ -152,9 +158,7 @@ class VariableSpecCollectionTestCase(unittest.TestCase):
 
     def test_collection_multiple_groups(self):
         census_group1 = CensusGroup(self.group1)
-        census_group2 = CensusGroup(
-            self.group2, denominator=self.group2_denominator
-        )
+        census_group2 = CensusGroup(self.group2, denominator=self.group2_denominator)
         census_group3 = CensusGroup(self.group3, leaves_only=True)
         census_group_overlap = CensusGroup([self.group1, self.group2])
 
@@ -259,9 +263,7 @@ class YamlTestCase(unittest.TestCase):
 
         expected = VariableSpecCollection(
             [
-                VariableList(
-                    ["B03002_002E", "B03002_012E"], denominator="B03002_001E"
-                ),
+                VariableList(["B03002_002E", "B03002_012E"], denominator="B03002_001E"),
                 CensusGroup("B03002", leaves_only=True, denominator="B03002_001E"),
             ]
         )

@@ -107,11 +107,7 @@ def _read_dataspec(dataspec_file: str) -> DataSpec:
     return dataspec
 
 
-def _download_data(
-        dataspec: DataSpec,
-        needs_geometry: bool,
-        api_key: Optional[str]
-):
+def _download_data(dataspec: DataSpec, needs_geometry: bool, api_key: Optional[str]):
     if needs_geometry and not dataspec.with_geometry:
         logger.critical(
             "Data specification does not have `with_geometry: true`, but geometry is needed to save "
