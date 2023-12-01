@@ -1,15 +1,27 @@
 import itertools
 from pathlib import Path
-from typing import ClassVar, Dict, Iterable, List, Optional, Tuple, Union
+from typing import Any, Dict, Iterable, List, Optional, Tuple, Union, ClassVar
 
 import geopandas as gpd
 import pandas as pd
 import yaml
 
 import censusdis.data as ced
+import censusdis.maps as cem
 import censusdis.datasets
 from censusdis.geography import InSpecType
 from censusdis.impl.varsource.base import VintageType
+
+
+def _class_constructor(clazz: ClassVar):
+    def constructor(
+        loader: yaml.SafeLoader, node: yaml.nodes.MappingNode
+    ) -> VariableSpec:
+        """Construct a new object of the given class."""
+        kwargs = loader.construct_mapping(node, deep=True)
+        return clazz(**kwargs)
+
+    return constructor
 
 
 class VariableSpec:
@@ -264,17 +276,6 @@ class VariableSpecCollection(VariableSpec):
         return True
 
 
-def _class_constructor(clazz: ClassVar):
-    def constructor(
-        loader: yaml.SafeLoader, node: yaml.nodes.MappingNode
-    ) -> VariableSpec:
-        """Construct a new object of the given class."""
-        kwargs = loader.construct_mapping(node, deep=True)
-        return clazz(**kwargs)
-
-    return constructor
-
-
 def _variable_spec_collection_constructor(
     loader: yaml.SafeLoader, node: yaml.nodes.SequenceNode
 ) -> VariableSpecCollection:
@@ -350,3 +351,104 @@ class DataSpec:
         loaded = yaml.load(open(path, "rb"), Loader=loader)
 
         return loaded
+
+
+class PlotSpec:
+    def __init__(
+            self,
+            variable: str,
+            *,
+            boundary: bool = False,
+            with_background: bool = False,
+            plot_kwargs: Optional[Dict[str, Any]] = None,
+            projection: Optional[str] = None,
+    ):
+        self._variable = variable
+        self._boundary = boundary
+        self._with_background = with_background
+        if plot_kwargs is None:
+            plot_kwargs : Dict[str, Any] = {}
+        self._plot_kwargs = plot_kwargs
+        self._projection = projection
+
+    @property
+    def variable(self) -> str:
+        return self._variable
+
+    @property
+    def boundary(self) -> bool:
+        return self._boundary
+
+    @property
+    def with_background(self) -> bool:
+        return self._with_background
+
+    @property
+    def plot_kwargs(self) -> Dict[str, Any]:
+        return self._plot_kwargs
+
+    @property
+    def projection(self):
+        return self._projection
+
+    def __eq__(self, other) -> bool:
+        if not isinstance(other, PlotSpec):
+            return False
+
+        return (
+            self._variable == other._variable
+            and self._boundary == other._boundary
+            and self._with_background == other._with_background
+            and self._projection == other._projection
+            and self._plot_kwargs == other._plot_kwargs
+        )
+
+    def plot(self, gdf: gpd.GeoDataFrame):
+        if self._projection in ['US', 'us', 'U.S.']:
+            if self._boundary:
+                ax = cem.plot_us_boundary(
+                    gdf,
+                    self._variable,
+                    with_background=self._with_background,
+                    do_relocate_ak_hi_pr=True,
+                    **self._plot_kwargs
+                )
+            else:
+                ax = cem.plot_us(
+                    gdf,
+                    self._variable,
+                    with_background=self._with_background,
+                    do_relocate_ak_hi_pr=True,
+                    **self._plot_kwargs
+                )
+        else:
+            if self._projection is not None:
+                gdf = gdf.to_crs(epsg=self._projection)
+
+            if self._boundary:
+                gdf = gdf.boundary
+
+            ax = cem.plot_map(
+                gdf,
+                self._variable,
+                with_background=self._with_background,
+                **self.plot_kwargs
+            )
+
+        return ax
+
+    @classmethod
+    def yaml_loader(cls):
+        loader = yaml.SafeLoader
+        loader.add_constructor("!PlotSpec", _class_constructor(cls))
+        return loader
+
+    @classmethod
+    def load_yaml(cls, path: Union[str, Path]) -> "PlotSpec":
+        loader = cls.yaml_loader()
+
+        loaded = yaml.load(open(path, "rb"), Loader=loader)
+
+        return loaded
+
+

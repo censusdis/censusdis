@@ -1,7 +1,7 @@
 import unittest
 from pathlib import Path
 
-import censusdis.dataspec as cds
+from censusdis.cli.yamlspec import CensusGroup, DataSpec, VariableSpec, VariableList, VariableSpecCollection
 from censusdis.datasets import ACS5
 from censusdis.states import NJ, NY
 
@@ -11,7 +11,7 @@ class VariableTestCase(unittest.TestCase):
         self.variables = ["X01001_001E", "X01001_002E", "X01001_003E"]
 
     def test_variable_spec(self):
-        spec = cds.VariableList(self.variables)
+        spec = VariableList(self.variables)
 
         variables_to_download = spec.variables_to_download()
 
@@ -19,7 +19,7 @@ class VariableTestCase(unittest.TestCase):
         self.assertEqual([], spec.groups_to_download())
 
     def test_variable_spec_one(self):
-        spec = cds.VariableList(self.variables[0])
+        spec = VariableList(self.variables[0])
 
         variables_to_download = spec.variables_to_download()
 
@@ -27,7 +27,7 @@ class VariableTestCase(unittest.TestCase):
         self.assertEqual([], spec.groups_to_download())
 
     def test_variable_spec_sum_denominator(self):
-        spec = cds.VariableList(self.variables, denominator=True)
+        spec = VariableList(self.variables, denominator=True)
 
         variables_to_download = spec.variables_to_download()
 
@@ -35,7 +35,7 @@ class VariableTestCase(unittest.TestCase):
         self.assertEqual([], spec.groups_to_download())
 
     def test_variable_spec_sum_denominator_var(self):
-        spec = cds.VariableList(self.variables, denominator=self.variables[-1])
+        spec = VariableList(self.variables, denominator=self.variables[-1])
 
         variables_to_download = spec.variables_to_download()
 
@@ -43,7 +43,7 @@ class VariableTestCase(unittest.TestCase):
         self.assertEqual([], spec.groups_to_download())
 
     def test_variable_spec_sum_denominator_other(self):
-        spec = cds.VariableList(self.variables, denominator="X02001_001E")
+        spec = VariableList(self.variables, denominator="X02001_001E")
 
         variables_to_download = spec.variables_to_download()
 
@@ -62,13 +62,13 @@ class GroupTestCase(unittest.TestCase):
         self.group = ["X01001", "X01002"]
 
     def test_one_group(self):
-        spec = cds.CensusGroup(self.group[0])
+        spec = CensusGroup(self.group[0])
 
         self.assertEqual([], spec.variables_to_download())
         self.assertEqual([(self.group[0], False)], spec.groups_to_download())
 
     def test_groups(self):
-        spec = cds.CensusGroup(self.group)
+        spec = CensusGroup(self.group)
 
         self.assertEqual([], spec.variables_to_download())
         self.assertEqual(
@@ -77,7 +77,7 @@ class GroupTestCase(unittest.TestCase):
 
     def test_groups_leaves_only(self):
         for leaves_only in False, True:
-            spec = cds.CensusGroup(self.group, leaves_only=leaves_only)
+            spec = CensusGroup(self.group, leaves_only=leaves_only)
 
             self.assertEqual([], spec.variables_to_download())
             self.assertEqual(
@@ -88,7 +88,7 @@ class GroupTestCase(unittest.TestCase):
     def test_groups_with_denominator(self):
         denominator = "X02001_001E"
 
-        spec = cds.CensusGroup(self.group, denominator=denominator)
+        spec = CensusGroup(self.group, denominator=denominator)
 
         self.assertEqual([denominator], spec.variables_to_download())
         self.assertEqual(
@@ -107,20 +107,20 @@ class VariableSpecCollectionTestCase(unittest.TestCase):
         self.group3 = "Q01001"
 
     def test_collection(self):
-        variable_list = cds.VariableList(self.variables1)
-        group = cds.CensusGroup(self.group1)
+        variable_list = VariableList(self.variables1)
+        group = CensusGroup(self.group1)
 
-        spec = cds.VariableSpecCollection([variable_list, group])
+        spec = VariableSpecCollection([variable_list, group])
 
         self.assertEqual(len(self.variables1), len(spec.variables_to_download()))
         self.assertSetEqual(set(self.variables1), set(spec.variables_to_download()))
         self.assertEqual([(self.group1, False)], spec.groups_to_download())
 
     def test_collection_multiple_vars(self):
-        variable_list1 = cds.VariableList(self.variables1)
-        variable_list2 = cds.VariableList(self.variables2)
+        variable_list1 = VariableList(self.variables1)
+        variable_list2 = VariableList(self.variables2)
 
-        spec = cds.VariableSpecCollection([variable_list1, variable_list2])
+        spec = VariableSpecCollection([variable_list1, variable_list2])
 
         self.assertEqual(
             len(self.variables1) + len(self.variables2),
@@ -132,11 +132,11 @@ class VariableSpecCollectionTestCase(unittest.TestCase):
         self.assertEqual([], spec.groups_to_download())
 
     def test_collection_multiple_vars_overlap(self):
-        variable_list1 = cds.VariableList(self.variables1)
-        variable_list2 = cds.VariableList(self.variables2)
-        variable_list_overlap = cds.VariableList(self.variables_overlap)
+        variable_list1 = VariableList(self.variables1)
+        variable_list2 = VariableList(self.variables2)
+        variable_list_overlap = VariableList(self.variables_overlap)
 
-        spec = cds.VariableSpecCollection(
+        spec = VariableSpecCollection(
             [variable_list1, variable_list_overlap, variable_list2]
         )
 
@@ -151,14 +151,14 @@ class VariableSpecCollectionTestCase(unittest.TestCase):
         self.assertEqual([], spec.groups_to_download())
 
     def test_collection_multiple_groups(self):
-        census_group1 = cds.CensusGroup(self.group1)
-        census_group2 = cds.CensusGroup(
+        census_group1 = CensusGroup(self.group1)
+        census_group2 = CensusGroup(
             self.group2, denominator=self.group2_denominator
         )
-        census_group3 = cds.CensusGroup(self.group3, leaves_only=True)
-        census_group_overlap = cds.CensusGroup([self.group1, self.group2])
+        census_group3 = CensusGroup(self.group3, leaves_only=True)
+        census_group_overlap = CensusGroup([self.group1, self.group2])
 
-        spec = cds.VariableSpecCollection(
+        spec = VariableSpecCollection(
             [census_group1, census_group2, census_group3, census_group_overlap]
         )
 
@@ -180,7 +180,7 @@ class DownloadTestCase(unittest.TestCase):
         self.variable_not_hispanic_latino_pop = "B03002_002E"
 
     def test_one_variable_spec(self):
-        spec = cds.VariableList(["NAME", self.variable_total_pop])
+        spec = VariableList(["NAME", self.variable_total_pop])
 
         df = spec.download(dataset=self.dataset, vintage=self.vintage, state=[NJ, NY])
 
@@ -192,7 +192,7 @@ class DownloadTestCase(unittest.TestCase):
     def test_variables_denominator(self):
         # Try both an explicit denominator and an implicit one.
         for denominator in True, self.variable_total_pop:
-            spec = cds.VariableList(
+            spec = VariableList(
                 [
                     self.variable_hispanic_latino_pop,
                     self.variable_not_hispanic_latino_pop,
@@ -220,7 +220,7 @@ class DownloadTestCase(unittest.TestCase):
             )
 
     def test_group_denominator(self):
-        spec = cds.CensusGroup(self.group, denominator=self.variable_total_pop)
+        spec = CensusGroup(self.group, denominator=self.variable_total_pop)
 
         df = spec.download(dataset=self.dataset, vintage=self.vintage, state=NJ)
 
@@ -234,35 +234,35 @@ class YamlTestCase(unittest.TestCase):
         self.directory = Path(__file__).parent / "data" / "dataspecs"
 
     def test_load_variables(self):
-        spec = cds.VariableSpec.load_yaml(self.directory / "variable_list.yaml")
+        spec = VariableSpec.load_yaml(self.directory / "variable_list.yaml")
 
-        self.assertIsInstance(spec, cds.VariableList)
+        self.assertIsInstance(spec, VariableList)
 
         self.assertEqual(
-            cds.VariableList(["B03002_002E", "B03002_012E"], denominator="B03002_001E"),
+            VariableList(["B03002_002E", "B03002_012E"], denominator="B03002_001E"),
             spec,
         )
 
     def test_load_group(self):
-        spec = cds.VariableSpec.load_yaml(self.directory / "group.yaml")
+        spec = VariableSpec.load_yaml(self.directory / "group.yaml")
 
-        self.assertIsInstance(spec, cds.CensusGroup)
+        self.assertIsInstance(spec, CensusGroup)
 
         self.assertEqual(
-            cds.CensusGroup("B03002", leaves_only=True, denominator="B03002_001E"), spec
+            CensusGroup("B03002", leaves_only=True, denominator="B03002_001E"), spec
         )
 
     def test_load_spec_collection(self):
-        spec = cds.VariableSpec.load_yaml(self.directory / "collection.yaml")
+        spec = VariableSpec.load_yaml(self.directory / "collection.yaml")
 
-        self.assertIsInstance(spec, cds.VariableSpecCollection)
+        self.assertIsInstance(spec, VariableSpecCollection)
 
-        expected = cds.VariableSpecCollection(
+        expected = VariableSpecCollection(
             [
-                cds.VariableList(
+                VariableList(
                     ["B03002_002E", "B03002_012E"], denominator="B03002_001E"
                 ),
-                cds.CensusGroup("B03002", leaves_only=True, denominator="B03002_001E"),
+                CensusGroup("B03002", leaves_only=True, denominator="B03002_001E"),
             ]
         )
 
@@ -274,31 +274,31 @@ class DataSpecTestCase(unittest.TestCase):
         self.directory = Path(__file__).parent / "data" / "dataspecs"
 
     def test_load_yaml1(self):
-        dataspec = cds.DataSpec.load_yaml(self.directory / "dataspec1.yaml")
+        dataspec = DataSpec.load_yaml(self.directory / "dataspec1.yaml")
 
-        self.assertIsInstance(dataspec, cds.DataSpec)
+        self.assertIsInstance(dataspec, DataSpec)
 
         self.assertEqual(ACS5, dataspec.dataset)
         self.assertEqual(2020, dataspec.vintage)
         self.assertFalse(dataspec.with_geometry)
 
-        self.assertIsInstance(dataspec.variable_spec, cds.CensusGroup)
+        self.assertIsInstance(dataspec.variable_spec, CensusGroup)
 
     def test_load_yaml2(self):
-        dataspec = cds.DataSpec.load_yaml(self.directory / "dataspec2.yaml")
+        dataspec = DataSpec.load_yaml(self.directory / "dataspec2.yaml")
 
-        self.assertIsInstance(dataspec, cds.DataSpec)
+        self.assertIsInstance(dataspec, DataSpec)
 
         self.assertEqual(ACS5, dataspec.dataset)
         self.assertEqual(2021, dataspec.vintage)
         self.assertTrue(dataspec.with_geometry)
 
-        self.assertIsInstance(dataspec.variable_spec, cds.VariableSpecCollection)
+        self.assertIsInstance(dataspec.variable_spec, VariableSpecCollection)
 
     def test_download_from_yaml_dataspec(self):
-        dataspec = cds.DataSpec.load_yaml(self.directory / "dataspec2.yaml")
+        dataspec = DataSpec.load_yaml(self.directory / "dataspec2.yaml")
 
-        self.assertIsInstance(dataspec, cds.DataSpec)
+        self.assertIsInstance(dataspec, DataSpec)
 
         gdf_data = dataspec.download()
 
