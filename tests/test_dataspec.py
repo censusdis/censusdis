@@ -1,6 +1,7 @@
 import unittest
 from pathlib import Path
 
+import censusdis.states
 from censusdis.cli.yamlspec import (
     CensusGroup,
     DataSpec,
@@ -296,6 +297,34 @@ class DataSpecTestCase(unittest.TestCase):
         self.assertTrue(dataspec.with_geometry)
 
         self.assertIsInstance(dataspec.variable_spec, VariableSpecCollection)
+
+    def test_state_geo(self):
+        """Test mapping state names."""
+        dataspec = DataSpec.load_yaml(self.directory / "dataspec3.yaml")
+
+        self.assertIsInstance(dataspec, DataSpec)
+
+        # This one had a single state.
+        self.assertEqual("34", dataspec.geography["state"])
+
+    def test_state_geo_download(self):
+        dataspec = DataSpec.load_yaml(self.directory / "dataspec4.yaml")
+
+        self.assertIsInstance(dataspec, DataSpec)
+
+        # This one had a list.
+        self.assertEqual(["36", "34", "09", "06"], dataspec.geography["state"])
+
+        # Download it and make sure we got the names of the four states we expected.
+        df = dataspec.download()
+
+        self.assertEqual((4, 3), df.shape)
+        self.assertSetEqual({"STATE", "NAME", "B25003_001E"}, set(df.columns))
+        for state in dataspec.geography["state"]:
+            self.assertEqual(
+                df[df["STATE"] == state]["NAME"].iloc[0],
+                censusdis.states.NAMES_FROM_IDS[state],
+            )
 
     def test_download_from_yaml_dataspec(self):
         dataspec = DataSpec.load_yaml(self.directory / "dataspec2.yaml")

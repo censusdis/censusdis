@@ -9,6 +9,7 @@ import yaml
 import censusdis.data as ced
 import censusdis.maps as cem
 import censusdis.datasets
+import censusdis.states
 from censusdis.geography import InSpecType
 from censusdis.impl.varsource.base import VintageType
 
@@ -290,7 +291,7 @@ class DataSpec:
         dataset: str,
         vintage: VintageType,
         specs: Union[VariableSpec, Iterable[VariableSpec]],
-        geography: Dict[str, str],
+        geography: Dict[str, Union[str, List[str]]],
         *,
         with_geometry: bool = False,
         remove_water: bool = False,
@@ -298,12 +299,34 @@ class DataSpec:
         # Map symbolic names or use what we are given if there is no mapping.
         self._dataset = getattr(censusdis.datasets, dataset, dataset)
         self._vintage = vintage
+        # If it is a raw list construct a collection around it.
         self._variable_spec = (
             specs if isinstance(specs, VariableSpec) else VariableSpecCollection(specs)
         )
-        self._geography = geography
+        self._geography = self.map_state_names(geography)
         self._with_geometry = with_geometry
         self._remove_water = remove_water
+
+    @classmethod
+    def map_state_names(
+        cls, geography: Dict[str, Union[str, List[str]]]
+    ) -> Dict[str, Union[str, List[str]]]:
+        """If there is a state in a geography, try to map it."""
+
+        def map_state(state: str) -> str:
+            """Map the name if a symbolic name exists."""
+            return getattr(censusdis.states, state, state)
+
+        # If there is no 'state' in geography there is nothing to do.
+        # If there is a 'state', we copy the dict and do the mapping.
+        if "state" in geography:
+            geography = dict(geography)
+            if isinstance(geography["state"], str):
+                geography["state"] = map_state(geography["state"])
+            else:
+                geography["state"] = [map_state(state) for state in geography["state"]]
+
+        return geography
 
     @property
     def dataset(self) -> str:
@@ -324,6 +347,10 @@ class DataSpec:
     @property
     def variable_spec(self) -> VariableSpec:
         return self._variable_spec
+
+    @property
+    def geography(self) -> Dict[str, Union[str, List[str]]]:
+        return self._geography
 
     def download(
         self,

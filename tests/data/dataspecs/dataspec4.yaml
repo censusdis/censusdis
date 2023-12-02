@@ -1,0 +1,13 @@
+# This dataspec has a single group.
+!DataSpec
+dataset: ACS5
+vintage: 2021
+# Three states by symbolic name and one by FIPS code.
+geography:
+  state: [NY, NJ, CT, '06']
+# In this example we have a list of specs.
+specs:
+  - !VariableList
+    variables:
+      - NAME
+      - B25003_001E
