@@ -1,3 +1,4 @@
+"""Tests for YAML specification for the CLI."""
 import unittest
 from pathlib import Path
 
@@ -14,6 +15,7 @@ from censusdis.states import NJ, NY
 
 
 class VariableTestCase(unittest.TestCase):
+    """Test for VariableSpec."""
     def setUp(self) -> None:
         self.variables = ["X01001_001E", "X01001_002E", "X01001_003E"]
 

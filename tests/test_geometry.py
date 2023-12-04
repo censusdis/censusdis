@@ -1,3 +1,4 @@
+"""Test geometry."""
 # Copyright (c) 2023 Darren Erik Vengroff
 import math
 import unittest
@@ -36,7 +37,7 @@ class IsoperimetricQuotientTestCase(unittest.TestCase):
         self.assertAlmostEqual(1.0, q, places=3)
 
     def test_series(self):
-        """Test with a `gpd.GeoSeries`"""
+        """Test with a `gpd.GeoSeries`."""
         geometry = gpd.GeoSeries(
             [
                 # Square
@@ -52,7 +53,7 @@ class IsoperimetricQuotientTestCase(unittest.TestCase):
         self.assertAlmostEqual(0.0, q.iloc[1], places=10)
 
     def test_geo_data_frame(self):
-        """Test with a `gpd.GeoDataFrame`"""
+        """Test with a `gpd.GeoDataFrame`."""
         gdf_geometry = gpd.GeoDataFrame(
             [[1.0, 1.1], [2.0, 2.2]],
             columns=["col1", "col2"],
@@ -119,6 +120,7 @@ class DropSliversTestCase(unittest.TestCase):
         self.assertEqual(p1, p4)
 
     def test_drop_slivers_from_zero_area_polygon(self):
+        """Test dropping slivers from a polygon with zero area."""
         p1 = self.geometry.iloc[1]
 
         self.assertIsInstance(p1, Polygon)
@@ -135,6 +137,7 @@ class DropSliversTestCase(unittest.TestCase):
         self.assertIsNone(p4)
 
     def test_drop_slivers_from_multi_polygon(self):
+        """Test dropping slivers from a multi-polygon."""
         mp1 = self.geometry.iloc[0]
 
         self.assertIsInstance(mp1, MultiPolygon)
@@ -152,6 +155,7 @@ class DropSliversTestCase(unittest.TestCase):
         self.assertIsNone(mp4)
 
     def test_drop_slivers_from_geo_series(self):
+        """Test dropping slivers from a geo series."""
         remaining = drop_slivers(self.geometry)
 
         self.assertEqual(len(self.geometry), len(remaining))
@@ -173,6 +177,7 @@ class DropSliversTestCase(unittest.TestCase):
         )
 
     def test_drop_slivers_from_gdf(self):
+        """Test dropping slivers from a GeoDataFrame."""
         gdf_geo = gpd.GeoDataFrame(
             [
                 ["Square and Line"],

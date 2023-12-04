@@ -1,3 +1,4 @@
+"""Test map plotting functionality."""
 import sys
 import tempfile
 import unittest
@@ -32,13 +33,22 @@ from censusdis.states import (
 
 
 class ShapeReaderTestCase(unittest.TestCase):
+    """
+    Test reading shapefiles.
+
+    The complexity we have to test is that file locations on the
+    server side have changed over the years.
+    """
+
     def setUp(self) -> None:
+        """Set up before each test."""
         root = Path(tempfile.TemporaryDirectory().name)
 
         self.reader09 = cmap.ShapeReader(root, 2009)
         self.reader20 = cmap.ShapeReader(root, 2020)
 
     def test_url_for_file_09(self):
+        """Test the shapefile url for 2009."""
         url = self.reader09._url_for_file("cb_something")
         self.assertEqual(
             "https://www2.census.gov/geo/tiger/GENZ2009/shp/cb_something.zip", url
@@ -51,6 +61,7 @@ class ShapeReaderTestCase(unittest.TestCase):
         )
 
     def test_url_for_file_20(self):
+        """Test the shapefile url for 2020."""
         url = self.reader20._url_for_file("cb_something")
         self.assertEqual(
             "https://www2.census.gov/geo/tiger/GENZ2020/shp/cb_something.zip", url
@@ -63,6 +74,7 @@ class ShapeReaderTestCase(unittest.TestCase):
         )
 
     def test_tiger_url(self):
+        """Test TIGER URLs."""
         base_url, name = self.reader09.tiger_url("tl", NJ, "tract")
 
         self.assertEqual(
@@ -79,6 +91,8 @@ class ShapeReaderTestCase(unittest.TestCase):
 
 
 class GdfCrsBoundsTestCase(unittest.TestCase):
+    """Test loading our CRS bounds resource file."""
+
     def test_load_resource(self):
         """Make sure we can load the resource file."""
         gdf_crs_bounds = cmap._gdf_crs_bounds()
@@ -224,9 +238,7 @@ class MapPlotTestCase(unittest.TestCase):
         self.assert_structurally_similar(expected_file, output_file)
 
     def test_plot_us_boundary(self):
-        """
-        Test calling plot_us_boundary.
-        """
+        """Test calling plot_us_boundary."""
         png_file_name = "plot_us_boundary.png"
         expected_file = self.expected_dir / png_file_name
 
@@ -240,9 +252,7 @@ class MapPlotTestCase(unittest.TestCase):
         self.assert_structurally_similar(expected_file, output_file)
 
     def test_plot_us_boundary_with_background(self):
-        """
-        Test calling plot_us_boundary.
-        """
+        """Test calling plot_us_boundary."""
         png_file_name = "plot_us_boundary_with_background.png"
         expected_file = self.expected_dir / png_file_name
 
@@ -263,9 +273,7 @@ class MapPlotTestCase(unittest.TestCase):
         self.assert_structurally_similar(expected_file, output_file)
 
     def test_plot_us_boundary_with_background_no_relocate(self):
-        """
-        Test calling plot_us_boundary.
-        """
+        """Test calling plot_us_boundary."""
         png_file_name = "plot_us_boundary_with_background_no_relocate.png"
         expected_file = self.expected_dir / png_file_name
 
@@ -288,9 +296,7 @@ class MapPlotTestCase(unittest.TestCase):
         self.assert_structurally_similar(expected_file, output_file)
 
     def test_plot_us_with_background_no_relocate(self):
-        """
-        Test calling plot_us_boundary.
-        """
+        """Test calling plot_us_boundary."""
         png_file_name = "plot_us_with_background_no_relocate.png"
         expected_file = self.expected_dir / png_file_name
 
@@ -380,6 +386,8 @@ class MapPlotTestCase(unittest.TestCase):
 
 
 class GeographicCentroidsTestCase(unittest.TestCase):
+    """Test computing geographic centroids."""
+
     def setUp(self) -> None:
         """Set up before each test."""
         # Geometry of Wyoming.

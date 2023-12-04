@@ -9,7 +9,7 @@ import censusdis.data as ced
 
 
 def _shape_size(shape: Union[Polygon, MultiPolygon]) -> int:
-    """How many points in a Polygon or MultiPolygon?"""
+    """How many points in a Polygon or MultiPolygon."""
     if isinstance(shape, Polygon):
         return len(shape.exterior.coords) + sum(
             len(hole.coords) for hole in shape.interiors
@@ -24,6 +24,7 @@ class TigerTestCase(unittest.TestCase):
     """Test falling back on TIGER maps, which are much bigger and higher resolution."""
 
     def test_single_years(self):
+        """Test for a single year."""
         for year in range(2010, 2022):
             gdf = ced.download(
                 "acs/acs5",
