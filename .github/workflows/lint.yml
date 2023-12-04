@@ -33,8 +33,9 @@ jobs:
       #----------------------------------------------
       #          run linters
       #----------------------------------------------
-      - run: python -m pip install black[jupyter] flake8 isort pylint
+      - run: python -m pip install black[jupyter] flake8 isort pylint ruff
       - run: |
           flake8 --show-source .
           black . --check
           isort --profile black .
+          ruff check .
