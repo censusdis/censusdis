@@ -53,7 +53,7 @@ the values allowed by the filter. For example::
 
 def _gf2s(geo_filter: GeoFilterType) -> Optional[str]:
     """
-    Utility to convert a filter to a string.
+    Convert a filter to a string.
 
     For the Census API, multiple values are encoded
     in a single comma separated string.
@@ -157,12 +157,12 @@ def _download_multiple(
             [
                 item
                 for item in row_keys
-                + download_variables[start : start + chunk_size]  # noqa: 203
+                + download_variables[start : start + chunk_size]  # noqa: E203
                 if item not in row_keys
                 or row_keys.index(item)
                 == (
                     row_keys
-                    + download_variables[start : start + chunk_size]  # noqa: 203
+                    + download_variables[start : start + chunk_size]  # noqa: E203
                 ).index(item)
             ]
             for start in range(0, len(download_variables), chunk_size)
@@ -170,7 +170,9 @@ def _download_multiple(
     else:
         variable_groups = [
             # black and flake8 disagree about the whitespace before ':' here...
-            download_variables[start : start + _MAX_VARIABLES_PER_DOWNLOAD]  # noqa: 203
+            download_variables[
+                start : start + _MAX_VARIABLES_PER_DOWNLOAD
+            ]  # noqa: E203
             for start in range(0, len(download_variables), _MAX_VARIABLES_PER_DOWNLOAD)
         ]
 
@@ -637,8 +639,9 @@ def add_inferred_geography(
     df_data: pd.DataFrame, year: Optional[int] = None
 ) -> gpd.GeoDataFrame:
     """
-    Infer the geography level of the given dataframe and
-    add geometry to each row for that level.
+    Infer the geography level of the given dataframe.
+
+    Add geometry to each row for the inferred level.
 
     See Also
     --------
@@ -1236,7 +1239,7 @@ def geography_names(
 
 def geographies(dataset: str, vintage: VintageType) -> List[List[str]]:
     """
-    What geographies are supported for a dataset and vintage?
+    Determine what geographies are supported for a dataset and vintage.
 
     This utility gives us a list of the different geography
     keywords we can use in calls to :py:func:`download` with
@@ -1266,7 +1269,7 @@ variables = VariableCache()
 
 def _identify_counties(gdf_geo: gpd.GeoDataFrame, year: int):
     """
-    Takes a geodataframe and identifies which US counties the supplied geography overlaps.
+    Takesa geodataframe and identify which US counties the supplied geography overlaps.
 
     Parameters
     ----------
@@ -1299,7 +1302,7 @@ def _identify_counties(gdf_geo: gpd.GeoDataFrame, year: int):
 
 def _retrieve_water(county_fips_codes: list[str], year: int):
     """
-    Loads `AREAWATER` files from tiger for specified counties.
+    Load `AREAWATER` files from tiger for specified counties.
 
     Parameters
     ----------
@@ -1325,7 +1328,7 @@ def _water_difference(
     gdf_geo: gpd.GeoDataFrame, gdf_water: gpd.GeoDataFrame, minimum_area_sq_meters: int
 ):
     """
-    Removes water polygons exceeding minimum size from supplied GeoDataFrame
+    Remove water polygons exceeding minimum size from supplied `GeoDataFrame`.
 
     Parameters
     ----------
@@ -1361,7 +1364,7 @@ def clip_water(
     sliver_threshold=0.01,
 ):
     """
-    Removes water from input geodataframe.
+    Remove water from input `GeoDataFrame`.
 
     Parameters
     ----------

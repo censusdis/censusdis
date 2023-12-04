@@ -1,7 +1,6 @@
 # Copyright (c) 2022 Darren Erik Vengroff
-"""
-Utilities for managing hierarchies of geographies.
-"""
+"""Utilities for managing hierarchies of geographies."""
+
 import os
 from collections import defaultdict
 from dataclasses import dataclass
@@ -54,18 +53,21 @@ class PathSpec:
         self._path = list(path)
 
     def __str__(self):
+        """Convert to a string."""
         return ":".join(self._path)
 
     def __repr__(self):
+        """Generate a representation."""
         quoted_path = (f'"{c}"' for c in self._path)
         return f"PathSpec([{', '.join(quoted_path)}])"
 
     def __len__(self):
+        """How many components are in the path."""
         return len(self._path)
 
     @property
     def path(self):
-        "The path."
+        """The path."""
         return self._path
 
     @staticmethod
@@ -94,6 +96,12 @@ class PathSpec:
         return self._partial_match(**kwargs) and len(kwargs) == len(self._path)
 
     def fill_in(self, **kwargs: InSpecType) -> InSpecType:
+        """
+        Fill in missing levels in a parial specification.
+
+        This can only be done if a unique partial match can be found
+        amony the set of all valid paths.
+        """
         if not self._partial_match(is_prefix=False, **kwargs):
             raise ValueError("Must be at least a partial match to fill in.")
         reversed_result = {}
@@ -109,13 +117,15 @@ class PathSpec:
 
         return result
 
-    def keys(self):
+    def keys(self) -> List[str]:
+        """Get the keys identifying the path components."""
         return list(self._path)
 
     @classmethod
     def partial_matches(
         cls, dataset: str, year: int, is_prefix=True, **kwargs: InSpecType
     ) -> List["BoundGeographyPath"]:
+        """Find all partial matches for the path."""
         kwargs = PathSpec._u2s(**kwargs)
 
         return [
@@ -128,6 +138,7 @@ class PathSpec:
     def partial_prefix_match(
         cls, dataset: str, year: int, **kwargs: InSpecType
     ) -> Optional["BoundGeographyPath"]:
+        """Find the minimal partial prefix match."""
         matches = cls.partial_matches(dataset, year, is_prefix=True, **kwargs)
 
         min_bgp = None
@@ -140,6 +151,7 @@ class PathSpec:
 
     @classmethod
     def full_match(cls, dataset: str, year: int, **kwargs: InSpecType):
+        """Find a full match."""
         full_matches = [
             (num, path_spec)
             for num, path_spec in cls.get_path_specs(dataset, year).items()
@@ -155,6 +167,11 @@ class PathSpec:
 
     @classmethod
     def by_number(cls, dataset: str, year: int, num: str):
+        """
+        Get the path spec for a given U.S. Census numerical geography code.
+
+        For example, the code '050' represents a state and county specification.
+        """
         return cls.get_path_specs(dataset, year).get(num, None)
 
     @staticmethod
@@ -201,12 +218,13 @@ class PathSpec:
     )
 
     @staticmethod
-    def get_path_specs(dataset: str, year: int) -> Dict[str, "PathSpec"]:
-        if year not in PathSpec._PATH_SPECS_BY_DATASET_YEAR[dataset]:
+    def get_path_specs(dataset: str, vintage: int) -> Dict[str, "PathSpec"]:
+        """Fet all the path specifications for the given dataset and vintage."""
+        if vintage not in PathSpec._PATH_SPECS_BY_DATASET_YEAR[dataset]:
             PathSpec._PATH_SPECS_BY_DATASET_YEAR[dataset][
-                year
-            ] = PathSpec._fetch_path_specs(dataset, year)
-            PathSpec._PATH_SPEC_SNAKE_MAP[dataset][year] = {
+                vintage
+            ] = PathSpec._fetch_path_specs(dataset, vintage)
+            PathSpec._PATH_SPEC_SNAKE_MAP[dataset][vintage] = {
                 component.replace(" ", "_")
                 .replace("/", "_")
                 .replace("-", "_")
@@ -214,36 +232,62 @@ class PathSpec:
                 .replace(")", "")
                 .lower(): component
                 for path_spec in PathSpec._PATH_SPECS_BY_DATASET_YEAR[dataset][
-                    year
+                    vintage
                 ].values()
                 for component in path_spec.path
             }
-            PathSpec._PATH_SPEC_SNAKE_INV_MAP[dataset][year] = {
+            PathSpec._PATH_SPEC_SNAKE_INV_MAP[dataset][vintage] = {
                 name: py_name
                 for py_name, name in PathSpec._PATH_SPEC_SNAKE_MAP[dataset][
-                    year
+                    vintage
                 ].items()
             }
 
-        return PathSpec._PATH_SPECS_BY_DATASET_YEAR[dataset][year]
+        return PathSpec._PATH_SPECS_BY_DATASET_YEAR[dataset][vintage]
 
 
 class BoundGeographyPath:
+    """A fully bound geography path."""
+
     def __init__(self, num: str, path_spec: PathSpec, **kwargs: InSpecType):
+        """
+        Initialize a bound geography path.
+
+        This means it corresponds to a path spec with a numeric ID from
+        the U.S. Census, like '050' for state and county.
+
+        It also means that it has bound values for all components.
+
+        Parameters
+        ----------
+        num
+            A numberic code from the U.S. Census. E.g. '050' for state and county.
+        path_spec
+            The path specification.
+        kwargs
+            Keyword args specifying the bound values.
+        """
         self._num = num
         self._path_spec = path_spec
         self._bindings = path_spec.fill_in(**kwargs)
 
     @property
     def num(self) -> str:
+        """
+        The U.S. Census numeric code for the geography.
+
+        For example, '050' for state and county.
+        """
         return self._num
 
     @property
     def path_spec(self) -> PathSpec:
+        """The path specification."""
         return self._path_spec
 
     @property
     def bindings(self) -> Mapping[str, InSpecType]:
+        """The values bound for each path element."""
         return self._bindings
 
 
@@ -263,6 +307,17 @@ class EnvironmentApiKey:
 
     @classmethod
     def api_key(cls):
+        """
+        Determine the API key we should use.
+
+        This could come from the environment variable US_CENSUS_API_KEY or,
+        if that is not set, a value stored in a single line in the file
+        `'~/.censusdis/api_key.txt'`.
+
+        If neither of these is set, access to the U.S. Census API may be throttled
+        or limited. See https://api.census.gov/data/key_signup.html to sign up for
+        a key.
+        """
         # Try the env var,
         if cls._api_key is None:
             cls._api_key = os.environ.get(cls._env_var, None)
@@ -281,6 +336,8 @@ class EnvironmentApiKey:
 
 @dataclass(init=False)
 class CensusGeographyQuerySpec:
+    """A specification for a geography query."""
+
     dataset: str
     year: int
     variables: List[str]
@@ -297,6 +354,27 @@ class CensusGeographyQuerySpec:
         bound_path: BoundGeographyPath,
         api_key: Optional[str] = None,
     ):
+        """
+        Construct a geographic query.
+
+        Parameters
+        ----------
+        dataset
+            The dataset to download from. For example `"acs/acs5"`,
+            `"dec/pl"`, or `"timeseries/poverty/saipe/schdist"`. There are
+            symbolic names for datasets, like `ACS5` for `"acs/acs5"
+            in :py:module:`censusdis.datasets`.
+        year
+            The vintage to download data for. For most data sets this is
+            an integer year, for example, `2020`.
+        variables
+            The variables to download.
+        bound_path
+            A bound geographic query.
+        api_key
+            An optional API key. You may be throttled or prevented from using
+            the U.S. Census API if you don't provide one.
+        """
         self.dataset = dataset
         self.year = year
         self.variables = variables
@@ -309,6 +387,7 @@ class CensusGeographyQuerySpec:
 
     @property
     def for_component(self) -> str:
+        """The part of the query string that is the `for` clause."""
         *_, (key, value) = self.bound_path.bindings.items()
         if value == "*":
             return f"{key}"
@@ -316,6 +395,7 @@ class CensusGeographyQuerySpec:
 
     @property
     def in_components(self) -> Optional[str]:
+        """The part of the query string specifying the `in` components."""
         *components, _ = self.bound_path.bindings.items()
 
         if components:
@@ -352,6 +432,7 @@ class CensusGeographyQuerySpec:
 
 
 def geo_path_specs(dataset: str, year: int) -> Dict[str, List[str]]:
+    """Construct a map of all known path specs for a given data set and year."""
     return {
         name: [c for c in path_spec.path]
         for name, path_spec in PathSpec.get_path_specs(dataset, year).items()
@@ -359,14 +440,17 @@ def geo_path_specs(dataset: str, year: int) -> Dict[str, List[str]]:
 
 
 def path_component_to_snake(dataset: str, year: int, component: str) -> str:
+    """Convert path components to snake case."""
     return PathSpec._PATH_SPEC_SNAKE_INV_MAP[dataset][year].get(component, component)
 
 
 def path_component_from_snake(dataset: str, year: int, component: str) -> str:
+    """Convert path components out of snake case."""
     return PathSpec._PATH_SPEC_SNAKE_MAP[dataset][year].get(component, component)
 
 
 def geo_path_snake_specs(dataset: str, year: int) -> Dict[str, List[str]]:
+    """Construc a map to snake case for all know geo path specs."""
     return {
         name: [path_component_to_snake(dataset, year, c) for c in path_spec.path]
         for name, path_spec in PathSpec.get_path_specs(dataset, year).items()
