@@ -1,3 +1,4 @@
+"""Test the variable cache."""
 import unittest
 from typing import Any, Dict, Iterable, List, Optional
 
@@ -6,8 +7,14 @@ from censusdis.impl.varsource.base import VariableSource
 
 
 class VariableCacheTestCase(unittest.TestCase):
+    """Variable cache tests."""
+
     class MockVariableSource(VariableSource):
-        """A mock variable source."""
+        """
+        A mock variable source.
+
+        This sits behind a variable cache in our tests.
+        """
 
         def __init__(self):
             self._gets = 0
@@ -16,17 +23,21 @@ class VariableCacheTestCase(unittest.TestCase):
 
         @property
         def gets(self):
+            """A count of gets."""
             return self._gets
 
         @property
         def group_gets(self):
+            """A count of group gets."""
             return self._group_gets
 
         @property
         def all_group_gets(self):
+            """All group gets."""
             return self._all_group_gets
 
         def reset_counts(self):
+            """Reset the counts."""
             self._gets = 0
             self._group_gets = 0
             self._all_group_gets = 0
@@ -121,6 +132,7 @@ class VariableCacheTestCase(unittest.TestCase):
             }
 
         def get_datasets(self, year: Optional[int]) -> Dict[str, Any]:
+            """Get mock datasets."""
             return {
                 "dataset": [
                     {
@@ -135,6 +147,7 @@ class VariableCacheTestCase(unittest.TestCase):
         def group_variable_names(
             self, source: str, year: int, group_name: str
         ) -> Iterable[str]:
+            """Get mock group variable names."""
             variables = self.get_group(source, year, group_name)["variables"]
             for variable in variables.values():
                 yield variable["name"]
@@ -143,6 +156,8 @@ class VariableCacheTestCase(unittest.TestCase):
         """Set up before each test."""
         self.source = "acs/acs5"
         self.year = 2020
+
+        # Create the mock source and put it behind a variable cache.
         self.mock_source = self.MockVariableSource()
         self.variables = VariableCache(variable_source=self.mock_source)
 
@@ -168,6 +183,7 @@ class VariableCacheTestCase(unittest.TestCase):
         self.assertEqual(0, self.mock_source.group_gets)
 
     def test_get(self):
+        """Test getting from the cache."""
         self.assertEqual(0, len(self.variables))
         variable = self.variables.get(self.source, self.year, "X01001_001E")
 
@@ -186,6 +202,7 @@ class VariableCacheTestCase(unittest.TestCase):
         self.assertNotIn((self.source, self.year, "X01001_001E"), self.variables)
 
     def test_many_vars(self):
+        """Test getting many variables."""
         for n, source in enumerate(["foo/abc", "bar/xyz"]):
             for ii in range(20):
                 name = f"X01001_0{ii:02}E"
@@ -220,6 +237,7 @@ class VariableCacheTestCase(unittest.TestCase):
         self.assertEqual(0, len(self.variables))
 
     def test_group(self):
+        """Test caching groups."""
         self.assertEqual(0, self.mock_source.gets)
         self.assertEqual(0, self.mock_source.group_gets)
 
@@ -245,11 +263,13 @@ class VariableCacheTestCase(unittest.TestCase):
         self.assertEqual(0, self.mock_source.gets)
 
     def test_group_leaves(self):
+        """Test leaves of groups."""
         leaves = self.variables.group_leaves(self.source, self.year, "X02002")
 
         self.assertEqual(["X02002_003E", "X02002_004E"], leaves)
 
     def test_group_tree(self):
+        """Test getting the tree of a group."""
         tree = self.variables.group_tree(self.source, self.year, "X02002")
 
         self.assertEqual(
@@ -296,6 +316,7 @@ class VariableCacheTestCase(unittest.TestCase):
         self.assertIn("X02002_004E", leaf_names)
 
     def test_variables_iterables(self):
+        """Test iterating through cached variables."""
         # Initially, there are no variables cached locally.
         keys = frozenset(self.variables.keys())
         values = list(self.variables.values())
@@ -425,7 +446,7 @@ class VariableCacheTestCase(unittest.TestCase):
         df_variables_cached = self.variables.all_variables(dataset, year, group)
 
         # The last two columns are null, so they don't compare as equal. But make
-        # sure both are or they are equal, but not both.
+        # sure both are null or, they are equal, but not both.
         df_equal_or_both_null = (df_variables_first_time == df_variables_cached) ^ (
             df_variables_cached.isnull() & df_variables_cached.isnull()
         )
