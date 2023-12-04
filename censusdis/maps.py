@@ -74,7 +74,7 @@ class ShapeReader:
     def _read_shapefile(
         self, base_name: str, base_url: str, crs, timeout: int
     ) -> gpd.GeoDataFrame:
-        """Helper function to read a shapefile."""
+        """Read a shapefile."""
         self._auto_fetch_file(base_name, base_url, timeout=timeout)
 
         path = self._shapefile_full_path(base_name)
@@ -85,7 +85,7 @@ class ShapeReader:
         return gdf
 
     def _shapefile_full_path(self, basename: str) -> Path:
-        """Helper function to construct the full path to a shapefile."""
+        """Construct the full path to a shapefile."""
         path = self._shapefile_root / basename / f"{basename}.shp"
         return path
 
@@ -382,8 +382,11 @@ class ShapeReader:
         timeout: int = 30,
     ) -> gpd.GeoDataFrame:
         """
-        Wraps read_cb_shapefile and read_shapefile to try to retreive CB file, and if unable to find,
-        attempts to find the full tiger file.
+        Try to retrieve CB file.
+
+        Wraps read_cb_shapefile and read_shapefile.
+
+        If unable to find, attempts to find the full tiger file.
 
         Returns
         -------
@@ -495,8 +498,7 @@ class ShapeReader:
 
 def clip_to_states(gdf, gdf_bounds):
     """
-    Clip every geometry in a gdf to the state it
-    belongs to, from the states in the state bounds.
+    Clip every geometry in a gdf to the state it belongs to, from the states in the state bounds.
 
     We clip to state bounds so that we don't plot areas
     outside the state. Typically, this clips areas that
@@ -528,7 +530,7 @@ def clip_to_states(gdf, gdf_bounds):
 
 def _wrap_poly(poly: Union[Polygon, Point]):
     """
-    A helper function for moving a polygon.
+    Move a polygon.
 
     Used in shifting AK and HI geometries.
     """
@@ -549,7 +551,7 @@ def _wrap_poly(poly: Union[Polygon, Point]):
 
 def _wrap_polys(polys):
     """
-    A helper function for moving polygons.
+    Move the polygons in a multi-polygon.
 
     Used in shifting AK and HI geometries.
     """
@@ -725,7 +727,7 @@ def _wrap_and_relocate_geos(geo: BaseGeometry):
 
 def _relocate_ak_hi_pr_group(group):
     """
-    A helper function that relocates a group of geometries.
+    Relocate a group of geometries.
 
     They are relocated if they belong to AK, HI or PR, otherwise
     they are left alone.
@@ -798,7 +800,7 @@ __gdf_crs_bounds: Optional[gpd.GeoDataFrame] = None
 
 def _gdf_crs_bounds() -> gpd.GeoDataFrame:
     """
-    A dataframe wit the bound of all the CRSs we might use in `plot_map`.
+    Construct a dataframe witn the bound of all the CRSs we might use in `plot_map`.
 
     Returns
     -------

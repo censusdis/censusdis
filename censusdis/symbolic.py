@@ -129,9 +129,7 @@ But you can always use raw strings. For example, even for `ACS5` you can use
 
 
 def main():  # pragma: no cover
-    """
-    Main function to generate a new version of datasets.py.
-    """
+    """Generate a new version of datasets.py."""
     df_datasets = ced.variables.all_data_sets()
     dataset_names = df_datasets["DATASET"].to_list()
     dataset_url = df_datasets["API BASE URL"].to_list()

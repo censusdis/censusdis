@@ -136,6 +136,7 @@ class CensusApiVariableSource(VariableSource):
         return f"https://api.census.gov/data/{CensusApiVariableSource._url_part(dataset, year)}/groups.json"
 
     def get(self, dataset: str, year: int, name: str) -> Dict[str, Any]:
+        """Get info on a dataset via a remote query to the U.S. Census API."""
         url = self.url(dataset, year, name)
         value = json_from_url(url)
 
@@ -144,6 +145,7 @@ class CensusApiVariableSource(VariableSource):
     def get_group(
         self, dataset: str, year: int, name: Optional[str]
     ) -> Dict[str, Dict]:
+        """Get info on the groups in a dataset via a remote query to the U.S. Census API."""
         url = self.group_url(dataset, year, name)
         value = json_from_url(url)
 
@@ -162,12 +164,14 @@ class CensusApiVariableSource(VariableSource):
         return value
 
     def get_all_groups(self, dataset: str, year: int) -> Dict[str, List]:
+        """Get info on all the groups in a dataset via a remote query to the U.S. Census API."""
         url = self.all_groups_url(dataset, year)
         value = json_from_url(url)
 
         return value
 
     def get_datasets(self, year: Optional[int]) -> Dict[str, Any]:
+        """Get info on all the datasets for a given year via a remote query to the U.S. Census API."""
         if year is not None:
             url = f"https://api.census.gov/data/{year}.json"
         else:
