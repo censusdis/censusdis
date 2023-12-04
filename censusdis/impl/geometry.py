@@ -1,7 +1,5 @@
 # Copyright (c) 2023 Darren Erik Vengroff
-"""
-Utilities for geometric operations.
-"""
+"""Utilities for geometric operations."""
 
 import math
 from typing import Optional, TypeVar, Union
@@ -50,6 +48,20 @@ def isoperimetric_quotient(
 def drop_polygon_if_sliver(
     polygon: Polygon, threshold: float = 0.01
 ) -> Optional[Polygon]:
+    """
+    Drop a polygon if it is a sliver.
+
+    Parameters
+    ----------
+    polygon
+        The polygon to check.
+    threshold
+        Threshold of sliveryness (isoperimetric quotient).
+
+    Returns
+    -------
+        `polygon` if not a sliver or `None` if a sliver.
+    """
     if isoperimetric_quotient(polygon) < threshold:
         return None
 
@@ -58,7 +70,23 @@ def drop_polygon_if_sliver(
 
 def drop_slivers_multi_polygon(
     multi_polygon: Union[Polygon, MultiPolygon], threshold: float = 0.01
-) -> Optional[MultiPolygon]:
+) -> Optional[Union[Polygon, MultiPolygon]]:
+    """
+    Drop all the sliver polygons from a multi-polygon.
+
+    Parameters
+    ----------
+    multi_polygon
+        A `MultiPolygon`.
+    threshold
+        The isopermimetric threshold below which polygons are considered
+        slivers.
+
+    Returns
+    -------
+        A shape (either a `Polygon` or `MultiPolygon` containing all non-sliver
+        polygones. If there aren't any, `None` is returned.
+    """
     remaining_polygons = [
         poly
         for poly in multi_polygon.geoms
@@ -76,6 +104,20 @@ def drop_slivers_multi_polygon(
 def drop_slivers_from_geo_series(
     gs_geo: gpd.GeoSeries, threshold: float = 0.01
 ) -> gpd.GeoSeries:
+    """
+    Drop all slivers from the geometries in a `GeoSeries`.
+
+    Parameters
+    ----------
+    gs_geo
+        The original `GeoSeries`.
+    threshold
+        The isoperimetric quotient threshold.
+
+    Returns
+    -------
+        The series with all slivers removed.
+    """
     return gs_geo.map(
         lambda s: drop_slivers_multi_polygon(s, threshold)
         if isinstance(s, MultiPolygon)
@@ -88,6 +130,20 @@ def drop_slivers_from_geo_series(
 def drop_slivers_from_gdf(
     gdf_geo: gpd.GeoDataFrame, threshold: float = 0.01
 ) -> gpd.GeoDataFrame:
+    """
+    Drop all slivers from the geometries in a `GeoDataFrame`.
+
+    Parameters
+    ----------
+    gdf_geo
+        The original `GeoDataFrame`.
+    threshold
+        The isoperimetric quotient threshold.
+
+    Returns
+    -------
+        The geo data frame with all slivers removed.
+    """
     new_geometry = drop_slivers_from_geo_series(gdf_geo.geometry, threshold=threshold)
 
     gdf_result = gpd.GeoDataFrame(gdf_geo, geometry=new_geometry)
@@ -102,6 +158,22 @@ def drop_slivers(
     geo: T,
     threshold: float = 0.01,
 ) -> Union[None, T]:
+    """
+    Drop slivers from an arbitrary geometry or collection of geometries.
+
+    Accepts `MultiPolygon`, `Polygon`, `gpd.GeoSeries` or `gpd.GeoDataFrame`
+
+    Parameters
+    ----------
+    geo
+        the geography.
+    threshold
+        the isoperimetric threshold.
+
+    Returns
+    -------
+        The geometry with slivers dropped.
+    """
     if isinstance(geo, MultiPolygon):
         return drop_slivers_multi_polygon(geo, threshold=threshold)
     elif isinstance(geo, Polygon):

@@ -170,9 +170,7 @@ def _download_multiple(
     else:
         variable_groups = [
             # black and flake8 disagree about the whitespace before ':' here...
-            download_variables[
-                start : start + _MAX_VARIABLES_PER_DOWNLOAD
-            ]  # noqa: E203
+            download_variables[start : start + _MAX_VARIABLES_PER_DOWNLOAD]  # noqa: 203
             for start in range(0, len(download_variables), _MAX_VARIABLES_PER_DOWNLOAD)
         ]
 

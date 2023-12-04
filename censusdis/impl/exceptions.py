@@ -1,7 +1,5 @@
 # Copyright (c) 2022 Darren Erik Vengroff
-"""
-Exception classes.
-"""
+"""Exception classes."""
 
 
 class CensusApiException(Exception):

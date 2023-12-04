@@ -1,7 +1,5 @@
 # Copyright (c) 2022 Darren Erik Vengroff
-"""
-Utilities for loading census data.
-"""
+"""Utilities for loading census data."""
 
 from logging import getLogger
 from typing import Any, Mapping, Optional
@@ -15,6 +13,7 @@ logger = getLogger(__name__)
 
 
 def json_from_url(url: str, params: Optional[Mapping[str, str]] = None) -> Any:
+    """Get json from a URL."""
     request = requests.get(url, params=params)
 
     if request.status_code == 200:
@@ -28,6 +27,7 @@ def json_from_url(url: str, params: Optional[Mapping[str, str]] = None) -> Any:
 
 
 def data_from_url(url: str, params: Optional[Mapping[str, str]] = None) -> pd.DataFrame:
+    """Get json from a URL and parse into a data frame."""
     logger.info(f"Downloading data from {url} with {params}.")
 
     parsed_json = json_from_url(url, params)
