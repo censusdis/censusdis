@@ -34,7 +34,7 @@ class PlotSpecTestCase(unittest.TestCase):
 
         self.assertEqual("B25003I_002E", spec.variable)
 
-        self.assertEqual(PlotSpec("B25003I_002E"), spec)
+        self.assertEqual(PlotSpec(variable="B25003I_002E"), spec)
 
     def test_load_plotspec2(self):
         spec = PlotSpec.load_yaml(self.plot_spec_directory / "plotspec2.yaml")
@@ -43,7 +43,7 @@ class PlotSpecTestCase(unittest.TestCase):
 
         self.assertEqual(
             PlotSpec(
-                "B25003I_002E",
+                variable="B25003I_002E",
                 boundary=False,
                 with_background=False,
                 projection="US",
