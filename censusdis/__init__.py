@@ -1,3 +1,4 @@
+# Copyright (c) 2022-2023 Darren Erik Vengroff
 """
 Tools for downloading and analyzing U.S. Census data.
 

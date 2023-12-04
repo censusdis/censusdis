@@ -1,3 +1,4 @@
+# Copyright (c) 2023 Darren Erik Vengroff
 """Test map plotting functionality."""
 import sys
 import tempfile

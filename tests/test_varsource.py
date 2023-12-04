@@ -1,3 +1,4 @@
+# Copyright (c) 2023 Darren Erik Vengroff
 """Test variable source functionality."""
 import unittest
 

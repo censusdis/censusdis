@@ -1,3 +1,4 @@
+# Copyright (c) 2023 Darren Erik Vengroff
 """Classes that are loaded from YAML config files for the CLI."""
 from abc import ABC
 import itertools

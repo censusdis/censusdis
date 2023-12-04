@@ -1,3 +1,4 @@
+# Copyright (c) 2023 Darren Erik Vengroff
 """Tests for YAML specification for the CLI."""
 import unittest
 from pathlib import Path

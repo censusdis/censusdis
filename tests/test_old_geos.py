@@ -1,3 +1,4 @@
+# Copyright (c) 2023 Darren Erik Vengroff
 """Tests for older geometry formats that are different than the current ones."""
 import unittest
 
