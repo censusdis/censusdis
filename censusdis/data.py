@@ -146,7 +146,6 @@ def _download_multiple(
         The full results of the query with all columns.
 
     """
-
     # Divide the variables into groups. If row keys are provided, include them in each chunk of variables,
     # while respecting the variable max
     if row_keys:
@@ -465,7 +464,6 @@ def _add_geography(
         A GeoDataFrame with the original data and an
         added geometry column for each row.
     """
-
     if geo_level not in _GEO_QUERY_FROM_DATA_QUERY_INNER_GEO:
         raise CensusApiException(
             "The with_geometry=True flag is only allowed if the "
@@ -662,7 +660,6 @@ def add_inferred_geography(
         A geo data frame containing the original data augmented with
         the appropriate geometry for each row.
     """
-
     geo_level = infer_geo_level(df_data)
 
     shapefile_scope = _GEO_QUERY_FROM_DATA_QUERY_INNER_GEO[geo_level][0]
@@ -730,7 +727,9 @@ def download(
     ----------
     dataset
         The dataset to download from. For example `"acs/acs5"`,
-        `"dec/pl"`, or `"timeseries/poverty/saipe/schdist"`.
+        `"dec/pl"`, or `"timeseries/poverty/saipe/schdist"`. There are
+        symbolic names for datasets, like `ACS5` for `"acs/acs5"
+        in :py:module:`censusdis.datasets`.
     vintage
         The vintage to download data for. For most data sets this is
         an integer year, for example, `2020`. But for
@@ -782,7 +781,7 @@ def download(
 
     Returns
     -------
-        A :py:class:`~pd.DataFrame` containing the requested US Census data.
+        A :py:class:`~pd.DataFrame` or `~gpd.GeoDataFrame` containing the requested US Census data.
     """
     if variable_cache is None:
         variable_cache = variables
@@ -911,7 +910,6 @@ def _download_remote(
         The downloaded variables, with or without added geometry, as
         either a `pd.DataFrame` or `gpd.GeoDataFrame`.
     """
-
     url, params, bound_path = census_table_url(
         dataset, vintage, download_variables, api_key=api_key, **kwargs
     )
@@ -1109,7 +1107,6 @@ def _parse_download_variables(
     -------
         The fully expanded list of variables to download.
     """
-
     # Turn the variables we were given into a list if they are not already.
     if download_variables is None:
         download_variables = []
@@ -1226,6 +1223,7 @@ def geography_names(
         A specification of the geometry that we want data for. For example,
         `state = "34", county = "017"` will download the name of Hudson County,
         New Jersey.
+
     Returns
     -------
         A dataframe with columns specifying the geography and one for the name.
@@ -1282,7 +1280,6 @@ def _identify_counties(gdf_geo: gpd.GeoDataFrame, year: int):
     -------
         A list of five digit county FIPS codes.
     """
-
     # Some dataframes will contain the county column already
     if "STATE" in gdf_geo and "COUNTY" in gdf_geo:
         fips_codes = gdf_geo["STATE"] + gdf_geo["COUNTY"]
@@ -1343,7 +1340,6 @@ def _water_difference(
     -------
         A version of gdf_geo with the water areas removed
     """
-
     # Combining polygons speeds up the overlay operation
     geo_combined_water = gdf_water[
         gdf_water["AWATER"] >= minimum_area_sq_meters
@@ -1382,7 +1378,6 @@ def clip_water(
         A GeoDataFrame with the water areas larger than
         the specified threshold removed.
     """
-
     counties = _identify_counties(gdf_geo, year)
     gdf_water = _retrieve_water(counties, year)
 

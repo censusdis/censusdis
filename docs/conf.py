@@ -38,7 +38,8 @@ def get_pyproject() -> MutableMapping:
     """
     Get project metadata from pyproject.toml file.
 
-    Returns:
+    Returns
+    -------
         MutableMapping
     """
     import toml

@@ -82,6 +82,7 @@ class VariableSource(ABC):
             The name of the variable to get information about. For example,
             `B03002_001E` is a variable from the ACS5 data set that represents
             total population in a geographic area.
+
         Returns
         -------
             A dictionary of information about the variable.

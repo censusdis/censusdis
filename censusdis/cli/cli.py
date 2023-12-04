@@ -1,3 +1,4 @@
+"""Main module for the command line interface to censusdis."""
 from typing import Optional
 import argparse
 import logging
@@ -15,6 +16,7 @@ logger = getLogger(__name__)
 
 
 def main():
+    """Entry point for the CLI interface to censusdis."""
     parser = LoggingArgumentParser(logger, prog="censusdis")
 
     subparsers = parser.add_subparsers(
@@ -123,6 +125,7 @@ def _download_data(dataspec: DataSpec, needs_geometry: bool, api_key: Optional[s
 
 
 def download(args):
+    """Execute the download command from the CLI."""
     logger.debug("Download command selected.")
 
     dataspec_file = args.dataspec
@@ -152,6 +155,7 @@ def download(args):
 
 
 def plot(args):
+    """Execute the plot command from the CLI."""
     logger.debug("Plot command selected.")
 
     logger.info(f"Loading plot spec from {args.plotspec}.")

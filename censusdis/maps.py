@@ -75,7 +75,6 @@ class ShapeReader:
         self, base_name: str, base_url: str, crs, timeout: int
     ) -> gpd.GeoDataFrame:
         """Helper function to read a shapefile."""
-
         self._auto_fetch_file(base_name, base_url, timeout=timeout)
 
         path = self._shapefile_full_path(base_name)
@@ -514,6 +513,7 @@ def clip_to_states(gdf, gdf_bounds):
         The input geometries.
     gdf_bounds
         The state bounds.
+
     Returns
     -------
         The input geometries where each is clipped to the bounds
@@ -620,6 +620,7 @@ def _relocate_ak(geo: BaseGeometry) -> BaseGeometry:
     ----------
     geo
         The geometry.
+
     Returns
     -------
         The relocated geometry.
@@ -645,6 +646,7 @@ def _relocate_hi(geo: BaseGeometry) -> BaseGeometry:
     ----------
     geo
         The geometry.
+
     Returns
     -------
         The relocated geometry.
@@ -665,6 +667,7 @@ def _relocate_pr(geo: BaseGeometry) -> BaseGeometry:
     ----------
     geo
         The geometry.
+
     Returns
     -------
         The relocated geometry.
@@ -761,6 +764,7 @@ def relocate_ak_hi_pr(gdf: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
     ----------
     gdf
         the geo data frame to relocate.
+
     Returns
     -------
         a geo data frame with any geometry in AK or HI moved for plotting.
@@ -828,6 +832,7 @@ def _closest_epsg(
     ----------
     gdf
         The gdf we want to plot.
+
     Returns
     -------
         The EPSG number.
@@ -1070,6 +1075,7 @@ def geographic_centroids(gdf: gpd.GeoDataFrame) -> gpd.GeoSeries:
     ----------
     gdf
         A geo data frame in any crs.
+
     Returns
     -------
         A geo data series of the centroids of all the geometries in

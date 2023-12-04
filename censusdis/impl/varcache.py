@@ -515,6 +515,7 @@ class VariableCache:
         skip_annotations
             If `True`, skip variables that are annotations of others, like
             margin of error.
+
         Returns
         -------
             A tree that can be printed or walked.

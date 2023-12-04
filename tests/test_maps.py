@@ -117,7 +117,6 @@ class MapPlotTestCase(unittest.TestCase):
 
     def test_closest_epsg(self):
         """Test finding the right epsg to plot each of several states."""
-
         # See https://wiki.spatialmanager.com/index.php/Coordinate_Systems_objects_list
         epsg_wa_s = 32149
         epsg_ca_4 = 26944
@@ -212,7 +211,6 @@ class MapPlotTestCase(unittest.TestCase):
 
     def test_plot_us(self):
         """Test calling plot_us."""
-
         png_file_name = "plot_us.png"
         expected_file = self.expected_dir / png_file_name
 
@@ -229,7 +227,6 @@ class MapPlotTestCase(unittest.TestCase):
         """
         Test calling plot_us_boundary.
         """
-
         png_file_name = "plot_us_boundary.png"
         expected_file = self.expected_dir / png_file_name
 
@@ -246,7 +243,6 @@ class MapPlotTestCase(unittest.TestCase):
         """
         Test calling plot_us_boundary.
         """
-
         png_file_name = "plot_us_boundary_with_background.png"
         expected_file = self.expected_dir / png_file_name
 
@@ -270,7 +266,6 @@ class MapPlotTestCase(unittest.TestCase):
         """
         Test calling plot_us_boundary.
         """
-
         png_file_name = "plot_us_boundary_with_background_no_relocate.png"
         expected_file = self.expected_dir / png_file_name
 
@@ -296,7 +291,6 @@ class MapPlotTestCase(unittest.TestCase):
         """
         Test calling plot_us_boundary.
         """
-
         png_file_name = "plot_us_with_background_no_relocate.png"
         expected_file = self.expected_dir / png_file_name
 
@@ -324,7 +318,6 @@ class MapPlotTestCase(unittest.TestCase):
 
         It should still get the western Aleutian islands right.
         """
-
         png_file_name = "plot_us_no_relocate.png"
         expected_file = self.expected_dir / png_file_name
 
@@ -343,7 +336,6 @@ class MapPlotTestCase(unittest.TestCase):
 
         It should still get the western Aleutian islands right.
         """
-
         png_file_name = "plot_us_boundary_no_relocate.png"
         expected_file = self.expected_dir / png_file_name
 
@@ -365,7 +357,6 @@ class MapPlotTestCase(unittest.TestCase):
         We remove the STATEFP column from the data, so we have
         to look at all the geometries to decide what to relocate.
         """
-
         # Drop the column and make sure it is dropped.
         self.assertEqual((52, 10), self.gdf.shape)
         self.assertIn("STATEFP", self.gdf.columns)
@@ -391,7 +382,6 @@ class MapPlotTestCase(unittest.TestCase):
 class GeographicCentroidsTestCase(unittest.TestCase):
     def setUp(self) -> None:
         """Set up before each test."""
-
         # Geometry of Wyoming.
 
         geometry_wy = Polygon(
@@ -413,7 +403,6 @@ class GeographicCentroidsTestCase(unittest.TestCase):
 
     def test_geographic_centroids(self):
         """We should get a slightly different centroid under the projection to 3857."""
-
         centroid_geo = cmap.geographic_centroids(self.gdf_wy).iloc[0]
 
         centroid_4269 = self.gdf_wy.centroid.iloc[0]

@@ -62,7 +62,6 @@ class DownloadTestCase(unittest.TestCase):
 
     def test_download(self):
         """Download just a couple of variables."""
-
         df = ced.download(
             self._dataset, self._year, ["NAME", self._name], state=states.NJ, county="*"
         )
@@ -73,7 +72,6 @@ class DownloadTestCase(unittest.TestCase):
 
     def test_bad_variable(self):
         """Try to download a variable that does not exist."""
-
         with self.assertRaises(censusdis.impl.exceptions.CensusApiException) as cm:
             ced.download(
                 self._dataset,
@@ -140,7 +138,6 @@ class DownloadTestCase(unittest.TestCase):
 
     def test_download_with_geometry_county(self):
         """Download at the county level with geometry."""
-
         gdf = ced.download(
             self._dataset,
             self._year,
@@ -160,7 +157,6 @@ class DownloadTestCase(unittest.TestCase):
 
     def test_download_with_geometry_state(self):
         """Download at the state level with geometry."""
-
         gdf = ced.download(
             self._dataset,
             self._year,
@@ -206,7 +202,6 @@ class DownloadTestCase(unittest.TestCase):
 
     def test_download_with_geometry_consolidated_city(self):
         """Download at the consolidated city level with geometry."""
-
         gdf = ced.download(
             self._dataset,
             self._year,
@@ -227,7 +222,6 @@ class DownloadTestCase(unittest.TestCase):
 
     def test_download_with_geometry_tract(self):
         """Download at the tract level with geometry."""
-
         gdf = ced.download(
             self._dataset,
             self._year,
@@ -249,7 +243,6 @@ class DownloadTestCase(unittest.TestCase):
 
     def test_download_with_geometry_block_group(self):
         """Download at the county level with geometry."""
-
         gdf = ced.download(
             self._dataset,
             self._year,
@@ -279,7 +272,6 @@ class DownloadTestCase(unittest.TestCase):
 
     def test_download_with_geometry_not_available(self):
         """Download at a geography level that has no geometry available."""
-
         with self.assertRaises(
             censusdis.impl.exceptions.CensusApiException
         ) as assertion:
@@ -321,7 +313,6 @@ class DownloadTestCase(unittest.TestCase):
         As in `state=[states.NJ, states.NY]`, vs. the more general
         `state="*"`.
         """
-
         df = ced.download(
             self._dataset,
             self._year,
@@ -341,7 +332,6 @@ class DownloadTestCase(unittest.TestCase):
         As in `state=[states.NJ, states.NY]`, vs. the more general
         `state="*"` and `county="*"`.
         """
-
         df = ced.download(
             self._dataset,
             self._year,
@@ -380,7 +370,6 @@ class DownloadTestCase(unittest.TestCase):
 
         In this test we also skip a level.
         """
-
         df = ced.download(
             self._dataset,
             self._year,
@@ -406,7 +395,6 @@ class DownloadTestCase(unittest.TestCase):
 
         In this test we also skip two levels.
         """
-
         df = ced.download(
             self._dataset,
             self._year,
@@ -492,7 +480,6 @@ class DownloadWideTestCase(unittest.TestCase):
         that will trigger the merge strategy because each
         sub-query will have rows with a unique geogrpahic key.
         """
-
         dataset = "acs/acs1/spp"
         year = 2019
         group = "S0201"
@@ -594,7 +581,6 @@ class DownloadGroupTestCase(unittest.TestCase):
 
     def test_group(self):
         """Download the whole group."""
-
         df_group = ced.download(
             self._dataset,
             self._year,
@@ -612,7 +598,6 @@ class DownloadGroupTestCase(unittest.TestCase):
 
     def test_leaves_of_group(self):
         """Download the leaves of the group."""
-
         df_leaves = ced.download(
             self._dataset,
             self._year,
@@ -630,7 +615,6 @@ class DownloadGroupTestCase(unittest.TestCase):
 
     def test_group_plus(self):
         """Download the whole group plus another variable."""
-
         extra_variable = "NAME"
 
         df_group = ced.download(
@@ -654,7 +638,6 @@ class DownloadGroupTestCase(unittest.TestCase):
 
     def test_leaves_of_group_plus(self):
         """Download the leaves of the group plus another variable."""
-
         extra_variable = "NAME"
 
         df_leaves = ced.download(
@@ -678,7 +661,6 @@ class DownloadGroupTestCase(unittest.TestCase):
 
     def test_group_with_dups(self):
         """Test the case where some variables are double specified."""
-
         group_variables = ced.variables.group_variables(
             self._dataset, self._year, self._group_name_0
         )
@@ -717,7 +699,6 @@ class DownloadGroupTestCase(unittest.TestCase):
 
     def test_leaves_of_group_with_dups(self):
         """Test the case where some variables are double specified."""
-
         extra_variable = "NAME"
         leaf_variables = ced.variables.group_leaves(
             self._dataset, self._year, self._group_name_0
@@ -759,7 +740,6 @@ class DownloadGroupTestCase(unittest.TestCase):
 
     def test_multiple_groups(self):
         """Download from more than one group."""
-
         df_group = ced.download(
             self._dataset,
             self._year,
@@ -778,7 +758,6 @@ class DownloadGroupTestCase(unittest.TestCase):
 
     def test_download_wide_survey(self):
         """Test case where row_keys are required to download more than 50 variables"""
-
         df_all_vars = ced.variables.all_variables("cps/internet/nov", 2021, None)
         all_vars = df_all_vars["VARIABLE"].to_list()
 
@@ -1162,7 +1141,6 @@ class RemoveWaterTestCase(unittest.TestCase):
 
     def test_remove_water_nyc(self):
         """Test census tracts in NYC."""
-
         nyc_counties = [
             "061",
             "081",

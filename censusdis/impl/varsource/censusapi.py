@@ -111,7 +111,6 @@ class CensusApiVariableSource(VariableSource):
         -------
             The URL to fetch the metadata from.
         """
-
         if group_name is None:
             return f"https://api.census.gov/data/{CensusApiVariableSource._url_part(dataset, year)}/variables.json"
 
