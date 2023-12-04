@@ -1,7 +1,5 @@
 # Copyright (c) 2022 Darren Erik Vengroff
-"""
-A variable source that loads metadata about variables from the U.S. Census API.
-"""
+"""A variable source that loads metadata about variables from the U.S. Census API."""
 
 from typing import Any, Dict, List, Optional
 
