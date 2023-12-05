@@ -356,7 +356,7 @@ class DataSpecTestCase(unittest.TestCase):
         self.assertIsInstance(dataspec, DataSpec)
 
         self.assertEqual(NJ, dataspec.geography["state"])
-        self.assertEqual(ESSEX, dataspec.geography['county'])
+        self.assertEqual(ESSEX, dataspec.geography["county"])
 
     def test_state_county_symbolic_list(self):
         """Test symbolic state and county."""
@@ -365,8 +365,7 @@ class DataSpecTestCase(unittest.TestCase):
         self.assertIsInstance(dataspec, DataSpec)
 
         self.assertEqual(NJ, dataspec.geography["state"])
-        self.assertEqual([ESSEX, HUDSON], dataspec.geography['county'])
-
+        self.assertEqual([ESSEX, HUDSON], dataspec.geography["county"])
 
     def test_state_geo_download(self):
         """Test downloading with state geographies."""

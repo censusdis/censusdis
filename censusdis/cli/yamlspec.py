@@ -572,7 +572,9 @@ class DataSpec:
 
         def _map_county(state: str):
             """Construct a function to map counties in a state."""
-            state_symbol = censusdis.states.NAMES_FROM_IDS[state].lower().replace(' ', '_')
+            state_symbol = (
+                censusdis.states.NAMES_FROM_IDS[state].lower().replace(" ", "_")
+            )
 
             state_county_module = import_module(f"censusdis.counties.{state_symbol}")
 
@@ -597,7 +599,9 @@ class DataSpec:
                     if isinstance(geography["county"], str):
                         geography["county"] = map_county(geography["county"])
                     else:
-                        geography["county"] = [map_county(county) for county in geography["county"]]
+                        geography["county"] = [
+                            map_county(county) for county in geography["county"]
+                        ]
             else:
                 geography["state"] = [map_state(state) for state in geography["state"]]
 
