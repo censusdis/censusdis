@@ -65,7 +65,7 @@ class CountyTestCase(unittest.TestCase):
         ]
         sym_count = len(symbols)
 
-        self.assertEquals({len(df_state.index)}, sym_count)
+        self.assertEqual({len(df_state.index)}, sym_count)
 """
             )
 

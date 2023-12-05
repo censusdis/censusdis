@@ -18,7 +18,7 @@ class CountyTestCase(unittest.TestCase):
         ]
         sym_count = len(symbols)
 
-        self.assertEquals(67, sym_count)
+        self.assertEqual(67, sym_count)
 
     def test_alaska(self):
         """Test Alaska."""
@@ -31,7 +31,7 @@ class CountyTestCase(unittest.TestCase):
         ]
         sym_count = len(symbols)
 
-        self.assertEquals(30, sym_count)
+        self.assertEqual(30, sym_count)
 
     def test_arizona(self):
         """Test Arizona."""
@@ -44,7 +44,7 @@ class CountyTestCase(unittest.TestCase):
         ]
         sym_count = len(symbols)
 
-        self.assertEquals(15, sym_count)
+        self.assertEqual(15, sym_count)
 
     def test_arkansas(self):
         """Test Arkansas."""
@@ -57,7 +57,7 @@ class CountyTestCase(unittest.TestCase):
         ]
         sym_count = len(symbols)
 
-        self.assertEquals(75, sym_count)
+        self.assertEqual(75, sym_count)
 
     def test_california(self):
         """Test California."""
@@ -70,7 +70,7 @@ class CountyTestCase(unittest.TestCase):
         ]
         sym_count = len(symbols)
 
-        self.assertEquals(58, sym_count)
+        self.assertEqual(58, sym_count)
 
     def test_colorado(self):
         """Test Colorado."""
@@ -83,7 +83,7 @@ class CountyTestCase(unittest.TestCase):
         ]
         sym_count = len(symbols)
 
-        self.assertEquals(64, sym_count)
+        self.assertEqual(64, sym_count)
 
     def test_connecticut(self):
         """Test Connecticut."""
@@ -96,7 +96,7 @@ class CountyTestCase(unittest.TestCase):
         ]
         sym_count = len(symbols)
 
-        self.assertEquals(8, sym_count)
+        self.assertEqual(8, sym_count)
 
     def test_delaware(self):
         """Test Delaware."""
@@ -109,7 +109,7 @@ class CountyTestCase(unittest.TestCase):
         ]
         sym_count = len(symbols)
 
-        self.assertEquals(3, sym_count)
+        self.assertEqual(3, sym_count)
 
     def test_district_of_columbia(self):
         """Test District of Columbia."""
@@ -122,7 +122,7 @@ class CountyTestCase(unittest.TestCase):
         ]
         sym_count = len(symbols)
 
-        self.assertEquals(1, sym_count)
+        self.assertEqual(1, sym_count)
 
     def test_florida(self):
         """Test Florida."""
@@ -135,7 +135,7 @@ class CountyTestCase(unittest.TestCase):
         ]
         sym_count = len(symbols)
 
-        self.assertEquals(67, sym_count)
+        self.assertEqual(67, sym_count)
 
     def test_georgia(self):
         """Test Georgia."""
@@ -148,7 +148,7 @@ class CountyTestCase(unittest.TestCase):
         ]
         sym_count = len(symbols)
 
-        self.assertEquals(159, sym_count)
+        self.assertEqual(159, sym_count)
 
     def test_hawaii(self):
         """Test Hawaii."""
@@ -161,7 +161,7 @@ class CountyTestCase(unittest.TestCase):
         ]
         sym_count = len(symbols)
 
-        self.assertEquals(5, sym_count)
+        self.assertEqual(5, sym_count)
 
     def test_idaho(self):
         """Test Idaho."""
@@ -174,7 +174,7 @@ class CountyTestCase(unittest.TestCase):
         ]
         sym_count = len(symbols)
 
-        self.assertEquals(44, sym_count)
+        self.assertEqual(44, sym_count)
 
     def test_illinois(self):
         """Test Illinois."""
@@ -187,7 +187,7 @@ class CountyTestCase(unittest.TestCase):
         ]
         sym_count = len(symbols)
 
-        self.assertEquals(102, sym_count)
+        self.assertEqual(102, sym_count)
 
     def test_indiana(self):
         """Test Indiana."""
@@ -200,7 +200,7 @@ class CountyTestCase(unittest.TestCase):
         ]
         sym_count = len(symbols)
 
-        self.assertEquals(92, sym_count)
+        self.assertEqual(92, sym_count)
 
     def test_iowa(self):
         """Test Iowa."""
@@ -213,7 +213,7 @@ class CountyTestCase(unittest.TestCase):
         ]
         sym_count = len(symbols)
 
-        self.assertEquals(99, sym_count)
+        self.assertEqual(99, sym_count)
 
     def test_kansas(self):
         """Test Kansas."""
@@ -226,7 +226,7 @@ class CountyTestCase(unittest.TestCase):
         ]
         sym_count = len(symbols)
 
-        self.assertEquals(105, sym_count)
+        self.assertEqual(105, sym_count)
 
     def test_kentucky(self):
         """Test Kentucky."""
@@ -239,7 +239,7 @@ class CountyTestCase(unittest.TestCase):
         ]
         sym_count = len(symbols)
 
-        self.assertEquals(120, sym_count)
+        self.assertEqual(120, sym_count)
 
     def test_louisiana(self):
         """Test Louisiana."""
@@ -252,7 +252,7 @@ class CountyTestCase(unittest.TestCase):
         ]
         sym_count = len(symbols)
 
-        self.assertEquals(64, sym_count)
+        self.assertEqual(64, sym_count)
 
     def test_maine(self):
         """Test Maine."""
@@ -265,7 +265,7 @@ class CountyTestCase(unittest.TestCase):
         ]
         sym_count = len(symbols)
 
-        self.assertEquals(16, sym_count)
+        self.assertEqual(16, sym_count)
 
     def test_maryland(self):
         """Test Maryland."""
@@ -278,7 +278,7 @@ class CountyTestCase(unittest.TestCase):
         ]
         sym_count = len(symbols)
 
-        self.assertEquals(24, sym_count)
+        self.assertEqual(24, sym_count)
 
     def test_massachusetts(self):
         """Test Massachusetts."""
@@ -291,7 +291,7 @@ class CountyTestCase(unittest.TestCase):
         ]
         sym_count = len(symbols)
 
-        self.assertEquals(14, sym_count)
+        self.assertEqual(14, sym_count)
 
     def test_michigan(self):
         """Test Michigan."""
@@ -304,7 +304,7 @@ class CountyTestCase(unittest.TestCase):
         ]
         sym_count = len(symbols)
 
-        self.assertEquals(83, sym_count)
+        self.assertEqual(83, sym_count)
 
     def test_minnesota(self):
         """Test Minnesota."""
@@ -317,7 +317,7 @@ class CountyTestCase(unittest.TestCase):
         ]
         sym_count = len(symbols)
 
-        self.assertEquals(87, sym_count)
+        self.assertEqual(87, sym_count)
 
     def test_mississippi(self):
         """Test Mississippi."""
@@ -330,7 +330,7 @@ class CountyTestCase(unittest.TestCase):
         ]
         sym_count = len(symbols)
 
-        self.assertEquals(82, sym_count)
+        self.assertEqual(82, sym_count)
 
     def test_missouri(self):
         """Test Missouri."""
@@ -343,7 +343,7 @@ class CountyTestCase(unittest.TestCase):
         ]
         sym_count = len(symbols)
 
-        self.assertEquals(115, sym_count)
+        self.assertEqual(115, sym_count)
 
     def test_montana(self):
         """Test Montana."""
@@ -356,7 +356,7 @@ class CountyTestCase(unittest.TestCase):
         ]
         sym_count = len(symbols)
 
-        self.assertEquals(56, sym_count)
+        self.assertEqual(56, sym_count)
 
     def test_nebraska(self):
         """Test Nebraska."""
@@ -369,7 +369,7 @@ class CountyTestCase(unittest.TestCase):
         ]
         sym_count = len(symbols)
 
-        self.assertEquals(93, sym_count)
+        self.assertEqual(93, sym_count)
 
     def test_nevada(self):
         """Test Nevada."""
@@ -382,7 +382,7 @@ class CountyTestCase(unittest.TestCase):
         ]
         sym_count = len(symbols)
 
-        self.assertEquals(17, sym_count)
+        self.assertEqual(17, sym_count)
 
     def test_new_hampshire(self):
         """Test New Hampshire."""
@@ -395,7 +395,7 @@ class CountyTestCase(unittest.TestCase):
         ]
         sym_count = len(symbols)
 
-        self.assertEquals(10, sym_count)
+        self.assertEqual(10, sym_count)
 
     def test_new_jersey(self):
         """Test New Jersey."""
@@ -408,7 +408,7 @@ class CountyTestCase(unittest.TestCase):
         ]
         sym_count = len(symbols)
 
-        self.assertEquals(21, sym_count)
+        self.assertEqual(21, sym_count)
 
     def test_new_mexico(self):
         """Test New Mexico."""
@@ -421,7 +421,7 @@ class CountyTestCase(unittest.TestCase):
         ]
         sym_count = len(symbols)
 
-        self.assertEquals(33, sym_count)
+        self.assertEqual(33, sym_count)
 
     def test_new_york(self):
         """Test New York."""
@@ -434,7 +434,7 @@ class CountyTestCase(unittest.TestCase):
         ]
         sym_count = len(symbols)
 
-        self.assertEquals(62, sym_count)
+        self.assertEqual(62, sym_count)
 
     def test_north_carolina(self):
         """Test North Carolina."""
@@ -447,7 +447,7 @@ class CountyTestCase(unittest.TestCase):
         ]
         sym_count = len(symbols)
 
-        self.assertEquals(100, sym_count)
+        self.assertEqual(100, sym_count)
 
     def test_north_dakota(self):
         """Test North Dakota."""
@@ -460,7 +460,7 @@ class CountyTestCase(unittest.TestCase):
         ]
         sym_count = len(symbols)
 
-        self.assertEquals(53, sym_count)
+        self.assertEqual(53, sym_count)
 
     def test_ohio(self):
         """Test Ohio."""
@@ -473,7 +473,7 @@ class CountyTestCase(unittest.TestCase):
         ]
         sym_count = len(symbols)
 
-        self.assertEquals(88, sym_count)
+        self.assertEqual(88, sym_count)
 
     def test_oklahoma(self):
         """Test Oklahoma."""
@@ -486,7 +486,7 @@ class CountyTestCase(unittest.TestCase):
         ]
         sym_count = len(symbols)
 
-        self.assertEquals(77, sym_count)
+        self.assertEqual(77, sym_count)
 
     def test_oregon(self):
         """Test Oregon."""
@@ -499,7 +499,7 @@ class CountyTestCase(unittest.TestCase):
         ]
         sym_count = len(symbols)
 
-        self.assertEquals(36, sym_count)
+        self.assertEqual(36, sym_count)
 
     def test_pennsylvania(self):
         """Test Pennsylvania."""
@@ -512,7 +512,7 @@ class CountyTestCase(unittest.TestCase):
         ]
         sym_count = len(symbols)
 
-        self.assertEquals(67, sym_count)
+        self.assertEqual(67, sym_count)
 
     def test_rhode_island(self):
         """Test Rhode Island."""
@@ -525,7 +525,7 @@ class CountyTestCase(unittest.TestCase):
         ]
         sym_count = len(symbols)
 
-        self.assertEquals(5, sym_count)
+        self.assertEqual(5, sym_count)
 
     def test_south_carolina(self):
         """Test South Carolina."""
@@ -538,7 +538,7 @@ class CountyTestCase(unittest.TestCase):
         ]
         sym_count = len(symbols)
 
-        self.assertEquals(46, sym_count)
+        self.assertEqual(46, sym_count)
 
     def test_south_dakota(self):
         """Test South Dakota."""
@@ -551,7 +551,7 @@ class CountyTestCase(unittest.TestCase):
         ]
         sym_count = len(symbols)
 
-        self.assertEquals(66, sym_count)
+        self.assertEqual(66, sym_count)
 
     def test_tennessee(self):
         """Test Tennessee."""
@@ -564,7 +564,7 @@ class CountyTestCase(unittest.TestCase):
         ]
         sym_count = len(symbols)
 
-        self.assertEquals(95, sym_count)
+        self.assertEqual(95, sym_count)
 
     def test_texas(self):
         """Test Texas."""
@@ -577,7 +577,7 @@ class CountyTestCase(unittest.TestCase):
         ]
         sym_count = len(symbols)
 
-        self.assertEquals(254, sym_count)
+        self.assertEqual(254, sym_count)
 
     def test_utah(self):
         """Test Utah."""
@@ -590,7 +590,7 @@ class CountyTestCase(unittest.TestCase):
         ]
         sym_count = len(symbols)
 
-        self.assertEquals(29, sym_count)
+        self.assertEqual(29, sym_count)
 
     def test_vermont(self):
         """Test Vermont."""
@@ -603,7 +603,7 @@ class CountyTestCase(unittest.TestCase):
         ]
         sym_count = len(symbols)
 
-        self.assertEquals(14, sym_count)
+        self.assertEqual(14, sym_count)
 
     def test_virginia(self):
         """Test Virginia."""
@@ -616,7 +616,7 @@ class CountyTestCase(unittest.TestCase):
         ]
         sym_count = len(symbols)
 
-        self.assertEquals(133, sym_count)
+        self.assertEqual(133, sym_count)
 
     def test_washington(self):
         """Test Washington."""
@@ -629,7 +629,7 @@ class CountyTestCase(unittest.TestCase):
         ]
         sym_count = len(symbols)
 
-        self.assertEquals(39, sym_count)
+        self.assertEqual(39, sym_count)
 
     def test_west_virginia(self):
         """Test West Virginia."""
@@ -642,7 +642,7 @@ class CountyTestCase(unittest.TestCase):
         ]
         sym_count = len(symbols)
 
-        self.assertEquals(55, sym_count)
+        self.assertEqual(55, sym_count)
 
     def test_wisconsin(self):
         """Test Wisconsin."""
@@ -655,7 +655,7 @@ class CountyTestCase(unittest.TestCase):
         ]
         sym_count = len(symbols)
 
-        self.assertEquals(72, sym_count)
+        self.assertEqual(72, sym_count)
 
     def test_wyoming(self):
         """Test Wyoming."""
@@ -668,7 +668,7 @@ class CountyTestCase(unittest.TestCase):
         ]
         sym_count = len(symbols)
 
-        self.assertEquals(23, sym_count)
+        self.assertEqual(23, sym_count)
 
     def test_puerto_rico(self):
         """Test Puerto Rico."""
@@ -681,4 +681,4 @@ class CountyTestCase(unittest.TestCase):
         ]
         sym_count = len(symbols)
 
-        self.assertEquals(78, sym_count)
+        self.assertEqual(78, sym_count)
