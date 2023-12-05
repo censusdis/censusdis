@@ -9,7 +9,7 @@ from pathlib import Path
 
 import censusdis.data as ced
 from censusdis.datasets import ACS5
-from censusdis.states import ABBREVIATIONS_FROM_IDS, NAMES_FROM_IDS
+from censusdis.states import NAMES_FROM_IDS
 
 
 def drop_suffix(s: str, suffix: str) -> str:
