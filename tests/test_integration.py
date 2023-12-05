@@ -1,3 +1,4 @@
+# Copyright (c) 2023 Darren Erik Vengroff
 """
 These are integration tests because they require access to the remote census API.
 
@@ -54,7 +55,7 @@ class DownloadTestCase(unittest.TestCase):
         self._name = f"{self._group_name}_001E"
 
     def test_path(self):
-        """Are we using the right cache path for shapefiles?"""
+        """Are we using the right cache path for shapefiles."""
         path = ced.get_shapefile_path()
 
         filename = path.name
@@ -62,7 +63,6 @@ class DownloadTestCase(unittest.TestCase):
 
     def test_download(self):
         """Download just a couple of variables."""
-
         df = ced.download(
             self._dataset, self._year, ["NAME", self._name], state=states.NJ, county="*"
         )
@@ -73,7 +73,6 @@ class DownloadTestCase(unittest.TestCase):
 
     def test_bad_variable(self):
         """Try to download a variable that does not exist."""
-
         with self.assertRaises(censusdis.impl.exceptions.CensusApiException) as cm:
             ced.download(
                 self._dataset,
@@ -140,7 +139,6 @@ class DownloadTestCase(unittest.TestCase):
 
     def test_download_with_geometry_county(self):
         """Download at the county level with geometry."""
-
         gdf = ced.download(
             self._dataset,
             self._year,
@@ -160,7 +158,6 @@ class DownloadTestCase(unittest.TestCase):
 
     def test_download_with_geometry_state(self):
         """Download at the state level with geometry."""
-
         gdf = ced.download(
             self._dataset,
             self._year,
@@ -206,7 +203,6 @@ class DownloadTestCase(unittest.TestCase):
 
     def test_download_with_geometry_consolidated_city(self):
         """Download at the consolidated city level with geometry."""
-
         gdf = ced.download(
             self._dataset,
             self._year,
@@ -227,7 +223,6 @@ class DownloadTestCase(unittest.TestCase):
 
     def test_download_with_geometry_tract(self):
         """Download at the tract level with geometry."""
-
         gdf = ced.download(
             self._dataset,
             self._year,
@@ -249,7 +244,6 @@ class DownloadTestCase(unittest.TestCase):
 
     def test_download_with_geometry_block_group(self):
         """Download at the county level with geometry."""
-
         gdf = ced.download(
             self._dataset,
             self._year,
@@ -279,7 +273,6 @@ class DownloadTestCase(unittest.TestCase):
 
     def test_download_with_geometry_not_available(self):
         """Download at a geography level that has no geometry available."""
-
         with self.assertRaises(
             censusdis.impl.exceptions.CensusApiException
         ) as assertion:
@@ -321,7 +314,6 @@ class DownloadTestCase(unittest.TestCase):
         As in `state=[states.NJ, states.NY]`, vs. the more general
         `state="*"`.
         """
-
         df = ced.download(
             self._dataset,
             self._year,
@@ -341,7 +333,6 @@ class DownloadTestCase(unittest.TestCase):
         As in `state=[states.NJ, states.NY]`, vs. the more general
         `state="*"` and `county="*"`.
         """
-
         df = ced.download(
             self._dataset,
             self._year,
@@ -380,7 +371,6 @@ class DownloadTestCase(unittest.TestCase):
 
         In this test we also skip a level.
         """
-
         df = ced.download(
             self._dataset,
             self._year,
@@ -406,7 +396,6 @@ class DownloadTestCase(unittest.TestCase):
 
         In this test we also skip two levels.
         """
-
         df = ced.download(
             self._dataset,
             self._year,
@@ -492,7 +481,6 @@ class DownloadWideTestCase(unittest.TestCase):
         that will trigger the merge strategy because each
         sub-query will have rows with a unique geogrpahic key.
         """
-
         dataset = "acs/acs1/spp"
         year = 2019
         group = "S0201"
@@ -594,7 +582,6 @@ class DownloadGroupTestCase(unittest.TestCase):
 
     def test_group(self):
         """Download the whole group."""
-
         df_group = ced.download(
             self._dataset,
             self._year,
@@ -612,7 +599,6 @@ class DownloadGroupTestCase(unittest.TestCase):
 
     def test_leaves_of_group(self):
         """Download the leaves of the group."""
-
         df_leaves = ced.download(
             self._dataset,
             self._year,
@@ -630,7 +616,6 @@ class DownloadGroupTestCase(unittest.TestCase):
 
     def test_group_plus(self):
         """Download the whole group plus another variable."""
-
         extra_variable = "NAME"
 
         df_group = ced.download(
@@ -654,7 +639,6 @@ class DownloadGroupTestCase(unittest.TestCase):
 
     def test_leaves_of_group_plus(self):
         """Download the leaves of the group plus another variable."""
-
         extra_variable = "NAME"
 
         df_leaves = ced.download(
@@ -678,7 +662,6 @@ class DownloadGroupTestCase(unittest.TestCase):
 
     def test_group_with_dups(self):
         """Test the case where some variables are double specified."""
-
         group_variables = ced.variables.group_variables(
             self._dataset, self._year, self._group_name_0
         )
@@ -717,7 +700,6 @@ class DownloadGroupTestCase(unittest.TestCase):
 
     def test_leaves_of_group_with_dups(self):
         """Test the case where some variables are double specified."""
-
         extra_variable = "NAME"
         leaf_variables = ced.variables.group_leaves(
             self._dataset, self._year, self._group_name_0
@@ -759,7 +741,6 @@ class DownloadGroupTestCase(unittest.TestCase):
 
     def test_multiple_groups(self):
         """Download from more than one group."""
-
         df_group = ced.download(
             self._dataset,
             self._year,
@@ -777,8 +758,7 @@ class DownloadGroupTestCase(unittest.TestCase):
         self.assertEqual(["STATE", "COUNTY"] + group_variables, list(df_group.columns))
 
     def test_download_wide_survey(self):
-        """Test case where row_keys are required to download more than 50 variables"""
-
+        """Test case where row_keys are required to download more than 50 variables."""
         df_all_vars = ced.variables.all_variables("cps/internet/nov", 2021, None)
         all_vars = df_all_vars["VARIABLE"].to_list()
 
@@ -799,11 +779,10 @@ class DownloadGroupTestCase(unittest.TestCase):
 
 
 class GeoNameTestCase(unittest.TestCase):
-    """
-    Test the ability to download geography names.
-    """
+    """Test the ability to download geography names."""
 
     def test_county(self):
+        """Test at the county level."""
         df_name = ced.geography_names(ACS5, 2020, state=states.NJ, county="017")
 
         self.assertEqual((1, 3), df_name.shape)
@@ -814,9 +793,7 @@ class GeoNameTestCase(unittest.TestCase):
 
 
 class AcsSubjectTestCase(unittest.TestCase):
-    """
-    Test on ACS Subject Data that includes null in an int field.
-    """
+    """Test on ACS Subject Data that includes null in an int field."""
 
     def setUp(self) -> None:
         """Set up before each test."""
@@ -825,6 +802,7 @@ class AcsSubjectTestCase(unittest.TestCase):
         self._variable_name = "DP02_0001E"
 
     def test_states_with_null_in_pr(self):
+        """Test a corner case where there is a null for PR."""
         df = ced.download(
             self._dataset, self._year, ["NAME", self._variable_name], state="*"
         )
@@ -841,6 +819,8 @@ class AcsSubjectTestCase(unittest.TestCase):
 
 
 class ShapefileTestCase(unittest.TestCase):
+    """Test shapefile functionality."""
+
     PATH_PREFIX = "test_integration_shapefiles_"
 
     @classmethod
@@ -854,6 +834,7 @@ class ShapefileTestCase(unittest.TestCase):
         self.reader = cem.ShapeReader(self.shapefile_path, self._year)
 
     def test_county_shapefile(self):
+        """Test reading a county level shapefile for the whole country."""
         gdf_counties = self.reader.read_shapefile("us", "county")
 
         self.assertIsInstance(gdf_counties, gpd.GeoDataFrame)
@@ -861,6 +842,7 @@ class ShapefileTestCase(unittest.TestCase):
         self.assertEqual((3233, 18), gdf_counties.shape)
 
     def test_county_cb_shapefile(self):
+        """Test reading a county level cb shapefile for the whole country."""
         gdf_counties = self.reader.read_cb_shapefile("us", "county")
 
         self.assertIsInstance(gdf_counties, gpd.GeoDataFrame)
@@ -868,6 +850,7 @@ class ShapefileTestCase(unittest.TestCase):
         self.assertEqual((3233, 10), gdf_counties.shape)
 
     def test_puma_shapefile(self):
+        """Test reading a puma level shapefile for the whole country."""
         gdf_puma = self.reader.read_cb_shapefile("us", "puma")
 
         self.assertIsInstance(gdf_puma, gpd.GeoDataFrame)
@@ -875,6 +858,7 @@ class ShapefileTestCase(unittest.TestCase):
         self.assertEqual((2380, 9), gdf_puma.shape)
 
     def test_2010_shapefile(self):
+        """Test special behavior in 2010."""
         # Override the normal setup for 2010.
         self._year = 2010
         self.reader = cem.ShapeReader(self.shapefile_path, self._year)
@@ -886,6 +870,7 @@ class ShapefileTestCase(unittest.TestCase):
         self.assertEqual((3221, 18), gdf_counties.shape)
 
     def test_2010_cb_shapefile(self):
+        """Test special behavior in 2010."""
         # Override the normal setup for 2010.
         self._year = 2010
         self.reader = cem.ShapeReader(self.shapefile_path, self._year)
@@ -1140,7 +1125,7 @@ class AddInferredGeographyTestCase(unittest.TestCase):
 
 class LongIdTestCase(unittest.TestCase):
     """
-    This is a test of long IDs.
+    Test long IDs.
 
     Sometimes the metadata says a variable is an int, but it is
     too long to fit into one. So we fall back on treating it like
@@ -1150,6 +1135,7 @@ class LongIdTestCase(unittest.TestCase):
     """
 
     def test_cps_asec_mar(self):
+        """Test with the cps/asec/mar dataset."""
         df_cps_asec_mar = ced.download("cps/asec/mar", 2020, "H_IDNUM", state="*")
 
         self.assertEqual(2, len(df_cps_asec_mar.columns))
@@ -1162,7 +1148,6 @@ class RemoveWaterTestCase(unittest.TestCase):
 
     def test_remove_water_nyc(self):
         """Test census tracts in NYC."""
-
         nyc_counties = [
             "061",
             "081",
@@ -1244,6 +1229,7 @@ class SymbolicInsertTestCase(unittest.TestCase):
     """Test our ability to add symbolic names."""
 
     def setUp(self) -> None:
+        """Set up before each test."""
         self.df_datasets = ced.variables.all_data_sets()
         self.dataset_names = self.df_datasets["DATASET"].to_list()
         self.dataset_url = self.df_datasets["API BASE URL"].to_list()

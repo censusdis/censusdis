@@ -1,3 +1,5 @@
+# Copyright (c) 2023 Darren Erik Vengroff
+"""Test plot specifications for the CLI."""
 import unittest
 
 from typing import Any
@@ -15,8 +17,11 @@ from censusdis.cli.yamlspec import PlotSpec, DataSpec
 
 
 class PlotSpecTestCase(unittest.TestCase):
+    """Test plotting from a plot specification."""
+
     @classmethod
     def setUpClass(cls) -> None:
+        """Set up once before all tests."""
         cls.plot_spec_directory = Path(__file__).parent / "data" / "plotspecs"
         cls.data_spec_directory = Path(__file__).parent / "data" / "dataspecs"
 
@@ -28,22 +33,24 @@ class PlotSpecTestCase(unittest.TestCase):
         cls.expected_dir = Path(__file__).parent / "expected" / sys.platform
 
     def test_load_plotspec1(self):
+        """Test loading a plotspec."""
         spec = PlotSpec.load_yaml(self.plot_spec_directory / "plotspec1.yaml")
 
         self.assertIsInstance(spec, PlotSpec)
 
         self.assertEqual("B25003I_002E", spec.variable)
 
-        self.assertEqual(PlotSpec("B25003I_002E"), spec)
+        self.assertEqual(PlotSpec(variable="B25003I_002E"), spec)
 
     def test_load_plotspec2(self):
+        """Test loading a plotspec."""
         spec = PlotSpec.load_yaml(self.plot_spec_directory / "plotspec2.yaml")
 
         self.assertIsInstance(spec, PlotSpec)
 
         self.assertEqual(
             PlotSpec(
-                "B25003I_002E",
+                variable="B25003I_002E",
                 boundary=False,
                 with_background=False,
                 projection="US",
@@ -82,6 +89,7 @@ class PlotSpecTestCase(unittest.TestCase):
             self.assertGreater(similarity, threshold, msg=msg)
 
     def test_plot(self):
+        """Test plotting."""
         plot_spec = PlotSpec.load_yaml(self.plot_spec_directory / "plotspec2.yaml")
         data_spec: DataSpec = DataSpec.load_yaml(
             self.data_spec_directory / "dataspec2.yaml"

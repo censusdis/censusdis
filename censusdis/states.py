@@ -1,7 +1,7 @@
 # Copyright (c) 2022 Darren Erik Vengroff
 
 """
-This module defines state FIPS codes and some utilities for using them.
+Defines state FIPS codes and some utilities for using them.
 
 The US Census identifies states by their
 `FIPS Codes <https://en.wikipedia.org/wiki/Federal_Information_Processing_Standard_code#FIPS_codes>`_,

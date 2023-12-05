@@ -1,3 +1,5 @@
+# Copyright (c) 2023 Darren Erik Vengroff
+"""Tests for `censusdis.data`."""
 import unittest
 
 import pandas as pd
@@ -10,12 +12,15 @@ class TestFilters(unittest.TestCase):
     """Test that we can properly convert geo filters to strings."""
 
     def test_filter_none(self):
+        """Test the None arg."""
         self.assertIsNone(ced._gf2s(None))
 
     def test_filter_str(self):
+        """Test with a string."""
         self.assertEqual("013", ced._gf2s("013"))
 
     def test_filter_list(self):
+        """Test with a list."""
         self.assertEqual("013", ced._gf2s(["013"]))
         self.assertEqual("013,014", ced._gf2s(["013", "014"]))
         self.assertEqual("013,014,015", ced._gf2s(["013", "014", "015"]))
@@ -41,7 +46,7 @@ class InferGeoTestCase(unittest.TestCase):
         self.assertEqual("county", geo)
 
     def test_infer_geo_bg(self):
-        """Match in a df with state, county, tract and block group"""
+        """Match in a df with state, county, tract and block group."""
         df = pd.DataFrame(
             [["34", "013", "019400", "1"]],
             columns=["STATE", "COUNTY", "TRACT", "BLOCK_GROUP"],

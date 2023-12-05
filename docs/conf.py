@@ -1,3 +1,4 @@
+"""Configure sphinx."""
 # Configuration file for the Sphinx documentation builder.
 #
 # For the full list of built-in configuration values, see the documentation:
@@ -38,7 +39,8 @@ def get_pyproject() -> MutableMapping:
     """
     Get project metadata from pyproject.toml file.
 
-    Returns:
+    Returns
+    -------
         MutableMapping
     """
     import toml

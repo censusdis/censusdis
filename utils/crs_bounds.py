@@ -35,6 +35,20 @@ def epsg_bounds_rect(
     epsgs: Iterable[int],
     verbose: bool = False,
 ) -> Generator[Tuple[int, Polygon], None, None]:
+    """
+    Generae the bounds rectangles for EPSGs.
+
+    Parameters
+    ----------
+    epsgs
+        The EPSGs
+    verbose
+        Print verbose messages
+
+    Returns
+    -------
+        A generator of bounds.
+    """
     for epsg in epsgs:
         try:
             crs = pyproj.CRS(epsg)
@@ -62,6 +76,7 @@ def epsg_bounds_rect(
 
 
 def main():
+    """Generate CRS bounds."""
     parser = ArgumentParser()
 
     parser.add_argument("-v", "--verbose", action=BooleanOptionalAction)

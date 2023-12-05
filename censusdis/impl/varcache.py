@@ -1,7 +1,5 @@
 # Copyright (c) 2022 Darren Erik Vengroff
-"""
-Variable cache code to cache metatada about variables locally.
-"""
+"""Variable cache code to cache metatada about variables locally."""
 
 from collections import defaultdict
 from logging import getLogger
@@ -170,7 +168,7 @@ class VariableCache:
 
         def is_leaf(self) -> bool:
             """
-            Is the node a leaf?
+            Is the node a leaf.
 
             Returns
             -------
@@ -179,17 +177,20 @@ class VariableCache:
             return len(self._children) == 0
 
         def __len__(self):
+            """Return the number of children the node has."""
             return len(self._children)
 
         def __contains__(self, component: str):
+            """Determine if a component is in the node."""
             return component in self._children
 
         def __getitem__(self, component: str):
+            """Get a child of a node."""
             return self._children[component]
 
         def keys(self) -> Generator[str, None, None]:
             """
-            The keys, which are the strings of the next component to each child.
+            Return the keys, which are the strings of the next component to each child.
 
             Returns
             -------
@@ -200,7 +201,7 @@ class VariableCache:
 
         def values(self) -> Generator["VariableCache.GroupTreeNode", None, None]:
             """
-            The values, which are our children.
+            Return the values, which are our children.
 
             Returns
             -------
@@ -213,6 +214,8 @@ class VariableCache:
             self,
         ) -> Generator[Tuple[str, "VariableCache.GroupTreeNode"], None, None]:
             """
+            Retudn the items.
+
             The items are (key, value) pairs. See :py:meth:`keys` and
             :py:meth:`values`.
 
@@ -244,7 +247,9 @@ class VariableCache:
 
         def leaves(self) -> Generator["VariableCache.GroupTreeNode", None, None]:
             """
-            All the leaves below us. Compare with :py:meth:`~leaf_variables`
+            Return all the leaves below us.
+
+            Compare with :py:meth:`~leaf_variables`
             which returns just the names of the leaves.
 
             Returns
@@ -258,7 +263,9 @@ class VariableCache:
 
         def leaf_variables(self) -> Generator[str, None, None]:
             """
-            The names of all the leaves below us. Compare with :py:meth:`~leaves`
+            Return the names of all the leaves below us.
+
+            Compare with :py:meth:`~leaves`
             which returns the full node for each leaf.
 
             Returns
@@ -283,7 +290,7 @@ class VariableCache:
 
         def subtree_str(self, level: int, component: str, indent_prefix: str) -> str:
             """
-            A string representing a subtree.
+            Return a string representing a subtree.
 
             Used to construct an indented string representation for the whole tree.
             """
@@ -299,6 +306,7 @@ class VariableCache:
             return rep
 
         def __str__(self) -> str:
+            """Return a string representation of the node."""
             return "\n".join(
                 child.subtree_str(0, path_component, indent_prefix="    ")
                 for path_component, child in sorted(
@@ -307,6 +315,7 @@ class VariableCache:
             )
 
         def __repr__(self) -> str:
+            """Return the representation of the node."""
             return str(self)
 
     def _all_data_sets(self) -> pd.DataFrame:
@@ -501,8 +510,7 @@ class VariableCache:
         skip_annotations: bool = True,
     ) -> "VariableCache.GroupTreeNode":
         """
-        Construct a tree that embodies the parent/child relationships of
-        all the variables in a group.
+        Construct a tree that embodies the parent/child relationships of all the variables in a group.
 
         Parameters
         ----------
@@ -515,6 +523,7 @@ class VariableCache:
         skip_annotations
             If `True`, skip variables that are annotations of others, like
             margin of error.
+
         Returns
         -------
             A tree that can be printed or walked.
@@ -651,7 +660,7 @@ class VariableCache:
         return self.get(*item)
 
     def __len__(self):
-        """The number of elements in the cache."""
+        """Return he number of elements in the cache."""
         return sum(
             len(names)
             for years in self._variable_cache.values()
@@ -664,6 +673,7 @@ class VariableCache:
             yield key
 
     def __iter__(self) -> Iterable[Tuple[str, int, str]]:
+        """Return an iterator over the keys."""
         return self.keys()
 
     def values(self) -> Iterable[dict]:

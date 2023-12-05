@@ -1,3 +1,5 @@
+# Copyright (c) 2023 Darren Erik Vengroff
+"""Tests for the fetch implementation."""
 import unittest
 
 import pandas as pd
@@ -7,7 +9,10 @@ from censusdis import CensusApiException
 
 
 class ParseCensusJsonTestCase(unittest.TestCase):
+    """Tests of parsing census JSON."""
+
     def test_parse_json(self):
+        """Test parsing JSON."""
         # This is an example of what comes back in JSON
         # form from the census API.
         parsed_json = [
@@ -32,6 +37,7 @@ class ParseCensusJsonTestCase(unittest.TestCase):
         self.assertTrue((df == expected_df).all().all())
 
     def test_parse_bad_json(self):
+        """Test with malformed JSON."""
         with self.assertRaises(CensusApiException):
             censusdis.impl.fetch._df_from_census_json([])
 

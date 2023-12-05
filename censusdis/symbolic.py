@@ -8,6 +8,7 @@ and their respective symbolic names for
 documentation purposes.
 """
 
+from datetime import datetime
 import argparse
 from pathlib import Path
 
@@ -29,9 +30,10 @@ class symbolic:
 
     def __init__(self):
         self.dictionary = {}
-        self.module_message = """# Copyright (c) 2022 Darren Erik Vengroff
-\"\"\"
-This module is auto-generated. It should not be edited directly.
+        self.module_message = (
+            f"""# Copyright (c) {datetime.now().year} Darren Erik Vengroff\n"""
+            """\"\"\"
+Auto-generated module. It should not be edited directly.
 
 This module contains abbreviated names for commonly used data sets.
 
@@ -46,6 +48,7 @@ But you can always use raw strings. For example, even for `ACS5` you can use
 `acs/acs5` instead.
 \"\"\"
 """
+        )
 
     def store_dataset(self, dataset_list: list, url_list: list):
         """
@@ -129,9 +132,7 @@ But you can always use raw strings. For example, even for `ACS5` you can use
 
 
 def main():  # pragma: no cover
-    """
-    Main function to generate a new version of datasets.py.
-    """
+    """Generate a new version of datasets.py."""
     df_datasets = ced.variables.all_data_sets()
     dataset_names = df_datasets["DATASET"].to_list()
     dataset_url = df_datasets["API BASE URL"].to_list()

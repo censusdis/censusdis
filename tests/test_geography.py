@@ -1,3 +1,5 @@
+# Copyright (c) 2023 Darren Erik Vengroff
+"""Test for geography functionality."""
 import unittest
 from typing import Mapping, Optional, Tuple
 
@@ -5,15 +7,20 @@ from censusdis.geography import CensusGeographyQuerySpec, PathSpec
 
 
 class CanonicalGeometryTestCase(unittest.TestCase):
+    """Test canonical geometry matching."""
+
     def setUp(self) -> None:
+        """Set up before each test."""
         self.dataset = "acs/acs5"
         self.year = 2019
 
     def test_init_raises(self):
+        """Test that the constructor raises an exception when it should."""
         with self.assertRaises(ValueError):
             PathSpec(["state"])
 
     def test_partial_match_self(self):
+        """Test the partial match case."""
         # 150 is state:county:tract:block group,
         # which is not a prefix of anything else.
         path_spec = PathSpec.by_number(self.dataset, self.year, "150")
@@ -27,12 +34,14 @@ class CanonicalGeometryTestCase(unittest.TestCase):
         self.assertEqual(path_spec, partial_matches[0].path_spec)
 
     def test_partial_match_no_match(self):
+        """Test when there is no match."""
         path_spec = PathSpec.by_number(self.dataset, self.year, "150")
 
         self.assertFalse(path_spec._partial_match(unknown="*"))
         self.assertFalse(path_spec._partial_match(state="034", unknown="*"))
 
     def test_partial_match_underscore(self):
+        """Test the private match method."""
         # 150 is state:county:tract:block group,
         # which is not a prefix of anything else.
         path_spec = PathSpec.by_number(self.dataset, self.year, "150")
@@ -41,6 +50,7 @@ class CanonicalGeometryTestCase(unittest.TestCase):
         self.assertTrue(path_spec._partial_match(is_prefix=False, block_group="12345"))
 
     def test_partial_matches(self):
+        """Test partial matches."""
         partial_matches = PathSpec.partial_matches(
             self.dataset, self.year, state="034", county="*"
         )
@@ -49,6 +59,7 @@ class CanonicalGeometryTestCase(unittest.TestCase):
             self.assertIn("county", bound_path.path_spec.path)
 
     def test_partial_prefix_match(self):
+        """Test a partial prefix match."""
         bound_path = PathSpec.partial_prefix_match(
             self.dataset, self.year, state="034", county="*"
         )
@@ -59,6 +70,7 @@ class CanonicalGeometryTestCase(unittest.TestCase):
         )
 
     def test_partial_prefix_match_140(self):
+        """Test a partial prefix match of 140."""
         bound_path = PathSpec.partial_prefix_match(
             self.dataset, self.year, state="034", tract="*"
         )
@@ -69,6 +81,7 @@ class CanonicalGeometryTestCase(unittest.TestCase):
         )
 
     def test_partial_prefix_match_150(self):
+        """Test a partial prefix match of 150."""
         bound_path = PathSpec.partial_prefix_match(
             self.dataset, self.year, state="034", block_group="*"
         )
@@ -79,6 +92,7 @@ class CanonicalGeometryTestCase(unittest.TestCase):
         )
 
     def test_full_match(self):
+        """Test full matches."""
         num, path_spec = PathSpec.full_match(self.dataset, self.year, state="*")
         self.assertEqual("040", num)
         self.assertIs(PathSpec.by_number(self.dataset, self.year, "040"), path_spec)
@@ -90,6 +104,7 @@ class CanonicalGeometryTestCase(unittest.TestCase):
         self.assertIs(PathSpec.by_number(self.dataset, self.year, "140"), path_spec)
 
     def test_full_match_none(self):
+        """Test gull match returns None, None when expected."""
         num, path_spec = PathSpec.full_match(
             self.dataset, self.year, unknown="*", other="foo"
         )
@@ -97,9 +112,11 @@ class CanonicalGeometryTestCase(unittest.TestCase):
         self.assertIsNone(path_spec)
 
     def test_by_number_none(self):
+        """Test with a bad number."""
         self.assertIsNone(PathSpec.by_number(self.dataset, self.year, "999"))
 
     def test_full_match_all(self):
+        """Test a full match on all components."""
         for num, path_spec in PathSpec.get_path_specs(self.dataset, self.year).items():
             num_match, path_spec_match = PathSpec.full_match(
                 self.dataset, self.year, **{k: "*" for k in path_spec.keys()}
@@ -108,6 +125,7 @@ class CanonicalGeometryTestCase(unittest.TestCase):
             self.assertIs(path_spec, path_spec_match)
 
     def test_fill_in(self):
+        """Test filling in missing components."""
         # 150 is state:county:tract:block group.
         path_spec = PathSpec.by_number(self.dataset, self.year, "150")
 
@@ -141,6 +159,7 @@ class CanonicalGeometryTestCase(unittest.TestCase):
         )
 
     def test_fill_partial_prefix_match(self):
+        """Test filling in a partial prefix match."""
         bound_path = PathSpec.partial_prefix_match(
             self.dataset, self.year, state="34", block_group="*"
         )
@@ -155,7 +174,10 @@ class CanonicalGeometryTestCase(unittest.TestCase):
 
 
 class CensusGeographyQuerySpecTestCase(unittest.TestCase):
+    """Test geographic queries."""
+
     def setUp(self) -> None:
+        """Set up before each test."""
         self.dataset = "acs/acs5"
         self.year = 2013
 
@@ -179,6 +201,7 @@ class CensusGeographyQuerySpecTestCase(unittest.TestCase):
         self.assertEqual(params0, params1, message)
 
     def test_for(self):
+        """Test the for clause in the get params."""
         bound_path = PathSpec.partial_prefix_match(self.dataset, self.year, state="*")
 
         self.assertEqual("040", bound_path.num)
@@ -200,6 +223,7 @@ class CensusGeographyQuerySpecTestCase(unittest.TestCase):
         )
 
     def test_for_bound(self):
+        """Test the for clause with bound params."""
         bound_path = PathSpec.partial_prefix_match(self.dataset, self.year, state="36")
 
         self.assertEqual("040", bound_path.num)
@@ -221,6 +245,7 @@ class CensusGeographyQuerySpecTestCase(unittest.TestCase):
         )
 
     def test_for_in(self):
+        """Test the for and in clauses in the same query."""
         bound_path = PathSpec.partial_prefix_match(
             self.dataset, self.year, state="36", county="001", tract="*"
         )
@@ -244,6 +269,7 @@ class CensusGeographyQuerySpecTestCase(unittest.TestCase):
         )
 
     def test_for_in_skip_components(self):
+        """Test the for and in clause on a partial prefix match."""
         bound_path = PathSpec.partial_prefix_match(
             self.dataset, self.year, state="36", block_group="*"
         )
@@ -275,6 +301,7 @@ class CensusGeographyQuerySpecTestCase(unittest.TestCase):
         )
 
     def test_for_in_bound(self):
+        """Tets the for and in clauses with bound values."""
         bound_path = PathSpec.partial_prefix_match(
             self.dataset, self.year, state="36", county="001", tract="001802"
         )

@@ -1,6 +1,6 @@
-# Copyright (c) 2022 Darren Erik Vengroff
+# Copyright (c) 2023 Darren Erik Vengroff
 """
-This module is auto-generated. It should not be edited directly.
+Auto-generated module. It should not be edited directly.
 
 This module contains abbreviated names for commonly used data sets.
 

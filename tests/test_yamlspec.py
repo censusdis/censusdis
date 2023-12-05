@@ -1,3 +1,5 @@
+# Copyright (c) 2023 Darren Erik Vengroff
+"""Tests for YAML specification for the CLI."""
 import unittest
 from pathlib import Path
 
@@ -13,11 +15,15 @@ from censusdis.datasets import ACS5
 from censusdis.states import NJ, NY
 
 
-class VariableTestCase(unittest.TestCase):
+class VariableListTestCase(unittest.TestCase):
+    """Test for variable lists.."""
+
     def setUp(self) -> None:
+        """Set up before each test."""
         self.variables = ["X01001_001E", "X01001_002E", "X01001_003E"]
 
     def test_variable_spec(self):
+        """Test variables to download from a list of variables."""
         spec = VariableList(self.variables)
 
         variables_to_download = spec.variables_to_download()
@@ -26,6 +32,7 @@ class VariableTestCase(unittest.TestCase):
         self.assertEqual([], spec.groups_to_download())
 
     def test_variable_spec_one(self):
+        """Test construction with a single variable."""
         spec = VariableList(self.variables[0])
 
         variables_to_download = spec.variables_to_download()
@@ -34,6 +41,7 @@ class VariableTestCase(unittest.TestCase):
         self.assertEqual([], spec.groups_to_download())
 
     def test_variable_spec_sum_denominator(self):
+        """Test the fractional case when a sum has to be generated."""
         spec = VariableList(self.variables, denominator=True)
 
         variables_to_download = spec.variables_to_download()
@@ -42,6 +50,7 @@ class VariableTestCase(unittest.TestCase):
         self.assertEqual([], spec.groups_to_download())
 
     def test_variable_spec_sum_denominator_var(self):
+        """Test the fractional case when a denominator variable is given."""
         spec = VariableList(self.variables, denominator=self.variables[-1])
 
         variables_to_download = spec.variables_to_download()
@@ -50,6 +59,7 @@ class VariableTestCase(unittest.TestCase):
         self.assertEqual([], spec.groups_to_download())
 
     def test_variable_spec_sum_denominator_other(self):
+        """Test when the denominator is a variable from outside the list."""
         spec = VariableList(self.variables, denominator="X02001_001E")
 
         variables_to_download = spec.variables_to_download()
@@ -65,16 +75,21 @@ class VariableTestCase(unittest.TestCase):
 
 
 class GroupTestCase(unittest.TestCase):
+    """Test for groups of variables."""
+
     def setUp(self) -> None:
+        """Set up before each test."""
         self.group = ["X01001", "X01002"]
 
     def test_one_group(self):
+        """Test with just one group."""
         spec = CensusGroup(self.group[0])
 
         self.assertEqual([], spec.variables_to_download())
         self.assertEqual([(self.group[0], False)], spec.groups_to_download())
 
     def test_groups(self):
+        """Test with multiple groups."""
         spec = CensusGroup(self.group)
 
         self.assertEqual([], spec.variables_to_download())
@@ -83,6 +98,7 @@ class GroupTestCase(unittest.TestCase):
         )
 
     def test_groups_leaves_only(self):
+        """Test getting leaves of the group only."""
         for leaves_only in False, True:
             spec = CensusGroup(self.group, leaves_only=leaves_only)
 
@@ -93,6 +109,7 @@ class GroupTestCase(unittest.TestCase):
             )
 
     def test_groups_with_denominator(self):
+        """Test a group with a denominator for fractional variables."""
         denominator = "X02001_001E"
 
         spec = CensusGroup(self.group, denominator=denominator)
@@ -104,7 +121,10 @@ class GroupTestCase(unittest.TestCase):
 
 
 class VariableSpecCollectionTestCase(unittest.TestCase):
+    """Test variable specifications that are collections of variable specifications."""
+
     def setUp(self) -> None:
+        """Set up before each test."""
         self.variables1 = ["X01001_001E", "X01001_002E", "X01001_003E"]
         self.group1 = "X01001"
         self.variables2 = ["Y01001_001E", "Y01001_002E", "Y01001_003E"]
@@ -114,6 +134,7 @@ class VariableSpecCollectionTestCase(unittest.TestCase):
         self.group3 = "Q01001"
 
     def test_collection(self):
+        """Test a collection with a single member."""
         variable_list = VariableList(self.variables1)
         group = CensusGroup(self.group1)
 
@@ -124,6 +145,7 @@ class VariableSpecCollectionTestCase(unittest.TestCase):
         self.assertEqual([(self.group1, False)], spec.groups_to_download())
 
     def test_collection_multiple_vars(self):
+        """Test a collection with multiple members."""
         variable_list1 = VariableList(self.variables1)
         variable_list2 = VariableList(self.variables2)
 
@@ -139,6 +161,7 @@ class VariableSpecCollectionTestCase(unittest.TestCase):
         self.assertEqual([], spec.groups_to_download())
 
     def test_collection_multiple_vars_overlap(self):
+        """Test a collection with multiple members with overlapping variables."""
         variable_list1 = VariableList(self.variables1)
         variable_list2 = VariableList(self.variables2)
         variable_list_overlap = VariableList(self.variables_overlap)
@@ -158,6 +181,7 @@ class VariableSpecCollectionTestCase(unittest.TestCase):
         self.assertEqual([], spec.groups_to_download())
 
     def test_collection_multiple_groups(self):
+        """Test a collection with multiple group members."""
         census_group1 = CensusGroup(self.group1)
         census_group2 = CensusGroup(self.group2, denominator=self.group2_denominator)
         census_group3 = CensusGroup(self.group3, leaves_only=True)
@@ -176,7 +200,10 @@ class VariableSpecCollectionTestCase(unittest.TestCase):
 
 
 class DownloadTestCase(unittest.TestCase):
+    """Test downloading from variable specs."""
+
     def setUp(self) -> None:
+        """Set up before each test."""
         self.dataset = ACS5
         self.vintage = 2020
         self.group = "B03002"
@@ -185,6 +212,7 @@ class DownloadTestCase(unittest.TestCase):
         self.variable_not_hispanic_latino_pop = "B03002_002E"
 
     def test_one_variable_spec(self):
+        """Test downloading one variable from a single spec."""
         spec = VariableList(["NAME", self.variable_total_pop])
 
         df = spec.download(dataset=self.dataset, vintage=self.vintage, state=[NJ, NY])
@@ -195,6 +223,7 @@ class DownloadTestCase(unittest.TestCase):
         self.assertEqual("New York", df[df["STATE"] == NY]["NAME"].iloc[0])
 
     def test_variables_denominator(self):
+        """Test downloading then synthesizing with a denomominator."""
         # Try both an explicit denominator and an implicit one.
         for denominator in True, self.variable_total_pop:
             spec = VariableList(
@@ -225,6 +254,7 @@ class DownloadTestCase(unittest.TestCase):
             )
 
     def test_group_denominator(self):
+        """Test a group of variables with a denominator."""
         spec = CensusGroup(self.group, denominator=self.variable_total_pop)
 
         df = spec.download(dataset=self.dataset, vintage=self.vintage, state=NJ)
@@ -235,10 +265,14 @@ class DownloadTestCase(unittest.TestCase):
 
 
 class YamlTestCase(unittest.TestCase):
+    """Test loading specs from YAML files."""
+
     def setUp(self) -> None:
+        """Set up before each test."""
         self.directory = Path(__file__).parent / "data" / "dataspecs"
 
     def test_load_variables(self):
+        """Test loading variables."""
         spec = VariableSpec.load_yaml(self.directory / "variable_list.yaml")
 
         self.assertIsInstance(spec, VariableList)
@@ -249,6 +283,7 @@ class YamlTestCase(unittest.TestCase):
         )
 
     def test_load_group(self):
+        """Test loading a group spec."""
         spec = VariableSpec.load_yaml(self.directory / "group.yaml")
 
         self.assertIsInstance(spec, CensusGroup)
@@ -258,6 +293,7 @@ class YamlTestCase(unittest.TestCase):
         )
 
     def test_load_spec_collection(self):
+        """Test loading a collection of underlying specs."""
         spec = VariableSpec.load_yaml(self.directory / "collection.yaml")
 
         self.assertIsInstance(spec, VariableSpecCollection)
@@ -273,10 +309,14 @@ class YamlTestCase(unittest.TestCase):
 
 
 class DataSpecTestCase(unittest.TestCase):
+    """Test data loading specifications."""
+
     def setUp(self) -> None:
+        """Set up before each test."""
         self.directory = Path(__file__).parent / "data" / "dataspecs"
 
     def test_load_yaml1(self):
+        """Test loading a basic yaml file."""
         dataspec = DataSpec.load_yaml(self.directory / "dataspec1.yaml")
 
         self.assertIsInstance(dataspec, DataSpec)
@@ -288,6 +328,7 @@ class DataSpecTestCase(unittest.TestCase):
         self.assertIsInstance(dataspec.variable_spec, CensusGroup)
 
     def test_load_yaml2(self):
+        """Test loading a more complex yaml file."""
         dataspec = DataSpec.load_yaml(self.directory / "dataspec2.yaml")
 
         self.assertIsInstance(dataspec, DataSpec)
@@ -308,6 +349,7 @@ class DataSpecTestCase(unittest.TestCase):
         self.assertEqual("34", dataspec.geography["state"])
 
     def test_state_geo_download(self):
+        """Test downloading with state geographies."""
         dataspec = DataSpec.load_yaml(self.directory / "dataspec4.yaml")
 
         self.assertIsInstance(dataspec, DataSpec)
@@ -327,6 +369,7 @@ class DataSpecTestCase(unittest.TestCase):
             )
 
     def test_download_from_yaml_dataspec(self):
+        """Test downloading based on a spec in a YAML file."""
         dataspec = DataSpec.load_yaml(self.directory / "dataspec2.yaml")
 
         self.assertIsInstance(dataspec, DataSpec)
