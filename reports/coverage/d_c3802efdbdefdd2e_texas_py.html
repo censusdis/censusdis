@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Coverage for censusdis/counties/texas.py: 100%</title>
+    <link rel="icon" sizes="32x32" href="favicon_32.png">
+    <link rel="stylesheet" href="style.css" type="text/css">
+    <script type="text/javascript" src="coverage_html.js" defer></script>
+</head>
+<body class="pyfile">
+<header>
+    <div class="content">
+        <h1>
+            <span class="text">Coverage for </span><b>censusdis/counties/texas.py</b>:
+            <span class="pc_cov">100%</span>
+        </h1>
+        <aside id="help_panel_wrapper">
+            <input id="help_panel_state" type="checkbox">
+            <label for="help_panel_state">
+                <img id="keyboard_icon" src="keybd_closed.png" alt="Show/hide keyboard shortcuts" />
+            </label>
+            <div id="help_panel">
+                <p class="legend">Shortcuts on this page</p>
+                <div class="keyhelp">
+                    <p>
+                        <kbd>r</kbd>
+                        <kbd>m</kbd>
+                        <kbd>x</kbd>
+                        &nbsp; toggle line displays
+                    </p>
+                    <p>
+                        <kbd>j</kbd>
+                        <kbd>k</kbd>
+                        &nbsp; next/prev highlighted chunk
+                    </p>
+                    <p>
+                        <kbd>0</kbd> &nbsp; (zero) top of page
+                    </p>
+                    <p>
+                        <kbd>1</kbd> &nbsp; (one) first highlighted chunk
+                    </p>
+                    <p>
+                        <kbd>[</kbd>
+                        <kbd>]</kbd>
+                        &nbsp; prev/next file
+                    </p>
+                    <p>
+                        <kbd>u</kbd> &nbsp; up to the index
+                    </p>
+                    <p>
+                        <kbd>?</kbd> &nbsp; show/hide this help
+                    </p>
+                </div>
+            </div>
+        </aside>
+        <h2>
+            <span class="text">255 statements &nbsp;</span>
+            <button type="button" class="run button_toggle_run" value="run" data-shortcut="r" title="Toggle lines run">255<span class="text"> run</span></button>
+            <button type="button" class="mis show_mis button_toggle_mis" value="mis" data-shortcut="m" title="Toggle lines missing">0<span class="text"> missing</span></button>
+            <button type="button" class="exc show_exc button_toggle_exc" value="exc" data-shortcut="x" title="Toggle lines excluded">0<span class="text"> excluded</span></button>
+        </h2>
+        <p class="text">
+            <a id="prevFileLink" class="nav" href="d_c3802efdbdefdd2e_tennessee_py.html">&#xab; prev</a> &nbsp; &nbsp;
+            <a id="indexLink" class="nav" href="index.html">&Hat; index</a> &nbsp; &nbsp;
+            <a id="nextFileLink" class="nav" href="d_c3802efdbdefdd2e_utah_py.html">&#xbb; next</a>
+            &nbsp; &nbsp; &nbsp;
+            <a class="nav" href="https://coverage.readthedocs.io">coverage.py v6.5.0</a>,
+            created at 2023-12-05 17:20 +0000
+        </p>
+        <aside class="hidden">
+            <button type="button" class="button_next_chunk" data-shortcut="j"/>
+            <button type="button" class="button_prev_chunk" data-shortcut="k"/>
+            <button type="button" class="button_top_of_page" data-shortcut="0"/>
+            <button type="button" class="button_first_chunk" data-shortcut="1"/>
+            <button type="button" class="button_prev_file" data-shortcut="["/>
+            <button type="button" class="button_next_file" data-shortcut="]"/>
+            <button type="button" class="button_to_index" data-shortcut="u"/>
+            <button type="button" class="button_show_hide_help" data-shortcut="?"/>
+        </aside>
+    </div>
+</header>
+<main id="source">
+    <p class="pln"><span class="n"><a id="t1" href="#t1">1</a></span><span class="t"><span class="com"># Copyright (c) 2023 Darren Erik Vengroff</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t2" href="#t2">2</a></span><span class="t"><span class="str">"""Counties in Texas."""</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t3" href="#t3">3</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t4" href="#t4">4</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t5" href="#t5">5</a></span><span class="t"><span class="nam">ANDERSON</span> <span class="op">=</span> <span class="str">"001"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t6" href="#t6">6</a></span><span class="t"><span class="nam">ANDREWS</span> <span class="op">=</span> <span class="str">"003"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t7" href="#t7">7</a></span><span class="t"><span class="nam">ANGELINA</span> <span class="op">=</span> <span class="str">"005"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t8" href="#t8">8</a></span><span class="t"><span class="nam">ARANSAS</span> <span class="op">=</span> <span class="str">"007"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t9" href="#t9">9</a></span><span class="t"><span class="nam">ARCHER</span> <span class="op">=</span> <span class="str">"009"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t10" href="#t10">10</a></span><span class="t"><span class="nam">ARMSTRONG</span> <span class="op">=</span> <span class="str">"011"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t11" href="#t11">11</a></span><span class="t"><span class="nam">ATASCOSA</span> <span class="op">=</span> <span class="str">"013"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t12" href="#t12">12</a></span><span class="t"><span class="nam">AUSTIN</span> <span class="op">=</span> <span class="str">"015"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t13" href="#t13">13</a></span><span class="t"><span class="nam">BAILEY</span> <span class="op">=</span> <span class="str">"017"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t14" href="#t14">14</a></span><span class="t"><span class="nam">BANDERA</span> <span class="op">=</span> <span class="str">"019"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t15" href="#t15">15</a></span><span class="t"><span class="nam">BASTROP</span> <span class="op">=</span> <span class="str">"021"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t16" href="#t16">16</a></span><span class="t"><span class="nam">BAYLOR</span> <span class="op">=</span> <span class="str">"023"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t17" href="#t17">17</a></span><span class="t"><span class="nam">BEE</span> <span class="op">=</span> <span class="str">"025"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t18" href="#t18">18</a></span><span class="t"><span class="nam">BELL</span> <span class="op">=</span> <span class="str">"027"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t19" href="#t19">19</a></span><span class="t"><span class="nam">BEXAR</span> <span class="op">=</span> <span class="str">"029"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t20" href="#t20">20</a></span><span class="t"><span class="nam">BLANCO</span> <span class="op">=</span> <span class="str">"031"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t21" href="#t21">21</a></span><span class="t"><span class="nam">BORDEN</span> <span class="op">=</span> <span class="str">"033"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t22" href="#t22">22</a></span><span class="t"><span class="nam">BOSQUE</span> <span class="op">=</span> <span class="str">"035"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t23" href="#t23">23</a></span><span class="t"><span class="nam">BOWIE</span> <span class="op">=</span> <span class="str">"037"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t24" href="#t24">24</a></span><span class="t"><span class="nam">BRAZORIA</span> <span class="op">=</span> <span class="str">"039"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t25" href="#t25">25</a></span><span class="t"><span class="nam">BRAZOS</span> <span class="op">=</span> <span class="str">"041"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t26" href="#t26">26</a></span><span class="t"><span class="nam">BREWSTER</span> <span class="op">=</span> <span class="str">"043"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t27" href="#t27">27</a></span><span class="t"><span class="nam">BRISCOE</span> <span class="op">=</span> <span class="str">"045"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t28" href="#t28">28</a></span><span class="t"><span class="nam">BROOKS</span> <span class="op">=</span> <span class="str">"047"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t29" href="#t29">29</a></span><span class="t"><span class="nam">BROWN</span> <span class="op">=</span> <span class="str">"049"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t30" href="#t30">30</a></span><span class="t"><span class="nam">BURLESON</span> <span class="op">=</span> <span class="str">"051"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t31" href="#t31">31</a></span><span class="t"><span class="nam">BURNET</span> <span class="op">=</span> <span class="str">"053"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t32" href="#t32">32</a></span><span class="t"><span class="nam">CALDWELL</span> <span class="op">=</span> <span class="str">"055"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t33" href="#t33">33</a></span><span class="t"><span class="nam">CALHOUN</span> <span class="op">=</span> <span class="str">"057"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t34" href="#t34">34</a></span><span class="t"><span class="nam">CALLAHAN</span> <span class="op">=</span> <span class="str">"059"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t35" href="#t35">35</a></span><span class="t"><span class="nam">CAMERON</span> <span class="op">=</span> <span class="str">"061"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t36" href="#t36">36</a></span><span class="t"><span class="nam">CAMP</span> <span class="op">=</span> <span class="str">"063"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t37" href="#t37">37</a></span><span class="t"><span class="nam">CARSON</span> <span class="op">=</span> <span class="str">"065"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t38" href="#t38">38</a></span><span class="t"><span class="nam">CASS</span> <span class="op">=</span> <span class="str">"067"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t39" href="#t39">39</a></span><span class="t"><span class="nam">CASTRO</span> <span class="op">=</span> <span class="str">"069"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t40" href="#t40">40</a></span><span class="t"><span class="nam">CHAMBERS</span> <span class="op">=</span> <span class="str">"071"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t41" href="#t41">41</a></span><span class="t"><span class="nam">CHEROKEE</span> <span class="op">=</span> <span class="str">"073"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t42" href="#t42">42</a></span><span class="t"><span class="nam">CHILDRESS</span> <span class="op">=</span> <span class="str">"075"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t43" href="#t43">43</a></span><span class="t"><span class="nam">CLAY</span> <span class="op">=</span> <span class="str">"077"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t44" href="#t44">44</a></span><span class="t"><span class="nam">COCHRAN</span> <span class="op">=</span> <span class="str">"079"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t45" href="#t45">45</a></span><span class="t"><span class="nam">COKE</span> <span class="op">=</span> <span class="str">"081"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t46" href="#t46">46</a></span><span class="t"><span class="nam">COLEMAN</span> <span class="op">=</span> <span class="str">"083"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t47" href="#t47">47</a></span><span class="t"><span class="nam">COLLIN</span> <span class="op">=</span> <span class="str">"085"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t48" href="#t48">48</a></span><span class="t"><span class="nam">COLLINGSWORTH</span> <span class="op">=</span> <span class="str">"087"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t49" href="#t49">49</a></span><span class="t"><span class="nam">COLORADO</span> <span class="op">=</span> <span class="str">"089"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t50" href="#t50">50</a></span><span class="t"><span class="nam">COMAL</span> <span class="op">=</span> <span class="str">"091"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t51" href="#t51">51</a></span><span class="t"><span class="nam">COMANCHE</span> <span class="op">=</span> <span class="str">"093"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t52" href="#t52">52</a></span><span class="t"><span class="nam">CONCHO</span> <span class="op">=</span> <span class="str">"095"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t53" href="#t53">53</a></span><span class="t"><span class="nam">COOKE</span> <span class="op">=</span> <span class="str">"097"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t54" href="#t54">54</a></span><span class="t"><span class="nam">CORYELL</span> <span class="op">=</span> <span class="str">"099"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t55" href="#t55">55</a></span><span class="t"><span class="nam">COTTLE</span> <span class="op">=</span> <span class="str">"101"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t56" href="#t56">56</a></span><span class="t"><span class="nam">CRANE</span> <span class="op">=</span> <span class="str">"103"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t57" href="#t57">57</a></span><span class="t"><span class="nam">CROCKETT</span> <span class="op">=</span> <span class="str">"105"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t58" href="#t58">58</a></span><span class="t"><span class="nam">CROSBY</span> <span class="op">=</span> <span class="str">"107"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t59" href="#t59">59</a></span><span class="t"><span class="nam">CULBERSON</span> <span class="op">=</span> <span class="str">"109"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t60" href="#t60">60</a></span><span class="t"><span class="nam">DALLAM</span> <span class="op">=</span> <span class="str">"111"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t61" href="#t61">61</a></span><span class="t"><span class="nam">DALLAS</span> <span class="op">=</span> <span class="str">"113"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t62" href="#t62">62</a></span><span class="t"><span class="nam">DAWSON</span> <span class="op">=</span> <span class="str">"115"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t63" href="#t63">63</a></span><span class="t"><span class="nam">DEWITT</span> <span class="op">=</span> <span class="str">"123"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t64" href="#t64">64</a></span><span class="t"><span class="nam">DEAF_SMITH</span> <span class="op">=</span> <span class="str">"117"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t65" href="#t65">65</a></span><span class="t"><span class="nam">DELTA</span> <span class="op">=</span> <span class="str">"119"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t66" href="#t66">66</a></span><span class="t"><span class="nam">DENTON</span> <span class="op">=</span> <span class="str">"121"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t67" href="#t67">67</a></span><span class="t"><span class="nam">DICKENS</span> <span class="op">=</span> <span class="str">"125"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t68" href="#t68">68</a></span><span class="t"><span class="nam">DIMMIT</span> <span class="op">=</span> <span class="str">"127"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t69" href="#t69">69</a></span><span class="t"><span class="nam">DONLEY</span> <span class="op">=</span> <span class="str">"129"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t70" href="#t70">70</a></span><span class="t"><span class="nam">DUVAL</span> <span class="op">=</span> <span class="str">"131"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t71" href="#t71">71</a></span><span class="t"><span class="nam">EASTLAND</span> <span class="op">=</span> <span class="str">"133"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t72" href="#t72">72</a></span><span class="t"><span class="nam">ECTOR</span> <span class="op">=</span> <span class="str">"135"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t73" href="#t73">73</a></span><span class="t"><span class="nam">EDWARDS</span> <span class="op">=</span> <span class="str">"137"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t74" href="#t74">74</a></span><span class="t"><span class="nam">EL_PASO</span> <span class="op">=</span> <span class="str">"141"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t75" href="#t75">75</a></span><span class="t"><span class="nam">ELLIS</span> <span class="op">=</span> <span class="str">"139"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t76" href="#t76">76</a></span><span class="t"><span class="nam">ERATH</span> <span class="op">=</span> <span class="str">"143"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t77" href="#t77">77</a></span><span class="t"><span class="nam">FALLS</span> <span class="op">=</span> <span class="str">"145"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t78" href="#t78">78</a></span><span class="t"><span class="nam">FANNIN</span> <span class="op">=</span> <span class="str">"147"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t79" href="#t79">79</a></span><span class="t"><span class="nam">FAYETTE</span> <span class="op">=</span> <span class="str">"149"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t80" href="#t80">80</a></span><span class="t"><span class="nam">FISHER</span> <span class="op">=</span> <span class="str">"151"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t81" href="#t81">81</a></span><span class="t"><span class="nam">FLOYD</span> <span class="op">=</span> <span class="str">"153"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t82" href="#t82">82</a></span><span class="t"><span class="nam">FOARD</span> <span class="op">=</span> <span class="str">"155"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t83" href="#t83">83</a></span><span class="t"><span class="nam">FORT_BEND</span> <span class="op">=</span> <span class="str">"157"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t84" href="#t84">84</a></span><span class="t"><span class="nam">FRANKLIN</span> <span class="op">=</span> <span class="str">"159"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t85" href="#t85">85</a></span><span class="t"><span class="nam">FREESTONE</span> <span class="op">=</span> <span class="str">"161"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t86" href="#t86">86</a></span><span class="t"><span class="nam">FRIO</span> <span class="op">=</span> <span class="str">"163"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t87" href="#t87">87</a></span><span class="t"><span class="nam">GAINES</span> <span class="op">=</span> <span class="str">"165"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t88" href="#t88">88</a></span><span class="t"><span class="nam">GALVESTON</span> <span class="op">=</span> <span class="str">"167"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t89" href="#t89">89</a></span><span class="t"><span class="nam">GARZA</span> <span class="op">=</span> <span class="str">"169"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t90" href="#t90">90</a></span><span class="t"><span class="nam">GILLESPIE</span> <span class="op">=</span> <span class="str">"171"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t91" href="#t91">91</a></span><span class="t"><span class="nam">GLASSCOCK</span> <span class="op">=</span> <span class="str">"173"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t92" href="#t92">92</a></span><span class="t"><span class="nam">GOLIAD</span> <span class="op">=</span> <span class="str">"175"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t93" href="#t93">93</a></span><span class="t"><span class="nam">GONZALES</span> <span class="op">=</span> <span class="str">"177"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t94" href="#t94">94</a></span><span class="t"><span class="nam">GRAY</span> <span class="op">=</span> <span class="str">"179"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t95" href="#t95">95</a></span><span class="t"><span class="nam">GRAYSON</span> <span class="op">=</span> <span class="str">"181"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t96" href="#t96">96</a></span><span class="t"><span class="nam">GREGG</span> <span class="op">=</span> <span class="str">"183"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t97" href="#t97">97</a></span><span class="t"><span class="nam">GRIMES</span> <span class="op">=</span> <span class="str">"185"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t98" href="#t98">98</a></span><span class="t"><span class="nam">GUADALUPE</span> <span class="op">=</span> <span class="str">"187"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t99" href="#t99">99</a></span><span class="t"><span class="nam">HALE</span> <span class="op">=</span> <span class="str">"189"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t100" href="#t100">100</a></span><span class="t"><span class="nam">HALL</span> <span class="op">=</span> <span class="str">"191"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t101" href="#t101">101</a></span><span class="t"><span class="nam">HAMILTON</span> <span class="op">=</span> <span class="str">"193"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t102" href="#t102">102</a></span><span class="t"><span class="nam">HANSFORD</span> <span class="op">=</span> <span class="str">"195"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t103" href="#t103">103</a></span><span class="t"><span class="nam">HARDEMAN</span> <span class="op">=</span> <span class="str">"197"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t104" href="#t104">104</a></span><span class="t"><span class="nam">HARDIN</span> <span class="op">=</span> <span class="str">"199"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t105" href="#t105">105</a></span><span class="t"><span class="nam">HARRIS</span> <span class="op">=</span> <span class="str">"201"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t106" href="#t106">106</a></span><span class="t"><span class="nam">HARRISON</span> <span class="op">=</span> <span class="str">"203"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t107" href="#t107">107</a></span><span class="t"><span class="nam">HARTLEY</span> <span class="op">=</span> <span class="str">"205"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t108" href="#t108">108</a></span><span class="t"><span class="nam">HASKELL</span> <span class="op">=</span> <span class="str">"207"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t109" href="#t109">109</a></span><span class="t"><span class="nam">HAYS</span> <span class="op">=</span> <span class="str">"209"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t110" href="#t110">110</a></span><span class="t"><span class="nam">HEMPHILL</span> <span class="op">=</span> <span class="str">"211"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t111" href="#t111">111</a></span><span class="t"><span class="nam">HENDERSON</span> <span class="op">=</span> <span class="str">"213"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t112" href="#t112">112</a></span><span class="t"><span class="nam">HIDALGO</span> <span class="op">=</span> <span class="str">"215"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t113" href="#t113">113</a></span><span class="t"><span class="nam">HILL</span> <span class="op">=</span> <span class="str">"217"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t114" href="#t114">114</a></span><span class="t"><span class="nam">HOCKLEY</span> <span class="op">=</span> <span class="str">"219"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t115" href="#t115">115</a></span><span class="t"><span class="nam">HOOD</span> <span class="op">=</span> <span class="str">"221"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t116" href="#t116">116</a></span><span class="t"><span class="nam">HOPKINS</span> <span class="op">=</span> <span class="str">"223"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t117" href="#t117">117</a></span><span class="t"><span class="nam">HOUSTON</span> <span class="op">=</span> <span class="str">"225"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t118" href="#t118">118</a></span><span class="t"><span class="nam">HOWARD</span> <span class="op">=</span> <span class="str">"227"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t119" href="#t119">119</a></span><span class="t"><span class="nam">HUDSPETH</span> <span class="op">=</span> <span class="str">"229"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t120" href="#t120">120</a></span><span class="t"><span class="nam">HUNT</span> <span class="op">=</span> <span class="str">"231"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t121" href="#t121">121</a></span><span class="t"><span class="nam">HUTCHINSON</span> <span class="op">=</span> <span class="str">"233"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t122" href="#t122">122</a></span><span class="t"><span class="nam">IRION</span> <span class="op">=</span> <span class="str">"235"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t123" href="#t123">123</a></span><span class="t"><span class="nam">JACK</span> <span class="op">=</span> <span class="str">"237"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t124" href="#t124">124</a></span><span class="t"><span class="nam">JACKSON</span> <span class="op">=</span> <span class="str">"239"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t125" href="#t125">125</a></span><span class="t"><span class="nam">JASPER</span> <span class="op">=</span> <span class="str">"241"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t126" href="#t126">126</a></span><span class="t"><span class="nam">JEFF_DAVIS</span> <span class="op">=</span> <span class="str">"243"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t127" href="#t127">127</a></span><span class="t"><span class="nam">JEFFERSON</span> <span class="op">=</span> <span class="str">"245"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t128" href="#t128">128</a></span><span class="t"><span class="nam">JIM_HOGG</span> <span class="op">=</span> <span class="str">"247"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t129" href="#t129">129</a></span><span class="t"><span class="nam">JIM_WELLS</span> <span class="op">=</span> <span class="str">"249"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t130" href="#t130">130</a></span><span class="t"><span class="nam">JOHNSON</span> <span class="op">=</span> <span class="str">"251"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t131" href="#t131">131</a></span><span class="t"><span class="nam">JONES</span> <span class="op">=</span> <span class="str">"253"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t132" href="#t132">132</a></span><span class="t"><span class="nam">KARNES</span> <span class="op">=</span> <span class="str">"255"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t133" href="#t133">133</a></span><span class="t"><span class="nam">KAUFMAN</span> <span class="op">=</span> <span class="str">"257"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t134" href="#t134">134</a></span><span class="t"><span class="nam">KENDALL</span> <span class="op">=</span> <span class="str">"259"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t135" href="#t135">135</a></span><span class="t"><span class="nam">KENEDY</span> <span class="op">=</span> <span class="str">"261"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t136" href="#t136">136</a></span><span class="t"><span class="nam">KENT</span> <span class="op">=</span> <span class="str">"263"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t137" href="#t137">137</a></span><span class="t"><span class="nam">KERR</span> <span class="op">=</span> <span class="str">"265"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t138" href="#t138">138</a></span><span class="t"><span class="nam">KIMBLE</span> <span class="op">=</span> <span class="str">"267"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t139" href="#t139">139</a></span><span class="t"><span class="nam">KING</span> <span class="op">=</span> <span class="str">"269"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t140" href="#t140">140</a></span><span class="t"><span class="nam">KINNEY</span> <span class="op">=</span> <span class="str">"271"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t141" href="#t141">141</a></span><span class="t"><span class="nam">KLEBERG</span> <span class="op">=</span> <span class="str">"273"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t142" href="#t142">142</a></span><span class="t"><span class="nam">KNOX</span> <span class="op">=</span> <span class="str">"275"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t143" href="#t143">143</a></span><span class="t"><span class="nam">LA_SALLE</span> <span class="op">=</span> <span class="str">"283"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t144" href="#t144">144</a></span><span class="t"><span class="nam">LAMAR</span> <span class="op">=</span> <span class="str">"277"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t145" href="#t145">145</a></span><span class="t"><span class="nam">LAMB</span> <span class="op">=</span> <span class="str">"279"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t146" href="#t146">146</a></span><span class="t"><span class="nam">LAMPASAS</span> <span class="op">=</span> <span class="str">"281"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t147" href="#t147">147</a></span><span class="t"><span class="nam">LAVACA</span> <span class="op">=</span> <span class="str">"285"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t148" href="#t148">148</a></span><span class="t"><span class="nam">LEE</span> <span class="op">=</span> <span class="str">"287"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t149" href="#t149">149</a></span><span class="t"><span class="nam">LEON</span> <span class="op">=</span> <span class="str">"289"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t150" href="#t150">150</a></span><span class="t"><span class="nam">LIBERTY</span> <span class="op">=</span> <span class="str">"291"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t151" href="#t151">151</a></span><span class="t"><span class="nam">LIMESTONE</span> <span class="op">=</span> <span class="str">"293"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t152" href="#t152">152</a></span><span class="t"><span class="nam">LIPSCOMB</span> <span class="op">=</span> <span class="str">"295"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t153" href="#t153">153</a></span><span class="t"><span class="nam">LIVE_OAK</span> <span class="op">=</span> <span class="str">"297"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t154" href="#t154">154</a></span><span class="t"><span class="nam">LLANO</span> <span class="op">=</span> <span class="str">"299"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t155" href="#t155">155</a></span><span class="t"><span class="nam">LOVING</span> <span class="op">=</span> <span class="str">"301"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t156" href="#t156">156</a></span><span class="t"><span class="nam">LUBBOCK</span> <span class="op">=</span> <span class="str">"303"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t157" href="#t157">157</a></span><span class="t"><span class="nam">LYNN</span> <span class="op">=</span> <span class="str">"305"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t158" href="#t158">158</a></span><span class="t"><span class="nam">MADISON</span> <span class="op">=</span> <span class="str">"313"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t159" href="#t159">159</a></span><span class="t"><span class="nam">MARION</span> <span class="op">=</span> <span class="str">"315"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t160" href="#t160">160</a></span><span class="t"><span class="nam">MARTIN</span> <span class="op">=</span> <span class="str">"317"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t161" href="#t161">161</a></span><span class="t"><span class="nam">MASON</span> <span class="op">=</span> <span class="str">"319"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t162" href="#t162">162</a></span><span class="t"><span class="nam">MATAGORDA</span> <span class="op">=</span> <span class="str">"321"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t163" href="#t163">163</a></span><span class="t"><span class="nam">MAVERICK</span> <span class="op">=</span> <span class="str">"323"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t164" href="#t164">164</a></span><span class="t"><span class="nam">MCCULLOCH</span> <span class="op">=</span> <span class="str">"307"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t165" href="#t165">165</a></span><span class="t"><span class="nam">MCLENNAN</span> <span class="op">=</span> <span class="str">"309"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t166" href="#t166">166</a></span><span class="t"><span class="nam">MCMULLEN</span> <span class="op">=</span> <span class="str">"311"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t167" href="#t167">167</a></span><span class="t"><span class="nam">MEDINA</span> <span class="op">=</span> <span class="str">"325"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t168" href="#t168">168</a></span><span class="t"><span class="nam">MENARD</span> <span class="op">=</span> <span class="str">"327"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t169" href="#t169">169</a></span><span class="t"><span class="nam">MIDLAND</span> <span class="op">=</span> <span class="str">"329"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t170" href="#t170">170</a></span><span class="t"><span class="nam">MILAM</span> <span class="op">=</span> <span class="str">"331"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t171" href="#t171">171</a></span><span class="t"><span class="nam">MILLS</span> <span class="op">=</span> <span class="str">"333"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t172" href="#t172">172</a></span><span class="t"><span class="nam">MITCHELL</span> <span class="op">=</span> <span class="str">"335"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t173" href="#t173">173</a></span><span class="t"><span class="nam">MONTAGUE</span> <span class="op">=</span> <span class="str">"337"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t174" href="#t174">174</a></span><span class="t"><span class="nam">MONTGOMERY</span> <span class="op">=</span> <span class="str">"339"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t175" href="#t175">175</a></span><span class="t"><span class="nam">MOORE</span> <span class="op">=</span> <span class="str">"341"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t176" href="#t176">176</a></span><span class="t"><span class="nam">MORRIS</span> <span class="op">=</span> <span class="str">"343"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t177" href="#t177">177</a></span><span class="t"><span class="nam">MOTLEY</span> <span class="op">=</span> <span class="str">"345"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t178" href="#t178">178</a></span><span class="t"><span class="nam">NACOGDOCHES</span> <span class="op">=</span> <span class="str">"347"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t179" href="#t179">179</a></span><span class="t"><span class="nam">NAVARRO</span> <span class="op">=</span> <span class="str">"349"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t180" href="#t180">180</a></span><span class="t"><span class="nam">NEWTON</span> <span class="op">=</span> <span class="str">"351"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t181" href="#t181">181</a></span><span class="t"><span class="nam">NOLAN</span> <span class="op">=</span> <span class="str">"353"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t182" href="#t182">182</a></span><span class="t"><span class="nam">NUECES</span> <span class="op">=</span> <span class="str">"355"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t183" href="#t183">183</a></span><span class="t"><span class="nam">OCHILTREE</span> <span class="op">=</span> <span class="str">"357"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t184" href="#t184">184</a></span><span class="t"><span class="nam">OLDHAM</span> <span class="op">=</span> <span class="str">"359"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t185" href="#t185">185</a></span><span class="t"><span class="nam">ORANGE</span> <span class="op">=</span> <span class="str">"361"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t186" href="#t186">186</a></span><span class="t"><span class="nam">PALO_PINTO</span> <span class="op">=</span> <span class="str">"363"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t187" href="#t187">187</a></span><span class="t"><span class="nam">PANOLA</span> <span class="op">=</span> <span class="str">"365"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t188" href="#t188">188</a></span><span class="t"><span class="nam">PARKER</span> <span class="op">=</span> <span class="str">"367"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t189" href="#t189">189</a></span><span class="t"><span class="nam">PARMER</span> <span class="op">=</span> <span class="str">"369"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t190" href="#t190">190</a></span><span class="t"><span class="nam">PECOS</span> <span class="op">=</span> <span class="str">"371"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t191" href="#t191">191</a></span><span class="t"><span class="nam">POLK</span> <span class="op">=</span> <span class="str">"373"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t192" href="#t192">192</a></span><span class="t"><span class="nam">POTTER</span> <span class="op">=</span> <span class="str">"375"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t193" href="#t193">193</a></span><span class="t"><span class="nam">PRESIDIO</span> <span class="op">=</span> <span class="str">"377"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t194" href="#t194">194</a></span><span class="t"><span class="nam">RAINS</span> <span class="op">=</span> <span class="str">"379"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t195" href="#t195">195</a></span><span class="t"><span class="nam">RANDALL</span> <span class="op">=</span> <span class="str">"381"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t196" href="#t196">196</a></span><span class="t"><span class="nam">REAGAN</span> <span class="op">=</span> <span class="str">"383"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t197" href="#t197">197</a></span><span class="t"><span class="nam">REAL</span> <span class="op">=</span> <span class="str">"385"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t198" href="#t198">198</a></span><span class="t"><span class="nam">RED_RIVER</span> <span class="op">=</span> <span class="str">"387"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t199" href="#t199">199</a></span><span class="t"><span class="nam">REEVES</span> <span class="op">=</span> <span class="str">"389"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t200" href="#t200">200</a></span><span class="t"><span class="nam">REFUGIO</span> <span class="op">=</span> <span class="str">"391"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t201" href="#t201">201</a></span><span class="t"><span class="nam">ROBERTS</span> <span class="op">=</span> <span class="str">"393"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t202" href="#t202">202</a></span><span class="t"><span class="nam">ROBERTSON</span> <span class="op">=</span> <span class="str">"395"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t203" href="#t203">203</a></span><span class="t"><span class="nam">ROCKWALL</span> <span class="op">=</span> <span class="str">"397"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t204" href="#t204">204</a></span><span class="t"><span class="nam">RUNNELS</span> <span class="op">=</span> <span class="str">"399"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t205" href="#t205">205</a></span><span class="t"><span class="nam">RUSK</span> <span class="op">=</span> <span class="str">"401"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t206" href="#t206">206</a></span><span class="t"><span class="nam">SABINE</span> <span class="op">=</span> <span class="str">"403"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t207" href="#t207">207</a></span><span class="t"><span class="nam">SAN_AUGUSTINE</span> <span class="op">=</span> <span class="str">"405"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t208" href="#t208">208</a></span><span class="t"><span class="nam">SAN_JACINTO</span> <span class="op">=</span> <span class="str">"407"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t209" href="#t209">209</a></span><span class="t"><span class="nam">SAN_PATRICIO</span> <span class="op">=</span> <span class="str">"409"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t210" href="#t210">210</a></span><span class="t"><span class="nam">SAN_SABA</span> <span class="op">=</span> <span class="str">"411"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t211" href="#t211">211</a></span><span class="t"><span class="nam">SCHLEICHER</span> <span class="op">=</span> <span class="str">"413"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t212" href="#t212">212</a></span><span class="t"><span class="nam">SCURRY</span> <span class="op">=</span> <span class="str">"415"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t213" href="#t213">213</a></span><span class="t"><span class="nam">SHACKELFORD</span> <span class="op">=</span> <span class="str">"417"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t214" href="#t214">214</a></span><span class="t"><span class="nam">SHELBY</span> <span class="op">=</span> <span class="str">"419"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t215" href="#t215">215</a></span><span class="t"><span class="nam">SHERMAN</span> <span class="op">=</span> <span class="str">"421"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t216" href="#t216">216</a></span><span class="t"><span class="nam">SMITH</span> <span class="op">=</span> <span class="str">"423"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t217" href="#t217">217</a></span><span class="t"><span class="nam">SOMERVELL</span> <span class="op">=</span> <span class="str">"425"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t218" href="#t218">218</a></span><span class="t"><span class="nam">STARR</span> <span class="op">=</span> <span class="str">"427"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t219" href="#t219">219</a></span><span class="t"><span class="nam">STEPHENS</span> <span class="op">=</span> <span class="str">"429"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t220" href="#t220">220</a></span><span class="t"><span class="nam">STERLING</span> <span class="op">=</span> <span class="str">"431"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t221" href="#t221">221</a></span><span class="t"><span class="nam">STONEWALL</span> <span class="op">=</span> <span class="str">"433"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t222" href="#t222">222</a></span><span class="t"><span class="nam">SUTTON</span> <span class="op">=</span> <span class="str">"435"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t223" href="#t223">223</a></span><span class="t"><span class="nam">SWISHER</span> <span class="op">=</span> <span class="str">"437"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t224" href="#t224">224</a></span><span class="t"><span class="nam">TARRANT</span> <span class="op">=</span> <span class="str">"439"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t225" href="#t225">225</a></span><span class="t"><span class="nam">TAYLOR</span> <span class="op">=</span> <span class="str">"441"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t226" href="#t226">226</a></span><span class="t"><span class="nam">TERRELL</span> <span class="op">=</span> <span class="str">"443"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t227" href="#t227">227</a></span><span class="t"><span class="nam">TERRY</span> <span class="op">=</span> <span class="str">"445"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t228" href="#t228">228</a></span><span class="t"><span class="nam">THROCKMORTON</span> <span class="op">=</span> <span class="str">"447"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t229" href="#t229">229</a></span><span class="t"><span class="nam">TITUS</span> <span class="op">=</span> <span class="str">"449"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t230" href="#t230">230</a></span><span class="t"><span class="nam">TOM_GREEN</span> <span class="op">=</span> <span class="str">"451"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t231" href="#t231">231</a></span><span class="t"><span class="nam">TRAVIS</span> <span class="op">=</span> <span class="str">"453"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t232" href="#t232">232</a></span><span class="t"><span class="nam">TRINITY</span> <span class="op">=</span> <span class="str">"455"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t233" href="#t233">233</a></span><span class="t"><span class="nam">TYLER</span> <span class="op">=</span> <span class="str">"457"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t234" href="#t234">234</a></span><span class="t"><span class="nam">UPSHUR</span> <span class="op">=</span> <span class="str">"459"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t235" href="#t235">235</a></span><span class="t"><span class="nam">UPTON</span> <span class="op">=</span> <span class="str">"461"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t236" href="#t236">236</a></span><span class="t"><span class="nam">UVALDE</span> <span class="op">=</span> <span class="str">"463"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t237" href="#t237">237</a></span><span class="t"><span class="nam">VAL_VERDE</span> <span class="op">=</span> <span class="str">"465"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t238" href="#t238">238</a></span><span class="t"><span class="nam">VAN_ZANDT</span> <span class="op">=</span> <span class="str">"467"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t239" href="#t239">239</a></span><span class="t"><span class="nam">VICTORIA</span> <span class="op">=</span> <span class="str">"469"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t240" href="#t240">240</a></span><span class="t"><span class="nam">WALKER</span> <span class="op">=</span> <span class="str">"471"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t241" href="#t241">241</a></span><span class="t"><span class="nam">WALLER</span> <span class="op">=</span> <span class="str">"473"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t242" href="#t242">242</a></span><span class="t"><span class="nam">WARD</span> <span class="op">=</span> <span class="str">"475"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t243" href="#t243">243</a></span><span class="t"><span class="nam">WASHINGTON</span> <span class="op">=</span> <span class="str">"477"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t244" href="#t244">244</a></span><span class="t"><span class="nam">WEBB</span> <span class="op">=</span> <span class="str">"479"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t245" href="#t245">245</a></span><span class="t"><span class="nam">WHARTON</span> <span class="op">=</span> <span class="str">"481"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t246" href="#t246">246</a></span><span class="t"><span class="nam">WHEELER</span> <span class="op">=</span> <span class="str">"483"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t247" href="#t247">247</a></span><span class="t"><span class="nam">WICHITA</span> <span class="op">=</span> <span class="str">"485"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t248" href="#t248">248</a></span><span class="t"><span class="nam">WILBARGER</span> <span class="op">=</span> <span class="str">"487"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t249" href="#t249">249</a></span><span class="t"><span class="nam">WILLACY</span> <span class="op">=</span> <span class="str">"489"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t250" href="#t250">250</a></span><span class="t"><span class="nam">WILLIAMSON</span> <span class="op">=</span> <span class="str">"491"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t251" href="#t251">251</a></span><span class="t"><span class="nam">WILSON</span> <span class="op">=</span> <span class="str">"493"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t252" href="#t252">252</a></span><span class="t"><span class="nam">WINKLER</span> <span class="op">=</span> <span class="str">"495"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t253" href="#t253">253</a></span><span class="t"><span class="nam">WISE</span> <span class="op">=</span> <span class="str">"497"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t254" href="#t254">254</a></span><span class="t"><span class="nam">WOOD</span> <span class="op">=</span> <span class="str">"499"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t255" href="#t255">255</a></span><span class="t"><span class="nam">YOAKUM</span> <span class="op">=</span> <span class="str">"501"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t256" href="#t256">256</a></span><span class="t"><span class="nam">YOUNG</span> <span class="op">=</span> <span class="str">"503"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t257" href="#t257">257</a></span><span class="t"><span class="nam">ZAPATA</span> <span class="op">=</span> <span class="str">"505"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t258" href="#t258">258</a></span><span class="t"><span class="nam">ZAVALA</span> <span class="op">=</span> <span class="str">"507"</span>&nbsp;</span><span class="r"></span></p>
+</main>
+<footer>
+    <div class="content">
+        <p>
+            <a id="prevFileLink" class="nav" href="d_c3802efdbdefdd2e_tennessee_py.html">&#xab; prev</a> &nbsp; &nbsp;
+            <a id="indexLink" class="nav" href="index.html">&Hat; index</a> &nbsp; &nbsp;
+            <a id="nextFileLink" class="nav" href="d_c3802efdbdefdd2e_utah_py.html">&#xbb; next</a>
+            &nbsp; &nbsp; &nbsp;
+            <a class="nav" href="https://coverage.readthedocs.io">coverage.py v6.5.0</a>,
+            created at 2023-12-05 17:20 +0000
+        </p>
+    </div>
+</footer>
+</body>
+</html>
