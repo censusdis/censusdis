@@ -10,6 +10,8 @@ import geopandas as gpd
 import pandas as pd
 import yaml
 
+from matplotlib.ticker import StrMethodFormatter
+
 import censusdis.data as ced
 import censusdis.maps as cem
 import censusdis.datasets
@@ -687,9 +689,12 @@ class PlotSpec:
         *,
         variable: Optional[str] = None,
         boundary: bool = False,
+        title: Optional[str] = None,
         with_background: bool = False,
         plot_kwargs: Optional[Dict[str, Any]] = None,
         projection: Optional[str] = None,
+        legend: bool = True,
+        legend_format: Optional[str] = None,
     ):
         """
         Specify how to plot data we downloaded.
@@ -703,7 +708,16 @@ class PlotSpec:
         boundary
             Should we plot boundaries instead of filled geographies?
             If `True`, `variable` should not be speficied.
+        title
+            A title for the plot.
         with_background
+            If `True`, plot over a background map.
+        legend
+            If `True` and plotting a variable (not a boundary) then add a legend.
+        legend_format
+            How to format the numbers on the legend. The options are
+            '"float"', `"int"`, `"dollar"`, `"percent"`, or a format string like `"${x:.2f}"`
+            to choose any Python string format you want.
         plot_kwargs
         projection
         """
@@ -712,8 +726,14 @@ class PlotSpec:
         if variable is not None and boundary:
             raise ValueError("Must specify only one of `variable=` or `boundary=True`")
 
+        if projection is None:
+            projection = "US"
+
         self._variable = variable
         self._boundary = boundary
+        self._title = title
+        self._legend = legend
+        self._legend_format = legend_format
         self._with_background = with_background
         if plot_kwargs is None:
             plot_kwargs: Dict[str, Any] = {}
@@ -745,6 +765,21 @@ class PlotSpec:
         return self._plot_kwargs
 
     @property
+    def title(self):
+        """The plot title."""
+        return self._title
+
+    @property
+    def legend(self):
+        """Is there a legend."""
+        return self._legend
+
+    @property
+    def legend_format(self):
+        """Format for the legend numbers."""
+        return self._legend_format
+
+    @property
     def projection(self):
         """What projection to use when plotting."""
         return self._projection
@@ -759,10 +794,23 @@ class PlotSpec:
             and self._boundary == other._boundary
             and self._with_background == other._with_background
             and self._projection == other._projection
+            and self._title == other._title
+            and self._legend == other._legend
+            and self._legend_format == other._legend_format
             and self._plot_kwargs == other._plot_kwargs
         )
 
-    def plot(self, gdf: gpd.GeoDataFrame):
+    _LEGEND_FORMATS = {
+        "dollar": "${x:,.0f}",
+        "int": "{x:,.0f}",
+        "float": "{x:,}",
+        "percent": "{x*100:.0f}%",
+    }
+
+    def _final_legend_format(self):
+        return self._LEGEND_FORMATS.get(self._legend_format, self._legend_format)
+
+    def plot(self, gdf: gpd.GeoDataFrame, ax=None):
         """
         Plot data on a map according to the specification.
 
@@ -770,11 +818,19 @@ class PlotSpec:
         ----------
         gdf
             The data to plot.
+        ax
+            Optional existing ax to plot on top of.
 
         Returns
         -------
             `ax` of the plot.
         """
+        legend_kwds = (
+            None
+            if self._boundary or not self._legend or self._legend_format is None
+            else {"format": StrMethodFormatter(self._final_legend_format())}
+        )
+
         if self._projection in ["US", "us", "U.S."]:
             if self._boundary:
                 ax = cem.plot_us_boundary(
@@ -782,6 +838,7 @@ class PlotSpec:
                     self._variable,
                     with_background=self._with_background,
                     do_relocate_ak_hi_pr=True,
+                    ax=ax,
                     **self._plot_kwargs,
                 )
             else:
@@ -790,11 +847,13 @@ class PlotSpec:
                     self._variable,
                     with_background=self._with_background,
                     do_relocate_ak_hi_pr=True,
+                    legend=self._legend,
+                    legend_kwds=legend_kwds,
+                    ax=ax,
                     **self._plot_kwargs,
                 )
         else:
-            if self._projection is not None:
-                gdf = gdf.to_crs(epsg=self._projection)
+            gdf = gdf.to_crs(epsg=self._projection)
 
             if self._boundary:
                 gdf = gdf.boundary
@@ -803,8 +862,14 @@ class PlotSpec:
                 gdf,
                 self._variable,
                 with_background=self._with_background,
+                legend=self._legend and not self._boundary,
+                legend_kwds=legend_kwds,
+                ax=ax,
                 **self.plot_kwargs,
             )
+
+        if self._title is not None:
+            ax.set_title(self._title)
 
         return ax
 

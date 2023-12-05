@@ -161,7 +161,7 @@ def plot(args):
 
     logger.info(f"Loading plot spec from {args.plotspec}.")
 
-    plotspec = PlotSpec.load_yaml(args.plotspec)
+    plotspecs = PlotSpec.load_yaml(args.plotspec)
 
     logger.info("Loaded.")
 
@@ -175,7 +175,13 @@ def plot(args):
         dataspec = _read_dataspec(dataspec_file)
         gdf = _download_data(dataspec, True, args.api_key)
 
-    ax = plotspec.plot(gdf)
+    if isinstance(plotspecs, PlotSpec):
+        plotspecs = [plotspecs]
+
+    ax = None
+
+    for plotspec in plotspecs:
+        ax = plotspec.plot(gdf, ax=ax)
 
     fig = ax.get_figure()
 
