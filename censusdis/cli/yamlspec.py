@@ -2,6 +2,7 @@
 """Classes that are loaded from YAML config files for the CLI."""
 from abc import ABC
 import itertools
+from importlib import import_module
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional, Tuple, Union, ClassVar
 
@@ -555,19 +556,32 @@ class DataSpec:
         self._variable_spec = (
             specs if isinstance(specs, VariableSpec) else VariableSpecCollection(specs)
         )
-        self._geography = self.map_state_names(geography)
+        self._geography = self.map_state_and_county_names(geography)
         self._with_geometry = with_geometry
         self._remove_water = remove_water
 
     @classmethod
-    def map_state_names(
+    def map_state_and_county_names(
         cls, geography: Dict[str, Union[str, List[str]]]
     ) -> Dict[str, Union[str, List[str]]]:
-        """If there is a state in a geography, try to map it."""
+        """If there is a state and optionally counties a geography, try to map them."""
 
         def map_state(state: str) -> str:
             """Map the name if a symbolic name exists."""
             return getattr(censusdis.states, state, state)
+
+        def _map_county(state: str):
+            """Construct a function to map counties in a state."""
+            state_symbol = censusdis.states.NAMES_FROM_IDS[state].lower().replace(' ', '_')
+
+            state_county_module = import_module(f"censusdis.counties.{state_symbol}")
+
+            def map_county(county: str):
+                """Map a county in the given state."""
+                county = getattr(state_county_module, county, county)
+                return county
+
+            return map_county
 
         # If there is no 'state' in geography there is nothing to do.
         # If there is a 'state', we copy the dict and do the mapping.
@@ -575,6 +589,15 @@ class DataSpec:
             geography = dict(geography)
             if isinstance(geography["state"], str):
                 geography["state"] = map_state(geography["state"])
+
+                # There is a single state, so there might be counties
+                # underneath it that need mapping.
+                if "county" in geography:
+                    map_county = _map_county(geography["state"])
+                    if isinstance(geography["county"], str):
+                        geography["county"] = map_county(geography["county"])
+                    else:
+                        geography["county"] = [map_county(county) for county in geography["county"]]
             else:
                 geography["state"] = [map_state(state) for state in geography["state"]]
 

@@ -1,0 +1,13 @@
+# This dataspec has a single group.
+!DataSpec
+dataset: ACS5
+vintage: 2020
+# State and counties by symbolic names.
+geography:
+  state: NJ
+  county: [ESSEX, HUDSON]
+# In this example we have a list of specs.
+specs:
+  - !VariableList
+    variables:
+      - NAME
