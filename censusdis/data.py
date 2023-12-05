@@ -529,7 +529,7 @@ def _add_geography(
         if len(gdf_shapefile.index) == 0:
             # None of the years matched, so we add None for geometry to all.
             gdf = gpd.GeoDataFrame(df_data, copy=True)
-            gdf["geometry"] = None
+            gdf.set_geometry([None for _ in gdf.index], inplace=True)
             return gdf
 
         merge_gdf_on = ["YEAR"] + gdf_on

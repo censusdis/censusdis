@@ -1,3 +1,4 @@
+# Copyright (c) 2023 Darren Erik Vengroff
 """
 An internal utility to generate the bounds of regional CRS's.
 

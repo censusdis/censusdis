@@ -13,6 +13,7 @@ from censusdis.cli.yamlspec import (
 )
 from censusdis.datasets import ACS5
 from censusdis.states import NJ, NY
+from censusdis.counties.new_jersey import ESSEX, HUDSON
 
 
 class VariableListTestCase(unittest.TestCase):
@@ -347,6 +348,24 @@ class DataSpecTestCase(unittest.TestCase):
 
         # This one had a single state.
         self.assertEqual("34", dataspec.geography["state"])
+
+    def test_state_county_symbolic(self):
+        """Test symbolic state and county."""
+        dataspec = DataSpec.load_yaml(self.directory / "dataspec5a.yaml")
+
+        self.assertIsInstance(dataspec, DataSpec)
+
+        self.assertEqual(NJ, dataspec.geography["state"])
+        self.assertEqual(ESSEX, dataspec.geography["county"])
+
+    def test_state_county_symbolic_list(self):
+        """Test symbolic state and county."""
+        dataspec = DataSpec.load_yaml(self.directory / "dataspec5b.yaml")
+
+        self.assertIsInstance(dataspec, DataSpec)
+
+        self.assertEqual(NJ, dataspec.geography["state"])
+        self.assertEqual([ESSEX, HUDSON], dataspec.geography["county"])
 
     def test_state_geo_download(self):
         """Test downloading with state geographies."""
