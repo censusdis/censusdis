@@ -1,0 +1,21 @@
+# Copyright (c) 2023 Darren Erik Vengroff
+"""Counties in Nevada."""
+
+
+CARSON_CITY = "510"
+CHURCHILL = "001"
+CLARK = "003"
+DOUGLAS = "005"
+ELKO = "007"
+ESMERALDA = "009"
+EUREKA = "011"
+HUMBOLDT = "013"
+LANDER = "015"
+LINCOLN = "017"
+LYON = "019"
+MINERAL = "021"
+NYE = "023"
+PERSHING = "027"
+STOREY = "029"
+WASHOE = "031"
+WHITE_PINE = "033"

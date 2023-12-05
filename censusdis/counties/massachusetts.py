@@ -1,0 +1,18 @@
+# Copyright (c) 2023 Darren Erik Vengroff
+"""Counties in Massachusetts."""
+
+
+BARNSTABLE = "001"
+BERKSHIRE = "003"
+BRISTOL = "005"
+DUKES = "007"
+ESSEX = "009"
+FRANKLIN = "011"
+HAMPDEN = "013"
+HAMPSHIRE = "015"
+MIDDLESEX = "017"
+NANTUCKET = "019"
+NORFOLK = "021"
+PLYMOUTH = "023"
+SUFFOLK = "025"
+WORCESTER = "027"
