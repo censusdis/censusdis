@@ -32,22 +32,7 @@ def _class_constructor(clazz: ClassVar):
 
 
 class VariableSpec(ABC):
-    """
-    Abstract ase class for specification of variables to download from the U.S. Census API.
-
-    Parameters
-    ----------
-    denominator
-        The denominator to divide by when constructing fractional variables.
-        If `False` then no fractional variables are added. If the name of a
-        variable, that variable will be downloaded and used as a denominator
-        to compute fractional versions of all of the other variables. If `True`
-        then the denominator will be computed as the sum of all the other
-        variables.
-    frac_prefix
-        The prefix to prepend to fractional variables. If `None` a default
-        prefix of `'frac_'` is used.
-    """
+    """Abstract ase class for specification of variables to download from the U.S. Census API."""
 
     def __init__(
         self,
@@ -55,6 +40,22 @@ class VariableSpec(ABC):
         denominator: Union[str, bool] = False,
         frac_prefix: Optional[str] = None,
     ):
+        """
+        Specification of variables to download from the U.S. Census API.
+
+        Parameters
+        ----------
+        denominator
+            The denominator to divide by when constructing fractional variables.
+            If `False` then no fractional variables are added. If the name of a
+            variable, that variable will be downloaded and used as a denominator
+            to compute fractional versions of all of the other variables. If `True`
+            then the denominator will be computed as the sum of all the other
+            variables.
+        frac_prefix
+            The prefix to prepend to fractional variables. If `None` a default
+            prefix of `'frac_'` is used.
+        """
         self._denominator = denominator
 
         if frac_prefix is None:
@@ -219,24 +220,7 @@ class VariableSpec(ABC):
 
 
 class VariableList(VariableSpec):
-    """
-    Specification of a list of variables to download from the U.S. Census API.
-
-    Parameters
-    ----------
-    variables
-        The variables to download.
-    denominator
-        The denominator to divide by when constructing fractional variables.
-        If `False` then no fractional variables are added. If the name of a
-        variable, that variable will be downloaded and used as a denominator
-        to compute fractional versions of all of the other variables. If `True`
-        then the denominator will be computed as the sum of all the other
-        variables.
-    frac_prefix
-        The prefix to prepend to fractional variables. If `None` a default
-        prefix of `'frac_'` is used.
-    """
+    """Specification of a list of variables to download from the U.S. Census API."""
 
     def __init__(
         self,
@@ -245,6 +229,24 @@ class VariableList(VariableSpec):
         denominator: Union[str, bool] = False,
         frac_prefix: Optional[str] = None,
     ):
+        """
+        Specification of a list of variables to download from the U.S. Census API.
+
+        Parameters
+        ----------
+        variables
+            The variables to download.
+        denominator
+            The denominator to divide by when constructing fractional variables.
+            If `False` then no fractional variables are added. If the name of a
+            variable, that variable will be downloaded and used as a denominator
+            to compute fractional versions of all of the other variables. If `True`
+            then the denominator will be computed as the sum of all the other
+            variables.
+        frac_prefix
+            The prefix to prepend to fractional variables. If `None` a default
+            prefix of `'frac_'` is used.
+        """
         super().__init__(denominator=denominator, frac_prefix=frac_prefix)
         if isinstance(variables, str):
             self._variables = [variables]
@@ -602,9 +604,12 @@ class DataSpec:
         # If there is a 'state', we copy the dict and do the mapping.
         if "state" in geography:
             geography = dict(geography)
+
+            # We might need to map the symbol.
             if isinstance(geography["state"], str):
                 geography["state"] = map_state(geography["state"])
 
+            if isinstance(geography["state"], str):
                 # There is a single state, so there might be counties
                 # underneath it that need mapping.
                 if "county" in geography:
@@ -813,15 +818,15 @@ class PlotSpec:
             and self._plot_kwargs == other._plot_kwargs
         )
 
-    _LEGEND_FORMATS = {
-        "dollar": "${x:,.0f}",
-        "int": "{x:,.0f}",
-        "float": "{x:,}",
-        "percent": "{x*100:.0f}%",
+    _LEGEND_FORMATS: Dict[str, Tuple[str, float]] = {
+        "dollar": ("${x:,.0f}", 1.0),
+        "int": ("{x:,.0f}", 1.0),
+        "float": ("{x:,}", 1.0),
+        "percent": ("{x:.0f}%", 100),
     }
 
     def _final_legend_format(self):
-        return self._LEGEND_FORMATS.get(self._legend_format, self._legend_format)
+        return self._LEGEND_FORMATS.get(self._legend_format, (self._legend_format, 1.0))
 
     def plot(self, gdf: gpd.GeoDataFrame, ax=None):
         """
@@ -838,10 +843,12 @@ class PlotSpec:
         -------
             `ax` of the plot.
         """
+        final_legend_format, legend_scale = self._final_legend_format()
+
         legend_kwds = (
             None
             if self._boundary or not self._legend or self._legend_format is None
-            else {"format": StrMethodFormatter(self._final_legend_format())}
+            else {"format": StrMethodFormatter(final_legend_format)}
         )
 
         if self._projection in ["US", "us", "U.S."]:
@@ -855,9 +862,10 @@ class PlotSpec:
                     **self._plot_kwargs,
                 )
             else:
+                gdf["_scaled_var"] = gdf[self._variable] * legend_scale
                 ax = cem.plot_us(
                     gdf,
-                    self._variable,
+                    "_scaled_var",
                     with_background=self._with_background,
                     do_relocate_ak_hi_pr=True,
                     legend=self._legend,
@@ -870,10 +878,12 @@ class PlotSpec:
 
             if self._boundary:
                 gdf = gdf.boundary
+            else:
+                gdf["_scaled_var"] = gdf[self._variable] * legend_scale
 
             ax = cem.plot_map(
                 gdf,
-                self._variable,
+                self._variable if self._boundary else "_scaled_var",
                 with_background=self._with_background,
                 legend=self._legend and not self._boundary,
                 legend_kwds=legend_kwds,
