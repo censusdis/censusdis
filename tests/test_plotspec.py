@@ -51,10 +51,12 @@ class PlotSpecTestCase(unittest.TestCase):
         self.assertEqual(
             PlotSpec(
                 variable="B25003I_002E",
+                title="Test Plot - Population",
                 boundary=False,
                 with_background=False,
                 projection="US",
-                plot_kwargs={"figsize": [12, 8], "cmap": "Greens"},
+                legend_format="int",
+                plot_kwargs={"figsize": [12, 6], "cmap": "Blues"},
             ),
             spec,
         )

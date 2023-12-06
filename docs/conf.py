@@ -18,6 +18,7 @@ MOCK_MODULES = [
     "geopandas",
     "matplotlib",
     "matplotlib.pyplot",
+    "matplotlib.ticker",
     "pandas",
     "scipy",
     "shapely",

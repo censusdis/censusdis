@@ -10,6 +10,8 @@ import geopandas as gpd
 import pandas as pd
 import yaml
 
+from matplotlib.ticker import StrMethodFormatter
+
 import censusdis.data as ced
 import censusdis.maps as cem
 import censusdis.datasets
@@ -30,7 +32,22 @@ def _class_constructor(clazz: ClassVar):
 
 
 class VariableSpec(ABC):
-    """Abstract ase class for specification of variables to download from the U.S. Census API."""
+    """
+    Abstract ase class for specification of variables to download from the U.S. Census API.
+
+    Parameters
+    ----------
+    denominator
+        The denominator to divide by when constructing fractional variables.
+        If `False` then no fractional variables are added. If the name of a
+        variable, that variable will be downloaded and used as a denominator
+        to compute fractional versions of all of the other variables. If `True`
+        then the denominator will be computed as the sum of all the other
+        variables.
+    frac_prefix
+        The prefix to prepend to fractional variables. If `None` a default
+        prefix of `'frac_'` is used.
+    """
 
     def __init__(
         self,
@@ -38,22 +55,6 @@ class VariableSpec(ABC):
         denominator: Union[str, bool] = False,
         frac_prefix: Optional[str] = None,
     ):
-        """
-        Specification of variables to download from the U.S. Census API.
-
-        Parameters
-        ----------
-        denominator
-            The denominator to divide by when constructing fractional variables.
-            If `False` then no fractional variables are added. If the name of a
-            variable, that variable will be downloaded and used as a denominator
-            to compute fractional versions of all of the other variables. If `True`
-            then the denominator will be computed as the sum of all the other
-            variables.
-        frac_prefix
-            The prefix to prepend to fractional variables. If `None` a default
-            prefix of `'frac_'` is used.
-        """
         self._denominator = denominator
 
         if frac_prefix is None:
@@ -218,7 +219,24 @@ class VariableSpec(ABC):
 
 
 class VariableList(VariableSpec):
-    """Specification of a list of variables to download from the U.S. Census API."""
+    """
+    Specification of a list of variables to download from the U.S. Census API.
+
+    Parameters
+    ----------
+    variables
+        The variables to download.
+    denominator
+        The denominator to divide by when constructing fractional variables.
+        If `False` then no fractional variables are added. If the name of a
+        variable, that variable will be downloaded and used as a denominator
+        to compute fractional versions of all of the other variables. If `True`
+        then the denominator will be computed as the sum of all the other
+        variables.
+    frac_prefix
+        The prefix to prepend to fractional variables. If `None` a default
+        prefix of `'frac_'` is used.
+    """
 
     def __init__(
         self,
@@ -227,24 +245,6 @@ class VariableList(VariableSpec):
         denominator: Union[str, bool] = False,
         frac_prefix: Optional[str] = None,
     ):
-        """
-        Specification of a list of variables to download from the U.S. Census API.
-
-        Parameters
-        ----------
-        variables
-            The variables to download.
-        denominator
-            The denominator to divide by when constructing fractional variables.
-            If `False` then no fractional variables are added. If the name of a
-            variable, that variable will be downloaded and used as a denominator
-            to compute fractional versions of all of the other variables. If `True`
-            then the denominator will be computed as the sum of all the other
-            variables.
-        frac_prefix
-            The prefix to prepend to fractional variables. If `None` a default
-            prefix of `'frac_'` is used.
-        """
         super().__init__(denominator=denominator, frac_prefix=frac_prefix)
         if isinstance(variables, str):
             self._variables = [variables]
@@ -312,7 +312,28 @@ class VariableList(VariableSpec):
 
 
 class CensusGroup(VariableSpec):
-    """Specification of a group of variables to download from the U.S. Census API."""
+    """
+    Specification of a group of variables to download from the U.S. Census API.
+
+    Parameters
+    ----------
+    group
+        The name of a census group, such as `B03002`, or a list of several
+        such groups.
+    leaves_only
+        If `True`, then only download the variables that are at the leaves of
+        the group, not the internal variables.
+    denominator
+        The denominator to divide by when constructing fractional variables.
+        If `False` then no fractional variables are added. If the name of a
+        variable, that variable will be downloaded and used as a denominator
+        to compute fractional versions of all of the other variables. If `True`
+        then the denominator will be computed as the sum of all the other
+        variables.
+    frac_prefix
+        The prefix to prepend to fractional variables. If `None` a default
+        prefix of `'frac_'` is used.
+    """
 
     def __init__(
         self,
@@ -322,24 +343,6 @@ class CensusGroup(VariableSpec):
         denominator: Optional[str] = None,
         frac_prefix: Optional[str] = None,
     ):
-        """
-        Specification of a group of variables to download from the U.S. Census API.
-
-        Parameters
-        ----------
-        group
-        leaves_only
-        denominator
-            The denominator to divide by when constructing fractional variables.
-            If `False` then no fractional variables are added. If the name of a
-            variable, that variable will be downloaded and used as a denominator
-            to compute fractional versions of all of the other variables. If `True`
-            then the denominator will be computed as the sum of all the other
-            variables.
-        frac_prefix
-            The prefix to prepend to fractional variables. If `None` a default
-            prefix of `'frac_'` is used.
-        """
         if denominator is None:
             denominator = False
 
@@ -410,7 +413,18 @@ class CensusGroup(VariableSpec):
 
 
 class VariableSpecCollection(VariableSpec):
-    """Specification built on top of a collection of other :py:class:`~VariableSpec`s."""
+    """
+    Specification built on top of a collection of other :py:class:`~VariableSpec`s.
+
+    When downloading, all the groups and all the variables
+    specified in any of the constituent specs will be
+    downloaded.
+
+    Parameters
+    ----------
+    variable_specs
+        A collection of other :py:class:`~VariableSpec`s.
+    """
 
     def __init__(self, variable_specs: Iterable[VariableSpec]):
         super().__init__(denominator=None)
@@ -505,7 +519,38 @@ def _variable_spec_collection_constructor(
 
 
 class DataSpec:
-    """A specification for what data we want from the U.S. Census API."""
+    """
+    A specification for what data we want from the U.S. Census API.
+
+    In order to download data we must know the data set and vintage
+    and have one or more :py:class:`~VariableSpec`s that tell us
+    what variables we need and what synthetic variables to create,
+    for example fractional variables.
+
+    Parameters
+    ----------
+    dataset
+        The dataset to download from. For example `"acs/acs5"`,
+        `"dec/pl"`, or `"timeseries/poverty/saipe/schdist"`. There are
+        symbolic names for datasets, like `ACS5` for `"acs/acs5"
+        in :py:module:`censusdis.datasets`.
+    vintage
+        The vintage to download data for. For most data sets this is
+        an integer year, for example, `2020`.        specs
+    geography
+        A specification of the geography, for example `{'state': '*'}`
+        for all states or `{'state': censusdis.states.NJ, 'county': '*'}`
+        for all counties in New Jersey.
+    with_geometry
+        If `True` a :py:class:`gpd.GeoDataFrame` will be returned and each row
+        will have a geometry that is a cartographic boundary suitable for platting
+        a map. See https://www.census.gov/geographies/mapping-files/time-series/geo/cartographic-boundary.2020.html
+        for details of the shapefiles that will be downloaded on your behalf to
+        generate these boundaries.
+    remove_water
+        If `True` and if with_geometry=True, will query TIGER for AREAWATER shapefiles and
+        remove water areas from returned geometry.
+    """
 
     def __init__(
         self,
@@ -517,38 +562,6 @@ class DataSpec:
         with_geometry: bool = False,
         remove_water: bool = False,
     ):
-        """
-        Construct a specification for what data we want from the U.S. Census API.
-
-        In order to download data we must know the data set and vintage
-        and have one or more :py:class:`~VariableSpec`s that tell us
-        what variables we need and what synthetic variables to create,
-        for example fractional variables.
-
-        Parameters
-        ----------
-        dataset
-            The dataset to download from. For example `"acs/acs5"`,
-            `"dec/pl"`, or `"timeseries/poverty/saipe/schdist"`. There are
-            symbolic names for datasets, like `ACS5` for `"acs/acs5"
-            in :py:module:`censusdis.datasets`.
-        vintage
-            The vintage to download data for. For most data sets this is
-            an integer year, for example, `2020`.        specs
-        geography
-            A specification of the geography, for example `{'state': '*'}`
-            for all states or `{'state': censusdis.states.NJ, 'county': '*'}`
-            for all counties in New Jersey.
-        with_geometry
-            If `True` a :py:class:`gpd.GeoDataFrame` will be returned and each row
-            will have a geometry that is a cartographic boundary suitable for platting
-            a map. See https://www.census.gov/geographies/mapping-files/time-series/geo/cartographic-boundary.2020.html
-            for details of the shapefiles that will be downloaded on your behalf to
-            generate these boundaries.
-        remove_water
-            If `True` and if with_geometry=True, will query TIGER for AREAWATER shapefiles and
-            remove water areas from returned geometry.
-        """
         # Map symbolic names or use what we are given if there is no mapping.
         self._dataset = getattr(censusdis.datasets, dataset, dataset)
         self._vintage = vintage
@@ -680,40 +693,60 @@ class DataSpec:
 
 
 class PlotSpec:
-    """A specification for how to plot data we downloaded."""
+    """
+    A specification for how to plot data we downloaded.
+
+    Parameters
+    ----------
+    variable
+        What variable to plot. Specify this to shade geographies
+        based on the value of the variable. Leave out and set `boundary=True`
+        to plot boundaries instead.
+    boundary
+        Should we plot boundaries instead of filled geographies?
+        If `True`, `variable` should not be specified.
+    title
+        A title for the plot.
+    with_background
+        If `True`, plot over a background map.
+    legend
+        If `True` and plotting a variable (not a boundary) then add a legend.
+    legend_format
+        How to format the numbers on the legend. The options are
+        '"float"', `"int"`, `"dollar"`, `"percent"`, or a format string like `"${x:.2f}"`
+        to choose any Python string format you want.
+    projection
+        What projection to use. `"US"` means move AK, HI, and PR. `None` means
+        use what the map is already in. Anything else is interpreted as an EPSG.
+    plot_kwargs
+        Additional keyword args for matplotlib to use in plotting.
+    """
 
     def __init__(
         self,
         *,
         variable: Optional[str] = None,
         boundary: bool = False,
+        title: Optional[str] = None,
         with_background: bool = False,
         plot_kwargs: Optional[Dict[str, Any]] = None,
         projection: Optional[str] = None,
+        legend: bool = True,
+        legend_format: Optional[str] = None,
     ):
-        """
-        Specify how to plot data we downloaded.
-
-        Parameters
-        ----------
-        variable
-            What variable to plot. Specify this to shade geographies
-            based on the value of the variable. Leave out and set `boundary=True`
-            to plot boundaries instead.
-        boundary
-            Should we plot boundaries instead of filled geographies?
-            If `True`, `variable` should not be speficied.
-        with_background
-        plot_kwargs
-        projection
-        """
         if variable is None and not boundary:
             raise ValueError("Must specify either `variable=` or `boundary=True`")
         if variable is not None and boundary:
             raise ValueError("Must specify only one of `variable=` or `boundary=True`")
 
+        if projection is None:
+            projection = "US"
+
         self._variable = variable
         self._boundary = boundary
+        self._title = title
+        self._legend = legend
+        self._legend_format = legend_format
         self._with_background = with_background
         if plot_kwargs is None:
             plot_kwargs: Dict[str, Any] = {}
@@ -745,6 +778,21 @@ class PlotSpec:
         return self._plot_kwargs
 
     @property
+    def title(self):
+        """The plot title."""
+        return self._title
+
+    @property
+    def legend(self):
+        """Is there a legend."""
+        return self._legend
+
+    @property
+    def legend_format(self):
+        """Format for the legend numbers."""
+        return self._legend_format
+
+    @property
     def projection(self):
         """What projection to use when plotting."""
         return self._projection
@@ -759,10 +807,23 @@ class PlotSpec:
             and self._boundary == other._boundary
             and self._with_background == other._with_background
             and self._projection == other._projection
+            and self._title == other._title
+            and self._legend == other._legend
+            and self._legend_format == other._legend_format
             and self._plot_kwargs == other._plot_kwargs
         )
 
-    def plot(self, gdf: gpd.GeoDataFrame):
+    _LEGEND_FORMATS = {
+        "dollar": "${x:,.0f}",
+        "int": "{x:,.0f}",
+        "float": "{x:,}",
+        "percent": "{x*100:.0f}%",
+    }
+
+    def _final_legend_format(self):
+        return self._LEGEND_FORMATS.get(self._legend_format, self._legend_format)
+
+    def plot(self, gdf: gpd.GeoDataFrame, ax=None):
         """
         Plot data on a map according to the specification.
 
@@ -770,11 +831,19 @@ class PlotSpec:
         ----------
         gdf
             The data to plot.
+        ax
+            Optional existing ax to plot on top of.
 
         Returns
         -------
             `ax` of the plot.
         """
+        legend_kwds = (
+            None
+            if self._boundary or not self._legend or self._legend_format is None
+            else {"format": StrMethodFormatter(self._final_legend_format())}
+        )
+
         if self._projection in ["US", "us", "U.S."]:
             if self._boundary:
                 ax = cem.plot_us_boundary(
@@ -782,6 +851,7 @@ class PlotSpec:
                     self._variable,
                     with_background=self._with_background,
                     do_relocate_ak_hi_pr=True,
+                    ax=ax,
                     **self._plot_kwargs,
                 )
             else:
@@ -790,11 +860,13 @@ class PlotSpec:
                     self._variable,
                     with_background=self._with_background,
                     do_relocate_ak_hi_pr=True,
+                    legend=self._legend,
+                    legend_kwds=legend_kwds,
+                    ax=ax,
                     **self._plot_kwargs,
                 )
         else:
-            if self._projection is not None:
-                gdf = gdf.to_crs(epsg=self._projection)
+            gdf = gdf.to_crs(epsg=self._projection)
 
             if self._boundary:
                 gdf = gdf.boundary
@@ -803,8 +875,14 @@ class PlotSpec:
                 gdf,
                 self._variable,
                 with_background=self._with_background,
+                legend=self._legend and not self._boundary,
+                legend_kwds=legend_kwds,
+                ax=ax,
                 **self.plot_kwargs,
             )
+
+        if self._title is not None:
+            ax.set_title(self._title)
 
         return ax
 
