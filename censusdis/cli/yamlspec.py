@@ -318,7 +318,11 @@ class CensusGroup(VariableSpec):
     Parameters
     ----------
     group
+        The name of a census group, such as `B03002`, or a list of several
+        such groups.
     leaves_only
+        If `True`, then only download the variables that are at the leaves of
+        the group, not the internal variables.
     denominator
         The denominator to divide by when constructing fractional variables.
         If `False` then no fractional variables are added. If the name of a
