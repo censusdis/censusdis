@@ -1,9 +1,11 @@
 # A plot spec with bells and whistles.
 !PlotSpec
 variable: B25003I_002E
+title: Test Plot - Population
 boundary: false
 with_background: false
 projection: US
+legend_format: int
 plot_kwargs:
-  figsize: [12, 8]
-  cmap: Greens
+  figsize: [12, 6]
+  cmap: Blues
