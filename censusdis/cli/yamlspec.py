@@ -32,7 +32,22 @@ def _class_constructor(clazz: ClassVar):
 
 
 class VariableSpec(ABC):
-    """Abstract ase class for specification of variables to download from the U.S. Census API."""
+    """
+    Abstract ase class for specification of variables to download from the U.S. Census API.
+
+    Parameters
+    ----------
+    denominator
+        The denominator to divide by when constructing fractional variables.
+        If `False` then no fractional variables are added. If the name of a
+        variable, that variable will be downloaded and used as a denominator
+        to compute fractional versions of all of the other variables. If `True`
+        then the denominator will be computed as the sum of all the other
+        variables.
+    frac_prefix
+        The prefix to prepend to fractional variables. If `None` a default
+        prefix of `'frac_'` is used.
+    """
 
     def __init__(
         self,
@@ -40,22 +55,6 @@ class VariableSpec(ABC):
         denominator: Union[str, bool] = False,
         frac_prefix: Optional[str] = None,
     ):
-        """
-        Specification of variables to download from the U.S. Census API.
-
-        Parameters
-        ----------
-        denominator
-            The denominator to divide by when constructing fractional variables.
-            If `False` then no fractional variables are added. If the name of a
-            variable, that variable will be downloaded and used as a denominator
-            to compute fractional versions of all of the other variables. If `True`
-            then the denominator will be computed as the sum of all the other
-            variables.
-        frac_prefix
-            The prefix to prepend to fractional variables. If `None` a default
-            prefix of `'frac_'` is used.
-        """
         self._denominator = denominator
 
         if frac_prefix is None:
@@ -220,7 +219,24 @@ class VariableSpec(ABC):
 
 
 class VariableList(VariableSpec):
-    """Specification of a list of variables to download from the U.S. Census API."""
+    """
+    Specification of a list of variables to download from the U.S. Census API.
+
+    Parameters
+    ----------
+    variables
+        The variables to download.
+    denominator
+        The denominator to divide by when constructing fractional variables.
+        If `False` then no fractional variables are added. If the name of a
+        variable, that variable will be downloaded and used as a denominator
+        to compute fractional versions of all of the other variables. If `True`
+        then the denominator will be computed as the sum of all the other
+        variables.
+    frac_prefix
+        The prefix to prepend to fractional variables. If `None` a default
+        prefix of `'frac_'` is used.
+    """
 
     def __init__(
         self,
@@ -229,24 +245,6 @@ class VariableList(VariableSpec):
         denominator: Union[str, bool] = False,
         frac_prefix: Optional[str] = None,
     ):
-        """
-        Specification of a list of variables to download from the U.S. Census API.
-
-        Parameters
-        ----------
-        variables
-            The variables to download.
-        denominator
-            The denominator to divide by when constructing fractional variables.
-            If `False` then no fractional variables are added. If the name of a
-            variable, that variable will be downloaded and used as a denominator
-            to compute fractional versions of all of the other variables. If `True`
-            then the denominator will be computed as the sum of all the other
-            variables.
-        frac_prefix
-            The prefix to prepend to fractional variables. If `None` a default
-            prefix of `'frac_'` is used.
-        """
         super().__init__(denominator=denominator, frac_prefix=frac_prefix)
         if isinstance(variables, str):
             self._variables = [variables]
