@@ -8,3 +8,4 @@ censusdis API Reference
    data.rst
    maps.rst
    states.rst
+   cli.rst
