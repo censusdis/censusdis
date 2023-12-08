@@ -30,6 +30,16 @@ This tutorial was presented at [PyData Seattle 2023](https://pydata.org/seattle2
 contains links that let you run the tutorial notebooks live on [mybinder.org](https://mybinder.org/) in your browser without needing to set up a
 local development environment or download or install any code.
 
+### Tutorial Video
+
+A 86 minute 
+[video](https://www.youtube.com/watch?v=3vyC7ON0Tvg) 
+of the tutorial as presented at 
+[PyData Seattle 2023](https://pydata.org/seattle2023/)
+is also available.
+
+[![PyData Seattle Tutorial Video](https://img.youtube.com/vi/3vyC7ON0Tvg/0.jpg)](https://www.youtube.com/watch?v=3vyC7ON0Tvg)
+
 ## Introduction 
 
 `censusdis` is a package for discovering, loading, analyzing, and computing
