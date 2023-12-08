@@ -15,6 +15,15 @@
 ![Coverage Badge](https://github.com/vengroff/censusdis/raw/main/reports/coverage/coverage-badge.svg)
 [![Documentation Status](https://readthedocs.org/projects/censusdis/badge/?version=latest)](https://censusdis.readthedocs.io/en/latest/?badge=latest)
 
+censusdis is a package for discovering, loading, analyzing, and computing diversity, integration, and segregation metrics to U.S. Census demographic data. 
+It is designed
+
+- to support **every dataset**, **every geography, and every year**. It's not just about ACS data through the last time the software
+was updated and released;
+- to support **all geographies, on and off-spine**, not just states, counties, and census tracts;
+- to have **integrated mapping capabilities** that save you time and extra coding;
+- to be intuitive, Pythonic, and fast.
+  
 ## Note:
 
 For the full README, please visit the 
@@ -24,7 +33,7 @@ For the full README, please visit the
 
 `censusdis` is a package for discovering, loading, analyzing, and computing
 diversity, integration, and segregation metrics
-to U.S. Census demographic data. It is designed to be intuitive and Pythonic,
+on U.S. Census demographic data. It is designed to be intuitive and Pythonic,
 but give users access to the full collection of data and maps the US Census
 publishes via their APIs. It also avoids hard-coding metadata
 about U.S. Census variables, such as their names, types, and
