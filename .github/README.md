@@ -13,8 +13,16 @@
 [![Coverage Badge](../reports/coverage/coverage-badge.svg)](https://vengroff.github.io/censusdis/)
 [![Documentation Status](https://readthedocs.org/projects/censusdis/badge/?version=latest)](https://censusdis.readthedocs.io/en/latest/?badge=latest)
 
-Click any of the thumbnails below to see the notebook
-that generated it.
+censusdis is a package for discovering, loading, analyzing, and computing diversity, integration, and segregation metrics to U.S. Census demographic data. 
+It is designed
+
+- to support **every dataset**, **every geography, and every year**. It's not just about ACS data through the last time the software
+was updated and released;
+- to support **all geographies, on and off-spine**, not just states, counties, and census tracts;
+- to have **integrated mapping capabilities** that save you time and extra coding;
+- to be intuitive, Pythonic, and fast.
+
+Click any of the thumbnails below to see the notebook that generated it.
 
 [<img src="../docs/_static/images/sample00.png" alt="Integration in SoMa Tracts" height=160>](../notebooks/SoMa%20DIS%20Demo.ipynb)
 [<img src="../docs/_static/images/sample01.png" alt="Diversity in New Jersey" height=160>](../notebooks/ACS%20Demo.ipynb)
@@ -22,6 +30,12 @@ that generated it.
 [<img src="../docs/_static/images/sample05.png" alt="Nationwide Integration at the Census Tract over Block Group Level" height=160>](../notebooks/Nationwide%20Diversity%20and%20Integration.ipynb)
 [<img src="../docs/_static/images/sample03.png" alt="White Alone Population as a Percent of County Population" height=160>](../notebooks/Seeing%20White.ipynb)
 [<img src="../docs/_static/images/sample04.png" alt="Average Age by Public Use Microdata Area in Massachusetts" height=160>](../notebooks/PUMS%20Demo.ipynb)
+
+## Installation
+
+```shell
+pip install censusdis
+```
 
 ## Tutorial (A Great Place to Start!)
 
