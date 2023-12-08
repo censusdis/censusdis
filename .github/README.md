@@ -9,19 +9,19 @@
 ![PyPI - Downloads](https://img.shields.io/pypi/dw/censusdis?label=PyPI%20Downloads)
 
 ![GitHub last commit](https://img.shields.io/github/last-commit/vengroff/censusdis)
-[![Tests Badge](reports/junit/tests-badge.svg)](https://vengroff.github.io/censusdis/)
-[![Coverage Badge](reports/coverage/coverage-badge.svg)](https://vengroff.github.io/censusdis/)
+[![Tests Badge](../reports/junit/tests-badge.svg)](https://vengroff.github.io/censusdis/)
+[![Coverage Badge](../reports/coverage/coverage-badge.svg)](https://vengroff.github.io/censusdis/)
 [![Documentation Status](https://readthedocs.org/projects/censusdis/badge/?version=latest)](https://censusdis.readthedocs.io/en/latest/?badge=latest)
 
 Click any of the thumbnails below to see the notebook
 that generated it.
 
-[<img src="docs/_static/images/sample00.png" alt="Integration in SoMa Tracts" height=160>](notebooks/SoMa%20DIS%20Demo.ipynb)
-[<img src="docs/_static/images/sample01.png" alt="Diversity in New Jersey" height=160>](notebooks/ACS%20Demo.ipynb)
-[<img src="docs/_static/images/sample02.png" alt="2020 Median Income by County in Georgia" height=160>](notebooks/Data%20With%20Geometry.ipynb)
-[<img src="docs/_static/images/sample05.png" alt="Nationwide Integration at the Census Tract over Block Group Level" height=160>](notebooks/Nationwide%20Diversity%20and%20Integration.ipynb)
-[<img src="docs/_static/images/sample03.png" alt="White Alone Population as a Percent of County Population" height=160>](notebooks/Seeing%20White.ipynb)
-[<img src="docs/_static/images/sample04.png" alt="Average Age by Public Use Microdata Area in Massachusetts" height=160>](notebooks/PUMS%20Demo.ipynb)
+[<img src="docs/_static/images/sample00.png" alt="Integration in SoMa Tracts" height=160>](../notebooks/SoMa%20DIS%20Demo.ipynb)
+[<img src="docs/_static/images/sample01.png" alt="Diversity in New Jersey" height=160>](../notebooks/ACS%20Demo.ipynb)
+[<img src="docs/_static/images/sample02.png" alt="2020 Median Income by County in Georgia" height=160>](../notebooks/Data%20With%20Geometry.ipynb)
+[<img src="docs/_static/images/sample05.png" alt="Nationwide Integration at the Census Tract over Block Group Level" height=160>](../notebooks/Nationwide%20Diversity%20and%20Integration.ipynb)
+[<img src="docs/_static/images/sample03.png" alt="White Alone Population as a Percent of County Population" height=160>](../notebooks/Seeing%20White.ipynb)
+[<img src="docs/_static/images/sample04.png" alt="Average Age by Public Use Microdata Area in Massachusetts" height=160>](../notebooks/PUMS%20Demo.ipynb)
 
 ## Tutorial (A Great Place to Start!)
 
@@ -48,11 +48,11 @@ and easy. Finally, it interacts with the `divintseg`
 package to compute diversity and integration metrics.
 
 The design goal of `censusdis` are discussed in more
-detail in [design-goals.md](./design-goals.md).
+detail in [design-goals.md](../design-goals.md).
 
 > ### I'm not sure I get it. Show me what it can do.
 > 
-> The [Nationwide Diversity and Integration](./notebooks/Nationwide%20Diversity%20and%20Integration.ipynb)
+> The [Nationwide Diversity and Integration](../notebooks/Nationwide%20Diversity%20and%20Integration.ipynb)
 > notebook demonstrates how we can download, process, and 
 > plot a large amount of US Census demographic data quickly
 > and easily to produce compelling results with just a few
