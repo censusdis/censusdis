@@ -35,7 +35,7 @@ geometries to make plotting data and derived metrics simple
 and easy. Finally, it interacts with the `divintseg`
 package to compute diversity and integration metrics.
 
-## Tutorial (A Great Place to Start!)
+## Tutorial
 
 If you are interested in a tutorial, please see the [censusdis-tutorial](https://github.com/vengroff/censusdis-tutorial) repository.
 This tutorial was presented at [PyData Seattle 2023](https://pydata.org/seattle2023/). If you want to try it out for yourself, the README.md
