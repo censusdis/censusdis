@@ -118,7 +118,8 @@ The public modules that make up the `censusdis` package are
 | `censusdis.geography` | Code for managing geography hierarchies in which census data is organized.                                    | 
 | `censusdis.data`      | Code for fetching data from the US Census API, including managing datasets, groups, and variable hierarchies. |
 | `censusdis.maps`      | Code for downloading map data from the US, caching it locally, and using it to render maps.                   |
-| `censusdis.states`    | Constants defining the US States. Used by the three other modules.                                            |
+| `censusdis.states`    | Constants defining the US States. Used by the other modules.                                                  |
+| `censusdis.counties`  | Constants defining counties in all of the US States.                                                          |
 
 ## Demonstration Notebooks
 
