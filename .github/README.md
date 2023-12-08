@@ -78,7 +78,7 @@ detail in [design-goals.md](../design-goals.md).
 `censusdis` lets you quickly and easily load US Census data and make plots like 
 this one:
 
-![Median income by block group in GA](docs/_static/images/sample02.png)
+![Median income by block group in GA](../docs/_static/images/sample02.png)
 
 We downloaded the data behind this plot, including
 the geometry of all the block groups, with a
@@ -106,8 +106,8 @@ Similarly, we can download data and geographies, do a little
 analysis on our own using familiar [Pandas](https://pandas.pydata.org/)
 data frame operations, and plot graphs like these
 
-![Percent of population identifying as white by county](docs/_static/images/sample03.png)
-![Integration is SoMa](docs/_static/images/sample00.png)
+![Percent of population identifying as white by county](../docs/_static/images/sample03.png)
+![Integration is SoMa](../docs/_static/images/sample00.png)
 
 ## Modules
 
