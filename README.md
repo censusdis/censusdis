@@ -29,26 +29,50 @@ was updated and released;
 For the full README, please visit the 
 [censusdis source repository](https://github.com/vengroff/censusdis).
 
-## Introduction 
+## Installation and First Example
 
-`censusdis` is a package for discovering, loading, analyzing, and computing
-diversity, integration, and segregation metrics
-on U.S. Census demographic data. It is designed to be intuitive and Pythonic,
-but give users access to the full collection of data and maps the US Census
-publishes via their APIs. It also avoids hard-coding metadata
-about U.S. Census variables, such as their names, types, and
-hierarchies in groups. Instead, it queries this from the 
-U.S. Census API. This allows it to operate over a large set
-of datasets and years, likely including many that don't
-exist as of time of this writing. It also integrates
-downloading and merging the geometry of geographic 
-geometries to make plotting data and derived metrics simple
-and easy. Finally, it interacts with the `divintseg`
-package to compute diversity and integration metrics.
+censusdis can be installed with `pip`:
 
-## Tutorial
+```shell
+pip install censusdis
+```
 
-If you are interested in a tutorial, please see the [censusdis-tutorial](https://github.com/vengroff/censusdis-tutorial) repository.
+Every censusdis query needs four things:
+
+1. What data set we want to query.
+2. What vintage, or year.
+3. What variables.
+4. What geographies.
+
+Here is an example of how we can use censusdis to download data once we know
+those four things.
+
+```python
+import censusdis.data as ced
+from censusdis.datasets import ACS5
+from censusdis import states
+
+df_median_income = ced.download(
+    # Data set: American Community Survey 5-Year
+    dataset=ACS5,
+    
+    # Vintage: 2022
+    vintage=2022, 
+    
+    # Variable: median household income
+    download_variables=['NAME', 'B19013_001E'], 
+    
+    # Geography: All counties in New Jersey.
+    state=states.NJ,
+    county='*'
+)
+```
+
+There are many more examples in the tuturial and in the sample notebooks.
+
+## Tutorial (A Great Place to Start!)
+
+For a tutorial, please see the [censusdis-tutorial](https://github.com/vengroff/censusdis-tutorial) repository.
 This tutorial was presented at [PyData Seattle 2023](https://pydata.org/seattle2023/). If you want to try it out for yourself, the README.md
 contains links that let you run the tutorial notebooks live on [mybinder.org](https://mybinder.org/) in your browser without needing to set up a
 local development environment or download or install any code.
