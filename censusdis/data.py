@@ -1180,8 +1180,24 @@ def census_table_url(
         The URL, parameters and bound path.
 
     """
-    bound_path = cgeo.PathSpec.partial_prefix_match(dataset, vintage, **kwargs)
+    bound_path = _bind_path_if_possible(dataset, vintage, **kwargs)
 
+    query_spec = cgeo.CensusGeographyQuerySpec(
+        dataset, vintage, list(download_variables), bound_path, api_key=api_key
+    )
+
+    url, params = query_spec.table_url()
+
+    return url, params, bound_path
+
+
+def _bind_path_if_possible(dataset, vintage, **kwargs):
+    """
+    Bind the path if possible.
+
+    If not, raise an exception with enough info to fix it.
+    """
+    bound_path = cgeo.PathSpec.partial_prefix_match(dataset, vintage, **kwargs)
     if bound_path is None:
         raise CensusApiException(
             f"Unable to match the geography specification {kwargs}.\n"
@@ -1191,14 +1207,7 @@ def census_table_url(
                 for path_spec in cgeo.geo_path_snake_specs(dataset, vintage).values()
             )
         )
-
-    query_spec = cgeo.CensusGeographyQuerySpec(
-        dataset, vintage, list(download_variables), bound_path, api_key=api_key
-    )
-
-    url, params = query_spec.table_url()
-
-    return url, params, bound_path
+    return bound_path
 
 
 def geography_names(
@@ -1390,3 +1399,135 @@ def clip_water(
     ).to_crs(original_crs)
 
     return gdf_without_water
+
+
+def intersecting_geos(
+    dataset: str,
+    vintage: VintageType,
+    outer_kwargs: cgeo.InSpecType,
+    area_threshold: float = 0.8,
+    **kwargs: cgeo.InSpecType
+) -> cgeo.InSpecType:
+    # Download the geometry of the outer scope.
+    gdf_within = download(
+        dataset,
+        vintage,
+        ['NAME'],
+        with_geometry=True,
+        **outer_kwargs
+    )
+
+    # See if we can find a matching path spec.
+    bound_path = _bind_path_if_possible(dataset, vintage, **kwargs)
+
+    # Get the geography for the outermost level of the match.
+    first_binding = list(bound_path.bindings.items())[0]
+
+    outer_kwargs = {first_binding[0]: first_binding[1]}
+
+    gdf_first_binding = download(
+        dataset,
+        vintage,
+        ['NAME'],
+        with_geometry=True,
+        **outer_kwargs
+    )
+
+    # Which of the first binding geographies intersect
+    # the area we want our final geographies to be in.
+    gdf_intersects = gdf_first_binding.sjoin(gdf_within, lsuffix="FIRST", rsuffix="within")
+
+    col_name = first_binding[0].upper()
+    if col_name not in gdf_intersects.columns:
+        col_name = f"{col_name}_FIRST"
+
+    intersecting_geographies = list(gdf_intersects[col_name].unique())
+    intersecting_geographies = [geo[:-6] if geo.endswith("_FIRST") else geo for geo in intersecting_geographies]
+
+    geo = dict(bound_path.bindings)
+
+    geo[first_binding[0]] = intersecting_geographies
+
+    return geo
+
+
+class ContainedWithin:
+
+    def __init__(
+        self,
+        area_threshold: float = 0.8,
+        **kwargs: cgeo.InSpecType
+    ):
+        self._area_threshold = area_threshold
+        self._outer_kwargs = kwargs
+
+    def download(
+        self,
+        dataset: str,
+        vintage: VintageType,
+        download_variables: Optional[Union[str, Iterable[str]]] = None,
+        *,
+        group: Optional[Union[str, Iterable[str]]] = None,
+        leaves_of_group: Optional[Union[str, Iterable[str]]] = None,
+        set_to_nan: Union[bool, Iterable[int]] = True,
+        skip_annotations: bool = True,
+        with_geometry: bool = False,
+        remove_water: bool = False,
+        api_key: Optional[str] = None,
+        variable_cache: Optional["VariableCache"] = None,
+        row_keys: Optional[Union[str, Iterable[str]]] = None,
+        **kwargs: cgeo.InSpecType
+    ) -> Union[pd.DataFrame, gpd.GeoDataFrame]:
+        geos_kwargs = intersecting_geos(dataset, vintage, self._outer_kwargs, self._area_threshold, **kwargs)
+
+        gdf = download(
+            dataset,
+            vintage,
+            download_variables,
+            group=group,
+            leaves_of_group=leaves_of_group,
+            set_to_nan=set_to_nan,
+            skip_annotations=skip_annotations,
+            with_geometry=True,
+            remove_water=remove_water,
+            api_key=api_key,
+            variable_cache=variable_cache,
+            **geos_kwargs
+        )
+
+        # See which of these geometries are mostly contained by
+        # the geography we want to be within.
+
+        gdf_container = download(dataset, vintage, ["NAME"], with_geometry=True, **self._outer_kwargs)
+
+        gdf_contained = cmap.sjoin_mostly_contains(
+            gdf_container,
+            gdf,
+            area_threshold=self._area_threshold
+        )
+
+        # Drop all the large container columns we don't need.
+        gdf_contained = gdf_contained[
+            [col for col in gdf_contained.columns if not col.endswith('_large')]
+        ].reset_index(drop=True)
+
+        # Drop the "_small" suffix.
+
+        gdf_contained.rename(
+            lambda col: col[:-6] if col.endswith("_small") else col,
+            axis="columns",
+            inplace=True
+        )
+
+        if with_geometry:
+            # Keep the columns from the larger result.
+            return gdf_contained[
+                [col for col in gdf.columns if not col.startswith("_original_small_geos_")]
+            ]
+        else:
+            # Drop the geometry and return a `pd.DataFrame`
+            return pd.DataFrame(
+                gdf_contained[
+                    [col for col in gdf.columns if col != 'geometry' and not col.startswith("_original_small_geos_")]
+                ]
+            )

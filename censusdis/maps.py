@@ -1144,10 +1144,10 @@ def sjoin_mostly_contains(
 
     # Keep the original geos around in EPSG 3857 so
     # we can check intersection areas.
-    gdf_large_geos["_original_large_geos_{area_epsg}"] = gdf_large_geos.geometry.to_crs(
+    gdf_large_geos[f"_original_large_geos_{area_epsg}"] = gdf_large_geos.geometry.to_crs(
         epsg=area_epsg
     )
-    gdf_small_geos["_original_small_geos_{area_epsg}"] = gdf_small_geos.geometry.to_crs(
+    gdf_small_geos[f"_original_small_geos_{area_epsg}"] = gdf_small_geos.geometry.to_crs(
         epsg=area_epsg
     )
 
@@ -1163,14 +1163,14 @@ def sjoin_mostly_contains(
     # Filter down to only those where the area of the intersection
     # exceeds the threshold.
     gdf_results = gdf_intersection[
-        gdf_intersection["_original_small_geos_{area_epsg}"]
-        .intersection(gdf_intersection["_original_large_geos_{area_epsg}"])
+        gdf_intersection[f"_original_small_geos_{area_epsg}"]
+        .intersection(gdf_intersection[f"_original_large_geos_{area_epsg}"])
         .area
-        >= area_threshold * gdf_intersection["_original_small_geos_{area_epsg}"].area
+        >= area_threshold * gdf_intersection[f"_original_small_geos_{area_epsg}"].area
     ]
 
     gdf_results = gdf_results.drop(
-        ["_original_small_geos_{area_epsg}", "_original_large_geos_{area_epsg}"],
+        [f"_original_small_geos_{area_epsg}", f"_original_large_geos_{area_epsg}"],
         axis="columns",
     ).copy()
 

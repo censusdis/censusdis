@@ -24,7 +24,7 @@ import censusdis.symbolic as sym
 import censusdis.values as cev
 from censusdis import states
 from censusdis.datasets import ACS3, ACS5
-from censusdis.states import WA
+from censusdis.states import WA, NY, NJ, CT, PA
 
 
 class DownloadTestCase(unittest.TestCase):
@@ -1272,6 +1272,109 @@ class SymbolicInsertTestCase(unittest.TestCase):
         df = ced.download(dataset, year, ["NAME", name], state=states.NJ, county="*")
         self.assertGreaterEqual(len(df.index), 1)
         self.assertEqual(["STATE", "COUNTY", "NAME", "B19001_001E"], list(df.columns))
+
+
+class IntersectingGeosTestCase(unittest.TestCase):
+
+    def setUp(self) -> None:
+        self.dataset = ACS5
+        self.year = 2020
+
+    def test_intersecting_geos_cbsa(self):
+        geo_spec = ced.intersecting_geos(
+            self.dataset,
+            self.year,
+            outer_kwargs=dict(
+                # New York-Newark-Jersey City
+                metropolitan_statistical_area_micropolitan_statistical_area='35620'
+            ),
+            state="*",
+            county="*"
+        )
+
+        self.assertEqual(2, len(geo_spec))
+
+        state_spec = geo_spec["state"]
+
+        self.assertIsInstance(state_spec, list)
+        self.assertEqual(4, len(state_spec))
+        self.assertSetEqual({NY, NJ, CT, PA}, set(state_spec))
+
+        self.assertEqual("*", geo_spec["county"])
+
+    def test_intersecting_geos_place(self):
+        geo_spec = ced.intersecting_geos(
+            self.dataset,
+            self.year,
+            outer_kwargs=dict(
+                state=NJ,
+                # Asbury Park city
+                place="01960"
+            ),
+            state=NJ,
+            tract="*",
+        )
+
+        self.assertEqual(3, len(geo_spec))
+
+        state_spec = geo_spec["state"]
+
+        self.assertIsInstance(state_spec, list)
+        self.assertEqual(1, len(state_spec))
+        self.assertSetEqual({NJ}, set(state_spec))
+
+        # Note that we fully expand the match so `county="*"`
+        # that was implied.
+        self.assertEqual("*", geo_spec["county"])
+        self.assertEqual("*", geo_spec["tract"])
+
+
+class ContainedWithinTestCase(unittest.TestCase):
+
+    def setUp(self) -> None:
+        self.dataset = ACS5
+        self.year = 2020
+
+    def test_state_county_contained_within_cbsa(self):
+        df = ced.ContainedWithin(
+            # New York-Newark-Jersey City
+            metropolitan_statistical_area_micropolitan_statistical_area='35620'
+        ).download(
+            self.dataset,
+            self.year,
+            ["NAME", "B03002_001E"],
+            state="*",
+            county="*"
+        )
+
+        self.assertEqual((23, 4), df.shape)
+
+        self.assertEqual(
+            ["STATE", "COUNTY", "NAME", "B03002_001E"],
+            list(df.columns)
+        )
+
+    def test_tract_contained_within_place(self):
+        gdf = ced.ContainedWithin(
+            state=NJ,
+            # Asbury Park city
+            place="01960"
+        ).download(
+            self.dataset,
+            self.year,
+            ["NAME", "B03002_001E"],
+            state="*",
+            tract="*",
+            with_geometry=True
+        )
+
+        self.assertIsInstance(gdf, gpd.GeoDataFrame)
+        self.assertEqual((6, 6), gdf.shape)
+
+        self.assertEqual(
+            ["STATE", "COUNTY", "TRACT", "NAME", "B03002_001E", "geometry"],
+            list(gdf.columns)
+        )
 
 
 if __name__ == "__main__":
