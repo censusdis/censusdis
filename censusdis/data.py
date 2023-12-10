@@ -1406,15 +1406,11 @@ def intersecting_geos(
     vintage: VintageType,
     outer_kwargs: cgeo.InSpecType,
     area_threshold: float = 0.8,
-    **kwargs: cgeo.InSpecType
+    **kwargs: cgeo.InSpecType,
 ) -> cgeo.InSpecType:
     # Download the geometry of the outer scope.
     gdf_within = download(
-        dataset,
-        vintage,
-        ['NAME'],
-        with_geometry=True,
-        **outer_kwargs
+        dataset, vintage, ["NAME"], with_geometry=True, **outer_kwargs
     )
 
     # See if we can find a matching path spec.
@@ -1426,23 +1422,23 @@ def intersecting_geos(
     outer_kwargs = {first_binding[0]: first_binding[1]}
 
     gdf_first_binding = download(
-        dataset,
-        vintage,
-        ['NAME'],
-        with_geometry=True,
-        **outer_kwargs
+        dataset, vintage, ["NAME"], with_geometry=True, **outer_kwargs
     )
 
     # Which of the first binding geographies intersect
     # the area we want our final geographies to be in.
-    gdf_intersects = gdf_first_binding.sjoin(gdf_within, lsuffix="FIRST", rsuffix="within")
+    gdf_intersects = gdf_first_binding.sjoin(
+        gdf_within, lsuffix="FIRST", rsuffix="within"
+    )
 
     col_name = first_binding[0].upper()
     if col_name not in gdf_intersects.columns:
         col_name = f"{col_name}_FIRST"
 
     intersecting_geographies = list(gdf_intersects[col_name].unique())
-    intersecting_geographies = [geo[:-6] if geo.endswith("_FIRST") else geo for geo in intersecting_geographies]
+    intersecting_geographies = [
+        geo[:-6] if geo.endswith("_FIRST") else geo for geo in intersecting_geographies
+    ]
 
     geo = dict(bound_path.bindings)
 
@@ -1452,12 +1448,7 @@ def intersecting_geos(
 
 
 class ContainedWithin:
-
-    def __init__(
-        self,
-        area_threshold: float = 0.8,
-        **kwargs: cgeo.InSpecType
-    ):
+    def __init__(self, area_threshold: float = 0.8, **kwargs: cgeo.InSpecType):
         self._area_threshold = area_threshold
         self._outer_kwargs = kwargs
 
@@ -1476,9 +1467,11 @@ class ContainedWithin:
         api_key: Optional[str] = None,
         variable_cache: Optional["VariableCache"] = None,
         row_keys: Optional[Union[str, Iterable[str]]] = None,
-        **kwargs: cgeo.InSpecType
+        **kwargs: cgeo.InSpecType,
     ) -> Union[pd.DataFrame, gpd.GeoDataFrame]:
-        geos_kwargs = intersecting_geos(dataset, vintage, self._outer_kwargs, self._area_threshold, **kwargs)
+        geos_kwargs = intersecting_geos(
+            dataset, vintage, self._outer_kwargs, self._area_threshold, **kwargs
+        )
 
         gdf = download(
             dataset,
@@ -1492,23 +1485,23 @@ class ContainedWithin:
             remove_water=remove_water,
             api_key=api_key,
             variable_cache=variable_cache,
-            **geos_kwargs
+            **geos_kwargs,
         )
 
         # See which of these geometries are mostly contained by
         # the geography we want to be within.
 
-        gdf_container = download(dataset, vintage, ["NAME"], with_geometry=True, **self._outer_kwargs)
+        gdf_container = download(
+            dataset, vintage, ["NAME"], with_geometry=True, **self._outer_kwargs
+        )
 
         gdf_contained = cmap.sjoin_mostly_contains(
-            gdf_container,
-            gdf,
-            area_threshold=self._area_threshold
+            gdf_container, gdf, area_threshold=self._area_threshold
         )
 
         # Drop all the large container columns we don't need.
         gdf_contained = gdf_contained[
-            [col for col in gdf_contained.columns if not col.endswith('_large')]
+            [col for col in gdf_contained.columns if not col.endswith("_large")]
         ].reset_index(drop=True)
 
         # Drop the "_small" suffix.
@@ -1516,18 +1509,27 @@ class ContainedWithin:
         gdf_contained.rename(
             lambda col: col[:-6] if col.endswith("_small") else col,
             axis="columns",
-            inplace=True
+            inplace=True,
         )
 
         if with_geometry:
             # Keep the columns from the larger result.
             return gdf_contained[
-                [col for col in gdf.columns if not col.startswith("_original_small_geos_")]
+                [
+                    col
+                    for col in gdf.columns
+                    if not col.startswith("_original_small_geos_")
+                ]
             ]
         else:
             # Drop the geometry and return a `pd.DataFrame`
             return pd.DataFrame(
                 gdf_contained[
-                    [col for col in gdf.columns if col != 'geometry' and not col.startswith("_original_small_geos_")]
+                    [
+                        col
+                        for col in gdf.columns
+                        if col != "geometry"
+                        and not col.startswith("_original_small_geos_")
+                    ]
                 ]
             )

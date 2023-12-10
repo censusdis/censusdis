@@ -1275,7 +1275,6 @@ class SymbolicInsertTestCase(unittest.TestCase):
 
 
 class IntersectingGeosTestCase(unittest.TestCase):
-
     def setUp(self) -> None:
         self.dataset = ACS5
         self.year = 2020
@@ -1286,10 +1285,10 @@ class IntersectingGeosTestCase(unittest.TestCase):
             self.year,
             outer_kwargs=dict(
                 # New York-Newark-Jersey City
-                metropolitan_statistical_area_micropolitan_statistical_area='35620'
+                metropolitan_statistical_area_micropolitan_statistical_area="35620"
             ),
             state="*",
-            county="*"
+            county="*",
         )
 
         self.assertEqual(2, len(geo_spec))
@@ -1309,7 +1308,7 @@ class IntersectingGeosTestCase(unittest.TestCase):
             outer_kwargs=dict(
                 state=NJ,
                 # Asbury Park city
-                place="01960"
+                place="01960",
             ),
             state=NJ,
             tract="*",
@@ -1330,7 +1329,6 @@ class IntersectingGeosTestCase(unittest.TestCase):
 
 
 class ContainedWithinTestCase(unittest.TestCase):
-
     def setUp(self) -> None:
         self.dataset = ACS5
         self.year = 2020
@@ -1338,34 +1336,27 @@ class ContainedWithinTestCase(unittest.TestCase):
     def test_state_county_contained_within_cbsa(self):
         df = ced.ContainedWithin(
             # New York-Newark-Jersey City
-            metropolitan_statistical_area_micropolitan_statistical_area='35620'
+            metropolitan_statistical_area_micropolitan_statistical_area="35620"
         ).download(
-            self.dataset,
-            self.year,
-            ["NAME", "B03002_001E"],
-            state="*",
-            county="*"
+            self.dataset, self.year, ["NAME", "B03002_001E"], state="*", county="*"
         )
 
         self.assertEqual((23, 4), df.shape)
 
-        self.assertEqual(
-            ["STATE", "COUNTY", "NAME", "B03002_001E"],
-            list(df.columns)
-        )
+        self.assertEqual(["STATE", "COUNTY", "NAME", "B03002_001E"], list(df.columns))
 
     def test_tract_contained_within_place(self):
         gdf = ced.ContainedWithin(
             state=NJ,
             # Asbury Park city
-            place="01960"
+            place="01960",
         ).download(
             self.dataset,
             self.year,
             ["NAME", "B03002_001E"],
             state="*",
             tract="*",
-            with_geometry=True
+            with_geometry=True,
         )
 
         self.assertIsInstance(gdf, gpd.GeoDataFrame)
@@ -1373,7 +1364,7 @@ class ContainedWithinTestCase(unittest.TestCase):
 
         self.assertEqual(
             ["STATE", "COUNTY", "TRACT", "NAME", "B03002_001E", "geometry"],
-            list(gdf.columns)
+            list(gdf.columns),
         )
 
 
