@@ -8,7 +8,13 @@ readme = "README.md"
 repository = "https://github.com/vengroff/censusdis"
 keywords = ["census", "demographics"]
 classifiers = [
+    "Operating System :: POSIX :: Linux",
+    "Operating System :: MacOS :: MacOS X",
+    "Operating System :: Microsoft :: Windows",
     "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
     "Development Status :: 4 - Beta",
     "Intended Audience :: Science/Research"
 ]
