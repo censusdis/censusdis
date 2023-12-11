@@ -11,8 +11,9 @@ from censusdis.cli.yamlspec import (
     VariableList,
     VariableSpecCollection,
 )
+from censusdis.data import ContainedWithin
 from censusdis.datasets import ACS5
-from censusdis.states import NJ, NY
+from censusdis.states import NJ, NY, PA
 from censusdis.counties.new_jersey import ESSEX, HUDSON
 
 
@@ -387,6 +388,24 @@ class DataSpecTestCase(unittest.TestCase):
                 censusdis.states.NAMES_FROM_IDS[state],
             )
 
+    def test_contained_within(self):
+        """Test contained_within in spec."""
+        dataspec = DataSpec.load_yaml(self.directory / "contained_within.yaml")
+
+        self.assertIsInstance(dataspec, DataSpec)
+
+        # State amd county wildcards.
+        self.assertEqual(2, len(dataspec.geography))
+        self.assertEqual("*", dataspec.geography["state"])
+        self.assertEqual("*", dataspec.geography["county"])
+
+        self.assertEqual(
+            ContainedWithin(
+                metropolitan_statistical_area_micropolitan_statistical_area="35620"
+            ),
+            dataspec.contained_within,
+        )
+
     def test_download_from_yaml_dataspec(self):
         """Test downloading based on a spec in a YAML file."""
         dataspec = DataSpec.load_yaml(self.directory / "dataspec2.yaml")
@@ -421,6 +440,39 @@ class DataSpecTestCase(unittest.TestCase):
         sum_of_group_fracs = gdf_data[group_frac_variables].sum(axis="columns")
 
         sum_of_group_fracs.apply(lambda s: self.assertAlmostEqual(1.0, s, places=10))
+
+    def test_download_from_yaml_dataspec_contained_within(self):
+        """Test downloading based on a spec in a YAML file."""
+        dataspec = DataSpec.load_yaml(self.directory / "contained_within.yaml")
+
+        self.assertIsInstance(dataspec, DataSpec)
+
+        df = dataspec.download()
+
+        # There are 23 counties in the CBSA
+        self.assertEqual((23, 5), df.shape)
+
+        self.assertEqual(
+            [
+                "METROPOLITAN_STATISTICAL_AREA_MICROPOLITAN_STATISTICAL_AREA",
+                "STATE",
+                "COUNTY",
+                "NAME",
+                "B01003_001E",
+            ],
+            list(df.columns),
+        )
+
+        # All match the query.
+        self.assertTrue(
+            (
+                df["METROPOLITAN_STATISTICAL_AREA_MICROPOLITAN_STATISTICAL_AREA"]
+                == "35620"
+            ).all()
+        )
+
+        # There are unique states.
+        self.assertSetEqual({NY, NJ, PA}, set(df["STATE"].unique()))
 
 
 if __name__ == "__main__":

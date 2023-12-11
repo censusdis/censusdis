@@ -1,0 +1,18 @@
+# This dataspec has a single group.
+!DataSpec
+dataset: ACS5
+vintage: 2020
+geography:
+  # All counties contained withing the geography desribed below.
+  state: '*'
+  county: '*'
+contained_within:
+  # New York-Newark-Jersey City
+  metropolitan_statistical_area_micropolitan_statistical_area: "35620"
+# The single spec here is a group.
+specs:
+  - !VariableList
+    variables:
+      - NAME
+  - !Group
+    group: B01003

@@ -24,11 +24,13 @@ was updated and released;
 
 Click any of the thumbnails below to see the notebook that generated it.
 
-[<img src="../docs/_static/images/sample00.png" alt="Integration in SoMa Tracts" height=160>](../notebooks/SoMa%20DIS%20Demo.ipynb)
 [<img src="../docs/_static/images/sample01.png" alt="Diversity in New Jersey" height=160>](../notebooks/ACS%20Demo.ipynb)
 [<img src="../docs/_static/images/sample02.png" alt="2020 Median Income by County in Georgia" height=160>](../notebooks/Data%20With%20Geometry.ipynb)
 [<img src="../docs/_static/images/sample05.png" alt="Nationwide Integration at the Census Tract over Block Group Level" height=160>](../notebooks/Nationwide%20Diversity%20and%20Integration.ipynb)
 [<img src="../docs/_static/images/sample03.png" alt="White Alone Population as a Percent of County Population" height=160>](../notebooks/Seeing%20White.ipynb)
+[<img src="../docs/_static/images/sample06.png" alt="Urban Census Tracts in Illinois" height=160>](../notebooks/Geographies%20Contained%20within%20Geographies.ipynb)
+[<img src="../docs/_static/images/sample07.png" alt="NYC Area with Water Overlap Removed" height=160>](../notebooks/Remove%20Water.ipynb)
+[<img src="../docs/_static/images/sample00.png" alt="Integration in SoMa Tracts" height=160>](../notebooks/SoMa%20DIS%20Demo.ipynb)
 [<img src="../docs/_static/images/sample04.png" alt="Average Age by Public Use Microdata Area in Massachusetts" height=160>](../notebooks/PUMS%20Demo.ipynb)
 
 ## Installation and First Example

@@ -1342,9 +1342,18 @@ class ContainedWithinTestCase(unittest.TestCase):
             self.dataset, self.year, ["NAME", "B03002_001E"], state="*", county="*"
         )
 
-        self.assertEqual((23, 4), df.shape)
+        self.assertEqual((23, 5), df.shape)
 
-        self.assertEqual(["STATE", "COUNTY", "NAME", "B03002_001E"], list(df.columns))
+        self.assertEqual(
+            [
+                "METROPOLITAN_STATISTICAL_AREA_MICROPOLITAN_STATISTICAL_AREA",
+                "STATE",
+                "COUNTY",
+                "NAME",
+                "B03002_001E",
+            ],
+            list(df.columns),
+        )
 
     def test_tract_contained_within_place(self):
         """Test tracts contained within places."""
@@ -1362,10 +1371,10 @@ class ContainedWithinTestCase(unittest.TestCase):
         )
 
         self.assertIsInstance(gdf, gpd.GeoDataFrame)
-        self.assertEqual((6, 6), gdf.shape)
+        self.assertEqual((6, 7), gdf.shape)
 
         self.assertEqual(
-            ["STATE", "COUNTY", "TRACT", "NAME", "B03002_001E", "geometry"],
+            ["STATE", "PLACE", "COUNTY", "TRACT", "NAME", "B03002_001E", "geometry"],
             list(gdf.columns),
         )
 
