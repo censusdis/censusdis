@@ -20,7 +20,7 @@ import censusdis.data as ced
 import censusdis.impl.exceptions
 import censusdis.impl.varsource.censusapi
 import censusdis.maps as cem
-import censusdis.symbolic as sym
+import utils.symbolic as sym
 import censusdis.values as cev
 from censusdis import states
 from censusdis.datasets import ACS3, ACS5

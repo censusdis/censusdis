@@ -142,7 +142,7 @@ file `datasets.py` using a utility called `symbolic.py`.
 You can be a good citizen by running
 
 ```shell
- poetry run python censusdis/symbolic.py datasets.py
+ poetry run python utils/symbolic.py datasets.py
 ```
 
 from the root directory of your clone of the repository
