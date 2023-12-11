@@ -65,7 +65,7 @@
             <a id="nextFileLink" class="nav" href="d_c7b4b9502c408abc___init___py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io">coverage.py v6.5.0</a>,
-            created at 2023-12-08 20:50 +0000
+            created at 2023-12-11 02:44 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"/>
@@ -1226,12 +1226,12 @@
     <p class="pln"><span class="n"><a id="t1144" href="#t1144">1144</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t1145" href="#t1145">1145</a></span><span class="t">    <span class="com"># Keep the original geos around in EPSG 3857 so</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t1146" href="#t1146">1146</a></span><span class="t">    <span class="com"># we can check intersection areas.</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t1147" href="#t1147">1147</a></span><span class="t">    <span class="nam">gdf_large_geos</span><span class="op">[</span><span class="str">"_original_large_geos_{area_epsg}"</span><span class="op">]</span> <span class="op">=</span> <span class="nam">gdf_large_geos</span><span class="op">.</span><span class="nam">geometry</span><span class="op">.</span><span class="nam">to_crs</span><span class="op">(</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t1148" href="#t1148">1148</a></span><span class="t">        <span class="nam">epsg</span><span class="op">=</span><span class="nam">area_epsg</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t1149" href="#t1149">1149</a></span><span class="t">    <span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t1150" href="#t1150">1150</a></span><span class="t">    <span class="nam">gdf_small_geos</span><span class="op">[</span><span class="str">"_original_small_geos_{area_epsg}"</span><span class="op">]</span> <span class="op">=</span> <span class="nam">gdf_small_geos</span><span class="op">.</span><span class="nam">geometry</span><span class="op">.</span><span class="nam">to_crs</span><span class="op">(</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t1151" href="#t1151">1151</a></span><span class="t">        <span class="nam">epsg</span><span class="op">=</span><span class="nam">area_epsg</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t1152" href="#t1152">1152</a></span><span class="t">    <span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t1147" href="#t1147">1147</a></span><span class="t">    <span class="nam">gdf_large_geos</span><span class="op">[</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t1148" href="#t1148">1148</a></span><span class="t">        <span class="str">f"_original_large_geos_{area_epsg}"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t1149" href="#t1149">1149</a></span><span class="t">    <span class="op">]</span> <span class="op">=</span> <span class="nam">gdf_large_geos</span><span class="op">.</span><span class="nam">geometry</span><span class="op">.</span><span class="nam">to_crs</span><span class="op">(</span><span class="nam">epsg</span><span class="op">=</span><span class="nam">area_epsg</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t1150" href="#t1150">1150</a></span><span class="t">    <span class="nam">gdf_small_geos</span><span class="op">[</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t1151" href="#t1151">1151</a></span><span class="t">        <span class="str">f"_original_small_geos_{area_epsg}"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t1152" href="#t1152">1152</a></span><span class="t">    <span class="op">]</span> <span class="op">=</span> <span class="nam">gdf_small_geos</span><span class="op">.</span><span class="nam">geometry</span><span class="op">.</span><span class="nam">to_crs</span><span class="op">(</span><span class="nam">epsg</span><span class="op">=</span><span class="nam">area_epsg</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t1153" href="#t1153">1153</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t1154" href="#t1154">1154</a></span><span class="t">    <span class="com"># Do an intersection join.</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t1155" href="#t1155">1155</a></span><span class="t">    <span class="nam">gdf_intersection</span> <span class="op">=</span> <span class="nam">gdf_small_geos</span><span class="op">.</span><span class="nam">sjoin</span><span class="op">(</span>&nbsp;</span><span class="r"></span></p>
@@ -1245,14 +1245,14 @@
     <p class="pln"><span class="n"><a id="t1163" href="#t1163">1163</a></span><span class="t">    <span class="com"># Filter down to only those where the area of the intersection</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t1164" href="#t1164">1164</a></span><span class="t">    <span class="com"># exceeds the threshold.</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t1165" href="#t1165">1165</a></span><span class="t">    <span class="nam">gdf_results</span> <span class="op">=</span> <span class="nam">gdf_intersection</span><span class="op">[</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t1166" href="#t1166">1166</a></span><span class="t">        <span class="nam">gdf_intersection</span><span class="op">[</span><span class="str">"_original_small_geos_{area_epsg}"</span><span class="op">]</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t1167" href="#t1167">1167</a></span><span class="t">        <span class="op">.</span><span class="nam">intersection</span><span class="op">(</span><span class="nam">gdf_intersection</span><span class="op">[</span><span class="str">"_original_large_geos_{area_epsg}"</span><span class="op">]</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t1166" href="#t1166">1166</a></span><span class="t">        <span class="nam">gdf_intersection</span><span class="op">[</span><span class="str">f"_original_small_geos_{area_epsg}"</span><span class="op">]</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t1167" href="#t1167">1167</a></span><span class="t">        <span class="op">.</span><span class="nam">intersection</span><span class="op">(</span><span class="nam">gdf_intersection</span><span class="op">[</span><span class="str">f"_original_large_geos_{area_epsg}"</span><span class="op">]</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t1168" href="#t1168">1168</a></span><span class="t">        <span class="op">.</span><span class="nam">area</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t1169" href="#t1169">1169</a></span><span class="t">        <span class="op">>=</span> <span class="nam">area_threshold</span> <span class="op">*</span> <span class="nam">gdf_intersection</span><span class="op">[</span><span class="str">"_original_small_geos_{area_epsg}"</span><span class="op">]</span><span class="op">.</span><span class="nam">area</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t1169" href="#t1169">1169</a></span><span class="t">        <span class="op">>=</span> <span class="nam">area_threshold</span> <span class="op">*</span> <span class="nam">gdf_intersection</span><span class="op">[</span><span class="str">f"_original_small_geos_{area_epsg}"</span><span class="op">]</span><span class="op">.</span><span class="nam">area</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t1170" href="#t1170">1170</a></span><span class="t">    <span class="op">]</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t1171" href="#t1171">1171</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t1172" href="#t1172">1172</a></span><span class="t">    <span class="nam">gdf_results</span> <span class="op">=</span> <span class="nam">gdf_results</span><span class="op">.</span><span class="nam">drop</span><span class="op">(</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t1173" href="#t1173">1173</a></span><span class="t">        <span class="op">[</span><span class="str">"_original_small_geos_{area_epsg}"</span><span class="op">,</span> <span class="str">"_original_large_geos_{area_epsg}"</span><span class="op">]</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t1173" href="#t1173">1173</a></span><span class="t">        <span class="op">[</span><span class="str">f"_original_small_geos_{area_epsg}"</span><span class="op">,</span> <span class="str">f"_original_large_geos_{area_epsg}"</span><span class="op">]</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t1174" href="#t1174">1174</a></span><span class="t">        <span class="nam">axis</span><span class="op">=</span><span class="str">"columns"</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t1175" href="#t1175">1175</a></span><span class="t">    <span class="op">)</span><span class="op">.</span><span class="nam">copy</span><span class="op">(</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t1176" href="#t1176">1176</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
@@ -1270,7 +1270,7 @@
             <a id="nextFileLink" class="nav" href="d_c7b4b9502c408abc___init___py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io">coverage.py v6.5.0</a>,
-            created at 2023-12-08 20:50 +0000
+            created at 2023-12-11 02:44 +0000
         </p>
     </div>
 </footer>
