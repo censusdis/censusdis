@@ -96,7 +96,7 @@ class CountyTestCase(unittest.TestCase):
         ]
         sym_count = len(symbols)
 
-        self.assertEqual(9, sym_count)
+        self.assertEqual(17, sym_count)
 
     def test_delaware(self):
         """Test Delaware."""
