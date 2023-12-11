@@ -1401,16 +1401,49 @@ def clip_water(
     return gdf_without_water
 
 
-def intersecting_geos(
+def _intersecting_geos_kws(
     dataset: str,
     vintage: VintageType,
-    outer_kwargs: cgeo.InSpecType,
-    area_threshold: float = 0.8,
+    containing_geo_kwargs: cgeo.InSpecType,
     **kwargs: cgeo.InSpecType,
 ) -> cgeo.InSpecType:
+    """
+    Construct geography keywords for intersecting geographies.
+
+    Parameters
+    ----------
+    dataset
+        The dataset to download from. For example `"acs/acs5"`,
+        `"dec/pl"`, or `"timeseries/poverty/saipe/schdist"`. There are
+        symbolic names for datasets, like `ACS5` for `"acs/acs5"
+        in :py:module:`censusdis.datasets`.
+    vintage
+        The vintage to download data for. For most data sets this is
+        an integer year, for example, `2020`. But for
+        a timeseries data set, pass the string `'timeseries'`.
+    containing_geo_kwargs
+        Geographic keywords specifying the containing geography that we are
+        looking for intersections with. For example
+        `dict(metropolitan_statistical_area_micropolitan_statistical_area="35620")`
+        for the New York area CBSA.
+    kwargs
+        A specification of the geometry that we want data for, limited to those
+        geographies that are contained in the geography specified by `containing_geo_kwargs`.
+        For example, `state="*", county="*", tract="*"` will specifies county-level data for
+        all counties contained in the containing geography.
+
+    Returns
+    -------
+        A dictionary of geographic keywords suitable for passing to :py:func:`~download`.
+    """
+    # This is a fast short circuit if the first component
+    # is already specified.
+    if list(kwargs.values())[0] != "*":
+        return kwargs
+
     # Download the geometry of the outer scope.
     gdf_within = download(
-        dataset, vintage, ["NAME"], with_geometry=True, **outer_kwargs
+        dataset, vintage, ["NAME"], with_geometry=True, **containing_geo_kwargs
     )
 
     # See if we can find a matching path spec.
@@ -1419,10 +1452,10 @@ def intersecting_geos(
     # Get the geography for the outermost level of the match.
     first_binding = list(bound_path.bindings.items())[0]
 
-    outer_kwargs = {first_binding[0]: first_binding[1]}
+    containing_geo_kwargs = {first_binding[0]: first_binding[1]}
 
     gdf_first_binding = download(
-        dataset, vintage, ["NAME"], with_geometry=True, **outer_kwargs
+        dataset, vintage, ["NAME"], with_geometry=True, **containing_geo_kwargs
     )
 
     # Which of the first binding geographies intersect
@@ -1448,9 +1481,24 @@ def intersecting_geos(
 
 
 class ContainedWithin:
+    """A representation of a geography that we want to query some other geographies that are contained within."""
+
     def __init__(self, area_threshold: float = 0.8, **kwargs: cgeo.InSpecType):
+        """
+        Construct a representation of a geography that we want to query some other geographies contained within.
+
+        Parameters
+        ----------
+        area_threshold
+            What fraction of the area of other geographies must be contained
+            in our geography to be included.
+        kwargs
+            A specification of the geometry that we want data for geometries
+            that are contained within. For example,
+            `state = "NJ", place = "01960"` will specify the city of Asbury Park, NJ.
+        """
         self._area_threshold = area_threshold
-        self._outer_kwargs = kwargs
+        self._containing_kwargs = kwargs
 
     def download(
         self,
@@ -1469,8 +1517,71 @@ class ContainedWithin:
         row_keys: Optional[Union[str, Iterable[str]]] = None,
         **kwargs: cgeo.InSpecType,
     ) -> Union[pd.DataFrame, gpd.GeoDataFrame]:
-        geos_kwargs = intersecting_geos(
-            dataset, vintage, self._outer_kwargs, self._area_threshold, **kwargs
+        """
+        Download data for geographies contained within a containing geography.
+
+        Parameters
+        ----------
+        dataset
+            The dataset to download from. For example `"acs/acs5"`,
+            `"dec/pl"`, or `"timeseries/poverty/saipe/schdist"`. There are
+            symbolic names for datasets, like `ACS5` for `"acs/acs5"
+            in :py:module:`censusdis.datasets`.
+        vintage
+            The vintage to download data for. For most data sets this is
+            an integer year, for example, `2020`. But for
+            a timeseries data set, pass the string `'timeseries'`.
+        download_variables
+            The census variables to download, for example `["NAME", "B01001_001E"]`.
+        group
+            One or more groups (as defined by the U.S. Census for the data set)
+            whose variable values should be downloaded. These are in addition to
+            any specified in `download_variables`.
+        leaves_of_group
+            One or more groups (as defined by the U.S. Census for the data set)
+            whose leaf variable values should be downloaded.These are in addition to
+            any specified in `download_variables` or `group`. See
+            :py:meth:`VariableCache.group_leaves` for more details on the semantics of
+            leaves vs. non-leaf group variables.
+        set_to_nan
+            A list of values that should be set to NaN. Normally these are special
+            values that the U.S. Census API sometimes returns. If `True`, then all
+            values in :py:ref:`censusdis.values.ALL_SPECIAL_VALUES` will be replaced.
+            If `False`, no replacements will be made.
+        skip_annotations
+            If `True` try to filter out `group` or `leaves_of_group` variables that are
+            annotations rather than actual values. See :py:meth:`VariableCache.group_variables`
+            for more details. Variable names passed in `download_variables` are not
+            affected by this flag.
+        with_geometry
+            If `True` a :py:class:`gpd.GeoDataFrame` will be returned and each row
+            will have a geometry that is a cartographic boundary suitable for platting
+            a map. See https://www.census.gov/geographies/mapping-files/time-series/geo/cartographic-boundary.2020.html
+            for details of the shapefiles that will be downloaded on your behalf to
+            generate these boundaries.
+        remove_water
+            If `True` and if with_geometry=True, will query TIGER for AREAWATER shapefiles and
+            remove water areas from returned geometry.
+        api_key
+            An optional API key. If you don't have or don't use a key, the number
+            of calls you can make will be limited to 500 per day.
+        variable_cache
+            A cache of metadata about variables.
+        row_keys
+            An optional set of identifier keys to help merge together requests for more than the census API limit of
+            50 variables per query. These keys are useful for census datasets such as the Current Population Survey
+            where the geographic identifiers do not uniquely identify each row.
+        kwargs
+            A specification of the geometry that we want data for. For example,
+            `state = "*", county = "*"` will download county-level data for
+            the entire US.
+
+        Returns
+        -------
+            A :py:class:`~pd.DataFrame` or `~gpd.GeoDataFrame` containing the requested US Census data.
+        """
+        geos_kwargs = _intersecting_geos_kws(
+            dataset, vintage, self._containing_kwargs, **kwargs
         )
 
         gdf = download(
@@ -1485,6 +1596,7 @@ class ContainedWithin:
             remove_water=remove_water,
             api_key=api_key,
             variable_cache=variable_cache,
+            row_keys=row_keys,
             **geos_kwargs,
         )
 
@@ -1492,7 +1604,7 @@ class ContainedWithin:
         # the geography we want to be within.
 
         gdf_container = download(
-            dataset, vintage, ["NAME"], with_geometry=True, **self._outer_kwargs
+            dataset, vintage, ["NAME"], with_geometry=True, **self._containing_kwargs
         )
 
         gdf_contained = cmap.sjoin_mostly_contains(
@@ -1533,3 +1645,22 @@ class ContainedWithin:
                     ]
                 ]
             )
+
+
+def contained_within(
+    area_threshold: float = 0.8, **kwargs: cgeo.InSpecType
+) -> ContainedWithin:
+    """
+    Construct a representation of a geography that we want to query some other geographies contained within.
+
+    Parameters
+    ----------
+    area_threshold
+        What fraction of the area of other geographies must be contained
+        in our geography to be included.
+    kwargs
+        A specification of the geometry that we want data for geometries
+        that are contained within. For example,
+        `state = "NJ", place = "01960"` will specify the city of Asbury Park, NJ.
+    """
+    return ContainedWithin(area_threshold=area_threshold, **kwargs)

@@ -1275,15 +1275,19 @@ class SymbolicInsertTestCase(unittest.TestCase):
 
 
 class IntersectingGeosTestCase(unittest.TestCase):
+    """Test intersection geometry keywords."""
+
     def setUp(self) -> None:
+        """Set up before each test."""
         self.dataset = ACS5
         self.year = 2020
 
     def test_intersecting_geos_cbsa(self):
-        geo_spec = ced.intersecting_geos(
+        """Test intersection with a CBSA."""
+        geo_spec = ced._intersecting_geos_kws(
             self.dataset,
             self.year,
-            outer_kwargs=dict(
+            containing_geo_kwargs=dict(
                 # New York-Newark-Jersey City
                 metropolitan_statistical_area_micropolitan_statistical_area="35620"
             ),
@@ -1302,10 +1306,11 @@ class IntersectingGeosTestCase(unittest.TestCase):
         self.assertEqual("*", geo_spec["county"])
 
     def test_intersecting_geos_place(self):
-        geo_spec = ced.intersecting_geos(
+        """Test intersection with a place."""
+        geo_spec = ced._intersecting_geos_kws(
             self.dataset,
             self.year,
-            outer_kwargs=dict(
+            containing_geo_kwargs=dict(
                 state=NJ,
                 # Asbury Park city
                 place="01960",
@@ -1314,27 +1319,23 @@ class IntersectingGeosTestCase(unittest.TestCase):
             tract="*",
         )
 
-        self.assertEqual(3, len(geo_spec))
+        self.assertEqual(2, len(geo_spec))
 
-        state_spec = geo_spec["state"]
-
-        self.assertIsInstance(state_spec, list)
-        self.assertEqual(1, len(state_spec))
-        self.assertSetEqual({NJ}, set(state_spec))
-
-        # Note that we fully expand the match so `county="*"`
-        # that was implied.
-        self.assertEqual("*", geo_spec["county"])
+        self.assertEqual(NJ, geo_spec["state"])
         self.assertEqual("*", geo_spec["tract"])
 
 
 class ContainedWithinTestCase(unittest.TestCase):
+    """Test the contains within functionality."""
+
     def setUp(self) -> None:
+        """Set up before each test."""
         self.dataset = ACS5
         self.year = 2020
 
     def test_state_county_contained_within_cbsa(self):
-        df = ced.ContainedWithin(
+        """Test state and county contained within a CBSA."""
+        df = ced.contained_within(
             # New York-Newark-Jersey City
             metropolitan_statistical_area_micropolitan_statistical_area="35620"
         ).download(
@@ -1346,7 +1347,8 @@ class ContainedWithinTestCase(unittest.TestCase):
         self.assertEqual(["STATE", "COUNTY", "NAME", "B03002_001E"], list(df.columns))
 
     def test_tract_contained_within_place(self):
-        gdf = ced.ContainedWithin(
+        """Test tracts contained within places."""
+        gdf = ced.contained_within(
             state=NJ,
             # Asbury Park city
             place="01960",
