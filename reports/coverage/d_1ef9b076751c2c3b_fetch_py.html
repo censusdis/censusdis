@@ -65,7 +65,7 @@
             <a id="nextFileLink" class="nav" href="d_1ef9b076751c2c3b_geometry_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io">coverage.py v6.5.0</a>,
-            created at 2023-12-11 15:36 +0000
+            created at 2023-12-11 16:48 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"/>
@@ -104,13 +104,13 @@
     <p class="pln"><span class="n"><a id="t22" href="#t22">22</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t23" href="#t23">23</a></span><span class="t">    <span class="com"># Do our best to tell the user something informative.</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t24" href="#t24">24</a></span><span class="t">    <span class="key">raise</span> <span class="nam">CensusApiException</span><span class="op">(</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t25" href="#t25">25</a></span><span class="t">        <span class="str">f"Census API request to {request.url} failed with status {request.status_code}. {request.text}"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t25" href="#t25">25</a></span><span class="t">        <span class="fst">f"</span><span class="fst">Census API request to </span><span class="op">{</span><span class="nam">request</span><span class="op">.</span><span class="nam">url</span><span class="op">}</span><span class="fst"> failed with status </span><span class="op">{</span><span class="nam">request</span><span class="op">.</span><span class="nam">status_code</span><span class="op">}</span><span class="fst">. </span><span class="op">{</span><span class="nam">request</span><span class="op">.</span><span class="nam">text</span><span class="op">}</span><span class="fst">"</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t26" href="#t26">26</a></span><span class="t">    <span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t27" href="#t27">27</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t28" href="#t28">28</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t29" href="#t29">29</a></span><span class="t"><span class="key">def</span> <span class="nam">data_from_url</span><span class="op">(</span><span class="nam">url</span><span class="op">:</span> <span class="nam">str</span><span class="op">,</span> <span class="nam">params</span><span class="op">:</span> <span class="nam">Optional</span><span class="op">[</span><span class="nam">Mapping</span><span class="op">[</span><span class="nam">str</span><span class="op">,</span> <span class="nam">str</span><span class="op">]</span><span class="op">]</span> <span class="op">=</span> <span class="key">None</span><span class="op">)</span> <span class="op">-></span> <span class="nam">pd</span><span class="op">.</span><span class="nam">DataFrame</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t30" href="#t30">30</a></span><span class="t">    <span class="str">"""Get json from a URL and parse into a data frame."""</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t31" href="#t31">31</a></span><span class="t">    <span class="nam">logger</span><span class="op">.</span><span class="nam">info</span><span class="op">(</span><span class="str">f"Downloading data from {url} with {params}."</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t31" href="#t31">31</a></span><span class="t">    <span class="nam">logger</span><span class="op">.</span><span class="nam">info</span><span class="op">(</span><span class="fst">f"</span><span class="fst">Downloading data from </span><span class="op">{</span><span class="nam">url</span><span class="op">}</span><span class="fst"> with </span><span class="op">{</span><span class="nam">params</span><span class="op">}</span><span class="fst">.</span><span class="fst">"</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t32" href="#t32">32</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t33" href="#t33">33</a></span><span class="t">    <span class="nam">parsed_json</span> <span class="op">=</span> <span class="nam">json_from_url</span><span class="op">(</span><span class="nam">url</span><span class="op">,</span> <span class="nam">params</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t34" href="#t34">34</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
@@ -137,7 +137,7 @@
     <p class="pln"><span class="n"><a id="t55" href="#t55">55</a></span><span class="t">        <span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t56" href="#t56">56</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t57" href="#t57">57</a></span><span class="t">    <span class="key">raise</span> <span class="nam">CensusApiException</span><span class="op">(</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t58" href="#t58">58</a></span><span class="t">        <span class="str">f"Expected json data to be a list of lists, not a {type(parsed_json)}"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t58" href="#t58">58</a></span><span class="t">        <span class="fst">f"</span><span class="fst">Expected json data to be a list of lists, not a </span><span class="op">{</span><span class="nam">type</span><span class="op">(</span><span class="nam">parsed_json</span><span class="op">)</span><span class="op">}</span><span class="fst">"</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t59" href="#t59">59</a></span><span class="t">    <span class="op">)</span>&nbsp;</span><span class="r"></span></p>
 </main>
 <footer>
@@ -148,7 +148,7 @@
             <a id="nextFileLink" class="nav" href="d_1ef9b076751c2c3b_geometry_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io">coverage.py v6.5.0</a>,
-            created at 2023-12-11 15:36 +0000
+            created at 2023-12-11 16:48 +0000
         </p>
     </div>
 </footer>
