@@ -9,7 +9,8 @@ regions as county-like divisions.
 We support both symbolically. Which one you get back from the census for
 county queries will depend on the data set and vintage.
 
-See https://www.federalregister.gov/documents/2022/06/06/2022-12063/change-to-county-equivalents-in-the-state-of-connecticut
+See
+https://www.federalregister.gov/documents/2022/06/06/2022-12063/change-to-county-equivalents-in-the-state-of-connecticut
 for more on this.
 """
 
