@@ -8,10 +8,9 @@ import censusdis.division
 
 class DivisionTestCase(unittest.TestCase):
     """Tests for Division symbols."""
-
+    
     def test_divisions(self):
         """Test division."""
-
         symbols = [
             symbol
             for symbol, val in censusdis.division.__dict__.items()

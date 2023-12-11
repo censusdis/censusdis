@@ -9,7 +9,6 @@ from pathlib import Path
 
 import censusdis.data as ced
 from censusdis.datasets import ACS5
-from censusdis.states import NAMES_FROM_IDS
 
 
 def drop_suffix(s: str, suffix: str) -> str:
@@ -32,6 +31,7 @@ def main():
 
 
 def generate_for_geo(geo: str, short_geo: str):
+    """Generate symbols and tests for a geography."""
     # Load the names.
     geo_dict = {geo: "*"}
 
@@ -53,10 +53,9 @@ import censusdis.{short_geo}
 
 class {short_geo.title()}TestCase(unittest.TestCase):
     \"\"\"Tests for {geo.replace('_', ' ').title()} symbols.\"\"\"
-
+    
     def test_{geo}s(self):
         \"\"\"Test {geo}.\"\"\"
-
         symbols = [
             symbol
             for symbol, val in censusdis.{short_geo}.__dict__.items()

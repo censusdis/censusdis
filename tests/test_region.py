@@ -8,10 +8,9 @@ import censusdis.region
 
 class RegionTestCase(unittest.TestCase):
     """Tests for Region symbols."""
-
+    
     def test_regions(self):
         """Test region."""
-
         symbols = [
             symbol
             for symbol, val in censusdis.region.__dict__.items()
