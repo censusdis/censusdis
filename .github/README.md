@@ -13,8 +13,16 @@
 [![Coverage Badge](../reports/coverage/coverage-badge.svg)](https://vengroff.github.io/censusdis/)
 [![Documentation Status](https://readthedocs.org/projects/censusdis/badge/?version=latest)](https://censusdis.readthedocs.io/en/latest/?badge=latest)
 
-Click any of the thumbnails below to see the notebook
-that generated it.
+censusdis is a package for discovering, loading, analyzing, and computing diversity, integration, and segregation metrics to U.S. Census demographic data. 
+It is designed
+
+- to support **every dataset**, **every geography, and every year**. It's not just about ACS data through the last time the software
+was updated and released;
+- to support **all geographies, on and off-spine**, not just states, counties, and census tracts;
+- to have **integrated mapping capabilities** that save you time and extra coding;
+- to be intuitive, Pythonic, and fast.
+
+Click any of the thumbnails below to see the notebook that generated it.
 
 [<img src="../docs/_static/images/sample00.png" alt="Integration in SoMa Tracts" height=160>](../notebooks/SoMa%20DIS%20Demo.ipynb)
 [<img src="../docs/_static/images/sample01.png" alt="Diversity in New Jersey" height=160>](../notebooks/ACS%20Demo.ipynb)
@@ -23,9 +31,50 @@ that generated it.
 [<img src="../docs/_static/images/sample03.png" alt="White Alone Population as a Percent of County Population" height=160>](../notebooks/Seeing%20White.ipynb)
 [<img src="../docs/_static/images/sample04.png" alt="Average Age by Public Use Microdata Area in Massachusetts" height=160>](../notebooks/PUMS%20Demo.ipynb)
 
+## Installation and First Example
+
+censusdis can be installed with `pip`:
+
+```shell
+pip install censusdis
+```
+
+Every censusdis query needs four things:
+
+1. What data set we want to query.
+2. What vintage, or year.
+3. What variables.
+4. What geographies.
+
+Here is an example of how we can use censusdis to download data once we know
+those four things.
+
+```python
+import censusdis.data as ced
+from censusdis.datasets import ACS5
+from censusdis import states
+
+df_median_income = ced.download(
+    # Data set: American Community Survey 5-Year
+    dataset=ACS5,
+    
+    # Vintage: 2022
+    vintage=2022, 
+    
+    # Variable: median household income
+    download_variables=['NAME', 'B19013_001E'], 
+    
+    # Geography: All counties in New Jersey.
+    state=states.NJ,
+    county='*'
+)
+```
+
+There are many more examples in the tuturial and in the sample notebooks.
+
 ## Tutorial (A Great Place to Start!)
 
-If you are interested in a tutorial, please see the [censusdis-tutorial](https://github.com/vengroff/censusdis-tutorial) repository.
+For a tutorial, please see the [censusdis-tutorial](https://github.com/vengroff/censusdis-tutorial) repository.
 This tutorial was presented at [PyData Seattle 2023](https://pydata.org/seattle2023/). If you want to try it out for yourself, the README.md
 contains links that let you run the tutorial notebooks live on [mybinder.org](https://mybinder.org/) in your browser without needing to set up a
 local development environment or download or install any code.
@@ -40,7 +89,7 @@ is also available.
 
 [![PyData Seattle Tutorial Video](https://img.youtube.com/vi/3vyC7ON0Tvg/0.jpg)](https://www.youtube.com/watch?v=3vyC7ON0Tvg)
 
-## Introduction 
+## Overview 
 
 `censusdis` is a package for discovering, loading, analyzing, and computing
 diversity, integration, and segregation metrics
@@ -150,6 +199,7 @@ The demo notebooks include
 | [Seeing White.ipynb](./notebooks/Seeing%20White.ipynb)                                                           | Load nationwide demographic data at the county level and plot of map of the US showing the percent of the population who identify as white only (no other race) at the county level. | 
 | [SoMa DIS Demo.ipynb](./notebooks/SoMa%20DIS%20Demo.ipynb)                                                       | Load race and ethnicity data for two towns in Essex County, NJ and compute diversity and integration metrics.                                                                        |
 | [Time Series School District Poverty.ipynb](./notebooks/Time%20Series%20School%20District%20Poverty.ipynb)       | Demonstrates how to work with time series datasets, which are a little different than vintaged data sets.                                                                            |
+
 
 
 ## Diversity and Integration Metrics
