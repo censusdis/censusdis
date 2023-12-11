@@ -1500,6 +1500,16 @@ class ContainedWithin:
         self._area_threshold = area_threshold
         self._containing_kwargs = kwargs
 
+    def __eq__(self, other) -> bool:
+        """Are two objects equal."""
+        if not isinstance(other, ContainedWithin):
+            return False
+
+        return (
+            self._area_threshold == other._area_threshold
+            and self._containing_kwargs == other._containing_kwargs
+        )
+
     def download(
         self,
         dataset: str,
@@ -1605,7 +1615,7 @@ class ContainedWithin:
 
         gdf_container = download(
             dataset, vintage, ["NAME"], with_geometry=True, **self._containing_kwargs
-        )
+        ).drop("NAME", axis="columns")
 
         gdf_contained = cmap.sjoin_mostly_contains(
             gdf_container, gdf, area_threshold=self._area_threshold
@@ -1629,8 +1639,13 @@ class ContainedWithin:
             return gdf_contained[
                 [
                     col
-                    for col in gdf.columns
-                    if not col.startswith("_original_small_geos_")
+                    for col in gdf_container.columns
+                    if col in gdf_contained.columns and col != "geometry"
+                ]
+                + [
+                    col
+                    for col in gdf_contained.columns
+                    if col not in gdf_container.columns or col == "geometry"
                 ]
             ]
         else:
@@ -1639,9 +1654,13 @@ class ContainedWithin:
                 gdf_contained[
                     [
                         col
-                        for col in gdf.columns
-                        if col != "geometry"
-                        and not col.startswith("_original_small_geos_")
+                        for col in gdf_container.columns
+                        if col in gdf_contained.columns and col != "geometry"
+                    ]
+                    + [
+                        col
+                        for col in gdf_contained.columns
+                        if col not in gdf_container.columns and col != "geometry"
                     ]
                 ]
             )

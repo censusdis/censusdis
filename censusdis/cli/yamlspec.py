@@ -113,6 +113,7 @@ class VariableSpec(ABC):
         set_to_nan: Union[bool, Iterable[int]] = True,
         skip_annotations: bool = True,
         with_geometry: bool = False,
+        contained_within: Optional[ced.ContainedWithin] = None,
         remove_water: bool = False,
         api_key: Optional[str] = None,
         row_keys: Optional[Union[str, Iterable[str]]] = None,
@@ -151,6 +152,9 @@ class VariableSpec(ABC):
             a map. See https://www.census.gov/geographies/mapping-files/time-series/geo/cartographic-boundary.2020.html
             for details of the shapefiles that will be downloaded on your behalf to
             generate these boundaries.
+        contained_within
+            An optional :py:class:`~ced.ContainedWithin` if we want to download
+            geometries contained within others.
         remove_water
             If `True` and if with_geometry=True, will query TIGER for AREAWATER shapefiles and
             remove water areas from returned geometry.
@@ -181,7 +185,14 @@ class VariableSpec(ABC):
         if len(leaves_of_groups) == 0:
             leaves_of_groups = None
 
-        df_or_gdf = ced.download(
+        # Our download might be scoped to be contained
+        # within some other geometries.
+        if contained_within:
+            download_scope = contained_within
+        else:
+            download_scope = ced
+
+        df_or_gdf = download_scope.download(
             dataset=dataset,
             vintage=vintage,
             download_variables=self.variables_to_download(),
@@ -541,6 +552,15 @@ class DataSpec:
         A specification of the geography, for example `{'state': '*'}`
         for all states or `{'state': censusdis.states.NJ, 'county': '*'}`
         for all counties in New Jersey.
+    contained_within
+        An optional specification for the geometry the results should be
+        contained within. For example, we could select a CBSA here and
+        put wildcards for state and county in `geography` to get all counties
+        contained within the CBSA. We need this in cases like this because
+        CBSAs are off-spine while states and counties are on-spine.
+    area_threshold
+        How much of the area of a geometry must be contained in an outer
+        geometry for it to be included.
     with_geometry
         If `True` a :py:class:`gpd.GeoDataFrame` will be returned and each row
         will have a geometry that is a cartographic boundary suitable for platting
@@ -559,6 +579,8 @@ class DataSpec:
         specs: Union[VariableSpec, Iterable[VariableSpec]],
         geography: Dict[str, Union[str, List[str]]],
         *,
+        contained_within: Optional[Dict[str, Union[str, List[str]]]] = None,
+        area_threshold: float = 0.8,
         with_geometry: bool = False,
         remove_water: bool = False,
     ):
@@ -570,6 +592,15 @@ class DataSpec:
             specs if isinstance(specs, VariableSpec) else VariableSpecCollection(specs)
         )
         self._geography = self.map_state_and_county_names(geography)
+
+        if contained_within is None:
+            self._contained_within = None
+        else:
+            contained_within = self.map_state_and_county_names(contained_within)
+            self._contained_within = ced.ContainedWithin(
+                area_threshold, **contained_within
+            )
+
         self._with_geometry = with_geometry
         self._remove_water = remove_water
 
@@ -610,7 +641,7 @@ class DataSpec:
             if isinstance(geography["state"], str):
                 # There is a single state, so there might be counties
                 # underneath it that need mapping.
-                if "county" in geography:
+                if "county" in geography and geography["state"] != "*":
                     map_county = _map_county(geography["state"])
                     if isinstance(geography["county"], str):
                         geography["county"] = map_county(geography["county"])
@@ -653,6 +684,11 @@ class DataSpec:
         """What geography to download data for."""
         return self._geography
 
+    @property
+    def contained_within(self) -> Union[None, ced.ContainedWithin]:
+        """What geometry are we contained within."""
+        return self._contained_within
+
     def download(
         self,
         api_key: Optional[str] = None,
@@ -674,6 +710,7 @@ class DataSpec:
             dataset=self.dataset,
             vintage=self._vintage,
             with_geometry=self._with_geometry,
+            contained_within=self._contained_within,
             remove_water=self._remove_water,
             api_key=api_key,
             **self._geography,
