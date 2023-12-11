@@ -261,7 +261,7 @@ class BoundGeographyPath:
         Parameters
         ----------
         num
-            A numberic code from the U.S. Census. E.g. '050' for state and county.
+            A numeric code from the U.S. Census. E.g. '050' for state and county.
         path_spec
             The path specification.
         kwargs
