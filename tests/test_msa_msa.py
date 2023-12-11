@@ -8,7 +8,7 @@ import censusdis.msa_msa
 
 class Msa_MsaTestCase(unittest.TestCase):
     """Tests for Metropolitan Statistical Area Micropolitan Statistical Area symbols."""
-    
+
     def test_metropolitan_statistical_area_micropolitan_statistical_areas(self):
         """Test metropolitan_statistical_area_micropolitan_statistical_area."""
         symbols = [

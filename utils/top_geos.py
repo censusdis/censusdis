@@ -53,7 +53,7 @@ import censusdis.{short_geo}
 
 class {short_geo.title()}TestCase(unittest.TestCase):
     \"\"\"Tests for {geo.replace('_', ' ').title()} symbols.\"\"\"
-    
+
     def test_{geo}s(self):
         \"\"\"Test {geo}.\"\"\"
         symbols = [
