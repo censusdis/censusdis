@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Coverage for censusdis/places/connecticut.py: 100%</title>
+    <link rel="icon" sizes="32x32" href="favicon_32.png">
+    <link rel="stylesheet" href="style.css" type="text/css">
+    <script type="text/javascript" src="coverage_html.js" defer></script>
+</head>
+<body class="pyfile">
+<header>
+    <div class="content">
+        <h1>
+            <span class="text">Coverage for </span><b>censusdis/places/connecticut.py</b>:
+            <span class="pc_cov">100%</span>
+        </h1>
+        <aside id="help_panel_wrapper">
+            <input id="help_panel_state" type="checkbox">
+            <label for="help_panel_state">
+                <img id="keyboard_icon" src="keybd_closed.png" alt="Show/hide keyboard shortcuts" />
+            </label>
+            <div id="help_panel">
+                <p class="legend">Shortcuts on this page</p>
+                <div class="keyhelp">
+                    <p>
+                        <kbd>r</kbd>
+                        <kbd>m</kbd>
+                        <kbd>x</kbd>
+                        &nbsp; toggle line displays
+                    </p>
+                    <p>
+                        <kbd>j</kbd>
+                        <kbd>k</kbd>
+                        &nbsp; next/prev highlighted chunk
+                    </p>
+                    <p>
+                        <kbd>0</kbd> &nbsp; (zero) top of page
+                    </p>
+                    <p>
+                        <kbd>1</kbd> &nbsp; (one) first highlighted chunk
+                    </p>
+                    <p>
+                        <kbd>[</kbd>
+                        <kbd>]</kbd>
+                        &nbsp; prev/next file
+                    </p>
+                    <p>
+                        <kbd>u</kbd> &nbsp; up to the index
+                    </p>
+                    <p>
+                        <kbd>?</kbd> &nbsp; show/hide this help
+                    </p>
+                </div>
+            </div>
+        </aside>
+        <h2>
+            <span class="text">216 statements &nbsp;</span>
+            <button type="button" class="run button_toggle_run" value="run" data-shortcut="r" title="Toggle lines run">216<span class="text"> run</span></button>
+            <button type="button" class="mis show_mis button_toggle_mis" value="mis" data-shortcut="m" title="Toggle lines missing">0<span class="text"> missing</span></button>
+            <button type="button" class="exc show_exc button_toggle_exc" value="exc" data-shortcut="x" title="Toggle lines excluded">0<span class="text"> excluded</span></button>
+        </h2>
+        <p class="text">
+            <a id="prevFileLink" class="nav" href="d_6f674a066a34dffd_colorado_py.html">&#xab; prev</a> &nbsp; &nbsp;
+            <a id="indexLink" class="nav" href="index.html">&Hat; index</a> &nbsp; &nbsp;
+            <a id="nextFileLink" class="nav" href="d_6f674a066a34dffd_delaware_py.html">&#xbb; next</a>
+            &nbsp; &nbsp; &nbsp;
+            <a class="nav" href="https://coverage.readthedocs.io">coverage.py v6.5.0</a>,
+            created at 2023-12-12 01:06 +0000
+        </p>
+        <aside class="hidden">
+            <button type="button" class="button_next_chunk" data-shortcut="j"/>
+            <button type="button" class="button_prev_chunk" data-shortcut="k"/>
+            <button type="button" class="button_top_of_page" data-shortcut="0"/>
+            <button type="button" class="button_first_chunk" data-shortcut="1"/>
+            <button type="button" class="button_prev_file" data-shortcut="["/>
+            <button type="button" class="button_next_file" data-shortcut="]"/>
+            <button type="button" class="button_to_index" data-shortcut="u"/>
+            <button type="button" class="button_show_hide_help" data-shortcut="?"/>
+        </aside>
+    </div>
+</header>
+<main id="source">
+    <p class="pln"><span class="n"><a id="t1" href="#t1">1</a></span><span class="t"><span class="com"># Copyright (c) 2023 Darren Erik Vengroff</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t2" href="#t2">2</a></span><span class="t"><span class="str">"""Places in Connecticut."""</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t3" href="#t3">3</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t4" href="#t4">4</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t5" href="#t5">5</a></span><span class="t"><span class="nam">ANSONIA_CITY</span> <span class="op">=</span> <span class="str">"01150"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t6" href="#t6">6</a></span><span class="t"><span class="nam">BALL_POND_CDP</span> <span class="op">=</span> <span class="str">"02480"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t7" href="#t7">7</a></span><span class="t"><span class="nam">BALTIC_CDP</span> <span class="op">=</span> <span class="str">"02550"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t8" href="#t8">8</a></span><span class="t"><span class="nam">BANTAM_BOROUGH</span> <span class="op">=</span> <span class="str">"02690"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t9" href="#t9">9</a></span><span class="t"><span class="nam">BETHEL_CDP</span> <span class="op">=</span> <span class="str">"04790"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t10" href="#t10">10</a></span><span class="t"><span class="nam">BETHLEHEM_VILLAGE_CDP</span> <span class="op">=</span> <span class="str">"04945"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t11" href="#t11">11</a></span><span class="t"><span class="nam">BIGELOW_CORNERS_CDP</span> <span class="op">=</span> <span class="str">"04965"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t12" href="#t12">12</a></span><span class="t"><span class="nam">BLUE_HILLS_CDP</span> <span class="op">=</span> <span class="str">"06050"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t13" href="#t13">13</a></span><span class="t"><span class="nam">BOGUS_HILL_CDP</span> <span class="op">=</span> <span class="str">"06155"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t14" href="#t14">14</a></span><span class="t"><span class="nam">BOTSFORD_CDP</span> <span class="op">=</span> <span class="str">"06680"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t15" href="#t15">15</a></span><span class="t"><span class="nam">BRANCHVILLE_CDP</span> <span class="op">=</span> <span class="str">"07100"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t16" href="#t16">16</a></span><span class="t"><span class="nam">BRANFORD_CENTER_CDP</span> <span class="op">=</span> <span class="str">"07345"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t17" href="#t17">17</a></span><span class="t"><span class="nam">BRIDGEPORT_CITY</span> <span class="op">=</span> <span class="str">"08000"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t18" href="#t18">18</a></span><span class="t"><span class="nam">BRIDGEWATER_CDP</span> <span class="op">=</span> <span class="str">"08140"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t19" href="#t19">19</a></span><span class="t"><span class="nam">BRISTOL_CITY</span> <span class="op">=</span> <span class="str">"08420"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t20" href="#t20">20</a></span><span class="t"><span class="nam">BROAD_BROOK_CDP</span> <span class="op">=</span> <span class="str">"08770"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t21" href="#t21">21</a></span><span class="t"><span class="nam">BROOKFIELD_CENTER_CDP</span> <span class="op">=</span> <span class="str">"09050"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t22" href="#t22">22</a></span><span class="t"><span class="nam">BROOKLYN_CDP</span> <span class="op">=</span> <span class="str">"09120"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t23" href="#t23">23</a></span><span class="t"><span class="nam">BYRAM_CDP</span> <span class="op">=</span> <span class="str">"10660"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t24" href="#t24">24</a></span><span class="t"><span class="nam">CANAAN_CDP</span> <span class="op">=</span> <span class="str">"10870"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t25" href="#t25">25</a></span><span class="t"><span class="nam">CANDLEWOOD_ISLE_CDP</span> <span class="op">=</span> <span class="str">"11360"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t26" href="#t26">26</a></span><span class="t"><span class="nam">CANDLEWOOD_KNOLLS_CDP</span> <span class="op">=</span> <span class="str">"11430"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t27" href="#t27">27</a></span><span class="t"><span class="nam">CANDLEWOOD_LAKE_CLUB_CDP</span> <span class="op">=</span> <span class="str">"11500"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t28" href="#t28">28</a></span><span class="t"><span class="nam">CANDLEWOOD_ORCHARDS_CDP</span> <span class="op">=</span> <span class="str">"11640"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t29" href="#t29">29</a></span><span class="t"><span class="nam">CANDLEWOOD_SHORES_CDP</span> <span class="op">=</span> <span class="str">"11780"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t30" href="#t30">30</a></span><span class="t"><span class="nam">CANNONDALE_CDP</span> <span class="op">=</span> <span class="str">"11990"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t31" href="#t31">31</a></span><span class="t"><span class="nam">CANTON_VALLEY_CDP</span> <span class="op">=</span> <span class="str">"12370"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t32" href="#t32">32</a></span><span class="t"><span class="nam">CHESHIRE_VILLAGE_CDP</span> <span class="op">=</span> <span class="str">"14200"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t33" href="#t33">33</a></span><span class="t"><span class="nam">CHESTER_CENTER_CDP</span> <span class="op">=</span> <span class="str">"14370"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t34" href="#t34">34</a></span><span class="t"><span class="nam">CHIMNEY_POINT_CDP</span> <span class="op">=</span> <span class="str">"14615"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t35" href="#t35">35</a></span><span class="t"><span class="nam">CLINTON_CDP</span> <span class="op">=</span> <span class="str">"15420"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t36" href="#t36">36</a></span><span class="t"><span class="nam">COLCHESTER_CDP</span> <span class="op">=</span> <span class="str">"15840"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t37" href="#t37">37</a></span><span class="t"><span class="nam">COLEYTOWN_CDP</span> <span class="op">=</span> <span class="str">"16085"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t38" href="#t38">38</a></span><span class="t"><span class="nam">COLLINSVILLE_CDP</span> <span class="op">=</span> <span class="str">"16120"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t39" href="#t39">39</a></span><span class="t"><span class="nam">COMPO_CDP</span> <span class="op">=</span> <span class="str">"16525"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t40" href="#t40">40</a></span><span class="t"><span class="nam">CONNING_TOWERS_NAUTILUS_PARK_CDP</span> <span class="op">=</span> <span class="str">"16960"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t41" href="#t41">41</a></span><span class="t"><span class="nam">CORNWALL_BRIDGE_CDP</span> <span class="op">=</span> <span class="str">"17310"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t42" href="#t42">42</a></span><span class="t"><span class="nam">CORNWALL_CDP</span> <span class="op">=</span> <span class="str">"17170"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t43" href="#t43">43</a></span><span class="t"><span class="nam">COS_COB_CDP</span> <span class="op">=</span> <span class="str">"17520"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t44" href="#t44">44</a></span><span class="t"><span class="nam">COVENTRY_LAKE_CDP</span> <span class="op">=</span> <span class="str">"17835"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t45" href="#t45">45</a></span><span class="t"><span class="nam">CRYSTAL_LAKE_CDP</span> <span class="op">=</span> <span class="str">"18220"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t46" href="#t46">46</a></span><span class="t"><span class="nam">DANBURY_CITY</span> <span class="op">=</span> <span class="str">"18430"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t47" href="#t47">47</a></span><span class="t"><span class="nam">DANIELS_FARM_CDP</span> <span class="op">=</span> <span class="str">"18675"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t48" href="#t48">48</a></span><span class="t"><span class="nam">DANIELSON_BOROUGH</span> <span class="op">=</span> <span class="str">"18780"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t49" href="#t49">49</a></span><span class="t"><span class="nam">DARIEN_DOWNTOWN_CDP</span> <span class="op">=</span> <span class="str">"18936"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t50" href="#t50">50</a></span><span class="t"><span class="nam">DAYVILLE_CDP</span> <span class="op">=</span> <span class="str">"18990"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t51" href="#t51">51</a></span><span class="t"><span class="nam">DEEP_RIVER_CENTER_CDP</span> <span class="op">=</span> <span class="str">"19200"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t52" href="#t52">52</a></span><span class="t"><span class="nam">DERBY_CITY</span> <span class="op">=</span> <span class="str">"19480"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t53" href="#t53">53</a></span><span class="t"><span class="nam">DODGINGTOWN_CDP</span> <span class="op">=</span> <span class="str">"20250"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t54" href="#t54">54</a></span><span class="t"><span class="nam">DURHAM_CDP</span> <span class="op">=</span> <span class="str">"20740"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t55" href="#t55">55</a></span><span class="t"><span class="nam">EAST_BROOKLYN_CDP</span> <span class="op">=</span> <span class="str">"21160"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t56" href="#t56">56</a></span><span class="t"><span class="nam">EAST_HAMPTON_CDP</span> <span class="op">=</span> <span class="str">"22420"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t57" href="#t57">57</a></span><span class="t"><span class="nam">EAST_HARTFORD_CDP</span> <span class="op">=</span> <span class="str">"22700"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t58" href="#t58">58</a></span><span class="t"><span class="nam">EAST_HAVEN_CDP</span> <span class="op">=</span> <span class="str">"22980"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t59" href="#t59">59</a></span><span class="t"><span class="nam">EAST_VILLAGE_CDP</span> <span class="op">=</span> <span class="str">"24520"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t60" href="#t60">60</a></span><span class="t"><span class="nam">ESSEX_VILLAGE_CDP</span> <span class="op">=</span> <span class="str">"26370"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t61" href="#t61">61</a></span><span class="t"><span class="nam">FAIRFIELD_UNIVERSITY_CDP</span> <span class="op">=</span> <span class="str">"26698"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t62" href="#t62">62</a></span><span class="t"><span class="nam">FALLS_VILLAGE_CDP</span> <span class="op">=</span> <span class="str">"27390"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t63" href="#t63">63</a></span><span class="t"><span class="nam">FENWICK_BOROUGH</span> <span class="op">=</span> <span class="str">"27810"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t64" href="#t64">64</a></span><span class="t"><span class="nam">GALES_FERRY_CDP</span> <span class="op">=</span> <span class="str">"30190"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t65" href="#t65">65</a></span><span class="t"><span class="nam">GAYLORDSVILLE_CDP</span> <span class="op">=</span> <span class="str">"30470"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t66" href="#t66">66</a></span><span class="t"><span class="nam">GEORGETOWN_CDP</span> <span class="op">=</span> <span class="str">"30540"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t67" href="#t67">67</a></span><span class="t"><span class="nam">GLASTONBURY_CENTER_CDP</span> <span class="op">=</span> <span class="str">"31270"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t68" href="#t68">68</a></span><span class="t"><span class="nam">GLENVILLE_CDP</span> <span class="op">=</span> <span class="str">"31520"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t69" href="#t69">69</a></span><span class="t"><span class="nam">GREENS_FARMS_CDP</span> <span class="op">=</span> <span class="str">"33480"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t70" href="#t70">70</a></span><span class="t"><span class="nam">GREENWICH_CDP</span> <span class="op">=</span> <span class="str">"33690"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t71" href="#t71">71</a></span><span class="t"><span class="nam">GROTON_LONG_POINT_BOROUGH</span> <span class="op">=</span> <span class="str">"34460"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t72" href="#t72">72</a></span><span class="t"><span class="nam">GROTON_CITY</span> <span class="op">=</span> <span class="str">"34180"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t73" href="#t73">73</a></span><span class="t"><span class="nam">GUILFORD_CENTER_CDP</span> <span class="op">=</span> <span class="str">"35020"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t74" href="#t74">74</a></span><span class="t"><span class="nam">HARTFORD_CITY</span> <span class="op">=</span> <span class="str">"37000"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t75" href="#t75">75</a></span><span class="t"><span class="nam">HAWLEYVILLE_CDP</span> <span class="op">=</span> <span class="str">"37490"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t76" href="#t76">76</a></span><span class="t"><span class="nam">HAZARDVILLE_CDP</span> <span class="op">=</span> <span class="str">"37770"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t77" href="#t77">77</a></span><span class="t"><span class="nam">HERITAGE_VILLAGE_CDP</span> <span class="op">=</span> <span class="str">"37930"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t78" href="#t78">78</a></span><span class="t"><span class="nam">HIGGANUM_CDP</span> <span class="op">=</span> <span class="str">"38050"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t79" href="#t79">79</a></span><span class="t"><span class="nam">INDIAN_FIELD_CDP</span> <span class="op">=</span> <span class="str">"39695"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t80" href="#t80">80</a></span><span class="t"><span class="nam">INGLENOOK_CDP</span> <span class="op">=</span> <span class="str">"39747"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t81" href="#t81">81</a></span><span class="t"><span class="nam">JEWETT_CITY_BOROUGH</span> <span class="op">=</span> <span class="str">"39940"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t82" href="#t82">82</a></span><span class="t"><span class="nam">KELLOGG_POINT_CDP</span> <span class="op">=</span> <span class="str">"40077"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t83" href="#t83">83</a></span><span class="t"><span class="nam">KENSINGTON_CDP</span> <span class="op">=</span> <span class="str">"40150"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t84" href="#t84">84</a></span><span class="t"><span class="nam">KNOLLCREST_CDP</span> <span class="op">=</span> <span class="str">"40920"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t85" href="#t85">85</a></span><span class="t"><span class="nam">LAKE_BUNGEE_CDP</span> <span class="op">=</span> <span class="str">"41226"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t86" href="#t86">86</a></span><span class="t"><span class="nam">LAKE_CHAFFEE_CDP</span> <span class="op">=</span> <span class="str">"41238"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t87" href="#t87">87</a></span><span class="t"><span class="nam">LAKE_POCOTOPAUG_CDP</span> <span class="op">=</span> <span class="str">"41410"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t88" href="#t88">88</a></span><span class="t"><span class="nam">LAKES_EAST_CDP</span> <span class="op">=</span> <span class="str">"41585"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t89" href="#t89">89</a></span><span class="t"><span class="nam">LAKES_WEST_CDP</span> <span class="op">=</span> <span class="str">"41736"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t90" href="#t90">90</a></span><span class="t"><span class="nam">LAKESIDE_WOODS_CDP</span> <span class="op">=</span> <span class="str">"41714"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t91" href="#t91">91</a></span><span class="t"><span class="nam">LAKEVILLE_CDP</span> <span class="op">=</span> <span class="str">"41830"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t92" href="#t92">92</a></span><span class="t"><span class="nam">LITCHFIELD_BOROUGH</span> <span class="op">=</span> <span class="str">"43300"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t93" href="#t93">93</a></span><span class="t"><span class="nam">LONG_HILL_CDP_GREATER_BRIDGEPORT_COUNTY</span> <span class="op">=</span> <span class="str">"43580"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t94" href="#t94">94</a></span><span class="t"><span class="nam">LONG_HILL_CDP_SOUTHEASTERN_CONNECTICUT_COUNTY</span> <span class="op">=</span> <span class="str">"43790"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t95" href="#t95">95</a></span><span class="t"><span class="nam">LORDSHIP_CDP</span> <span class="op">=</span> <span class="str">"44000"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t96" href="#t96">96</a></span><span class="t"><span class="nam">MADISON_CENTER_CDP</span> <span class="op">=</span> <span class="str">"44630"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t97" href="#t97">97</a></span><span class="t"><span class="nam">MAMANASCO_LAKE_CDP</span> <span class="op">=</span> <span class="str">"44660"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t98" href="#t98">98</a></span><span class="t"><span class="nam">MANCHESTER_CDP</span> <span class="op">=</span> <span class="str">"44690"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t99" href="#t99">99</a></span><span class="t"><span class="nam">MANSFIELD_CENTER_CDP</span> <span class="op">=</span> <span class="str">"45120"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t100" href="#t100">100</a></span><span class="t"><span class="nam">MASHANTUCKET_CDP</span> <span class="op">=</span> <span class="str">"45995"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t101" href="#t101">101</a></span><span class="t"><span class="nam">MECHANICSVILLE_CDP</span> <span class="op">=</span> <span class="str">"46240"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t102" href="#t102">102</a></span><span class="t"><span class="nam">MERIDEN_CITY</span> <span class="op">=</span> <span class="str">"46450"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t103" href="#t103">103</a></span><span class="t"><span class="nam">MIDDLETOWN_CITY</span> <span class="op">=</span> <span class="str">"47290"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t104" href="#t104">104</a></span><span class="t"><span class="nam">MILFORD_CITY_BALANCE</span> <span class="op">=</span> <span class="str">"47515"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t105" href="#t105">105</a></span><span class="t"><span class="nam">MILL_PLAIN_CDP</span> <span class="op">=</span> <span class="str">"47990"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t106" href="#t106">106</a></span><span class="t"><span class="nam">MOODUS_CDP</span> <span class="op">=</span> <span class="str">"49110"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t107" href="#t107">107</a></span><span class="t"><span class="nam">MOOSUP_CDP</span> <span class="op">=</span> <span class="str">"49180"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t108" href="#t108">108</a></span><span class="t"><span class="nam">MURRAY_CDP</span> <span class="op">=</span> <span class="str">"49720"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t109" href="#t109">109</a></span><span class="t"><span class="nam">MYSTIC_CDP</span> <span class="op">=</span> <span class="str">"49810"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t110" href="#t110">110</a></span><span class="t"><span class="nam">NAUGATUCK_BOROUGH</span> <span class="op">=</span> <span class="str">"49880"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t111" href="#t111">111</a></span><span class="t"><span class="nam">NEW_BRITAIN_CITY</span> <span class="op">=</span> <span class="str">"50370"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t112" href="#t112">112</a></span><span class="t"><span class="nam">NEW_CANAAN_CDP</span> <span class="op">=</span> <span class="str">"50576"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t113" href="#t113">113</a></span><span class="t"><span class="nam">NEW_HARTFORD_CENTER_CDP</span> <span class="op">=</span> <span class="str">"51420"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t114" href="#t114">114</a></span><span class="t"><span class="nam">NEW_HAVEN_CITY</span> <span class="op">=</span> <span class="str">"52000"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t115" href="#t115">115</a></span><span class="t"><span class="nam">NEW_LONDON_CITY</span> <span class="op">=</span> <span class="str">"52280"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t116" href="#t116">116</a></span><span class="t"><span class="nam">NEW_MILFORD_CDP</span> <span class="op">=</span> <span class="str">"52560"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t117" href="#t117">117</a></span><span class="t"><span class="nam">NEW_PRESTON_CDP</span> <span class="op">=</span> <span class="str">"52770"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t118" href="#t118">118</a></span><span class="t"><span class="nam">NEWINGTON_CDP</span> <span class="op">=</span> <span class="str">"52210"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t119" href="#t119">119</a></span><span class="t"><span class="nam">NEWTOWN_BOROUGH</span> <span class="op">=</span> <span class="str">"52910"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t120" href="#t120">120</a></span><span class="t"><span class="nam">NIANTIC_CDP</span> <span class="op">=</span> <span class="str">"53120"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t121" href="#t121">121</a></span><span class="t"><span class="nam">NOANK_CDP</span> <span class="op">=</span> <span class="str">"53260"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t122" href="#t122">122</a></span><span class="t"><span class="nam">NORFOLK_CDP</span> <span class="op">=</span> <span class="str">"53400"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t123" href="#t123">123</a></span><span class="t"><span class="nam">NOROTON_CDP</span> <span class="op">=</span> <span class="str">"53540"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t124" href="#t124">124</a></span><span class="t"><span class="nam">NOROTON_HEIGHTS_CDP</span> <span class="op">=</span> <span class="str">"53610"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t125" href="#t125">125</a></span><span class="t"><span class="nam">NORTH_GRANBY_CDP</span> <span class="op">=</span> <span class="str">"54660"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t126" href="#t126">126</a></span><span class="t"><span class="nam">NORTH_GROSVENOR_DALE_CDP</span> <span class="op">=</span> <span class="str">"54730"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t127" href="#t127">127</a></span><span class="t"><span class="nam">NORTH_HAVEN_CDP</span> <span class="op">=</span> <span class="str">"54940"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t128" href="#t128">128</a></span><span class="t"><span class="nam">NORTHFORD_CDP</span> <span class="op">=</span> <span class="str">"54450"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t129" href="#t129">129</a></span><span class="t"><span class="nam">NORTHWEST_HARWINTON_CDP</span> <span class="op">=</span> <span class="str">"55725"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t130" href="#t130">130</a></span><span class="t"><span class="nam">NORWALK_CITY</span> <span class="op">=</span> <span class="str">"55990"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t131" href="#t131">131</a></span><span class="t"><span class="nam">NORWICH_CITY</span> <span class="op">=</span> <span class="str">"56200"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t132" href="#t132">132</a></span><span class="t"><span class="nam">OAKVILLE_CDP</span> <span class="op">=</span> <span class="str">"56690"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t133" href="#t133">133</a></span><span class="t"><span class="nam">OLD_GREENWICH_CDP</span> <span class="op">=</span> <span class="str">"56900"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t134" href="#t134">134</a></span><span class="t"><span class="nam">OLD_HILL_CDP</span> <span class="op">=</span> <span class="str">"56935"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t135" href="#t135">135</a></span><span class="t"><span class="nam">OLD_MYSTIC_CDP</span> <span class="op">=</span> <span class="str">"57180"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t136" href="#t136">136</a></span><span class="t"><span class="nam">OLD_SAYBROOK_CENTER_CDP</span> <span class="op">=</span> <span class="str">"57390"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t137" href="#t137">137</a></span><span class="t"><span class="nam">ORANGE_CDP</span> <span class="op">=</span> <span class="str">"57670"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t138" href="#t138">138</a></span><span class="t"><span class="nam">ORONOQUE_CDP</span> <span class="op">=</span> <span class="str">"57880"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t139" href="#t139">139</a></span><span class="t"><span class="nam">OXOBOXO_RIVER_CDP</span> <span class="op">=</span> <span class="str">"58520"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t140" href="#t140">140</a></span><span class="t"><span class="nam">PAWCATUCK_CDP</span> <span class="op">=</span> <span class="str">"59140"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t141" href="#t141">141</a></span><span class="t"><span class="nam">PEMBERWICK_CDP</span> <span class="op">=</span> <span class="str">"59210"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t142" href="#t142">142</a></span><span class="t"><span class="nam">PLAINFIELD_VILLAGE_CDP</span> <span class="op">=</span> <span class="str">"60090"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t143" href="#t143">143</a></span><span class="t"><span class="nam">PLANTSVILLE_CDP</span> <span class="op">=</span> <span class="str">"60260"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t144" href="#t144">144</a></span><span class="t"><span class="nam">PLATTSVILLE_CDP</span> <span class="op">=</span> <span class="str">"60365"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t145" href="#t145">145</a></span><span class="t"><span class="nam">PLEASANT_VALLEY_CDP</span> <span class="op">=</span> <span class="str">"60540"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t146" href="#t146">146</a></span><span class="t"><span class="nam">POPLAR_PLAINS_CDP</span> <span class="op">=</span> <span class="str">"61555"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t147" href="#t147">147</a></span><span class="t"><span class="nam">POQUONOCK_BRIDGE_CDP</span> <span class="op">=</span> <span class="str">"61730"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t148" href="#t148">148</a></span><span class="t"><span class="nam">PORTLAND_CDP</span> <span class="op">=</span> <span class="str">"61870"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t149" href="#t149">149</a></span><span class="t"><span class="nam">PUTNAM_CDP</span> <span class="op">=</span> <span class="str">"62640"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t150" href="#t150">150</a></span><span class="t"><span class="nam">QUASSET_LAKE_CDP</span> <span class="op">=</span> <span class="str">"63165"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t151" href="#t151">151</a></span><span class="t"><span class="nam">QUINEBAUG_CDP</span> <span class="op">=</span> <span class="str">"63270"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t152" href="#t152">152</a></span><span class="t"><span class="nam">QUINNIPIAC_UNIVERSITY_CDP</span> <span class="op">=</span> <span class="str">"63313"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t153" href="#t153">153</a></span><span class="t"><span class="nam">REDDING_CENTER_CDP</span> <span class="op">=</span> <span class="str">"63620"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t154" href="#t154">154</a></span><span class="t"><span class="nam">RIDGEBURY_CDP</span> <span class="op">=</span> <span class="str">"63830"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t155" href="#t155">155</a></span><span class="t"><span class="nam">RIDGEFIELD_CDP</span> <span class="op">=</span> <span class="str">"63900"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t156" href="#t156">156</a></span><span class="t"><span class="nam">RIVERSIDE_CDP</span> <span class="op">=</span> <span class="str">"64530"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t157" href="#t157">157</a></span><span class="t"><span class="nam">RIVERTON_CDP</span> <span class="op">=</span> <span class="str">"64880"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t158" href="#t158">158</a></span><span class="t"><span class="nam">ROCK_RIDGE_CDP</span> <span class="op">=</span> <span class="str">"65160"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t159" href="#t159">159</a></span><span class="t"><span class="nam">ROCKVILLE_CDP</span> <span class="op">=</span> <span class="str">"65230"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t160" href="#t160">160</a></span><span class="t"><span class="nam">ROUTE_7_GATEWAY_CDP</span> <span class="op">=</span> <span class="str">"65685"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t161" href="#t161">161</a></span><span class="t"><span class="nam">SACRED_HEART_UNIVERSITY_CDP</span> <span class="op">=</span> <span class="str">"66086"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t162" href="#t162">162</a></span><span class="t"><span class="nam">SAIL_HARBOR_CDP</span> <span class="op">=</span> <span class="str">"66113"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t163" href="#t163">163</a></span><span class="t"><span class="nam">SALMON_BROOK_CDP</span> <span class="op">=</span> <span class="str">"66455"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t164" href="#t164">164</a></span><span class="t"><span class="nam">SANDY_HOOK_CDP</span> <span class="op">=</span> <span class="str">"66700"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t165" href="#t165">165</a></span><span class="t"><span class="nam">SAUGATUCK_CDP</span> <span class="op">=</span> <span class="str">"66770"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t166" href="#t166">166</a></span><span class="t"><span class="nam">SAYBROOK_MANOR_CDP</span> <span class="op">=</span> <span class="str">"67050"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t167" href="#t167">167</a></span><span class="t"><span class="nam">SHARON_CDP</span> <span class="op">=</span> <span class="str">"67890"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t168" href="#t168">168</a></span><span class="t"><span class="nam">SHELTON_CITY</span> <span class="op">=</span> <span class="str">"68100"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t169" href="#t169">169</a></span><span class="t"><span class="nam">SHERMAN_CDP</span> <span class="op">=</span> <span class="str">"68240"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t170" href="#t170">170</a></span><span class="t"><span class="nam">SHERWOOD_MANOR_CDP</span> <span class="op">=</span> <span class="str">"68450"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t171" href="#t171">171</a></span><span class="t"><span class="nam">SIMSBURY_CENTER_CDP</span> <span class="op">=</span> <span class="str">"69010"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t172" href="#t172">172</a></span><span class="t"><span class="nam">SOMERS_CDP</span> <span class="op">=</span> <span class="str">"69150"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t173" href="#t173">173</a></span><span class="t"><span class="nam">SOUTH_COVENTRY_CDP</span> <span class="op">=</span> <span class="str">"69990"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t174" href="#t174">174</a></span><span class="t"><span class="nam">SOUTH_WILTON_CDP</span> <span class="op">=</span> <span class="str">"71215"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t175" href="#t175">175</a></span><span class="t"><span class="nam">SOUTH_WINDHAM_CDP</span> <span class="op">=</span> <span class="str">"71250"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t176" href="#t176">176</a></span><span class="t"><span class="nam">SOUTH_WOODSTOCK_CDP</span> <span class="op">=</span> <span class="str">"71530"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t177" href="#t177">177</a></span><span class="t"><span class="nam">SOUTHPORT_CDP</span> <span class="op">=</span> <span class="str">"71040"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t178" href="#t178">178</a></span><span class="t"><span class="nam">SOUTHWOOD_ACRES_CDP</span> <span class="op">=</span> <span class="str">"71460"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t179" href="#t179">179</a></span><span class="t"><span class="nam">STAFFORD_SPRINGS_CDP</span> <span class="op">=</span> <span class="str">"72300"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t180" href="#t180">180</a></span><span class="t"><span class="nam">STAMFORD_CITY</span> <span class="op">=</span> <span class="str">"73000"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t181" href="#t181">181</a></span><span class="t"><span class="nam">STAPLES_CDP</span> <span class="op">=</span> <span class="str">"73175"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t182" href="#t182">182</a></span><span class="t"><span class="nam">STEPNEY_CDP</span> <span class="op">=</span> <span class="str">"73280"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t183" href="#t183">183</a></span><span class="t"><span class="nam">STONINGTON_BOROUGH</span> <span class="op">=</span> <span class="str">"73700"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t184" href="#t184">184</a></span><span class="t"><span class="nam">STORRS_CDP</span> <span class="op">=</span> <span class="str">"73980"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t185" href="#t185">185</a></span><span class="t"><span class="nam">STRATFORD_DOWNTOWN_CDP</span> <span class="op">=</span> <span class="str">"74303"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t186" href="#t186">186</a></span><span class="t"><span class="nam">SUFFIELD_DEPOT_CDP</span> <span class="op">=</span> <span class="str">"74655"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t187" href="#t187">187</a></span><span class="t"><span class="nam">TARIFFVILLE_CDP</span> <span class="op">=</span> <span class="str">"75100"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t188" href="#t188">188</a></span><span class="t"><span class="nam">TASHUA_CDP</span> <span class="op">=</span> <span class="str">"75116"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t189" href="#t189">189</a></span><span class="t"><span class="nam">TAYLOR_CORNERS_CDP</span> <span class="op">=</span> <span class="str">"75065"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t190" href="#t190">190</a></span><span class="t"><span class="nam">TERRAMUGGUS_CDP</span> <span class="op">=</span> <span class="str">"75200"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t191" href="#t191">191</a></span><span class="t"><span class="nam">TERRYVILLE_CDP</span> <span class="op">=</span> <span class="str">"75240"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t192" href="#t192">192</a></span><span class="t"><span class="nam">THOMASTON_CDP</span> <span class="op">=</span> <span class="str">"75660"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t193" href="#t193">193</a></span><span class="t"><span class="nam">THOMPSONVILLE_CDP</span> <span class="op">=</span> <span class="str">"75940"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t194" href="#t194">194</a></span><span class="t"><span class="nam">TOKENEKE_CDP</span> <span class="op">=</span> <span class="str">"76150"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t195" href="#t195">195</a></span><span class="t"><span class="nam">TOPSTONE_CDP</span> <span class="op">=</span> <span class="str">"76400"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t196" href="#t196">196</a></span><span class="t"><span class="nam">TORRINGTON_CITY</span> <span class="op">=</span> <span class="str">"76500"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t197" href="#t197">197</a></span><span class="t"><span class="nam">TRUMBULL_CENTER_CDP</span> <span class="op">=</span> <span class="str">"77278"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t198" href="#t198">198</a></span><span class="t"><span class="nam">WALLINGFORD_CENTER_CDP</span> <span class="op">=</span> <span class="str">"78880"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t199" href="#t199">199</a></span><span class="t"><span class="nam">WATERBURY_CITY</span> <span class="op">=</span> <span class="str">"80000"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t200" href="#t200">200</a></span><span class="t"><span class="nam">WATERFORD_CDP</span> <span class="op">=</span> <span class="str">"80210"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t201" href="#t201">201</a></span><span class="t"><span class="nam">WATERTOWN_CDP</span> <span class="op">=</span> <span class="str">"80420"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t202" href="#t202">202</a></span><span class="t"><span class="nam">WAUREGAN_CDP</span> <span class="op">=</span> <span class="str">"80630"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t203" href="#t203">203</a></span><span class="t"><span class="nam">WEATOGUE_CDP</span> <span class="op">=</span> <span class="str">"80770"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t204" href="#t204">204</a></span><span class="t"><span class="nam">WEST_CORNWALL_CDP</span> <span class="op">=</span> <span class="str">"82030"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t205" href="#t205">205</a></span><span class="t"><span class="nam">WEST_HARTFORD_CDP</span> <span class="op">=</span> <span class="str">"82660"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t206" href="#t206">206</a></span><span class="t"><span class="nam">WEST_HAVEN_CITY</span> <span class="op">=</span> <span class="str">"82800"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t207" href="#t207">207</a></span><span class="t"><span class="nam">WEST_MOUNTAIN_CDP</span> <span class="op">=</span> <span class="str">"83045"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t208" href="#t208">208</a></span><span class="t"><span class="nam">WEST_SIMSBURY_CDP</span> <span class="op">=</span> <span class="str">"83990"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t209" href="#t209">209</a></span><span class="t"><span class="nam">WESTBROOK_CENTER_CDP</span> <span class="op">=</span> <span class="str">"81750"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t210" href="#t210">210</a></span><span class="t"><span class="nam">WESTON_CDP</span> <span class="op">=</span> <span class="str">"83360"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t211" href="#t211">211</a></span><span class="t"><span class="nam">WESTPORT_VILLAGE_CDP</span> <span class="op">=</span> <span class="str">"83586"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t212" href="#t212">212</a></span><span class="t"><span class="nam">WETHERSFIELD_CDP</span> <span class="op">=</span> <span class="str">"84970"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t213" href="#t213">213</a></span><span class="t"><span class="nam">WILLIMANTIC_CDP</span> <span class="op">=</span> <span class="str">"85810"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t214" href="#t214">214</a></span><span class="t"><span class="nam">WILTON_CENTER_CDP</span> <span class="op">=</span> <span class="str">"86380"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t215" href="#t215">215</a></span><span class="t"><span class="nam">WINDSOR_LOCKS_CDP</span> <span class="op">=</span> <span class="str">"87140"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t216" href="#t216">216</a></span><span class="t"><span class="nam">WINSTED_CDP</span> <span class="op">=</span> <span class="str">"87350"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t217" href="#t217">217</a></span><span class="t"><span class="nam">WITCHES_WOODS_CDP</span> <span class="op">=</span> <span class="str">"87455"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t218" href="#t218">218</a></span><span class="t"><span class="nam">WOODBURY_CENTER_CDP</span> <span class="op">=</span> <span class="str">"87980"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t219" href="#t219">219</a></span><span class="t"><span class="nam">WOODMONT_BOROUGH</span> <span class="op">=</span> <span class="str">"88050"</span>&nbsp;</span><span class="r"></span></p>
+</main>
+<footer>
+    <div class="content">
+        <p>
+            <a id="prevFileLink" class="nav" href="d_6f674a066a34dffd_colorado_py.html">&#xab; prev</a> &nbsp; &nbsp;
+            <a id="indexLink" class="nav" href="index.html">&Hat; index</a> &nbsp; &nbsp;
+            <a id="nextFileLink" class="nav" href="d_6f674a066a34dffd_delaware_py.html">&#xbb; next</a>
+            &nbsp; &nbsp; &nbsp;
+            <a class="nav" href="https://coverage.readthedocs.io">coverage.py v6.5.0</a>,
+            created at 2023-12-12 01:06 +0000
+        </p>
+    </div>
+</footer>
+</body>
+</html>

@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Coverage for censusdis/places/puerto_rico.py: 100%</title>
+    <link rel="icon" sizes="32x32" href="favicon_32.png">
+    <link rel="stylesheet" href="style.css" type="text/css">
+    <script type="text/javascript" src="coverage_html.js" defer></script>
+</head>
+<body class="pyfile">
+<header>
+    <div class="content">
+        <h1>
+            <span class="text">Coverage for </span><b>censusdis/places/puerto_rico.py</b>:
+            <span class="pc_cov">100%</span>
+        </h1>
+        <aside id="help_panel_wrapper">
+            <input id="help_panel_state" type="checkbox">
+            <label for="help_panel_state">
+                <img id="keyboard_icon" src="keybd_closed.png" alt="Show/hide keyboard shortcuts" />
+            </label>
+            <div id="help_panel">
+                <p class="legend">Shortcuts on this page</p>
+                <div class="keyhelp">
+                    <p>
+                        <kbd>r</kbd>
+                        <kbd>m</kbd>
+                        <kbd>x</kbd>
+                        &nbsp; toggle line displays
+                    </p>
+                    <p>
+                        <kbd>j</kbd>
+                        <kbd>k</kbd>
+                        &nbsp; next/prev highlighted chunk
+                    </p>
+                    <p>
+                        <kbd>0</kbd> &nbsp; (zero) top of page
+                    </p>
+                    <p>
+                        <kbd>1</kbd> &nbsp; (one) first highlighted chunk
+                    </p>
+                    <p>
+                        <kbd>[</kbd>
+                        <kbd>]</kbd>
+                        &nbsp; prev/next file
+                    </p>
+                    <p>
+                        <kbd>u</kbd> &nbsp; up to the index
+                    </p>
+                    <p>
+                        <kbd>?</kbd> &nbsp; show/hide this help
+                    </p>
+                </div>
+            </div>
+        </aside>
+        <h2>
+            <span class="text">293 statements &nbsp;</span>
+            <button type="button" class="run button_toggle_run" value="run" data-shortcut="r" title="Toggle lines run">293<span class="text"> run</span></button>
+            <button type="button" class="mis show_mis button_toggle_mis" value="mis" data-shortcut="m" title="Toggle lines missing">0<span class="text"> missing</span></button>
+            <button type="button" class="exc show_exc button_toggle_exc" value="exc" data-shortcut="x" title="Toggle lines excluded">0<span class="text"> excluded</span></button>
+        </h2>
+        <p class="text">
+            <a id="prevFileLink" class="nav" href="d_6f674a066a34dffd_pennsylvania_py.html">&#xab; prev</a> &nbsp; &nbsp;
+            <a id="indexLink" class="nav" href="index.html">&Hat; index</a> &nbsp; &nbsp;
+            <a id="nextFileLink" class="nav" href="d_6f674a066a34dffd_rhode_island_py.html">&#xbb; next</a>
+            &nbsp; &nbsp; &nbsp;
+            <a class="nav" href="https://coverage.readthedocs.io">coverage.py v6.5.0</a>,
+            created at 2023-12-12 01:06 +0000
+        </p>
+        <aside class="hidden">
+            <button type="button" class="button_next_chunk" data-shortcut="j"/>
+            <button type="button" class="button_prev_chunk" data-shortcut="k"/>
+            <button type="button" class="button_top_of_page" data-shortcut="0"/>
+            <button type="button" class="button_first_chunk" data-shortcut="1"/>
+            <button type="button" class="button_prev_file" data-shortcut="["/>
+            <button type="button" class="button_next_file" data-shortcut="]"/>
+            <button type="button" class="button_to_index" data-shortcut="u"/>
+            <button type="button" class="button_show_hide_help" data-shortcut="?"/>
+        </aside>
+    </div>
+</header>
+<main id="source">
+    <p class="pln"><span class="n"><a id="t1" href="#t1">1</a></span><span class="t"><span class="com"># Copyright (c) 2023 Darren Erik Vengroff</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t2" href="#t2">2</a></span><span class="t"><span class="str">"""Places in Puerto Rico."""</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t3" href="#t3">3</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t4" href="#t4">4</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t5" href="#t5">5</a></span><span class="t"><span class="nam">ACEITUNAS_COMUNIDAD</span> <span class="op">=</span> <span class="str">"00186"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t6" href="#t6">6</a></span><span class="t"><span class="nam">ADJUNTAS_ZONA_URBANA</span> <span class="op">=</span> <span class="str">"00358"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t7" href="#t7">7</a></span><span class="t"><span class="nam">AGUADA_ZONA_URBANA</span> <span class="op">=</span> <span class="str">"00616"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t8" href="#t8">8</a></span><span class="t"><span class="nam">AGUADILLA_ZONA_URBANA</span> <span class="op">=</span> <span class="str">"00745"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t9" href="#t9">9</a></span><span class="t"><span class="nam">AGUAS_BUENAS_ZONA_URBANA</span> <span class="op">=</span> <span class="str">"00874"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t10" href="#t10">10</a></span><span class="t"><span class="nam">AGUAS_CLARAS_COMUNIDAD</span> <span class="op">=</span> <span class="str">"01003"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t11" href="#t11">11</a></span><span class="t"><span class="nam">AGUILITA_COMUNIDAD</span> <span class="op">=</span> <span class="str">"01089"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t12" href="#t12">12</a></span><span class="t"><span class="nam">AIBONITO_ZONA_URBANA</span> <span class="op">=</span> <span class="str">"01218"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t13" href="#t13">13</a></span><span class="t"><span class="nam">ALIANZA_COMUNIDAD</span> <span class="op">=</span> <span class="str">"01863"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t14" href="#t14">14</a></span><span class="t"><span class="nam">ANIMAS_COMUNIDAD</span> <span class="op">=</span> <span class="str">"03024"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t15" href="#t15">15</a></span><span class="t"><span class="nam">ANON_RAICES_COMUNIDAD</span> <span class="op">=</span> <span class="str">"03174"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t16" href="#t16">16</a></span><span class="t"><span class="nam">ANTON_RUIZ_COMUNIDAD</span> <span class="op">=</span> <span class="str">"03196"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t17" href="#t17">17</a></span><span class="t"><span class="nam">ARECIBO_ZONA_URBANA</span> <span class="op">=</span> <span class="str">"03368"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t18" href="#t18">18</a></span><span class="t"><span class="nam">ARROYO_ZONA_URBANA</span> <span class="op">=</span> <span class="str">"03927"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t19" href="#t19">19</a></span><span class="t"><span class="nam">ANASCO_ZONA_URBANA</span> <span class="op">=</span> <span class="str">"02680"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t20" href="#t20">20</a></span><span class="t"><span class="nam">BAIROA_LA_VEINTICINCO_COMUNIDAD</span> <span class="op">=</span> <span class="str">"04620"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t21" href="#t21">21</a></span><span class="t"><span class="nam">BAJADERO_COMUNIDAD</span> <span class="op">=</span> <span class="str">"04658"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t22" href="#t22">22</a></span><span class="t"><span class="nam">BAJANDAS_COMUNIDAD</span> <span class="op">=</span> <span class="str">"04701"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t23" href="#t23">23</a></span><span class="t"><span class="nam">BARAHONA_COMUNIDAD</span> <span class="op">=</span> <span class="str">"05217"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t24" href="#t24">24</a></span><span class="t"><span class="nam">BARCELONETA_ZONA_URBANA</span> <span class="op">=</span> <span class="str">"05346"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t25" href="#t25">25</a></span><span class="t"><span class="nam">BARRANQUITAS_ZONA_URBANA</span> <span class="op">=</span> <span class="str">"05690"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t26" href="#t26">26</a></span><span class="t"><span class="nam">BARTOLO_COMUNIDAD</span> <span class="op">=</span> <span class="str">"06421"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t27" href="#t27">27</a></span><span class="t"><span class="nam">BAYAMON_COMUNIDAD</span> <span class="op">=</span> <span class="str">"06679"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t28" href="#t28">28</a></span><span class="t"><span class="nam">BAYAMON_ZONA_URBANA</span> <span class="op">=</span> <span class="str">"06593"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t29" href="#t29">29</a></span><span class="t"><span class="nam">BENITEZ_COMUNIDAD</span> <span class="op">=</span> <span class="str">"07496"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t30" href="#t30">30</a></span><span class="t"><span class="nam">BETANCES_COMUNIDAD</span> <span class="op">=</span> <span class="str">"07668"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t31" href="#t31">31</a></span><span class="t"><span class="nam">BOQUERON_COMUNIDAD_CABO_ROJO_MUNICIPIO</span> <span class="op">=</span> <span class="str">"07969"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t32" href="#t32">32</a></span><span class="t"><span class="nam">BOQUERON_COMUNIDAD_LAS_PIEDRAS_MUNICIPIO</span> <span class="op">=</span> <span class="str">"08099"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t33" href="#t33">33</a></span><span class="t"><span class="nam">BRENAS_COMUNIDAD</span> <span class="op">=</span> <span class="str">"08700"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t34" href="#t34">34</a></span><span class="t"><span class="nam">BRISAS_DEL_CAMPANERO_COMUNIDAD</span> <span class="op">=</span> <span class="str">"08722"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t35" href="#t35">35</a></span><span class="t"><span class="nam">BUENA_VISTA_COMUNIDAD_ARROYO_MUNICIPIO</span> <span class="op">=</span> <span class="str">"09087"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t36" href="#t36">36</a></span><span class="t"><span class="nam">BUENA_VISTA_COMUNIDAD_HUMACAO_MUNICIPIO</span> <span class="op">=</span> <span class="str">"09250"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t37" href="#t37">37</a></span><span class="t"><span class="nam">B&#218;FALO_COMUNIDAD</span> <span class="op">=</span> <span class="str">"09603"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t38" href="#t38">38</a></span><span class="t"><span class="nam">CABO_ROJO_ZONA_URBANA</span> <span class="op">=</span> <span class="str">"09861"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t39" href="#t39">39</a></span><span class="t"><span class="nam">CABAN_COMUNIDAD</span> <span class="op">=</span> <span class="str">"09689"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t40" href="#t40">40</a></span><span class="t"><span class="nam">CACAO_COMUNIDAD</span> <span class="op">=</span> <span class="str">"10048"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t41" href="#t41">41</a></span><span class="t"><span class="nam">CAGUAS_ZONA_URBANA</span> <span class="op">=</span> <span class="str">"10334"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t42" href="#t42">42</a></span><span class="t"><span class="nam">CALZADA_COMUNIDAD</span> <span class="op">=</span> <span class="str">"11151"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t43" href="#t43">43</a></span><span class="t"><span class="nam">CAMBALACHE_COMUNIDAD</span> <span class="op">=</span> <span class="str">"11345"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t44" href="#t44">44</a></span><span class="t"><span class="nam">CAMPANILLA_COMUNIDAD</span> <span class="op">=</span> <span class="str">"11581"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t45" href="#t45">45</a></span><span class="t"><span class="nam">CAMPANILLAS_COMUNIDAD</span> <span class="op">=</span> <span class="str">"11597"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t46" href="#t46">46</a></span><span class="t"><span class="nam">CAMPO_RICO_COMUNIDAD</span> <span class="op">=</span> <span class="str">"11710"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t47" href="#t47">47</a></span><span class="t"><span class="nam">CAMUY_ZONA_URBANA</span> <span class="op">=</span> <span class="str">"11925"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t48" href="#t48">48</a></span><span class="t"><span class="nam">CANDELARIA_ARENAS_COMUNIDAD</span> <span class="op">=</span> <span class="str">"12560"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t49" href="#t49">49</a></span><span class="t"><span class="nam">CANDELARIA_COMUNIDAD</span> <span class="op">=</span> <span class="str">"12441"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t50" href="#t50">50</a></span><span class="t"><span class="nam">CANDELERO_ABAJO_COMUNIDAD</span> <span class="op">=</span> <span class="str">"12568"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t51" href="#t51">51</a></span><span class="t"><span class="nam">CANDELERO_ARRIBA_COMUNIDAD</span> <span class="op">=</span> <span class="str">"12613"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t52" href="#t52">52</a></span><span class="t"><span class="nam">CANOVANILLAS_COMUNIDAD</span> <span class="op">=</span> <span class="str">"13065"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t53" href="#t53">53</a></span><span class="t"><span class="nam">CANOVANAS_ZONA_URBANA</span> <span class="op">=</span> <span class="str">"12828"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t54" href="#t54">54</a></span><span class="t"><span class="nam">CAPITANEJO_COMUNIDAD</span> <span class="op">=</span> <span class="str">"13925"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t55" href="#t55">55</a></span><span class="t"><span class="nam">CAROLINA_ZONA_URBANA</span> <span class="op">=</span> <span class="str">"14290"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t56" href="#t56">56</a></span><span class="t"><span class="nam">CARRIZALES_COMUNIDAD</span> <span class="op">=</span> <span class="str">"14634"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t57" href="#t57">57</a></span><span class="t"><span class="nam">CATANO_ZONA_URBANA</span> <span class="op">=</span> <span class="str">"15193"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t58" href="#t58">58</a></span><span class="t"><span class="nam">CAYEY_ZONA_URBANA</span> <span class="op">=</span> <span class="str">"15494"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t59" href="#t59">59</a></span><span class="t"><span class="nam">CAYUCO_COMUNIDAD</span> <span class="op">=</span> <span class="str">"15623"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t60" href="#t60">60</a></span><span class="t"><span class="nam">CANO_MARTIN_PENA_COMUNIDAD</span> <span class="op">=</span> <span class="str">"12806"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t61" href="#t61">61</a></span><span class="t"><span class="nam">CEIBA_COMUNIDAD</span> <span class="op">=</span> <span class="str">"16139"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t62" href="#t62">62</a></span><span class="t"><span class="nam">CEIBA_ZONA_URBANA</span> <span class="op">=</span> <span class="str">"15924"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t63" href="#t63">63</a></span><span class="t"><span class="nam">CELADA_COMUNIDAD</span> <span class="op">=</span> <span class="str">"16440"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t64" href="#t64">64</a></span><span class="t"><span class="nam">CENTRAL_AGUIRRE_COMUNIDAD</span> <span class="op">=</span> <span class="str">"16526"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t65" href="#t65">65</a></span><span class="t"><span class="nam">CERRILLOS_HOYOS_COMUNIDAD</span> <span class="op">=</span> <span class="str">"17050"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t66" href="#t66">66</a></span><span class="t"><span class="nam">CIALES_ZONA_URBANA</span> <span class="op">=</span> <span class="str">"17773"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t67" href="#t67">67</a></span><span class="t"><span class="nam">CIDRA_ZONA_URBANA</span> <span class="op">=</span> <span class="str">"18074"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t68" href="#t68">68</a></span><span class="t"><span class="nam">COAMO_ZONA_URBANA</span> <span class="op">=</span> <span class="str">"18719"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t69" href="#t69">69</a></span><span class="t"><span class="nam">COCO_COMUNIDAD</span> <span class="op">=</span> <span class="str">"18891"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t70" href="#t70">70</a></span><span class="t"><span class="nam">COMERIO_ZONA_URBANA</span> <span class="op">=</span> <span class="str">"19665"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t71" href="#t71">71</a></span><span class="t"><span class="nam">COMUNAS_COMUNIDAD</span> <span class="op">=</span> <span class="str">"19837"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t72" href="#t72">72</a></span><span class="t"><span class="nam">COQUI_COMUNIDAD</span> <span class="op">=</span> <span class="str">"20310"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t73" href="#t73">73</a></span><span class="t"><span class="nam">CORAZON_COMUNIDAD</span> <span class="op">=</span> <span class="str">"20353"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t74" href="#t74">74</a></span><span class="t"><span class="nam">CORCOVADO_COMUNIDAD</span> <span class="op">=</span> <span class="str">"20482"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t75" href="#t75">75</a></span><span class="t"><span class="nam">COROZAL_ZONA_URBANA</span> <span class="op">=</span> <span class="str">"20783"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t76" href="#t76">76</a></span><span class="t"><span class="nam">CORRAL_VIEJO_COMUNIDAD</span> <span class="op">=</span> <span class="str">"20998"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t77" href="#t77">77</a></span><span class="t"><span class="nam">COTO_LAUREL_COMUNIDAD</span> <span class="op">=</span> <span class="str">"21213"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t78" href="#t78">78</a></span><span class="t"><span class="nam">COTO_NORTE_COMUNIDAD</span> <span class="op">=</span> <span class="str">"21385"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t79" href="#t79">79</a></span><span class="t"><span class="nam">CULEBRA_ZONA_URBANA</span> <span class="op">=</span> <span class="str">"22589"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t80" href="#t80">80</a></span><span class="t"><span class="nam">DAGUAO_COMUNIDAD</span> <span class="op">=</span> <span class="str">"23062"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t81" href="#t81">81</a></span><span class="t"><span class="nam">DEL_CARMEN_COMUNIDAD</span> <span class="op">=</span> <span class="str">"23341"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t82" href="#t82">82</a></span><span class="t"><span class="nam">DORADO_ZONA_URBANA</span> <span class="op">=</span> <span class="str">"24008"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t83" href="#t83">83</a></span><span class="t"><span class="nam">DUQUE_COMUNIDAD</span> <span class="op">=</span> <span class="str">"24395"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t84" href="#t84">84</a></span><span class="t"><span class="nam">EL_COMBATE_COMUNIDAD</span> <span class="op">=</span> <span class="str">"24954"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t85" href="#t85">85</a></span><span class="t"><span class="nam">EL_MANGO_COMUNIDAD</span> <span class="op">=</span> <span class="str">"25556"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t86" href="#t86">86</a></span><span class="t"><span class="nam">EL_NEGRO_COMUNIDAD</span> <span class="op">=</span> <span class="str">"25685"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t87" href="#t87">87</a></span><span class="t"><span class="nam">EL_OJO_COMUNIDAD</span> <span class="op">=</span> <span class="str">"25771"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t88" href="#t88">88</a></span><span class="t"><span class="nam">EL_PARAISO_COMUNIDAD</span> <span class="op">=</span> <span class="str">"25835"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t89" href="#t89">89</a></span><span class="t"><span class="nam">EL_TUMBAO_COMUNIDAD</span> <span class="op">=</span> <span class="str">"26287"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t90" href="#t90">90</a></span><span class="t"><span class="nam">EL_VEINTIS&#201;IS_COMUNIDAD</span> <span class="op">=</span> <span class="str">"26362"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t91" href="#t91">91</a></span><span class="t"><span class="nam">EMAJAGUA_COMUNIDAD</span> <span class="op">=</span> <span class="str">"26502"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t92" href="#t92">92</a></span><span class="t"><span class="nam">ESPERANZA_COMUNIDAD</span> <span class="op">=</span> <span class="str">"27190"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t93" href="#t93">93</a></span><span class="t"><span class="nam">ESPINO_COMUNIDAD</span> <span class="op">=</span> <span class="str">"27263"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t94" href="#t94">94</a></span><span class="t"><span class="nam">FAJARDO_ZONA_URBANA</span> <span class="op">=</span> <span class="str">"27964"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t95" href="#t95">95</a></span><span class="t"><span class="nam">FERRER_COMUNIDAD</span> <span class="op">=</span> <span class="str">"28367"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t96" href="#t96">96</a></span><span class="t"><span class="nam">FLORIDA_ZONA_URBANA</span> <span class="op">=</span> <span class="str">"28824"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t97" href="#t97">97</a></span><span class="t"><span class="nam">FRONTON_COMUNIDAD</span> <span class="op">=</span> <span class="str">"29682"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t98" href="#t98">98</a></span><span class="t"><span class="nam">FRANQUEZ_COMUNIDAD</span> <span class="op">=</span> <span class="str">"29555"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t99" href="#t99">99</a></span><span class="t"><span class="nam">FUIG_COMUNIDAD</span> <span class="op">=</span> <span class="str">"29727"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t100" href="#t100">100</a></span><span class="t"><span class="nam">G_L_GARCIA_COMUNIDAD</span> <span class="op">=</span> <span class="str">"30544"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t101" href="#t101">101</a></span><span class="t"><span class="nam">GALATEO_COMUNIDAD</span> <span class="op">=</span> <span class="str">"29813"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t102" href="#t102">102</a></span><span class="t"><span class="nam">GARROCHALES_COMUNIDAD</span> <span class="op">=</span> <span class="str">"30372"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t103" href="#t103">103</a></span><span class="t"><span class="nam">GUAYABAL_COMUNIDAD</span> <span class="op">=</span> <span class="str">"31877"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t104" href="#t104">104</a></span><span class="t"><span class="nam">GUAYAMA_ZONA_URBANA</span> <span class="op">=</span> <span class="str">"32221"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t105" href="#t105">105</a></span><span class="t"><span class="nam">GUAYANILLA_ZONA_URBANA</span> <span class="op">=</span> <span class="str">"32307"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t106" href="#t106">106</a></span><span class="t"><span class="nam">GUAYNABO_ZONA_URBANA</span> <span class="op">=</span> <span class="str">"32522"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t107" href="#t107">107</a></span><span class="t"><span class="nam">GURABO_ZONA_URBANA</span> <span class="op">=</span> <span class="str">"32823"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t108" href="#t108">108</a></span><span class="t"><span class="nam">GUANICA_ZONA_URBANA</span> <span class="op">=</span> <span class="str">"31189"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t109" href="#t109">109</a></span><span class="t"><span class="nam">H_RIVERA_COLON_COMUNIDAD</span> <span class="op">=</span> <span class="str">"35403"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t110" href="#t110">110</a></span><span class="t"><span class="nam">HACIENDA_SAN_JOS&#201;_COMUNIDAD</span> <span class="op">=</span> <span class="str">"33184"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t111" href="#t111">111</a></span><span class="t"><span class="nam">HATILLO_ZONA_URBANA</span> <span class="op">=</span> <span class="str">"33296"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t112" href="#t112">112</a></span><span class="t"><span class="nam">HATO_ARRIBA_COMUNIDAD</span> <span class="op">=</span> <span class="str">"33597"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t113" href="#t113">113</a></span><span class="t"><span class="nam">HATO_CANDAL_COMUNIDAD</span> <span class="op">=</span> <span class="str">"33683"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t114" href="#t114">114</a></span><span class="t"><span class="nam">HATO_VIEJO_COMUNIDAD</span> <span class="op">=</span> <span class="str">"34242"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t115" href="#t115">115</a></span><span class="t"><span class="nam">HONDURAS_COMUNIDAD</span> <span class="op">=</span> <span class="str">"34914"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t116" href="#t116">116</a></span><span class="t"><span class="nam">HORMIGUEROS_ZONA_URBANA</span> <span class="op">=</span> <span class="str">"35059"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t117" href="#t117">117</a></span><span class="t"><span class="nam">HUMACAO_ZONA_URBANA</span> <span class="op">=</span> <span class="str">"35532"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t118" href="#t118">118</a></span><span class="t"><span class="nam">IMB&#201;RY_COMUNIDAD</span> <span class="op">=</span> <span class="str">"35962"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t119" href="#t119">119</a></span><span class="t"><span class="nam">INDIOS_COMUNIDAD</span> <span class="op">=</span> <span class="str">"36177"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t120" href="#t120">120</a></span><span class="t"><span class="nam">INGENIO_COMUNIDAD</span> <span class="op">=</span> <span class="str">"36263"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t121" href="#t121">121</a></span><span class="t"><span class="nam">ISABELA_ZONA_URBANA</span> <span class="op">=</span> <span class="str">"36478"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t122" href="#t122">122</a></span><span class="t"><span class="nam">ISLETA_COMUNIDAD</span> <span class="op">=</span> <span class="str">"36779"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t123" href="#t123">123</a></span><span class="t"><span class="nam">JAGUAL_COMUNIDAD</span> <span class="op">=</span> <span class="str">"37166"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t124" href="#t124">124</a></span><span class="t"><span class="nam">JAGUAS_COMUNIDAD</span> <span class="op">=</span> <span class="str">"37336"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t125" href="#t125">125</a></span><span class="t"><span class="nam">JAUCA_COMUNIDAD</span> <span class="op">=</span> <span class="str">"38241"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t126" href="#t126">126</a></span><span class="t"><span class="nam">JAYUYA_ZONA_URBANA</span> <span class="op">=</span> <span class="str">"38370"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t127" href="#t127">127</a></span><span class="t"><span class="nam">JOBOS_COMUNIDAD</span> <span class="op">=</span> <span class="str">"38671"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t128" href="#t128">128</a></span><span class="t"><span class="nam">JUANA_DIAZ_ZONA_URBANA</span> <span class="op">=</span> <span class="str">"38972"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t129" href="#t129">129</a></span><span class="t"><span class="nam">JUNCAL_COMUNIDAD</span> <span class="op">=</span> <span class="str">"39470"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t130" href="#t130">130</a></span><span class="t"><span class="nam">JUNCOS_ZONA_URBANA</span> <span class="op">=</span> <span class="str">"39574"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t131" href="#t131">131</a></span><span class="t"><span class="nam">LA_ALIANZA_COMUNIDAD</span> <span class="op">=</span> <span class="str">"39875"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t132" href="#t132">132</a></span><span class="t"><span class="nam">LA_DOLORES_COMUNIDAD</span> <span class="op">=</span> <span class="str">"40348"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t133" href="#t133">133</a></span><span class="t"><span class="nam">LA_FERMINA_COMUNIDAD</span> <span class="op">=</span> <span class="str">"40563"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t134" href="#t134">134</a></span><span class="t"><span class="nam">LA_LIGA_COMUNIDAD</span> <span class="op">=</span> <span class="str">"41274"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t135" href="#t135">135</a></span><span class="t"><span class="nam">LA_LUISA_COMUNIDAD</span> <span class="op">=</span> <span class="str">"41294"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t136" href="#t136">136</a></span><span class="t"><span class="nam">LA_PARGUERA_COMUNIDAD</span> <span class="op">=</span> <span class="str">"41767"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t137" href="#t137">137</a></span><span class="t"><span class="nam">LA_PICA_COMUNIDAD</span> <span class="op">=</span> <span class="str">"41810"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t138" href="#t138">138</a></span><span class="t"><span class="nam">LA_PLAYA_COMUNIDAD</span> <span class="op">=</span> <span class="str">"42068"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t139" href="#t139">139</a></span><span class="t"><span class="nam">LA_PLENA_COMUNIDAD</span> <span class="op">=</span> <span class="str">"42197"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t140" href="#t140">140</a></span><span class="t"><span class="nam">LA_YUCA_COMUNIDAD</span> <span class="op">=</span> <span class="str">"45170"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t141" href="#t141">141</a></span><span class="t"><span class="nam">LAJAS_ZONA_URBANA</span> <span class="op">=</span> <span class="str">"40950"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t142" href="#t142">142</a></span><span class="t"><span class="nam">LAMBOGLIA_COMUNIDAD</span> <span class="op">=</span> <span class="str">"41466"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t143" href="#t143">143</a></span><span class="t"><span class="nam">LARES_ZONA_URBANA</span> <span class="op">=</span> <span class="str">"42498"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t144" href="#t144">144</a></span><span class="t"><span class="nam">LAS_CAROLINAS_COMUNIDAD</span> <span class="op">=</span> <span class="str">"42842"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t145" href="#t145">145</a></span><span class="t"><span class="nam">LAS_CROABAS_COMUNIDAD</span> <span class="op">=</span> <span class="str">"43057"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t146" href="#t146">146</a></span><span class="t"><span class="nam">LAS_GAVIOTAS_COMUNIDAD</span> <span class="op">=</span> <span class="str">"43294"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t147" href="#t147">147</a></span><span class="t"><span class="nam">LAS_MARIAS_COMUNIDAD</span> <span class="op">=</span> <span class="str">"43702"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t148" href="#t148">148</a></span><span class="t"><span class="nam">LAS_MARIAS_ZONA_URBANA</span> <span class="op">=</span> <span class="str">"43788"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t149" href="#t149">149</a></span><span class="t"><span class="nam">LAS_OCHENTA_COMUNIDAD</span> <span class="op">=</span> <span class="str">"44003"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t150" href="#t150">150</a></span><span class="t"><span class="nam">LAS_OLLAS_COMUNIDAD</span> <span class="op">=</span> <span class="str">"44089"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t151" href="#t151">151</a></span><span class="t"><span class="nam">LAS_PIEDRAS_ZONA_URBANA</span> <span class="op">=</span> <span class="str">"44390"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t152" href="#t152">152</a></span><span class="t"><span class="nam">LASSALLE_COMUNIDAD</span> <span class="op">=</span> <span class="str">"44507"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t153" href="#t153">153</a></span><span class="t"><span class="nam">LIBORIO_NEGRON_TORRES_COMUNIDAD</span> <span class="op">=</span> <span class="str">"45379"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t154" href="#t154">154</a></span><span class="t"><span class="nam">LLUVERAS_COMUNIDAD</span> <span class="op">=</span> <span class="str">"46282"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t155" href="#t155">155</a></span><span class="t"><span class="nam">LOMAS_VERDES_COMUNIDAD</span> <span class="op">=</span> <span class="str">"46800"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t156" href="#t156">156</a></span><span class="t"><span class="nam">LOMAS_COMUNIDAD</span> <span class="op">=</span> <span class="str">"46626"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t157" href="#t157">157</a></span><span class="t"><span class="nam">LOS_H&#201;ROES_COMUNIDAD</span> <span class="op">=</span> <span class="str">"46960"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t158" href="#t158">158</a></span><span class="t"><span class="nam">LOS_LLANOS_COMUNIDAD</span> <span class="op">=</span> <span class="str">"47013"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t159" href="#t159">159</a></span><span class="t"><span class="nam">LOS_PANES_COMUNIDAD</span> <span class="op">=</span> <span class="str">"47336"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t160" href="#t160">160</a></span><span class="t"><span class="nam">LOS_PRADOS_COMUNIDAD</span> <span class="op">=</span> <span class="str">"47422"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t161" href="#t161">161</a></span><span class="t"><span class="nam">LOIZA_ZONA_URBANA</span> <span class="op">=</span> <span class="str">"46368"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t162" href="#t162">162</a></span><span class="t"><span class="nam">LUIS_LLOR&#201;NS_TORRES_COMUNIDAD</span> <span class="op">=</span> <span class="str">"47615"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t163" href="#t163">163</a></span><span class="t"><span class="nam">LUIS_M_CINTRON_COMUNIDAD</span> <span class="op">=</span> <span class="str">"47701"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t164" href="#t164">164</a></span><span class="t"><span class="nam">LUQUILLO_ZONA_URBANA</span> <span class="op">=</span> <span class="str">"47787"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t165" href="#t165">165</a></span><span class="t"><span class="nam">LUYANDO_COMUNIDAD</span> <span class="op">=</span> <span class="str">"47873"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t166" href="#t166">166</a></span><span class="t"><span class="nam">MAGAS_ARRIBA_COMUNIDAD</span> <span class="op">=</span> <span class="str">"48604"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t167" href="#t167">167</a></span><span class="t"><span class="nam">MAGUAYO_COMUNIDAD</span> <span class="op">=</span> <span class="str">"48862"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t168" href="#t168">168</a></span><span class="t"><span class="nam">MANATI_ZONA_URBANA</span> <span class="op">=</span> <span class="str">"50152"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t169" href="#t169">169</a></span><span class="t"><span class="nam">MANSION_DEL_MAR_COMUNIDAD</span> <span class="op">=</span> <span class="str">"50260"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t170" href="#t170">170</a></span><span class="t"><span class="nam">MANSION_DEL_SOL_COMUNIDAD</span> <span class="op">=</span> <span class="str">"50270"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t171" href="#t171">171</a></span><span class="t"><span class="nam">MARIANO_COLON_COMUNIDAD</span> <span class="op">=</span> <span class="str">"51055"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t172" href="#t172">172</a></span><span class="t"><span class="nam">MARICAO_ZONA_URBANA</span> <span class="op">=</span> <span class="str">"51270"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t173" href="#t173">173</a></span><span class="t"><span class="nam">MARTORELL_COMUNIDAD</span> <span class="op">=</span> <span class="str">"51657"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t174" href="#t174">174</a></span><span class="t"><span class="nam">MARUENO_COMUNIDAD</span> <span class="op">=</span> <span class="str">"51700"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t175" href="#t175">175</a></span><span class="t"><span class="nam">MARIA_ANTONIA_COMUNIDAD</span> <span class="op">=</span> <span class="str">"50754"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t176" href="#t176">176</a></span><span class="t"><span class="nam">MAUNABO_ZONA_URBANA</span> <span class="op">=</span> <span class="str">"52345"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t177" href="#t177">177</a></span><span class="t"><span class="nam">MAYAGUEZ_ZONA_URBANA</span> <span class="op">=</span> <span class="str">"52431"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t178" href="#t178">178</a></span><span class="t"><span class="nam">MIRANDA_COMUNIDAD</span> <span class="op">=</span> <span class="str">"53678"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t179" href="#t179">179</a></span><span class="t"><span class="nam">MOCA_ZONA_URBANA</span> <span class="op">=</span> <span class="str">"53807"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t180" href="#t180">180</a></span><span class="t"><span class="nam">MONSERRATE_COMUNIDAD</span> <span class="op">=</span> <span class="str">"53979"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t181" href="#t181">181</a></span><span class="t"><span class="nam">MONTE_GRANDE_COMUNIDAD</span> <span class="op">=</span> <span class="str">"54366"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t182" href="#t182">182</a></span><span class="t"><span class="nam">MONTE_VERDE_COMUNIDAD</span> <span class="op">=</span> <span class="str">"54688"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t183" href="#t183">183</a></span><span class="t"><span class="nam">MORA_COMUNIDAD</span> <span class="op">=</span> <span class="str">"54882"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t184" href="#t184">184</a></span><span class="t"><span class="nam">MOROVIS_ZONA_URBANA</span> <span class="op">=</span> <span class="str">"55097"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t185" href="#t185">185</a></span><span class="t"><span class="nam">MUCARABONES_COMUNIDAD</span> <span class="op">=</span> <span class="str">"55355"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t186" href="#t186">186</a></span><span class="t"><span class="nam">NAGUABO_ZONA_URBANA</span> <span class="op">=</span> <span class="str">"55828"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t187" href="#t187">187</a></span><span class="t"><span class="nam">NARANJITO_ZONA_URBANA</span> <span class="op">=</span> <span class="str">"56129"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t188" href="#t188">188</a></span><span class="t"><span class="nam">OLIMPO_COMUNIDAD</span> <span class="op">=</span> <span class="str">"57075"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t189" href="#t189">189</a></span><span class="t"><span class="nam">OROCOVIS_ZONA_URBANA</span> <span class="op">=</span> <span class="str">"57290"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t190" href="#t190">190</a></span><span class="t"><span class="nam">PABELLONES_COMUNIDAD</span> <span class="op">=</span> <span class="str">"57612"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t191" href="#t191">191</a></span><span class="t"><span class="nam">PAJONAL_COMUNIDAD</span> <span class="op">=</span> <span class="str">"57862"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t192" href="#t192">192</a></span><span class="t"><span class="nam">PALMA_SOLA_COMUNIDAD</span> <span class="op">=</span> <span class="str">"58613"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t193" href="#t193">193</a></span><span class="t"><span class="nam">PALMAREJO_COMUNIDAD_COAMO_MUNICIPIO</span> <span class="op">=</span> <span class="str">"57978"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t194" href="#t194">194</a></span><span class="t"><span class="nam">PALMAREJO_COMUNIDAD_COROZAL_MUNICIPIO</span> <span class="op">=</span> <span class="str">"58064"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t195" href="#t195">195</a></span><span class="t"><span class="nam">PALMAREJO_COMUNIDAD_LAJAS_MUNICIPIO</span> <span class="op">=</span> <span class="str">"58150"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t196" href="#t196">196</a></span><span class="t"><span class="nam">PALMAS_COMUNIDAD</span> <span class="op">=</span> <span class="str">"58365"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t197" href="#t197">197</a></span><span class="t"><span class="nam">PALMAS_DEL_MAR_COMUNIDAD</span> <span class="op">=</span> <span class="str">"58602"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t198" href="#t198">198</a></span><span class="t"><span class="nam">PALMER_COMUNIDAD</span> <span class="op">=</span> <span class="str">"58666"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t199" href="#t199">199</a></span><span class="t"><span class="nam">PALO_SECO_COMUNIDAD</span> <span class="op">=</span> <span class="str">"59139"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t200" href="#t200">200</a></span><span class="t"><span class="nam">PALOMAS_COMUNIDAD_COMERIO_MUNICIPIO</span> <span class="op">=</span> <span class="str">"58967"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t201" href="#t201">201</a></span><span class="t"><span class="nam">PALOMAS_COMUNIDAD_YAUCO_MUNICIPIO</span> <span class="op">=</span> <span class="str">"59053"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t202" href="#t202">202</a></span><span class="t"><span class="nam">PARCELAS_LA_MILAGROSA_COMUNIDAD</span> <span class="op">=</span> <span class="str">"59420"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t203" href="#t203">203</a></span><span class="t"><span class="nam">PARCELAS_MANDRY_COMUNIDAD</span> <span class="op">=</span> <span class="str">"59422"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t204" href="#t204">204</a></span><span class="t"><span class="nam">PARCELAS_NUEVAS_COMUNIDAD</span> <span class="op">=</span> <span class="str">"59425"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t205" href="#t205">205</a></span><span class="t"><span class="nam">PARCELAS_PENUELAS_COMUNIDAD</span> <span class="op">=</span> <span class="str">"59440"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t206" href="#t206">206</a></span><span class="t"><span class="nam">PARCELAS_VIEJAS_BORINQUEN_COMUNIDAD</span> <span class="op">=</span> <span class="str">"59450"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t207" href="#t207">207</a></span><span class="t"><span class="nam">PARCELAS_DE_NAVARRO_COMUNIDAD</span> <span class="op">=</span> <span class="str">"59386"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t208" href="#t208">208</a></span><span class="t"><span class="nam">PASTOS_COMUNIDAD</span> <span class="op">=</span> <span class="str">"60257"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t209" href="#t209">209</a></span><span class="t"><span class="nam">PATILLAS_ZONA_URBANA</span> <span class="op">=</span> <span class="str">"60472"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t210" href="#t210">210</a></span><span class="t"><span class="nam">PENA_POBRE_COMUNIDAD</span> <span class="op">=</span> <span class="str">"60945"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t211" href="#t211">211</a></span><span class="t"><span class="nam">PENUELAS_ZONA_URBANA</span> <span class="op">=</span> <span class="str">"61074"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t212" href="#t212">212</a></span><span class="t"><span class="nam">PIEDRA_AGUZA_COMUNIDAD</span> <span class="op">=</span> <span class="str">"61545"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t213" href="#t213">213</a></span><span class="t"><span class="nam">PIEDRA_GORDA_COMUNIDAD</span> <span class="op">=</span> <span class="str">"61590"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t214" href="#t214">214</a></span><span class="t"><span class="nam">PINAS_COMUNIDAD</span> <span class="op">=</span> <span class="str">"61977"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t215" href="#t215">215</a></span><span class="t"><span class="nam">PLAYA_FORTUNA_COMUNIDAD</span> <span class="op">=</span> <span class="str">"63310"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t216" href="#t216">216</a></span><span class="t"><span class="nam">PLAYITA_CORTADA_COMUNIDAD</span> <span class="op">=</span> <span class="str">"63568"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t217" href="#t217">217</a></span><span class="t"><span class="nam">PLAYITA_COMUNIDAD_SALINAS_MUNICIPIO</span> <span class="op">=</span> <span class="str">"63503"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t218" href="#t218">218</a></span><span class="t"><span class="nam">PLAYITA_COMUNIDAD_YABUCOA_MUNICIPIO</span> <span class="op">=</span> <span class="str">"63525"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t219" href="#t219">219</a></span><span class="t"><span class="nam">POLE_OJEA_COMUNIDAD</span> <span class="op">=</span> <span class="str">"63697"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t220" href="#t220">220</a></span><span class="t"><span class="nam">PONCE_ZONA_URBANA</span> <span class="op">=</span> <span class="str">"63820"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t221" href="#t221">221</a></span><span class="t"><span class="nam">POTALA_PASTILLO_COMUNIDAD</span> <span class="op">=</span> <span class="str">"64127"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t222" href="#t222">222</a></span><span class="t"><span class="nam">PUEBLITO_DEL_CARMEN_COMUNIDAD</span> <span class="op">=</span> <span class="str">"64400"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t223" href="#t223">223</a></span><span class="t"><span class="nam">PUEBLITO_DEL_RIO_COMUNIDAD</span> <span class="op">=</span> <span class="str">"64500"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t224" href="#t224">224</a></span><span class="t"><span class="nam">PUERTO_REAL_COMUNIDAD</span> <span class="op">=</span> <span class="str">"65589"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t225" href="#t225">225</a></span><span class="t"><span class="nam">PUNTA_SANTIAGO_COMUNIDAD</span> <span class="op">=</span> <span class="str">"66492"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t226" href="#t226">226</a></span><span class="t"><span class="nam">PAJAROS_COMUNIDAD</span> <span class="op">=</span> <span class="str">"57806"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t227" href="#t227">227</a></span><span class="t"><span class="nam">QUEBRADA_PRIETA_COMUNIDAD</span> <span class="op">=</span> <span class="str">"67675"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t228" href="#t228">228</a></span><span class="t"><span class="nam">QUEBRADA_COMUNIDAD</span> <span class="op">=</span> <span class="str">"66660"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t229" href="#t229">229</a></span><span class="t"><span class="nam">QUEBRADA_DEL_AGUA_COMUNIDAD</span> <span class="op">=</span> <span class="str">"67200"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t230" href="#t230">230</a></span><span class="t"><span class="nam">QUEBRADILLAS_ZONA_URBANA</span> <span class="op">=</span> <span class="str">"68040"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t231" href="#t231">231</a></span><span class="t"><span class="nam">RAFAEL_CAPO_COMUNIDAD</span> <span class="op">=</span> <span class="str">"68513"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t232" href="#t232">232</a></span><span class="t"><span class="nam">RAFAEL_GONZALEZ_COMUNIDAD</span> <span class="op">=</span> <span class="str">"68556"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t233" href="#t233">233</a></span><span class="t"><span class="nam">RAFAEL_HERNANDEZ_COMUNIDAD</span> <span class="op">=</span> <span class="str">"68599"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t234" href="#t234">234</a></span><span class="t"><span class="nam">RAMOS_COMUNIDAD</span> <span class="op">=</span> <span class="str">"68771"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t235" href="#t235">235</a></span><span class="t"><span class="nam">RINCON_COMUNIDAD</span> <span class="op">=</span> <span class="str">"69488"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t236" href="#t236">236</a></span><span class="t"><span class="nam">RINCON_ZONA_URBANA</span> <span class="op">=</span> <span class="str">"69588"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t237" href="#t237">237</a></span><span class="t"><span class="nam">RODRIGUEZ_HEVIA_COMUNIDAD</span> <span class="op">=</span> <span class="str">"71996"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t238" href="#t238">238</a></span><span class="t"><span class="nam">ROSA_SANCHEZ_COMUNIDAD</span> <span class="op">=</span> <span class="str">"72555"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t239" href="#t239">239</a></span><span class="t"><span class="nam">RIO_BLANCO_COMUNIDAD</span> <span class="op">=</span> <span class="str">"70448"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t240" href="#t240">240</a></span><span class="t"><span class="nam">RIO_CANAS_ABAJO_COMUNIDAD</span> <span class="op">=</span> <span class="str">"70706"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t241" href="#t241">241</a></span><span class="t"><span class="nam">RIO_GRANDE_ZONA_URBANA</span> <span class="op">=</span> <span class="str">"71136"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t242" href="#t242">242</a></span><span class="t"><span class="nam">RIO_LAJAS_COMUNIDAD</span> <span class="op">=</span> <span class="str">"71437"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t243" href="#t243">243</a></span><span class="t"><span class="nam">SABANA_ENEAS_COMUNIDAD</span> <span class="op">=</span> <span class="str">"73372"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t244" href="#t244">244</a></span><span class="t"><span class="nam">SABANA_GRANDE_ZONA_URBANA</span> <span class="op">=</span> <span class="str">"73544"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t245" href="#t245">245</a></span><span class="t"><span class="nam">SABANA_HOYOS_COMUNIDAD</span> <span class="op">=</span> <span class="str">"73716"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t246" href="#t246">246</a></span><span class="t"><span class="nam">SABANA_SECA_COMUNIDAD</span> <span class="op">=</span> <span class="str">"74189"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t247" href="#t247">247</a></span><span class="t"><span class="nam">SABANA_COMUNIDAD</span> <span class="op">=</span> <span class="str">"73200"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t248" href="#t248">248</a></span><span class="t"><span class="nam">SALINAS_ZONA_URBANA</span> <span class="op">=</span> <span class="str">"74877"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t249" href="#t249">249</a></span><span class="t"><span class="nam">SAN_ANTONIO_COMUNIDAD_AGUADILLA_MUNICIPIO</span> <span class="op">=</span> <span class="str">"75608"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t250" href="#t250">250</a></span><span class="t"><span class="nam">SAN_ANTONIO_COMUNIDAD_DORADO_MUNICIPIO</span> <span class="op">=</span> <span class="str">"75694"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t251" href="#t251">251</a></span><span class="t"><span class="nam">SAN_ANTONIO_COMUNIDAD_QUEBRADILLAS_MUNICIPIO</span> <span class="op">=</span> <span class="str">"75780"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t252" href="#t252">252</a></span><span class="t"><span class="nam">SAN_GERMAN_ZONA_URBANA</span> <span class="op">=</span> <span class="str">"76167"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t253" href="#t253">253</a></span><span class="t"><span class="nam">SAN_ISIDRO_COMUNIDAD</span> <span class="op">=</span> <span class="str">"76339"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t254" href="#t254">254</a></span><span class="t"><span class="nam">SAN_JOS&#201;_COMUNIDAD</span> <span class="op">=</span> <span class="str">"76683"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t255" href="#t255">255</a></span><span class="t"><span class="nam">SAN_JUAN_ZONA_URBANA</span> <span class="op">=</span> <span class="str">"76770"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t256" href="#t256">256</a></span><span class="t"><span class="nam">SAN_LORENZO_ZONA_URBANA</span> <span class="op">=</span> <span class="str">"77027"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t257" href="#t257">257</a></span><span class="t"><span class="nam">SAN_SEBASTIAN_ZONA_URBANA</span> <span class="op">=</span> <span class="str">"77500"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t258" href="#t258">258</a></span><span class="t"><span class="nam">SANTA_BARBARA_COMUNIDAD</span> <span class="op">=</span> <span class="str">"77672"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t259" href="#t259">259</a></span><span class="t"><span class="nam">SANTA_CLARA_COMUNIDAD</span> <span class="op">=</span> <span class="str">"77826"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t260" href="#t260">260</a></span><span class="t"><span class="nam">SANTA_ISABEL_ZONA_URBANA</span> <span class="op">=</span> <span class="str">"78145"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t261" href="#t261">261</a></span><span class="t"><span class="nam">SANTA_MARIA_COMUNIDAD</span> <span class="op">=</span> <span class="str">"78317"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t262" href="#t262">262</a></span><span class="t"><span class="nam">SANTO_DOMINGO_COMUNIDAD</span> <span class="op">=</span> <span class="str">"79564"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t263" href="#t263">263</a></span><span class="t"><span class="nam">STELLA_COMUNIDAD</span> <span class="op">=</span> <span class="str">"80596"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t264" href="#t264">264</a></span><span class="t"><span class="nam">SUAREZ_COMUNIDAD</span> <span class="op">=</span> <span class="str">"80639"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t265" href="#t265">265</a></span><span class="t"><span class="nam">TALLABOA_ALTA_COMUNIDAD</span> <span class="op">=</span> <span class="str">"81456"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t266" href="#t266">266</a></span><span class="t"><span class="nam">TALLABOA_COMUNIDAD</span> <span class="op">=</span> <span class="str">"81413"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t267" href="#t267">267</a></span><span class="t"><span class="nam">TIBES_COMUNIDAD</span> <span class="op">=</span> <span class="str">"82055"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t268" href="#t268">268</a></span><span class="t"><span class="nam">TIBURONES_COMUNIDAD</span> <span class="op">=</span> <span class="str">"82125"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t269" href="#t269">269</a></span><span class="t"><span class="nam">TIERRAS_NUEVAS_PONIENTE_COMUNIDAD</span> <span class="op">=</span> <span class="str">"82187"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t270" href="#t270">270</a></span><span class="t"><span class="nam">TOA_ALTA_ZONA_URBANA</span> <span class="op">=</span> <span class="str">"82488"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t271" href="#t271">271</a></span><span class="t"><span class="nam">TOA_BAJA_ZONA_URBANA</span> <span class="op">=</span> <span class="str">"82617"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t272" href="#t272">272</a></span><span class="t"><span class="nam">TOAVILLE_COMUNIDAD</span> <span class="op">=</span> <span class="str">"82692"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t273" href="#t273">273</a></span><span class="t"><span class="nam">TOMAS_DE_CASTRO_COMUNIDAD</span> <span class="op">=</span> <span class="str">"82875"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t274" href="#t274">274</a></span><span class="t"><span class="nam">TRUJILLO_ALTO_ZONA_URBANA</span> <span class="op">=</span> <span class="str">"83606"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t275" href="#t275">275</a></span><span class="t"><span class="nam">UTUADO_ZONA_URBANA</span> <span class="op">=</span> <span class="str">"84509"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t276" href="#t276">276</a></span><span class="t"><span class="nam">VALLE_HILL_COMUNIDAD</span> <span class="op">=</span> <span class="str">"84917"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t277" href="#t277">277</a></span><span class="t"><span class="nam">VAYAS_COMUNIDAD</span> <span class="op">=</span> <span class="str">"85025"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t278" href="#t278">278</a></span><span class="t"><span class="nam">VEGA_ALTA_ZONA_URBANA</span> <span class="op">=</span> <span class="str">"85197"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t279" href="#t279">279</a></span><span class="t"><span class="nam">VEGA_BAJA_ZONA_URBANA</span> <span class="op">=</span> <span class="str">"85326"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t280" href="#t280">280</a></span><span class="t"><span class="nam">VIEQUES_COMUNIDAD</span> <span class="op">=</span> <span class="str">"85971"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t281" href="#t281">281</a></span><span class="t"><span class="nam">VIEQUES_ZONA_URBANA</span> <span class="op">=</span> <span class="str">"86014"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t282" href="#t282">282</a></span><span class="t"><span class="nam">VILLA_CALMA_COMUNIDAD</span> <span class="op">=</span> <span class="str">"86250"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t283" href="#t283">283</a></span><span class="t"><span class="nam">VILLA_ESPERANZA_COMUNIDAD</span> <span class="op">=</span> <span class="str">"86584"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t284" href="#t284">284</a></span><span class="t"><span class="nam">VILLA_HUGO_I_COMUNIDAD</span> <span class="op">=</span> <span class="str">"86788"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t285" href="#t285">285</a></span><span class="t"><span class="nam">VILLA_HUGO_II_COMUNIDAD</span> <span class="op">=</span> <span class="str">"86796"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t286" href="#t286">286</a></span><span class="t"><span class="nam">VILLA_QUINTERO_COMUNIDAD</span> <span class="op">=</span> <span class="str">"87240"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t287" href="#t287">287</a></span><span class="t"><span class="nam">VILLA_SIN_MIEDO_COMUNIDAD</span> <span class="op">=</span> <span class="str">"87282"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t288" href="#t288">288</a></span><span class="t"><span class="nam">VILLA_DE_SABANA_COMUNIDAD</span> <span class="op">=</span> <span class="str">"86509"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t289" href="#t289">289</a></span><span class="t"><span class="nam">VILLALBA_ZONA_URBANA</span> <span class="op">=</span> <span class="str">"86831"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t290" href="#t290">290</a></span><span class="t"><span class="nam">VILLAS_DEL_SOL_COMUNIDAD</span> <span class="op">=</span> <span class="str">"87272"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t291" href="#t291">291</a></span><span class="t"><span class="nam">VOLADORAS_COMUNIDAD</span> <span class="op">=</span> <span class="str">"87638"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t292" href="#t292">292</a></span><span class="t"><span class="nam">VAZQUEZ_COMUNIDAD</span> <span class="op">=</span> <span class="str">"85111"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t293" href="#t293">293</a></span><span class="t"><span class="nam">YABUCOA_ZONA_URBANA</span> <span class="op">=</span> <span class="str">"87863"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t294" href="#t294">294</a></span><span class="t"><span class="nam">YAUCO_ZONA_URBANA</span> <span class="op">=</span> <span class="str">"88035"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t295" href="#t295">295</a></span><span class="t"><span class="nam">YAUREL_COMUNIDAD</span> <span class="op">=</span> <span class="str">"88121"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t296" href="#t296">296</a></span><span class="t"><span class="nam">YEGUADA_COMUNIDAD</span> <span class="op">=</span> <span class="str">"88293"</span>&nbsp;</span><span class="r"></span></p>
+</main>
+<footer>
+    <div class="content">
+        <p>
+            <a id="prevFileLink" class="nav" href="d_6f674a066a34dffd_pennsylvania_py.html">&#xab; prev</a> &nbsp; &nbsp;
+            <a id="indexLink" class="nav" href="index.html">&Hat; index</a> &nbsp; &nbsp;
+            <a id="nextFileLink" class="nav" href="d_6f674a066a34dffd_rhode_island_py.html">&#xbb; next</a>
+            &nbsp; &nbsp; &nbsp;
+            <a class="nav" href="https://coverage.readthedocs.io">coverage.py v6.5.0</a>,
+            created at 2023-12-12 01:06 +0000
+        </p>
+    </div>
+</footer>
+</body>
+</html>

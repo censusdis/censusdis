@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Coverage for censusdis/places/utah.py: 100%</title>
+    <link rel="icon" sizes="32x32" href="favicon_32.png">
+    <link rel="stylesheet" href="style.css" type="text/css">
+    <script type="text/javascript" src="coverage_html.js" defer></script>
+</head>
+<body class="pyfile">
+<header>
+    <div class="content">
+        <h1>
+            <span class="text">Coverage for </span><b>censusdis/places/utah.py</b>:
+            <span class="pc_cov">100%</span>
+        </h1>
+        <aside id="help_panel_wrapper">
+            <input id="help_panel_state" type="checkbox">
+            <label for="help_panel_state">
+                <img id="keyboard_icon" src="keybd_closed.png" alt="Show/hide keyboard shortcuts" />
+            </label>
+            <div id="help_panel">
+                <p class="legend">Shortcuts on this page</p>
+                <div class="keyhelp">
+                    <p>
+                        <kbd>r</kbd>
+                        <kbd>m</kbd>
+                        <kbd>x</kbd>
+                        &nbsp; toggle line displays
+                    </p>
+                    <p>
+                        <kbd>j</kbd>
+                        <kbd>k</kbd>
+                        &nbsp; next/prev highlighted chunk
+                    </p>
+                    <p>
+                        <kbd>0</kbd> &nbsp; (zero) top of page
+                    </p>
+                    <p>
+                        <kbd>1</kbd> &nbsp; (one) first highlighted chunk
+                    </p>
+                    <p>
+                        <kbd>[</kbd>
+                        <kbd>]</kbd>
+                        &nbsp; prev/next file
+                    </p>
+                    <p>
+                        <kbd>u</kbd> &nbsp; up to the index
+                    </p>
+                    <p>
+                        <kbd>?</kbd> &nbsp; show/hide this help
+                    </p>
+                </div>
+            </div>
+        </aside>
+        <h2>
+            <span class="text">334 statements &nbsp;</span>
+            <button type="button" class="run button_toggle_run" value="run" data-shortcut="r" title="Toggle lines run">334<span class="text"> run</span></button>
+            <button type="button" class="mis show_mis button_toggle_mis" value="mis" data-shortcut="m" title="Toggle lines missing">0<span class="text"> missing</span></button>
+            <button type="button" class="exc show_exc button_toggle_exc" value="exc" data-shortcut="x" title="Toggle lines excluded">0<span class="text"> excluded</span></button>
+        </h2>
+        <p class="text">
+            <a id="prevFileLink" class="nav" href="d_6f674a066a34dffd_texas_py.html">&#xab; prev</a> &nbsp; &nbsp;
+            <a id="indexLink" class="nav" href="index.html">&Hat; index</a> &nbsp; &nbsp;
+            <a id="nextFileLink" class="nav" href="d_6f674a066a34dffd_vermont_py.html">&#xbb; next</a>
+            &nbsp; &nbsp; &nbsp;
+            <a class="nav" href="https://coverage.readthedocs.io">coverage.py v6.5.0</a>,
+            created at 2023-12-12 01:06 +0000
+        </p>
+        <aside class="hidden">
+            <button type="button" class="button_next_chunk" data-shortcut="j"/>
+            <button type="button" class="button_prev_chunk" data-shortcut="k"/>
+            <button type="button" class="button_top_of_page" data-shortcut="0"/>
+            <button type="button" class="button_first_chunk" data-shortcut="1"/>
+            <button type="button" class="button_prev_file" data-shortcut="["/>
+            <button type="button" class="button_next_file" data-shortcut="]"/>
+            <button type="button" class="button_to_index" data-shortcut="u"/>
+            <button type="button" class="button_show_hide_help" data-shortcut="?"/>
+        </aside>
+    </div>
+</header>
+<main id="source">
+    <p class="pln"><span class="n"><a id="t1" href="#t1">1</a></span><span class="t"><span class="com"># Copyright (c) 2023 Darren Erik Vengroff</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t2" href="#t2">2</a></span><span class="t"><span class="str">"""Places in Utah."""</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t3" href="#t3">3</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t4" href="#t4">4</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t5" href="#t5">5</a></span><span class="t"><span class="nam">ALPINE_CITY</span> <span class="op">=</span> <span class="str">"00540"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t6" href="#t6">6</a></span><span class="t"><span class="nam">ALTA_TOWN</span> <span class="op">=</span> <span class="str">"00650"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t7" href="#t7">7</a></span><span class="t"><span class="nam">ALTAMONT_TOWN</span> <span class="op">=</span> <span class="str">"00760"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t8" href="#t8">8</a></span><span class="t"><span class="nam">ALTON_TOWN</span> <span class="op">=</span> <span class="str">"00870"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t9" href="#t9">9</a></span><span class="t"><span class="nam">AMALGA_TOWN</span> <span class="op">=</span> <span class="str">"01090"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t10" href="#t10">10</a></span><span class="t"><span class="nam">AMERICAN_FORK_CITY</span> <span class="op">=</span> <span class="str">"01310"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t11" href="#t11">11</a></span><span class="t"><span class="nam">ANETH_CDP</span> <span class="op">=</span> <span class="str">"01530"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t12" href="#t12">12</a></span><span class="t"><span class="nam">ANNABELLA_TOWN</span> <span class="op">=</span> <span class="str">"01750"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t13" href="#t13">13</a></span><span class="t"><span class="nam">ANTIMONY_TOWN</span> <span class="op">=</span> <span class="str">"01860"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t14" href="#t14">14</a></span><span class="t"><span class="nam">APPLE_VALLEY_TOWN</span> <span class="op">=</span> <span class="str">"01905"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t15" href="#t15">15</a></span><span class="t"><span class="nam">AURORA_CITY</span> <span class="op">=</span> <span class="str">"02740"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t16" href="#t16">16</a></span><span class="t"><span class="nam">AVON_CDP</span> <span class="op">=</span> <span class="str">"02960"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t17" href="#t17">17</a></span><span class="t"><span class="nam">BALLARD_TOWN</span> <span class="op">=</span> <span class="str">"03345"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t18" href="#t18">18</a></span><span class="t"><span class="nam">BEAR_RIVER_CITY_CITY</span> <span class="op">=</span> <span class="str">"03950"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t19" href="#t19">19</a></span><span class="t"><span class="nam">BEAVER_CITY</span> <span class="op">=</span> <span class="str">"04060"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t20" href="#t20">20</a></span><span class="t"><span class="nam">BENJAMIN_CDP</span> <span class="op">=</span> <span class="str">"04720"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t21" href="#t21">21</a></span><span class="t"><span class="nam">BENSON_CDP</span> <span class="op">=</span> <span class="str">"05050"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t22" href="#t22">22</a></span><span class="t"><span class="nam">BERYL_JUNCTION_CDP</span> <span class="op">=</span> <span class="str">"05380"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t23" href="#t23">23</a></span><span class="t"><span class="nam">BICKNELL_TOWN</span> <span class="op">=</span> <span class="str">"05490"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t24" href="#t24">24</a></span><span class="t"><span class="nam">BIG_WATER_TOWN</span> <span class="op">=</span> <span class="str">"05534"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t25" href="#t25">25</a></span><span class="t"><span class="nam">BLANDING_CITY</span> <span class="op">=</span> <span class="str">"06370"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t26" href="#t26">26</a></span><span class="t"><span class="nam">BLUEBELL_CDP</span> <span class="op">=</span> <span class="str">"06590"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t27" href="#t27">27</a></span><span class="t"><span class="nam">BLUFF_TOWN</span> <span class="op">=</span> <span class="str">"06700"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t28" href="#t28">28</a></span><span class="t"><span class="nam">BLUFFDALE_CITY</span> <span class="op">=</span> <span class="str">"06810"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t29" href="#t29">29</a></span><span class="t"><span class="nam">BONANZA_CDP</span> <span class="op">=</span> <span class="str">"06920"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t30" href="#t30">30</a></span><span class="t"><span class="nam">BOULDER_TOWN</span> <span class="op">=</span> <span class="str">"07470"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t31" href="#t31">31</a></span><span class="t"><span class="nam">BOUNTIFUL_CITY</span> <span class="op">=</span> <span class="str">"07690"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t32" href="#t32">32</a></span><span class="t"><span class="nam">BRIAN_HEAD_TOWN</span> <span class="op">=</span> <span class="str">"08020"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t33" href="#t33">33</a></span><span class="t"><span class="nam">BRIGHAM_CITY_CITY</span> <span class="op">=</span> <span class="str">"08460"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t34" href="#t34">34</a></span><span class="t"><span class="nam">BRIGHTON_TOWN</span> <span class="op">=</span> <span class="str">"08570"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t35" href="#t35">35</a></span><span class="t"><span class="nam">BRYCE_CANYON_CITY_TOWN</span> <span class="op">=</span> <span class="str">"08787"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t36" href="#t36">36</a></span><span class="t"><span class="nam">CACHE_CDP</span> <span class="op">=</span> <span class="str">"09725"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t37" href="#t37">37</a></span><span class="t"><span class="nam">CANNONVILLE_TOWN</span> <span class="op">=</span> <span class="str">"10330"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t38" href="#t38">38</a></span><span class="t"><span class="nam">CARBONVILLE_CDP</span> <span class="op">=</span> <span class="str">"10440"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t39" href="#t39">39</a></span><span class="t"><span class="nam">CASTLE_DALE_CITY</span> <span class="op">=</span> <span class="str">"10660"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t40" href="#t40">40</a></span><span class="t"><span class="nam">CASTLE_VALLEY_TOWN</span> <span class="op">=</span> <span class="str">"11000"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t41" href="#t41">41</a></span><span class="t"><span class="nam">CEDAR_CITY_CITY</span> <span class="op">=</span> <span class="str">"11320"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t42" href="#t42">42</a></span><span class="t"><span class="nam">CEDAR_FORT_TOWN</span> <span class="op">=</span> <span class="str">"11430"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t43" href="#t43">43</a></span><span class="t"><span class="nam">CEDAR_HIGHLANDS_CDP</span> <span class="op">=</span> <span class="str">"11435"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t44" href="#t44">44</a></span><span class="t"><span class="nam">CEDAR_HILLS_CITY</span> <span class="op">=</span> <span class="str">"11440"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t45" href="#t45">45</a></span><span class="t"><span class="nam">CENTERFIELD_TOWN</span> <span class="op">=</span> <span class="str">"11870"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t46" href="#t46">46</a></span><span class="t"><span class="nam">CENTERVILLE_CITY</span> <span class="op">=</span> <span class="str">"11980"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t47" href="#t47">47</a></span><span class="t"><span class="nam">CENTRAL_CDP</span> <span class="op">=</span> <span class="str">"12200"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t48" href="#t48">48</a></span><span class="t"><span class="nam">CENTRAL_VALLEY_TOWN</span> <span class="op">=</span> <span class="str">"12260"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t49" href="#t49">49</a></span><span class="t"><span class="nam">CHARLESTON_TOWN</span> <span class="op">=</span> <span class="str">"12420"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t50" href="#t50">50</a></span><span class="t"><span class="nam">CIRCLEVILLE_TOWN</span> <span class="op">=</span> <span class="str">"12970"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t51" href="#t51">51</a></span><span class="t"><span class="nam">CLARKSTON_TOWN</span> <span class="op">=</span> <span class="str">"13190"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t52" href="#t52">52</a></span><span class="t"><span class="nam">CLAWSON_TOWN</span> <span class="op">=</span> <span class="str">"13300"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t53" href="#t53">53</a></span><span class="t"><span class="nam">CLEAR_CREEK_CDP</span> <span class="op">=</span> <span class="str">"13740"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t54" href="#t54">54</a></span><span class="t"><span class="nam">CLEARFIELD_CITY</span> <span class="op">=</span> <span class="str">"13850"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t55" href="#t55">55</a></span><span class="t"><span class="nam">CLEVELAND_TOWN</span> <span class="op">=</span> <span class="str">"14070"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t56" href="#t56">56</a></span><span class="t"><span class="nam">CLINTON_CITY</span> <span class="op">=</span> <span class="str">"14290"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t57" href="#t57">57</a></span><span class="t"><span class="nam">COALVILLE_CITY</span> <span class="op">=</span> <span class="str">"14840"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t58" href="#t58">58</a></span><span class="t"><span class="nam">COPPERTON_METRO_TOWNSHIP</span> <span class="op">=</span> <span class="str">"15720"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t59" href="#t59">59</a></span><span class="t"><span class="nam">CORINNE_CITY</span> <span class="op">=</span> <span class="str">"15830"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t60" href="#t60">60</a></span><span class="t"><span class="nam">CORNISH_TOWN</span> <span class="op">=</span> <span class="str">"15940"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t61" href="#t61">61</a></span><span class="t"><span class="nam">COTTONWOOD_HEIGHTS_CITY</span> <span class="op">=</span> <span class="str">"16270"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t62" href="#t62">62</a></span><span class="t"><span class="nam">COVE_CDP</span> <span class="op">=</span> <span class="str">"16490"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t63" href="#t63">63</a></span><span class="t"><span class="nam">DAMMERON_VALLEY_CDP</span> <span class="op">=</span> <span class="str">"18090"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t64" href="#t64">64</a></span><span class="t"><span class="nam">DANIEL_TOWN</span> <span class="op">=</span> <span class="str">"18140"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t65" href="#t65">65</a></span><span class="t"><span class="nam">DELTA_CITY</span> <span class="op">=</span> <span class="str">"18910"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t66" href="#t66">66</a></span><span class="t"><span class="nam">DESERET_CDP</span> <span class="op">=</span> <span class="str">"19020"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t67" href="#t67">67</a></span><span class="t"><span class="nam">DEWEYVILLE_TOWN</span> <span class="op">=</span> <span class="str">"19680"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t68" href="#t68">68</a></span><span class="t"><span class="nam">DRAPER_CITY</span> <span class="op">=</span> <span class="str">"20120"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t69" href="#t69">69</a></span><span class="t"><span class="nam">DUCHESNE_CITY</span> <span class="op">=</span> <span class="str">"20340"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t70" href="#t70">70</a></span><span class="t"><span class="nam">DUGWAY_CDP</span> <span class="op">=</span> <span class="str">"20450"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t71" href="#t71">71</a></span><span class="t"><span class="nam">DUTCH_JOHN_TOWN</span> <span class="op">=</span> <span class="str">"20780"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t72" href="#t72">72</a></span><span class="t"><span class="nam">EAGLE_MOUNTAIN_CITY</span> <span class="op">=</span> <span class="str">"20810"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t73" href="#t73">73</a></span><span class="t"><span class="nam">EAST_BASIN_CDP</span> <span class="op">=</span> <span class="str">"20850"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t74" href="#t74">74</a></span><span class="t"><span class="nam">EAST_CARBON_CITY</span> <span class="op">=</span> <span class="str">"20890"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t75" href="#t75">75</a></span><span class="t"><span class="nam">ECHO_CDP</span> <span class="op">=</span> <span class="str">"21880"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t76" href="#t76">76</a></span><span class="t"><span class="nam">EDEN_CDP</span> <span class="op">=</span> <span class="str">"21990"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t77" href="#t77">77</a></span><span class="t"><span class="nam">ELBERTA_CDP</span> <span class="op">=</span> <span class="str">"22210"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t78" href="#t78">78</a></span><span class="t"><span class="nam">ELK_RIDGE_CITY</span> <span class="op">=</span> <span class="str">"22370"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t79" href="#t79">79</a></span><span class="t"><span class="nam">ELMO_TOWN</span> <span class="op">=</span> <span class="str">"22540"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t80" href="#t80">80</a></span><span class="t"><span class="nam">ELSINORE_TOWN</span> <span class="op">=</span> <span class="str">"22650"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t81" href="#t81">81</a></span><span class="t"><span class="nam">ELWOOD_TOWN</span> <span class="op">=</span> <span class="str">"22760"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t82" href="#t82">82</a></span><span class="t"><span class="nam">EMERY_TOWN</span> <span class="op">=</span> <span class="str">"22870"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t83" href="#t83">83</a></span><span class="t"><span class="nam">EMIGRATION_CANYON_METRO_TOWNSHIP</span> <span class="op">=</span> <span class="str">"22875"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t84" href="#t84">84</a></span><span class="t"><span class="nam">ENOCH_CITY</span> <span class="op">=</span> <span class="str">"23200"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t85" href="#t85">85</a></span><span class="t"><span class="nam">ENTERPRISE_CDP</span> <span class="op">=</span> <span class="str">"23310"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t86" href="#t86">86</a></span><span class="t"><span class="nam">ENTERPRISE_CITY</span> <span class="op">=</span> <span class="str">"23420"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t87" href="#t87">87</a></span><span class="t"><span class="nam">EPHRAIM_CITY</span> <span class="op">=</span> <span class="str">"23530"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t88" href="#t88">88</a></span><span class="t"><span class="nam">ERDA_CDP</span> <span class="op">=</span> <span class="str">"23640"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t89" href="#t89">89</a></span><span class="t"><span class="nam">ESCALANTE_CITY</span> <span class="op">=</span> <span class="str">"23750"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t90" href="#t90">90</a></span><span class="t"><span class="nam">EUREKA_CITY</span> <span class="op">=</span> <span class="str">"24080"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t91" href="#t91">91</a></span><span class="t"><span class="nam">FAIRFIELD_TOWN</span> <span class="op">=</span> <span class="str">"24410"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t92" href="#t92">92</a></span><span class="t"><span class="nam">FAIRVIEW_CITY</span> <span class="op">=</span> <span class="str">"24630"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t93" href="#t93">93</a></span><span class="t"><span class="nam">FARMINGTON_CITY</span> <span class="op">=</span> <span class="str">"24740"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t94" href="#t94">94</a></span><span class="t"><span class="nam">FARR_WEST_CITY</span> <span class="op">=</span> <span class="str">"24850"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t95" href="#t95">95</a></span><span class="t"><span class="nam">FAYETTE_TOWN</span> <span class="op">=</span> <span class="str">"25070"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t96" href="#t96">96</a></span><span class="t"><span class="nam">FERRON_CITY</span> <span class="op">=</span> <span class="str">"25180"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t97" href="#t97">97</a></span><span class="t"><span class="nam">FIELDING_TOWN</span> <span class="op">=</span> <span class="str">"25290"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t98" href="#t98">98</a></span><span class="t"><span class="nam">FILLMORE_CITY</span> <span class="op">=</span> <span class="str">"25510"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t99" href="#t99">99</a></span><span class="t"><span class="nam">FLAMING_GORGE_CDP</span> <span class="op">=</span> <span class="str">"25910"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t100" href="#t100">100</a></span><span class="t"><span class="nam">FORT_DUCHESNE_CDP</span> <span class="op">=</span> <span class="str">"26610"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t101" href="#t101">101</a></span><span class="t"><span class="nam">FOUNTAIN_GREEN_CITY</span> <span class="op">=</span> <span class="str">"26720"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t102" href="#t102">102</a></span><span class="t"><span class="nam">FRANCIS_TOWN</span> <span class="op">=</span> <span class="str">"26940"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t103" href="#t103">103</a></span><span class="t"><span class="nam">FREMONT_CDP</span> <span class="op">=</span> <span class="str">"27270"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t104" href="#t104">104</a></span><span class="t"><span class="nam">FRUIT_HEIGHTS_CITY</span> <span class="op">=</span> <span class="str">"27490"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t105" href="#t105">105</a></span><span class="t"><span class="nam">GARDEN_CDP</span> <span class="op">=</span> <span class="str">"27902"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t106" href="#t106">106</a></span><span class="t"><span class="nam">GARDEN_CITY_TOWN</span> <span class="op">=</span> <span class="str">"27930"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t107" href="#t107">107</a></span><span class="t"><span class="nam">GARLAND_CITY</span> <span class="op">=</span> <span class="str">"28150"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t108" href="#t108">108</a></span><span class="t"><span class="nam">GENOLA_TOWN</span> <span class="op">=</span> <span class="str">"28810"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t109" href="#t109">109</a></span><span class="t"><span class="nam">GLENDALE_TOWN</span> <span class="op">=</span> <span class="str">"29360"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t110" href="#t110">110</a></span><span class="t"><span class="nam">GLENWOOD_TOWN</span> <span class="op">=</span> <span class="str">"29580"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t111" href="#t111">111</a></span><span class="t"><span class="nam">GOSHEN_TOWN</span> <span class="op">=</span> <span class="str">"30130"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t112" href="#t112">112</a></span><span class="t"><span class="nam">GRANITE_CDP</span> <span class="op">=</span> <span class="str">"30900"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t113" href="#t113">113</a></span><span class="t"><span class="nam">GRANTSVILLE_CITY</span> <span class="op">=</span> <span class="str">"31120"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t114" href="#t114">114</a></span><span class="t"><span class="nam">GREEN_RIVER_CITY</span> <span class="op">=</span> <span class="str">"31670"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t115" href="#t115">115</a></span><span class="t"><span class="nam">GUNNISON_CITY</span> <span class="op">=</span> <span class="str">"32660"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t116" href="#t116">116</a></span><span class="t"><span class="nam">HALCHITA_CDP</span> <span class="op">=</span> <span class="str">"33002"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t117" href="#t117">117</a></span><span class="t"><span class="nam">HALLS_CROSSING_CDP</span> <span class="op">=</span> <span class="str">"33027"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t118" href="#t118">118</a></span><span class="t"><span class="nam">HANKSVILLE_TOWN</span> <span class="op">=</span> <span class="str">"33100"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t119" href="#t119">119</a></span><span class="t"><span class="nam">HARRISVILLE_CITY</span> <span class="op">=</span> <span class="str">"33540"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t120" href="#t120">120</a></span><span class="t"><span class="nam">HATCH_TOWN</span> <span class="op">=</span> <span class="str">"33760"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t121" href="#t121">121</a></span><span class="t"><span class="nam">HEBER_CITY</span> <span class="op">=</span> <span class="str">"34200"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t122" href="#t122">122</a></span><span class="t"><span class="nam">HELPER_CITY</span> <span class="op">=</span> <span class="str">"34530"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t123" href="#t123">123</a></span><span class="t"><span class="nam">HENEFER_TOWN</span> <span class="op">=</span> <span class="str">"34640"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t124" href="#t124">124</a></span><span class="t"><span class="nam">HENRIEVILLE_TOWN</span> <span class="op">=</span> <span class="str">"34750"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t125" href="#t125">125</a></span><span class="t"><span class="nam">HERRIMAN_CITY</span> <span class="op">=</span> <span class="str">"34970"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t126" href="#t126">126</a></span><span class="t"><span class="nam">HIDEOUT_TOWN</span> <span class="op">=</span> <span class="str">"35120"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t127" href="#t127">127</a></span><span class="t"><span class="nam">HIGHLAND_CITY</span> <span class="op">=</span> <span class="str">"35190"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t128" href="#t128">128</a></span><span class="t"><span class="nam">HILDALE_CITY</span> <span class="op">=</span> <span class="str">"35300"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t129" href="#t129">129</a></span><span class="t"><span class="nam">HINCKLEY_TOWN</span> <span class="op">=</span> <span class="str">"35740"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t130" href="#t130">130</a></span><span class="t"><span class="nam">HOBBLE_CREEK_CDP</span> <span class="op">=</span> <span class="str">"35823"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t131" href="#t131">131</a></span><span class="t"><span class="nam">HOLDEN_TOWN</span> <span class="op">=</span> <span class="str">"35960"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t132" href="#t132">132</a></span><span class="t"><span class="nam">HOLLADAY_CITY</span> <span class="op">=</span> <span class="str">"36070"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t133" href="#t133">133</a></span><span class="t"><span class="nam">HONEYVILLE_CITY</span> <span class="op">=</span> <span class="str">"36290"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t134" href="#t134">134</a></span><span class="t"><span class="nam">HOOPER_CITY</span> <span class="op">=</span> <span class="str">"36400"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t135" href="#t135">135</a></span><span class="t"><span class="nam">HOWELL_TOWN</span> <span class="op">=</span> <span class="str">"36620"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t136" href="#t136">136</a></span><span class="t"><span class="nam">HOYTSVILLE_CDP</span> <span class="op">=</span> <span class="str">"36730"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t137" href="#t137">137</a></span><span class="t"><span class="nam">HUNTINGTON_CITY</span> <span class="op">=</span> <span class="str">"36950"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t138" href="#t138">138</a></span><span class="t"><span class="nam">HUNTSVILLE_TOWN</span> <span class="op">=</span> <span class="str">"37060"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t139" href="#t139">139</a></span><span class="t"><span class="nam">HURRICANE_CITY</span> <span class="op">=</span> <span class="str">"37170"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t140" href="#t140">140</a></span><span class="t"><span class="nam">HYDE_PARK_CITY</span> <span class="op">=</span> <span class="str">"37390"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t141" href="#t141">141</a></span><span class="t"><span class="nam">HYRUM_CITY</span> <span class="op">=</span> <span class="str">"37500"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t142" href="#t142">142</a></span><span class="t"><span class="nam">INDEPENDENCE_TOWN</span> <span class="op">=</span> <span class="str">"37690"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t143" href="#t143">143</a></span><span class="t"><span class="nam">INTERLAKEN_TOWN</span> <span class="op">=</span> <span class="str">"37924"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t144" href="#t144">144</a></span><span class="t"><span class="nam">IVINS_CITY</span> <span class="op">=</span> <span class="str">"38710"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t145" href="#t145">145</a></span><span class="t"><span class="nam">JENSEN_CDP</span> <span class="op">=</span> <span class="str">"39040"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t146" href="#t146">146</a></span><span class="t"><span class="nam">JOSEPH_TOWN</span> <span class="op">=</span> <span class="str">"39370"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t147" href="#t147">147</a></span><span class="t"><span class="nam">JUNCTION_TOWN</span> <span class="op">=</span> <span class="str">"39590"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t148" href="#t148">148</a></span><span class="t"><span class="nam">KAMAS_CITY</span> <span class="op">=</span> <span class="str">"39810"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t149" href="#t149">149</a></span><span class="t"><span class="nam">KANAB_CITY</span> <span class="op">=</span> <span class="str">"39920"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t150" href="#t150">150</a></span><span class="t"><span class="nam">KANARRAVILLE_TOWN</span> <span class="op">=</span> <span class="str">"40030"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t151" href="#t151">151</a></span><span class="t"><span class="nam">KANOSH_TOWN</span> <span class="op">=</span> <span class="str">"40250"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t152" href="#t152">152</a></span><span class="t"><span class="nam">KAYSVILLE_CITY</span> <span class="op">=</span> <span class="str">"40360"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t153" href="#t153">153</a></span><span class="t"><span class="nam">KEARNS_METRO_TOWNSHIP</span> <span class="op">=</span> <span class="str">"40470"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t154" href="#t154">154</a></span><span class="t"><span class="nam">KENILWORTH_CDP</span> <span class="op">=</span> <span class="str">"41020"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t155" href="#t155">155</a></span><span class="t"><span class="nam">KINGSTON_TOWN</span> <span class="op">=</span> <span class="str">"41350"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t156" href="#t156">156</a></span><span class="t"><span class="nam">KOOSHAREM_TOWN</span> <span class="op">=</span> <span class="str">"41680"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t157" href="#t157">157</a></span><span class="t"><span class="nam">LA_SAL_CDP</span> <span class="op">=</span> <span class="str">"43110"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t158" href="#t158">158</a></span><span class="t"><span class="nam">LA_VERKIN_CITY</span> <span class="op">=</span> <span class="str">"43440"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t159" href="#t159">159</a></span><span class="t"><span class="nam">LAKE_SHORE_CDP</span> <span class="op">=</span> <span class="str">"42230"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t160" href="#t160">160</a></span><span class="t"><span class="nam">LAKETOWN_TOWN</span> <span class="op">=</span> <span class="str">"42560"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t161" href="#t161">161</a></span><span class="t"><span class="nam">LAPOINT_CDP</span> <span class="op">=</span> <span class="str">"42890"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t162" href="#t162">162</a></span><span class="t"><span class="nam">LAYTON_CITY</span> <span class="op">=</span> <span class="str">"43660"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t163" href="#t163">163</a></span><span class="t"><span class="nam">LEAMINGTON_TOWN</span> <span class="op">=</span> <span class="str">"43880"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t164" href="#t164">164</a></span><span class="t"><span class="nam">LEEDS_TOWN</span> <span class="op">=</span> <span class="str">"44100"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t165" href="#t165">165</a></span><span class="t"><span class="nam">LEHI_CITY</span> <span class="op">=</span> <span class="str">"44320"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t166" href="#t166">166</a></span><span class="t"><span class="nam">LEVAN_TOWN</span> <span class="op">=</span> <span class="str">"44650"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t167" href="#t167">167</a></span><span class="t"><span class="nam">LEWISTON_CITY</span> <span class="op">=</span> <span class="str">"44760"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t168" href="#t168">168</a></span><span class="t"><span class="nam">LIBERTY_CDP</span> <span class="op">=</span> <span class="str">"44870"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t169" href="#t169">169</a></span><span class="t"><span class="nam">LINDON_CITY</span> <span class="op">=</span> <span class="str">"45090"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t170" href="#t170">170</a></span><span class="t"><span class="nam">LOA_TOWN</span> <span class="op">=</span> <span class="str">"45530"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t171" href="#t171">171</a></span><span class="t"><span class="nam">LOGAN_CITY</span> <span class="op">=</span> <span class="str">"45860"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t172" href="#t172">172</a></span><span class="t"><span class="nam">LYMAN_TOWN</span> <span class="op">=</span> <span class="str">"46410"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t173" href="#t173">173</a></span><span class="t"><span class="nam">LYNNDYL_TOWN</span> <span class="op">=</span> <span class="str">"46740"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t174" href="#t174">174</a></span><span class="t"><span class="nam">MAESER_CDP</span> <span class="op">=</span> <span class="str">"47180"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t175" href="#t175">175</a></span><span class="t"><span class="nam">MAGNA_METRO_TOWNSHIP</span> <span class="op">=</span> <span class="str">"47290"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t176" href="#t176">176</a></span><span class="t"><span class="nam">MANILA_TOWN</span> <span class="op">=</span> <span class="str">"47620"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t177" href="#t177">177</a></span><span class="t"><span class="nam">MANTI_CITY</span> <span class="op">=</span> <span class="str">"47730"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t178" href="#t178">178</a></span><span class="t"><span class="nam">MANTUA_TOWN</span> <span class="op">=</span> <span class="str">"47840"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t179" href="#t179">179</a></span><span class="t"><span class="nam">MAPLETON_CITY</span> <span class="op">=</span> <span class="str">"47950"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t180" href="#t180">180</a></span><span class="t"><span class="nam">MARION_CDP</span> <span class="op">=</span> <span class="str">"48170"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t181" href="#t181">181</a></span><span class="t"><span class="nam">MARRIOTT_SLATERVILLE_CITY</span> <span class="op">=</span> <span class="str">"48300"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t182" href="#t182">182</a></span><span class="t"><span class="nam">MARYSVALE_TOWN</span> <span class="op">=</span> <span class="str">"48610"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t183" href="#t183">183</a></span><span class="t"><span class="nam">MAYFIELD_TOWN</span> <span class="op">=</span> <span class="str">"48720"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t184" href="#t184">184</a></span><span class="t"><span class="nam">MEADOW_TOWN</span> <span class="op">=</span> <span class="str">"48830"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t185" href="#t185">185</a></span><span class="t"><span class="nam">MENDON_CITY</span> <span class="op">=</span> <span class="str">"49160"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t186" href="#t186">186</a></span><span class="t"><span class="nam">MEXICAN_HAT_CDP</span> <span class="op">=</span> <span class="str">"49380"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t187" href="#t187">187</a></span><span class="t"><span class="nam">MIDVALE_CITY</span> <span class="op">=</span> <span class="str">"49710"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t188" href="#t188">188</a></span><span class="t"><span class="nam">MIDWAY_CITY</span> <span class="op">=</span> <span class="str">"49820"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t189" href="#t189">189</a></span><span class="t"><span class="nam">MILFORD_CITY</span> <span class="op">=</span> <span class="str">"50040"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t190" href="#t190">190</a></span><span class="t"><span class="nam">MILLCREEK_CITY</span> <span class="op">=</span> <span class="str">"50150"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t191" href="#t191">191</a></span><span class="t"><span class="nam">MILLVILLE_CITY</span> <span class="op">=</span> <span class="str">"50370"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t192" href="#t192">192</a></span><span class="t"><span class="nam">MINERSVILLE_TOWN</span> <span class="op">=</span> <span class="str">"50590"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t193" href="#t193">193</a></span><span class="t"><span class="nam">MOAB_CITY</span> <span class="op">=</span> <span class="str">"50700"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t194" href="#t194">194</a></span><span class="t"><span class="nam">MODENA_CDP</span> <span class="op">=</span> <span class="str">"50810"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t195" href="#t195">195</a></span><span class="t"><span class="nam">MONA_CITY</span> <span class="op">=</span> <span class="str">"51140"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t196" href="#t196">196</a></span><span class="t"><span class="nam">MONROE_CITY</span> <span class="op">=</span> <span class="str">"51360"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t197" href="#t197">197</a></span><span class="t"><span class="nam">MONTEZUMA_CREEK_CDP</span> <span class="op">=</span> <span class="str">"51470"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t198" href="#t198">198</a></span><span class="t"><span class="nam">MONTICELLO_CITY</span> <span class="op">=</span> <span class="str">"51580"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t199" href="#t199">199</a></span><span class="t"><span class="nam">MORGAN_CITY</span> <span class="op">=</span> <span class="str">"51910"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t200" href="#t200">200</a></span><span class="t"><span class="nam">MORONI_CITY</span> <span class="op">=</span> <span class="str">"52130"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t201" href="#t201">201</a></span><span class="t"><span class="nam">MOUNT_PLEASANT_CITY</span> <span class="op">=</span> <span class="str">"53010"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t202" href="#t202">202</a></span><span class="t"><span class="nam">MOUNTAIN_GREEN_CDP</span> <span class="op">=</span> <span class="str">"52460"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t203" href="#t203">203</a></span><span class="t"><span class="nam">MURRAY_CITY</span> <span class="op">=</span> <span class="str">"53230"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t204" href="#t204">204</a></span><span class="t"><span class="nam">MYTON_CITY</span> <span class="op">=</span> <span class="str">"53340"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t205" href="#t205">205</a></span><span class="t"><span class="nam">NAPLES_CITY</span> <span class="op">=</span> <span class="str">"53560"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t206" href="#t206">206</a></span><span class="t"><span class="nam">NAVAJO_MOUNTAIN_CDP</span> <span class="op">=</span> <span class="str">"53890"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t207" href="#t207">207</a></span><span class="t"><span class="nam">NEOLA_CDP</span> <span class="op">=</span> <span class="str">"54110"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t208" href="#t208">208</a></span><span class="t"><span class="nam">NEPHI_CITY</span> <span class="op">=</span> <span class="str">"54220"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t209" href="#t209">209</a></span><span class="t"><span class="nam">NEW_HARMONY_TOWN</span> <span class="op">=</span> <span class="str">"54440"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t210" href="#t210">210</a></span><span class="t"><span class="nam">NEWCASTLE_CDP</span> <span class="op">=</span> <span class="str">"54330"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t211" href="#t211">211</a></span><span class="t"><span class="nam">NEWTON_TOWN</span> <span class="op">=</span> <span class="str">"54550"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t212" href="#t212">212</a></span><span class="t"><span class="nam">NIBLEY_CITY</span> <span class="op">=</span> <span class="str">"54660"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t213" href="#t213">213</a></span><span class="t"><span class="nam">NORTH_LOGAN_CITY</span> <span class="op">=</span> <span class="str">"54990"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t214" href="#t214">214</a></span><span class="t"><span class="nam">NORTH_OGDEN_CITY</span> <span class="op">=</span> <span class="str">"55100"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t215" href="#t215">215</a></span><span class="t"><span class="nam">NORTH_SALT_LAKE_CITY</span> <span class="op">=</span> <span class="str">"55210"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t216" href="#t216">216</a></span><span class="t"><span class="nam">OAK_CITY_TOWN</span> <span class="op">=</span> <span class="str">"55430"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t217" href="#t217">217</a></span><span class="t"><span class="nam">OAKLEY_CITY</span> <span class="op">=</span> <span class="str">"55650"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t218" href="#t218">218</a></span><span class="t"><span class="nam">OASIS_CDP</span> <span class="op">=</span> <span class="str">"55760"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t219" href="#t219">219</a></span><span class="t"><span class="nam">OGDEN_CITY</span> <span class="op">=</span> <span class="str">"55980"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t220" href="#t220">220</a></span><span class="t"><span class="nam">OLJATO_MONUMENT_VALLEY_CDP</span> <span class="op">=</span> <span class="str">"56440"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t221" href="#t221">221</a></span><span class="t"><span class="nam">OPHIR_CDP</span> <span class="op">=</span> <span class="str">"56750"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t222" href="#t222">222</a></span><span class="t"><span class="nam">ORANGEVILLE_CITY</span> <span class="op">=</span> <span class="str">"56860"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t223" href="#t223">223</a></span><span class="t"><span class="nam">ORDERVILLE_TOWN</span> <span class="op">=</span> <span class="str">"57080"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t224" href="#t224">224</a></span><span class="t"><span class="nam">OREM_CITY</span> <span class="op">=</span> <span class="str">"57300"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t225" href="#t225">225</a></span><span class="t"><span class="nam">PALMYRA_CDP</span> <span class="op">=</span> <span class="str">"57630"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t226" href="#t226">226</a></span><span class="t"><span class="nam">PANGUITCH_CITY</span> <span class="op">=</span> <span class="str">"57740"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t227" href="#t227">227</a></span><span class="t"><span class="nam">PARADISE_TOWN</span> <span class="op">=</span> <span class="str">"57850"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t228" href="#t228">228</a></span><span class="t"><span class="nam">PARAGONAH_TOWN</span> <span class="op">=</span> <span class="str">"57960"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t229" href="#t229">229</a></span><span class="t"><span class="nam">PARK_CITY_CITY</span> <span class="op">=</span> <span class="str">"58070"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t230" href="#t230">230</a></span><span class="t"><span class="nam">PAROWAN_CITY</span> <span class="op">=</span> <span class="str">"58510"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t231" href="#t231">231</a></span><span class="t"><span class="nam">PAYSON_CITY</span> <span class="op">=</span> <span class="str">"58730"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t232" href="#t232">232</a></span><span class="t"><span class="nam">PEOA_CDP</span> <span class="op">=</span> <span class="str">"59280"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t233" href="#t233">233</a></span><span class="t"><span class="nam">PERRY_CITY</span> <span class="op">=</span> <span class="str">"59390"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t234" href="#t234">234</a></span><span class="t"><span class="nam">PETER_CDP</span> <span class="op">=</span> <span class="str">"59555"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t235" href="#t235">235</a></span><span class="t"><span class="nam">PINE_VALLEY_CDP</span> <span class="op">=</span> <span class="str">"60270"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t236" href="#t236">236</a></span><span class="t"><span class="nam">PLAIN_CITY_CITY</span> <span class="op">=</span> <span class="str">"60710"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t237" href="#t237">237</a></span><span class="t"><span class="nam">PLEASANT_GROVE_CITY</span> <span class="op">=</span> <span class="str">"60930"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t238" href="#t238">238</a></span><span class="t"><span class="nam">PLEASANT_VIEW_CITY</span> <span class="op">=</span> <span class="str">"61150"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t239" href="#t239">239</a></span><span class="t"><span class="nam">PLYMOUTH_TOWN</span> <span class="op">=</span> <span class="str">"61260"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t240" href="#t240">240</a></span><span class="t"><span class="nam">PORTAGE_TOWN</span> <span class="op">=</span> <span class="str">"61590"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t241" href="#t241">241</a></span><span class="t"><span class="nam">PRICE_CITY</span> <span class="op">=</span> <span class="str">"62030"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t242" href="#t242">242</a></span><span class="t"><span class="nam">PROVIDENCE_CITY</span> <span class="op">=</span> <span class="str">"62360"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t243" href="#t243">243</a></span><span class="t"><span class="nam">PROVO_CITY</span> <span class="op">=</span> <span class="str">"62470"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t244" href="#t244">244</a></span><span class="t"><span class="nam">RANDLETT_CDP</span> <span class="op">=</span> <span class="str">"62910"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t245" href="#t245">245</a></span><span class="t"><span class="nam">RANDOLPH_TOWN</span> <span class="op">=</span> <span class="str">"63020"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t246" href="#t246">246</a></span><span class="t"><span class="nam">REDMOND_TOWN</span> <span class="op">=</span> <span class="str">"63240"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t247" href="#t247">247</a></span><span class="t"><span class="nam">RICHFIELD_CITY</span> <span class="op">=</span> <span class="str">"63570"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t248" href="#t248">248</a></span><span class="t"><span class="nam">RICHMOND_CITY</span> <span class="op">=</span> <span class="str">"63680"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t249" href="#t249">249</a></span><span class="t"><span class="nam">RIVER_HEIGHTS_CITY</span> <span class="op">=</span> <span class="str">"64120"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t250" href="#t250">250</a></span><span class="t"><span class="nam">RIVERDALE_CITY</span> <span class="op">=</span> <span class="str">"64010"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t251" href="#t251">251</a></span><span class="t"><span class="nam">RIVERSIDE_CDP</span> <span class="op">=</span> <span class="str">"64230"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t252" href="#t252">252</a></span><span class="t"><span class="nam">RIVERTON_CITY</span> <span class="op">=</span> <span class="str">"64340"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t253" href="#t253">253</a></span><span class="t"><span class="nam">ROCKVILLE_TOWN</span> <span class="op">=</span> <span class="str">"64560"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t254" href="#t254">254</a></span><span class="t"><span class="nam">ROCKY_RIDGE_TOWN</span> <span class="op">=</span> <span class="str">"64590"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t255" href="#t255">255</a></span><span class="t"><span class="nam">ROOSEVELT_CITY</span> <span class="op">=</span> <span class="str">"64670"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t256" href="#t256">256</a></span><span class="t"><span class="nam">ROY_CITY</span> <span class="op">=</span> <span class="str">"65110"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t257" href="#t257">257</a></span><span class="t"><span class="nam">RUSH_VALLEY_TOWN</span> <span class="op">=</span> <span class="str">"65240"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t258" href="#t258">258</a></span><span class="t"><span class="nam">SALEM_CITY</span> <span class="op">=</span> <span class="str">"65770"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t259" href="#t259">259</a></span><span class="t"><span class="nam">SALINA_CITY</span> <span class="op">=</span> <span class="str">"65880"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t260" href="#t260">260</a></span><span class="t"><span class="nam">SALT_LAKE_CITY_CITY</span> <span class="op">=</span> <span class="str">"67000"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t261" href="#t261">261</a></span><span class="t"><span class="nam">SAMAK_CDP</span> <span class="op">=</span> <span class="str">"67400"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t262" href="#t262">262</a></span><span class="t"><span class="nam">SANDY_CITY</span> <span class="op">=</span> <span class="str">"67440"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t263" href="#t263">263</a></span><span class="t"><span class="nam">SANTA_CLARA_CITY</span> <span class="op">=</span> <span class="str">"67660"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t264" href="#t264">264</a></span><span class="t"><span class="nam">SANTAQUIN_CITY</span> <span class="op">=</span> <span class="str">"67770"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t265" href="#t265">265</a></span><span class="t"><span class="nam">SARATOGA_SPRINGS_CITY</span> <span class="op">=</span> <span class="str">"67825"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t266" href="#t266">266</a></span><span class="t"><span class="nam">SCIPIO_TOWN</span> <span class="op">=</span> <span class="str">"67880"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t267" href="#t267">267</a></span><span class="t"><span class="nam">SCOFIELD_TOWN</span> <span class="op">=</span> <span class="str">"67990"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t268" href="#t268">268</a></span><span class="t"><span class="nam">SIGURD_TOWN</span> <span class="op">=</span> <span class="str">"68650"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t269" href="#t269">269</a></span><span class="t"><span class="nam">SILVER_SUMMIT_CDP</span> <span class="op">=</span> <span class="str">"69280"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t270" href="#t270">270</a></span><span class="t"><span class="nam">SMITHFIELD_CITY</span> <span class="op">=</span> <span class="str">"69640"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t271" href="#t271">271</a></span><span class="t"><span class="nam">SNOWVILLE_TOWN</span> <span class="op">=</span> <span class="str">"69970"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t272" href="#t272">272</a></span><span class="t"><span class="nam">SNYDERVILLE_CDP</span> <span class="op">=</span> <span class="str">"70190"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t273" href="#t273">273</a></span><span class="t"><span class="nam">SOUTH_JORDAN_CITY</span> <span class="op">=</span> <span class="str">"70850"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t274" href="#t274">274</a></span><span class="t"><span class="nam">SOUTH_OGDEN_CITY</span> <span class="op">=</span> <span class="str">"70960"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t275" href="#t275">275</a></span><span class="t"><span class="nam">SOUTH_SALT_LAKE_CITY</span> <span class="op">=</span> <span class="str">"71070"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t276" href="#t276">276</a></span><span class="t"><span class="nam">SOUTH_WEBER_CITY</span> <span class="op">=</span> <span class="str">"71180"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t277" href="#t277">277</a></span><span class="t"><span class="nam">SOUTH_WILLARD_CDP</span> <span class="op">=</span> <span class="str">"71255"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t278" href="#t278">278</a></span><span class="t"><span class="nam">SPANISH_FORK_CITY</span> <span class="op">=</span> <span class="str">"71290"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t279" href="#t279">279</a></span><span class="t"><span class="nam">SPANISH_VALLEY_CDP</span> <span class="op">=</span> <span class="str">"71455"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t280" href="#t280">280</a></span><span class="t"><span class="nam">SPRING_CITY_CITY</span> <span class="op">=</span> <span class="str">"71730"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t281" href="#t281">281</a></span><span class="t"><span class="nam">SPRING_GLEN_CDP</span> <span class="op">=</span> <span class="str">"72060"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t282" href="#t282">282</a></span><span class="t"><span class="nam">SPRING_LAKE_CDP</span> <span class="op">=</span> <span class="str">"72170"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t283" href="#t283">283</a></span><span class="t"><span class="nam">SPRINGDALE_TOWN</span> <span class="op">=</span> <span class="str">"71840"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t284" href="#t284">284</a></span><span class="t"><span class="nam">SPRINGVILLE_CITY</span> <span class="op">=</span> <span class="str">"72280"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t285" href="#t285">285</a></span><span class="t"><span class="nam">ST_GEORGE_CITY</span> <span class="op">=</span> <span class="str">"65330"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t286" href="#t286">286</a></span><span class="t"><span class="nam">STANSBURY_PARK_CDP</span> <span class="op">=</span> <span class="str">"72720"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t287" href="#t287">287</a></span><span class="t"><span class="nam">STERLING_TOWN</span> <span class="op">=</span> <span class="str">"72940"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t288" href="#t288">288</a></span><span class="t"><span class="nam">STOCKTON_TOWN</span> <span class="op">=</span> <span class="str">"73050"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t289" href="#t289">289</a></span><span class="t"><span class="nam">SUMMIT_CDP</span> <span class="op">=</span> <span class="str">"74040"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t290" href="#t290">290</a></span><span class="t"><span class="nam">SUMMIT_PARK_CDP</span> <span class="op">=</span> <span class="str">"74095"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t291" href="#t291">291</a></span><span class="t"><span class="nam">SUNDANCE_CDP</span> <span class="op">=</span> <span class="str">"74260"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t292" href="#t292">292</a></span><span class="t"><span class="nam">SUNSET_CITY</span> <span class="op">=</span> <span class="str">"74480"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t293" href="#t293">293</a></span><span class="t"><span class="nam">SUTHERLAND_CDP</span> <span class="op">=</span> <span class="str">"74590"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t294" href="#t294">294</a></span><span class="t"><span class="nam">SYRACUSE_CITY</span> <span class="op">=</span> <span class="str">"74810"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t295" href="#t295">295</a></span><span class="t"><span class="nam">TABIONA_TOWN</span> <span class="op">=</span> <span class="str">"74920"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t296" href="#t296">296</a></span><span class="t"><span class="nam">TAYLORSVILLE_CITY</span> <span class="op">=</span> <span class="str">"75360"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t297" href="#t297">297</a></span><span class="t"><span class="nam">TEASDALE_CDP</span> <span class="op">=</span> <span class="str">"75470"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t298" href="#t298">298</a></span><span class="t"><span class="nam">THATCHER_CDP</span> <span class="op">=</span> <span class="str">"75800"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t299" href="#t299">299</a></span><span class="t"><span class="nam">THOMPSON_SPRINGS_CDP</span> <span class="op">=</span> <span class="str">"76180"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t300" href="#t300">300</a></span><span class="t"><span class="nam">TIMBER_LAKES_CDP</span> <span class="op">=</span> <span class="str">"76280"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t301" href="#t301">301</a></span><span class="t"><span class="nam">TOOELE_CITY</span> <span class="op">=</span> <span class="str">"76680"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t302" href="#t302">302</a></span><span class="t"><span class="nam">TOQUERVILLE_CITY</span> <span class="op">=</span> <span class="str">"76900"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t303" href="#t303">303</a></span><span class="t"><span class="nam">TORREY_TOWN</span> <span class="op">=</span> <span class="str">"77010"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t304" href="#t304">304</a></span><span class="t"><span class="nam">TREMONTON_CITY</span> <span class="op">=</span> <span class="str">"77120"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t305" href="#t305">305</a></span><span class="t"><span class="nam">TRENTON_TOWN</span> <span class="op">=</span> <span class="str">"77230"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t306" href="#t306">306</a></span><span class="t"><span class="nam">TROPIC_TOWN</span> <span class="op">=</span> <span class="str">"77560"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t307" href="#t307">307</a></span><span class="t"><span class="nam">TSELAKAI_DEZZA_CDP</span> <span class="op">=</span> <span class="str">"77697"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t308" href="#t308">308</a></span><span class="t"><span class="nam">UINTAH_TOWN</span> <span class="op">=</span> <span class="str">"77890"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t309" href="#t309">309</a></span><span class="t"><span class="nam">VERNAL_CITY</span> <span class="op">=</span> <span class="str">"80090"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t310" href="#t310">310</a></span><span class="t"><span class="nam">VERNON_TOWN</span> <span class="op">=</span> <span class="str">"80200"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t311" href="#t311">311</a></span><span class="t"><span class="nam">VEYO_CDP</span> <span class="op">=</span> <span class="str">"80310"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t312" href="#t312">312</a></span><span class="t"><span class="nam">VINEYARD_TOWN</span> <span class="op">=</span> <span class="str">"80420"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t313" href="#t313">313</a></span><span class="t"><span class="nam">VIRGIN_TOWN</span> <span class="op">=</span> <span class="str">"80530"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t314" href="#t314">314</a></span><span class="t"><span class="nam">WALES_TOWN</span> <span class="op">=</span> <span class="str">"80860"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t315" href="#t315">315</a></span><span class="t"><span class="nam">WALLSBURG_TOWN</span> <span class="op">=</span> <span class="str">"80970"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t316" href="#t316">316</a></span><span class="t"><span class="nam">WANSHIP_CDP</span> <span class="op">=</span> <span class="str">"81190"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t317" href="#t317">317</a></span><span class="t"><span class="nam">WASHINGTON_TERRACE_CITY</span> <span class="op">=</span> <span class="str">"82070"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t318" href="#t318">318</a></span><span class="t"><span class="nam">WASHINGTON_CITY</span> <span class="op">=</span> <span class="str">"81960"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t319" href="#t319">319</a></span><span class="t"><span class="nam">WELLINGTON_CITY</span> <span class="op">=</span> <span class="str">"82510"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t320" href="#t320">320</a></span><span class="t"><span class="nam">WELLSVILLE_CITY</span> <span class="op">=</span> <span class="str">"82620"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t321" href="#t321">321</a></span><span class="t"><span class="nam">WENDOVER_CITY</span> <span class="op">=</span> <span class="str">"82730"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t322" href="#t322">322</a></span><span class="t"><span class="nam">WEST_BOUNTIFUL_CITY</span> <span class="op">=</span> <span class="str">"82840"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t323" href="#t323">323</a></span><span class="t"><span class="nam">WEST_HAVEN_CITY</span> <span class="op">=</span> <span class="str">"82930"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t324" href="#t324">324</a></span><span class="t"><span class="nam">WEST_JORDAN_CITY</span> <span class="op">=</span> <span class="str">"82950"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t325" href="#t325">325</a></span><span class="t"><span class="nam">WEST_MOUNTAIN_CDP</span> <span class="op">=</span> <span class="str">"83252"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t326" href="#t326">326</a></span><span class="t"><span class="nam">WEST_POINT_CITY</span> <span class="op">=</span> <span class="str">"83390"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t327" href="#t327">327</a></span><span class="t"><span class="nam">WEST_VALLEY_CITY_CITY</span> <span class="op">=</span> <span class="str">"83470"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t328" href="#t328">328</a></span><span class="t"><span class="nam">WEST_WOOD_CDP</span> <span class="op">=</span> <span class="str">"83730"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t329" href="#t329">329</a></span><span class="t"><span class="nam">WHITE_CITY_METRO_TOWNSHIP</span> <span class="op">=</span> <span class="str">"84050"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t330" href="#t330">330</a></span><span class="t"><span class="nam">WHITE_MESA_CDP</span> <span class="op">=</span> <span class="str">"84095"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t331" href="#t331">331</a></span><span class="t"><span class="nam">WHITEROCKS_CDP</span> <span class="op">=</span> <span class="str">"84160"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t332" href="#t332">332</a></span><span class="t"><span class="nam">WILLARD_CITY</span> <span class="op">=</span> <span class="str">"84710"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t333" href="#t333">333</a></span><span class="t"><span class="nam">WOLF_CREEK_CDP</span> <span class="op">=</span> <span class="str">"84950"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t334" href="#t334">334</a></span><span class="t"><span class="nam">WOODLAND_CDP</span> <span class="op">=</span> <span class="str">"85040"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t335" href="#t335">335</a></span><span class="t"><span class="nam">WOODLAND_HILLS_CITY</span> <span class="op">=</span> <span class="str">"85050"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t336" href="#t336">336</a></span><span class="t"><span class="nam">WOODRUFF_TOWN</span> <span class="op">=</span> <span class="str">"85260"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t337" href="#t337">337</a></span><span class="t"><span class="nam">WOODS_CROSS_CITY</span> <span class="op">=</span> <span class="str">"85370"</span>&nbsp;</span><span class="r"></span></p>
+</main>
+<footer>
+    <div class="content">
+        <p>
+            <a id="prevFileLink" class="nav" href="d_6f674a066a34dffd_texas_py.html">&#xab; prev</a> &nbsp; &nbsp;
+            <a id="indexLink" class="nav" href="index.html">&Hat; index</a> &nbsp; &nbsp;
+            <a id="nextFileLink" class="nav" href="d_6f674a066a34dffd_vermont_py.html">&#xbb; next</a>
+            &nbsp; &nbsp; &nbsp;
+            <a class="nav" href="https://coverage.readthedocs.io">coverage.py v6.5.0</a>,
+            created at 2023-12-12 01:06 +0000
+        </p>
+    </div>
+</footer>
+</body>
+</html>
