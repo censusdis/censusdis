@@ -397,7 +397,8 @@ class ShapeReader:
             gdf = self._cartographic_bound(
                 shapefile_scope, geography, resolution, crs, timeout=timeout
             )
-        except MapException:
+        except MapException as e:
+            logger.debug("Exception loading cb file. Trying tiger instead.", e)
             gdf = self._tiger(shapefile_scope, geography, crs, timeout=timeout)
 
         return gdf

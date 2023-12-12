@@ -360,6 +360,26 @@ def __shapefile_reader(year: int):
     return reader
 
 
+def _congressional_district_from_year(year: int) -> str:
+    """Construct the short form of the congressional district used in a given year."""
+    # See the files in https://www2.census.gov/geo/tiger/GENZ2020/shp/
+    # and similar. The interesting ones are of the form
+    #
+    # cb_20YY_us_cdCCC_500k.zip
+    #
+    # where YY is the year and CCC is the congressional district
+    # used.
+    #
+    # The mappings are not exactly at two year intervals as we would expect.
+    if year == 2020 or year == 2021:
+        # For some reason they did not update to cd117 for these years. Pandemic?
+        return "cd116"
+
+    # Regular year rule.
+    congress = 104 + (year - 1994) // 2
+    return f"cd{congress}"
+
+
 _GEO_QUERY_FROM_DATA_QUERY_INNER_GEO: Dict[
     str, Tuple[Optional[str], str, List[str], List[str]]
 ] = {
@@ -386,15 +406,27 @@ _GEO_QUERY_FROM_DATA_QUERY_INNER_GEO: Dict[
         ["STATEFP", "CONCTYFP"],
     ),
     "county": ("us", "county", ["STATE", "COUNTY"], ["STATEFP", "COUNTYFP"]),
+    "public use microdata area": lambda year: (
+        "us",
+        "puma10" if year < 2020 else "puma20",
+        ["STATE", "PUBLIC_USE_MICRODATA_AREA"],
+        ["STATEFP", "PUMACE"] if year < 2020 else ["STATEFP20", "PUMACE20"],
+    ),
+    "congressional district": lambda year: (
+        "us",
+        _congressional_district_from_year(year),
+        ["STATE", "CONGRESSIONAL_DISTRICT"],
+        ["STATEFP", f"{_congressional_district_from_year(year).upper()}FP"],
+    ),
+    # For these, the shapefiles are at the state level, so `None`
+    # indicates that we have to fill it in based on the geometry
+    # being queried.
     "county subdivision": (
         None,
         "cousub",
         ["STATE", "COUNTY_SUBDIVISION"],
         ["STATEFP", "COUSUBFP"],
     ),
-    # For these, the shapefiles are at the state level, so `None`
-    # indicates that we have to fill it in based on the geometry
-    # being queried.
     "place": (None, "place", ["STATE", "PLACE"], ["STATEFP", "PLACEFP"]),
     "tract": (
         None,
@@ -428,6 +460,12 @@ A map from the innermost level of a geometry specification
 to the arguments we need to pass to `get_cb_shapefile`
 to get the right shapefile for the geography and the columns
 we need to join the data and shapefile on.
+
+Most values are tuples, but a few are functions of the year.
+If a value is callable, then we call it with the year as an
+argument to get the final value. This is necessary for e.g.
+congressional districts, which have names that change every
+two years.
 
 We should add everything in
 https://www.census.gov/geographies/mapping-files/time-series/geo/cartographic-boundary.html
@@ -476,7 +514,11 @@ def _add_geography(
         shapefile_geo_level,
         df_on,
         gdf_on,
-    ) = _GEO_QUERY_FROM_DATA_QUERY_INNER_GEO[geo_level]
+    ) = (
+        _GEO_QUERY_FROM_DATA_QUERY_INNER_GEO[geo_level](year)
+        if callable(_GEO_QUERY_FROM_DATA_QUERY_INNER_GEO[geo_level])
+        else _GEO_QUERY_FROM_DATA_QUERY_INNER_GEO[geo_level]
+    )
 
     # If the query spec has a hard-coded value then we use it.
     if query_shapefile_scope is not None:
