@@ -570,7 +570,7 @@ def _add_geography(
     def individual_shapefile(sub_scope: str, query_year: int) -> gpd.GeoDataFrame:
         """Read the relevant shapefile and add a YEAR column to it."""
         try:
-            gdf = __shapefile_reader(query_year).read_cb_shapefile(
+            gdf = __shapefile_reader(query_year).try_cb_tiger_shapefile(
                 sub_scope, shapefile_geo_level
             )
             gdf["YEAR"] = query_year
