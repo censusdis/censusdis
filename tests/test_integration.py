@@ -1105,8 +1105,8 @@ class AddInferredGeographyTestCase(unittest.TestCase):
                 # There are no maps for these years.
                 [1999, states.NJ, "011", 0.4, 0.5],
                 [1999, states.NJ, "013", 0.0, 0.1],
-                [2000, states.NJ, "011", 0.5, 0.6],
-                [2000, states.NJ, "013", 0.1, 0.2],
+                [1998, states.NJ, "011", 0.5, 0.6],
+                [1998, states.NJ, "013", 0.1, 0.2],
             ],
             columns=["YEAR", "STATE", "COUNTY", "metric1", "metric2"],
         )
