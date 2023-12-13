@@ -10,7 +10,17 @@ import warnings
 from dataclasses import dataclass
 from logging import getLogger
 from pathlib import Path
-from typing import Dict, Iterable, List, Mapping, Optional, Tuple, Union
+from typing import (
+    Callable,
+    Dict,
+    Generator,
+    Iterable,
+    List,
+    Mapping,
+    Optional,
+    Tuple,
+    Union,
+)
 
 import geopandas as gpd
 import numpy as np
@@ -360,8 +370,32 @@ def __shapefile_reader(year: int):
     return reader
 
 
+def _congressional_district_from_year(year: int) -> str:
+    """Construct the short form of the congressional district used in a given year."""
+    # See the files in https://www2.census.gov/geo/tiger/GENZ2020/shp/
+    # and similar. The interesting ones are of the form
+    #
+    # cb_20YY_us_cdCCC_500k.zip
+    #
+    # where YY is the year and CCC is the congressional district
+    # used.
+    #
+    # The mappings are not exactly at two year intervals as we would expect.
+    if year == 2020 or year == 2021:
+        # For some reason they did not update to cd117 for these years. Pandemic?
+        return "cd116"
+
+    # Regular year rule.
+    congress = 104 + (year - 1994) // 2
+    return f"cd{congress}"
+
+
 _GEO_QUERY_FROM_DATA_QUERY_INNER_GEO: Dict[
-    str, Tuple[Optional[str], str, List[str], List[str]]
+    str,
+    Union[
+        Tuple[Optional[str], str, List[str], List[str]],
+        Callable[[str], Tuple[Optional[str], str, List[str], List[str]]],
+    ],
 ] = {
     # innermost geo: ( shapefile_scope, shapefile_geo_name, df_on, gdf_on )
     "region": ("us", "region", ["REGION"], ["REGIONCE"]),
@@ -386,15 +420,27 @@ _GEO_QUERY_FROM_DATA_QUERY_INNER_GEO: Dict[
         ["STATEFP", "CONCTYFP"],
     ),
     "county": ("us", "county", ["STATE", "COUNTY"], ["STATEFP", "COUNTYFP"]),
+    "public use microdata area": lambda year: (
+        "us",
+        "puma10" if year < 2020 else "puma20",
+        ["STATE", "PUBLIC_USE_MICRODATA_AREA"],
+        ["STATEFP", "PUMACE"] if year < 2020 else ["STATEFP20", "PUMACE20"],
+    ),
+    "congressional district": lambda year: (
+        "us",
+        _congressional_district_from_year(year),
+        ["STATE", "CONGRESSIONAL_DISTRICT"],
+        ["STATEFP", f"{_congressional_district_from_year(year).upper()}FP"],
+    ),
+    # For these, the shapefiles are at the state level, so `None`
+    # indicates that we have to fill it in based on the geometry
+    # being queried.
     "county subdivision": (
         None,
         "cousub",
         ["STATE", "COUNTY_SUBDIVISION"],
         ["STATEFP", "COUSUBFP"],
     ),
-    # For these, the shapefiles are at the state level, so `None`
-    # indicates that we have to fill it in based on the geometry
-    # being queried.
     "place": (None, "place", ["STATE", "PLACE"], ["STATEFP", "PLACEFP"]),
     "tract": (
         None,
@@ -429,10 +475,56 @@ to the arguments we need to pass to `get_cb_shapefile`
 to get the right shapefile for the geography and the columns
 we need to join the data and shapefile on.
 
+Most values are tuples, but a few are functions of the year.
+If a value is callable, then we call it with the year as an
+argument to get the final value. This is necessary for e.g.
+congressional districts, which have names that change every
+two years.
+
 We should add everything in
 https://www.census.gov/geographies/mapping-files/time-series/geo/cartographic-boundary.html
 to this map.
 """
+
+
+def _geo_query_from_data_query_inner_geo(
+    year: int, geo_level: str
+) -> Tuple[Optional[str], str, List[str], List[str]]:
+    """
+    Map lookup and call the value if it is callable to produce the result.
+
+    Parameters
+    ----------
+    year
+        The year to pass to callable values.
+    geo_level
+        The key to look up.
+
+    Returns
+    -------
+        A tuple oof results.
+    """
+    if geo_level not in _GEO_QUERY_FROM_DATA_QUERY_INNER_GEO:
+        raise CensusApiException(
+            "The with_geometry=True flag is only allowed if the "
+            f"geometry for the data to be loaded ('{geo_level}') is one of "
+            f"{list(_GEO_QUERY_FROM_DATA_QUERY_INNER_GEO.keys())}."
+        )
+
+    tuple_or_func = _GEO_QUERY_FROM_DATA_QUERY_INNER_GEO[geo_level]
+
+    if callable(tuple_or_func):
+        return tuple_or_func(year)
+
+    return tuple_or_func
+
+
+def _geo_query_from_data_query_inner_geo_items(
+    year: int,
+) -> Generator[Tuple[Optional[str], str, List[str], List[str]], None, None]:
+    """Generate the items in `GEO_QUERY_FROM_DATA_QUERY_INNER_GEO`."""
+    for geo_level in _GEO_QUERY_FROM_DATA_QUERY_INNER_GEO:
+        yield geo_level, _geo_query_from_data_query_inner_geo(year, geo_level)
 
 
 def _add_geography(
@@ -464,23 +556,35 @@ def _add_geography(
         A GeoDataFrame with the original data and an
         added geometry column for each row.
     """
-    if geo_level not in _GEO_QUERY_FROM_DATA_QUERY_INNER_GEO:
-        raise CensusApiException(
-            "The with_geometry=True flag is only allowed if the "
-            f"geometry for the data to be loaded ('{geo_level}') is one of "
-            f"{list(_GEO_QUERY_FROM_DATA_QUERY_INNER_GEO.keys())}."
-        )
-
     (
         query_shapefile_scope,
         shapefile_geo_level,
         df_on,
         gdf_on,
-    ) = _GEO_QUERY_FROM_DATA_QUERY_INNER_GEO[geo_level]
+    ) = _geo_query_from_data_query_inner_geo(year, geo_level)
 
     # If the query spec has a hard-coded value then we use it.
     if query_shapefile_scope is not None:
         shapefile_scope = query_shapefile_scope
+
+    def individual_shapefile(sub_scope: str, query_year: int) -> gpd.GeoDataFrame:
+        """Read the relevant shapefile and add a YEAR column to it."""
+        try:
+            gdf = __shapefile_reader(query_year).try_cb_tiger_shapefile(
+                sub_scope, shapefile_geo_level
+            )
+            gdf["YEAR"] = query_year
+            return gdf
+        except cmap.MapException:
+            # If there are some years where we can't find a shapefile,
+            # skip over it and those rows will not have geometry in the
+            # final result.
+            logger.info(
+                "Unable to load shapefile for scope %s for year %d",
+                sub_scope,
+                query_year,
+            )
+            return gpd.GeoDataFrame()
 
     # If there is a single defined year then we can load the single
     # shapefile. If not, then we have to load multiple shapefiles,
@@ -489,51 +593,28 @@ def _add_geography(
     # Whether there is a single or multiple years, there could also
     # me mutliple scopes, e.g. states, for which we have to download
     # shapefiles. If so, by the time we get here, they are encoded in
-    # one string with comma seperators.
+    # one string with comma separators.
     if isinstance(year, int):
         gdf_shapefile = pd.concat(
-            __shapefile_reader(year).try_cb_tiger_shapefile(
-                sub_scope,
-                shapefile_geo_level,
-            )
+            individual_shapefile(sub_scope, year)
             for sub_scope in shapefile_scope.split(",")
         )
         merge_gdf_on = gdf_on
     else:
-
-        def individual_shapefile(sub_scope: str, query_year: int) -> gpd.GeoDataFrame:
-            """Read the relevant shapefile and add a YEAR column to it."""
-            try:
-                gdf = __shapefile_reader(query_year).read_cb_shapefile(
-                    sub_scope, shapefile_geo_level
-                )
-                gdf["YEAR"] = query_year
-                return gdf
-            except cmap.MapException:
-                # If there are some years where we can't find a shapefile,
-                # skip over it and those rows will not have geometry in the
-                # final result.
-                logger.info(
-                    "Unable to load shapefile for scope %s for year %d",
-                    sub_scope,
-                    query_year,
-                )
-                return gpd.GeoDataFrame()
-
         gdf_shapefile = pd.concat(
             individual_shapefile(sub_scope, unique_year)
             for unique_year in df_data["YEAR"].unique()
             for sub_scope in shapefile_scope.split(",")
         )
 
-        if len(gdf_shapefile.index) == 0:
-            # None of the years matched, so we add None for geometry to all.
-            gdf = gpd.GeoDataFrame(df_data, copy=True)
-            gdf.set_geometry([None for _ in gdf.index], inplace=True)
-            return gdf
-
         merge_gdf_on = ["YEAR"] + gdf_on
         df_on = ["YEAR"] + df_on
+
+    if len(gdf_shapefile.index) == 0:
+        # None of the years matched, so we add None for geometry to all.
+        gdf = gpd.GeoDataFrame(df_data, copy=True)
+        gdf.set_geometry([None for _ in gdf.index], inplace=True)
+        return gdf
 
     if "TRACT" in df_data.columns:
         df_data["TRACT"] = df_data["TRACT"].str.ljust(
@@ -556,12 +637,14 @@ def _add_geography(
     return gdf_data
 
 
-def infer_geo_level(df_data: pd.DataFrame) -> str:
+def infer_geo_level(year: Optional[int], df_data: pd.DataFrame) -> str:
     """
     Infer the geography level based on columns names.
 
     Parameters
     ----------
+    year
+        The vintage of the data. `None` to infer from the data.
     df_data
         A dataframe of variables with one or more columns that
         can be used to infer what geometry level the rows represent.
@@ -596,7 +679,7 @@ def infer_geo_level(df_data: pd.DataFrame) -> str:
     match_on_len = 0
     partial_match_keys = []
 
-    for k, (_, _, df_on, _) in _GEO_QUERY_FROM_DATA_QUERY_INNER_GEO.items():
+    for k, (_, _, df_on, _) in _geo_query_from_data_query_inner_geo_items(year):
         if all(col in df_data.columns for col in df_on):
             # Full match. We want the longest full match
             # we find.
@@ -616,16 +699,16 @@ def infer_geo_level(df_data: pd.DataFrame) -> str:
         raise CensusApiException(
             f"Unable to infer geometry. Was not able to locate any of the "
             "known sets of columns "
-            f"{tuple(df_on for _, _, df_on, _ in _GEO_QUERY_FROM_DATA_QUERY_INNER_GEO.values())} "
+            f"{tuple(df_on for _, (_, _, df_on, _) in _geo_query_from_data_query_inner_geo_items(year))} "
             f"in the columns {list(df_data.columns)}."
         )
 
     if partial_match_keys:
         raise CensusApiException(
             f"Unable to infer geometry. Geometry matched {match_key} on columns "
-            f"{_GEO_QUERY_FROM_DATA_QUERY_INNER_GEO[match_key][2]} "
+            f"{_geo_query_from_data_query_inner_geo(year, match_key)[2]} "
             "but also partially matched one or more candidates "
-            f"{tuple(_GEO_QUERY_FROM_DATA_QUERY_INNER_GEO[k][2] for k in partial_match_keys)}. "
+            f"{tuple(_geo_query_from_data_query_inner_geo(year, k)[2] for k in partial_match_keys)}. "
             "Partial matches are usually unintended. Either add columns to allow a "
             "full match or rename some columns to prevent the undesired partial match."
         )
@@ -661,9 +744,27 @@ def add_inferred_geography(
         A geo data frame containing the original data augmented with
         the appropriate geometry for each row.
     """
-    geo_level = infer_geo_level(df_data)
+    if year is None:
+        # We'll try to get the year out of the data.
+        if "YEAR" not in df_data.columns:
+            raise ValueError(
+                "If year is None then there must be a `YEAR` column in the data."
+            )
 
-    shapefile_scope = _GEO_QUERY_FROM_DATA_QUERY_INNER_GEO[geo_level][0]
+        return gpd.GeoDataFrame(
+            df_data.groupby("YEAR", group_keys=False)
+            .apply(lambda df_group: add_inferred_geography(df_group, df_group.name))
+            .reset_index(drop=True)
+        )
+
+    geo_level = infer_geo_level(year, df_data)
+
+    (
+        shapefile_scope,
+        _,
+        shapefile_scope_columns,
+        _,
+    ) = _geo_query_from_data_query_inner_geo(year, geo_level)
 
     if shapefile_scope is not None:
         # The scope is the same across the board.
@@ -673,7 +774,7 @@ def add_inferred_geography(
     # We have to group by different values of the shapefile
     # scope from the appropriate column and add the right
     # geography to each group.
-    shapefile_scope_column = _GEO_QUERY_FROM_DATA_QUERY_INNER_GEO[geo_level][2][0]
+    shapefile_scope_column = shapefile_scope_columns[0]
 
     df_with_geo = (
         df_data.groupby(shapefile_scope_column, group_keys=False)
