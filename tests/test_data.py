@@ -30,6 +30,7 @@ class InferGeoTestCase(unittest.TestCase):
     """Test our ability to infer geometry from column names."""
 
     def setUp(self) -> None:
+        """Set up before each test."""
         self.year = 2020
 
     def test_infer_geo_state(self):

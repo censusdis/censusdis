@@ -10,7 +10,17 @@ import warnings
 from dataclasses import dataclass
 from logging import getLogger
 from pathlib import Path
-from typing import Callable, Dict, Generator, Iterable, List, Mapping, Optional, Tuple, Union
+from typing import (
+    Callable,
+    Dict,
+    Generator,
+    Iterable,
+    List,
+    Mapping,
+    Optional,
+    Tuple,
+    Union,
+)
 
 import geopandas as gpd
 import numpy as np
@@ -384,8 +394,8 @@ _GEO_QUERY_FROM_DATA_QUERY_INNER_GEO: Dict[
     str,
     Union[
         Tuple[Optional[str], str, List[str], List[str]],
-        Callable[[str], Tuple[Optional[str], str, List[str], List[str]]]
-    ]
+        Callable[[str], Tuple[Optional[str], str, List[str], List[str]]],
+    ],
 ] = {
     # innermost geo: ( shapefile_scope, shapefile_geo_name, df_on, gdf_on )
     "region": ("us", "region", ["REGION"], ["REGIONCE"]),
@@ -509,10 +519,10 @@ def _geo_query_from_data_query_inner_geo(
     return tuple_or_func
 
 
-def _geo_query_from_data_query_inner_geo_items(year: int) -> Generator[
-    Tuple[Optional[str], str, List[str], List[str]], None, None
-]:
-    """Generate the items in `GEO_QUERY_FROM_DATA_QUERY_INNER_GEO`"""
+def _geo_query_from_data_query_inner_geo_items(
+    year: int,
+) -> Generator[Tuple[Optional[str], str, List[str], List[str]], None, None]:
+    """Generate the items in `GEO_QUERY_FROM_DATA_QUERY_INNER_GEO`."""
     for geo_level in _GEO_QUERY_FROM_DATA_QUERY_INNER_GEO:
         yield geo_level, _geo_query_from_data_query_inner_geo(year, geo_level)
 
@@ -736,18 +746,25 @@ def add_inferred_geography(
     """
     if year is None:
         # We'll try to get the year out of the data.
-        if 'YEAR' not in df_data.columns:
-            raise ValueError("If year is None then there must be a `YEAR` column in the data.")
+        if "YEAR" not in df_data.columns:
+            raise ValueError(
+                "If year is None then there must be a `YEAR` column in the data."
+            )
 
         return gpd.GeoDataFrame(
-            df_data.groupby('YEAR', group_keys=False).apply(
-                lambda df_group: add_inferred_geography(df_group, df_group.name)
-            ).reset_index(drop=True)
+            df_data.groupby("YEAR", group_keys=False)
+            .apply(lambda df_group: add_inferred_geography(df_group, df_group.name))
+            .reset_index(drop=True)
         )
 
     geo_level = infer_geo_level(year, df_data)
 
-    (shapefile_scope, _, shapefile_scope_columns, _) = _geo_query_from_data_query_inner_geo(year, geo_level)
+    (
+        shapefile_scope,
+        _,
+        shapefile_scope_columns,
+        _,
+    ) = _geo_query_from_data_query_inner_geo(year, geo_level)
 
     if shapefile_scope is not None:
         # The scope is the same across the board.
