@@ -1550,7 +1550,7 @@ def _intersecting_geos_kws(
     # just let our caller do it. The second case is because
     # we might trim down the list, but more likely the user
     # double specified at the top level, like state=.
-    if len(kwargs) == 1 or  list(kwargs.values())[0] != "*":
+    if len(kwargs) == 1 or list(kwargs.values())[0] != "*":
         return kwargs
 
     # Download the geometry of the outer scope.
