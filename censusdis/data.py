@@ -432,6 +432,12 @@ _GEO_QUERY_FROM_DATA_QUERY_INNER_GEO: Dict[
         ["STATE", "CONGRESSIONAL_DISTRICT"],
         ["STATEFP", f"{_congressional_district_from_year(year).upper()}FP"],
     ),
+    "zip code tabulation area": lambda year: (
+        "us",
+        "zcta520" if year >= 2020 else "zcta510",
+        ["ZIP_CODE_TABULATION_AREA"],
+        ["ZCTA5CE10" if year < 2020 else "ZCTA5CE20" if year == 2020 else "ZCTA5CE"],
+    ),
     # For these, the shapefiles are at the state level, so `None`
     # indicates that we have to fill it in based on the geometry
     # being queried.
@@ -1565,11 +1571,20 @@ def _intersecting_geos_kws(
         gdf_within, lsuffix="FIRST", rsuffix="within"
     )
 
-    col_name = first_binding[0].upper()
+    col_name = first_binding[0].replace(" ", "_").upper()
     if col_name not in gdf_intersects.columns:
         col_name = f"{col_name}_FIRST"
 
     intersecting_geographies = list(gdf_intersects[col_name].unique())
+
+    # Short circuit if there are a massive number of intersection
+    # geps. In this case, we'll just leave things as they came with
+    # the leading '*' and query them all. Otherwise the URL gets super
+    # long and things go a little crazy. This can happen with zip code
+    # tabulation areas.
+    if len(intersecting_geographies) > 20:
+        return dict(**kwargs)
+
     intersecting_geographies = [
         geo[:-6] if geo.endswith("_FIRST") else geo for geo in intersecting_geographies
     ]
