@@ -1543,9 +1543,14 @@ def _intersecting_geos_kws(
     -------
         A dictionary of geographic keywords suitable for passing to :py:func:`~download`.
     """
-    # This is a fast short circuit if the first component
-    # is already specified.
-    if list(kwargs.values())[0] != "*":
+    # This is a fast short circuit if there is only one
+    # element of kwargs or the first component
+    # is already specified. The former is since we will have to
+    # query with the kwargs as they are, so we might as well
+    # just let our caller do it. The second case is because
+    # we might trim down the list, but more likely the user
+    # double specified at the top level, like state=.
+    if len(kwargs) == 1 or  list(kwargs.values())[0] != "*":
         return kwargs
 
     # Download the geometry of the outer scope.
