@@ -1378,6 +1378,21 @@ class ContainedWithinTestCase(unittest.TestCase):
             list(gdf.columns),
         )
 
+    def test_zcta_contained_within_state(self):
+        """Test zip code tabulation area in states."""
+        gdf = ced.contained_within(
+            state=NJ,
+        ).download(
+            self.dataset,
+            self.year,
+            ["NAME", "B03002_001E"],
+            zip_code_tabulation_area="*",
+            with_geometry=True,
+        )
+
+        self.assertIsInstance(gdf, gpd.GeoDataFrame)
+        self.assertEqual((593, 5), gdf.shape)
+
 
 if __name__ == "__main__":
     unittest.main()
