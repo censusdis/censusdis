@@ -474,6 +474,18 @@ _GEO_QUERY_FROM_DATA_QUERY_INNER_GEO: Dict[
         ["STATE", "SCHOOL_DISTRICT_UNIFIED"],
         ["STATEFP", "UNSDLEA"],
     ),
+    "school district (elementary)": lambda year: (
+        None,
+        "sde",
+        ["STATE", "SCHOOL_DISTRICT_ELEMENTARY"],
+        ["STATEFP", "ESDLEA"],
+    ),
+    "school district (secondary)": lambda year: (
+        None,
+        "sde",
+        ["STATE", "SCHOOL_DISTRICT_SECONDARY"],
+        ["STATEFP", "SSDLEA"],
+    ),
     "state legislative district (upper chamber)": lambda year: (
         None,
         "sldu",
@@ -485,6 +497,14 @@ _GEO_QUERY_FROM_DATA_QUERY_INNER_GEO: Dict[
         "sldl",
         ["STATE", "STATE_LEGISLATIVE_DISTRICT_LOWER_CHAMBER"],
         ["STATEFP", "SLDLST"],
+    ),
+    "voting district": lambda year: (
+        None,
+        "vtd",
+        ["STATE", "COUNTY", "VOTING_DISTRICT"],
+        ["STATEFP20", "COUNTYFP20", "VTDST20"]
+        if year >= 2020
+        else ["STATEFP10", "COUNTYFP10", "VTDST10"],
     ),
 }
 """

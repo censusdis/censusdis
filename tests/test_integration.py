@@ -24,7 +24,7 @@ import utils.symbolic as sym
 import censusdis.values as cev
 from censusdis import states
 import censusdis.counties.new_jersey
-from censusdis.datasets import ACS3, ACS5
+from censusdis.datasets import ACS3, ACS5, DECENNIAL_PUBLIC_LAW_94_171
 from censusdis.states import WA, NY, NJ, CT, PA
 
 
@@ -608,6 +608,112 @@ class DownloadWithGeometryTestCase(unittest.TestCase):
             [
                 "STATE",
                 "STATE_LEGISLATIVE_DISTRICT_LOWER_CHAMBER",
+                "NAME",
+                "B19001_001E",
+                "geometry",
+            ],
+            list(gdf.columns),
+        )
+
+    def test_download_with_geometry_voting_district(self):
+        """Download at the voting district level with geometry."""
+        gdf = ced.download(
+            DECENNIAL_PUBLIC_LAW_94_171,
+            self._year,
+            ["NAME", "P1_001N"],
+            with_geometry=True,
+            state=states.NJ,
+            county=censusdis.counties.new_jersey.HUDSON,
+            voting_district="*",
+        )
+
+        self.assertIsInstance(gdf, geopandas.GeoDataFrame)
+
+        self.assertEqual((452, 6), gdf.shape)
+
+        self.assertEqual(
+            [
+                "STATE",
+                "COUNTY",
+                "VOTING_DISTRICT",
+                "NAME",
+                "P1_001N",
+                "geometry",
+            ],
+            list(gdf.columns),
+        )
+
+    def test_download_with_geometry_school_district_unified(self):
+        """Download at the school district unified level with geometry."""
+        gdf = ced.download(
+            self._dataset,
+            self._year,
+            ["NAME", self._name],
+            with_geometry=True,
+            state=states.NJ,
+            school_district_unified="*",
+        )
+
+        self.assertIsInstance(gdf, geopandas.GeoDataFrame)
+
+        self.assertEqual((343, 5), gdf.shape)
+
+        self.assertEqual(
+            [
+                "STATE",
+                "SCHOOL_DISTRICT_UNIFIED",
+                "NAME",
+                "B19001_001E",
+                "geometry",
+            ],
+            list(gdf.columns),
+        )
+
+    def test_download_with_geometry_school_district_elementary(self):
+        """Download at the school district elementary level with geometry."""
+        gdf = ced.download(
+            self._dataset,
+            self._year,
+            ["NAME", self._name],
+            with_geometry=True,
+            state=states.NJ,
+            school_district_elementary="*",
+        )
+
+        self.assertIsInstance(gdf, geopandas.GeoDataFrame)
+
+        self.assertEqual((172, 5), gdf.shape)
+
+        self.assertEqual(
+            [
+                "STATE",
+                "SCHOOL_DISTRICT_ELEMENTARY",
+                "NAME",
+                "B19001_001E",
+                "geometry",
+            ],
+            list(gdf.columns),
+        )
+
+    def test_download_with_geometry_school_district_secondary(self):
+        """Download at the school district secondary level with geometry."""
+        gdf = ced.download(
+            self._dataset,
+            self._year,
+            ["NAME", self._name],
+            with_geometry=True,
+            state=states.NJ,
+            school_district_secondary="*",
+        )
+
+        self.assertIsInstance(gdf, geopandas.GeoDataFrame)
+
+        self.assertEqual((47, 5), gdf.shape)
+
+        self.assertEqual(
+            [
+                "STATE",
+                "SCHOOL_DISTRICT_SECONDARY",
                 "NAME",
                 "B19001_001E",
                 "geometry",
