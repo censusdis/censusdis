@@ -474,6 +474,18 @@ _GEO_QUERY_FROM_DATA_QUERY_INNER_GEO: Dict[
         ["STATE", "SCHOOL_DISTRICT_UNIFIED"],
         ["STATEFP", "UNSDLEA"],
     ),
+    "state legislative district (upper chamber)": lambda year: (
+        None,
+        "sldu",
+        ["STATE", "STATE_LEGISLATIVE_DISTRICT_UPPER_CHAMBER"],
+        ["STATEFP", "SLDUST"],
+    ),
+    "state legislative district (lower chamber)": lambda year: (
+        None,
+        "sldl",
+        ["STATE", "STATE_LEGISLATIVE_DISTRICT_LOWER_CHAMBER"],
+        ["STATEFP", "SLDLST"],
+    ),
 }
 """
 Helper map for the _with_geometry case.

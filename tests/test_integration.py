@@ -306,6 +306,61 @@ class DownloadWithGeometryTestCase(unittest.TestCase):
         filename = path.name
         self.assertTrue(filename.startswith(self.PATH_PREFIX))
 
+    def test_download_with_geometry_region(self):
+        """Download at the region level with geometry."""
+        gdf = ced.download(
+            self._dataset,
+            self._year,
+            ["NAME", self._name],
+            with_geometry=True,
+            region="*",
+        )
+
+        self.assertIsInstance(gdf, geopandas.GeoDataFrame)
+
+        self.assertEqual((4, 4), gdf.shape)
+
+        self.assertEqual(
+            ["REGION", "NAME", "B19001_001E", "geometry"], list(gdf.columns)
+        )
+
+    def test_download_with_geometry_division(self):
+        """Download at the region level with geometry."""
+        gdf = ced.download(
+            self._dataset,
+            self._year,
+            ["NAME", self._name],
+            with_geometry=True,
+            division="*",
+        )
+
+        self.assertIsInstance(gdf, geopandas.GeoDataFrame)
+
+        self.assertEqual((9, 4), gdf.shape)
+
+        self.assertEqual(
+            ["DIVISION", "NAME", "B19001_001E", "geometry"], list(gdf.columns)
+        )
+
+    def test_download_with_geometry_zcta(self):
+        """Download at the zip code tabulation area level with geometry."""
+        gdf = ced.download(
+            self._dataset,
+            self._year,
+            ["NAME", self._name],
+            with_geometry=True,
+            zip_code_tabulation_area="*",
+        )
+
+        self.assertIsInstance(gdf, geopandas.GeoDataFrame)
+
+        self.assertEqual((33_120, 4), gdf.shape)
+
+        self.assertEqual(
+            ["ZIP_CODE_TABULATION_AREA", "NAME", "B19001_001E", "geometry"],
+            list(gdf.columns),
+        )
+
     def test_download_with_geometry_state(self):
         """Download at the state level with geometry."""
         gdf = ced.download(
@@ -505,6 +560,58 @@ class DownloadWithGeometryTestCase(unittest.TestCase):
 
         self.assertEqual(
             ["STATE", "CONGRESSIONAL_DISTRICT", "NAME", "B19001_001E", "geometry"],
+            list(gdf.columns),
+        )
+
+    def test_download_with_geometry_state_legislative_district_upper(self):
+        """Download at the slate legislative district upper chamber level with geometry."""
+        gdf = ced.download(
+            self._dataset,
+            self._year,
+            ["NAME", self._name],
+            with_geometry=True,
+            state=states.NY,
+            state_legislative_district_upper_chamber="*",
+        )
+
+        self.assertIsInstance(gdf, geopandas.GeoDataFrame)
+
+        self.assertEqual((63, 5), gdf.shape)
+
+        self.assertEqual(
+            [
+                "STATE",
+                "STATE_LEGISLATIVE_DISTRICT_UPPER_CHAMBER",
+                "NAME",
+                "B19001_001E",
+                "geometry",
+            ],
+            list(gdf.columns),
+        )
+
+    def test_download_with_geometry_state_legislative_district_lower(self):
+        """Download at the slate legislative district lower chamber level with geometry."""
+        gdf = ced.download(
+            self._dataset,
+            self._year,
+            ["NAME", self._name],
+            with_geometry=True,
+            state=states.NY,
+            state_legislative_district_lower_chamber="*",
+        )
+
+        self.assertIsInstance(gdf, geopandas.GeoDataFrame)
+
+        self.assertEqual((150, 5), gdf.shape)
+
+        self.assertEqual(
+            [
+                "STATE",
+                "STATE_LEGISLATIVE_DISTRICT_LOWER_CHAMBER",
+                "NAME",
+                "B19001_001E",
+                "geometry",
+            ],
             list(gdf.columns),
         )
 
