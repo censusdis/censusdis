@@ -392,7 +392,7 @@ def _congressional_district_from_year(year: int) -> str:
 
 _GEO_QUERY_FROM_DATA_QUERY_INNER_GEO: Dict[
     str,
-    Callable[[str], Tuple[Optional[str], str, List[str], List[str]]],
+    Callable[[int], Tuple[Optional[str], str, List[str], List[str]]],
 ] = {
     # innermost geo: ( shapefile_scope, shapefile_geo_name, df_on, gdf_on )
     "region": lambda year: ("us", "region", ["REGION"], ["REGIONCE"]),

@@ -344,40 +344,73 @@ class DownloadWithGeometryTestCase(unittest.TestCase):
 
     def test_download_with_geometry_zcta(self):
         """Download at the zip code tabulation area level with geometry."""
-        gdf = ced.download(
-            self._dataset,
-            self._year,
-            ["NAME", self._name],
-            with_geometry=True,
-            zip_code_tabulation_area="*",
-        )
+        for year, num_zcta in (2020, 33_120), (2022, 33_774):
+            gdf = ced.download(
+                self._dataset,
+                year,
+                ["NAME", self._name],
+                with_geometry=True,
+                zip_code_tabulation_area="*",
+            )
 
-        self.assertIsInstance(gdf, geopandas.GeoDataFrame)
+            self.assertIsInstance(gdf, geopandas.GeoDataFrame)
 
-        self.assertEqual((33_120, 4), gdf.shape)
+            self.assertEqual((num_zcta, 4), gdf.shape)
 
-        self.assertEqual(
-            ["ZIP_CODE_TABULATION_AREA", "NAME", "B19001_001E", "geometry"],
-            list(gdf.columns),
-        )
+            self.assertEqual(
+                ["ZIP_CODE_TABULATION_AREA", "NAME", "B19001_001E", "geometry"],
+                list(gdf.columns),
+            )
 
     def test_download_with_geometry_state(self):
         """Download at the state level with geometry."""
-        gdf = ced.download(
-            self._dataset,
-            self._year,
-            ["NAME", self._name],
-            with_geometry=True,
-            state="*",
-        )
+        for year in range(2009, 2023):
+            gdf = ced.download(
+                self._dataset,
+                year,
+                ["NAME", self._name],
+                with_geometry=True,
+                state="*",
+            )
 
-        self.assertIsInstance(gdf, geopandas.GeoDataFrame)
+            self.assertIsInstance(gdf, geopandas.GeoDataFrame)
 
-        self.assertEqual((52, 4), gdf.shape)
+            self.assertEqual((52, 4), gdf.shape)
 
-        self.assertEqual(
-            ["STATE", "NAME", "B19001_001E", "geometry"], list(gdf.columns)
-        )
+            self.assertEqual(
+                ["STATE", "NAME", "B19001_001E", "geometry"], list(gdf.columns)
+            )
+
+    def test_download_with_geometry_state_zcta(self):
+        """
+        Download at the state and zip code tabulation area level with geometry.
+
+        Before 2020, the data model nested zcta inside of state.
+        """
+        for year, num_zcta in (2011, 595), (2019, 595):
+            gdf = ced.download(
+                self._dataset,
+                year,
+                ["NAME", self._name],
+                with_geometry=True,
+                state=NJ,
+                zip_code_tabulation_area="*",
+            )
+
+            self.assertIsInstance(gdf, geopandas.GeoDataFrame)
+
+            self.assertEqual((num_zcta, 5), gdf.shape)
+
+            self.assertEqual(
+                [
+                    "STATE",
+                    "ZIP_CODE_TABULATION_AREA",
+                    "NAME",
+                    "B19001_001E",
+                    "geometry",
+                ],
+                list(gdf.columns),
+            )
 
     def test_download_with_geometry_multi_state(self):
         """
@@ -388,42 +421,45 @@ class DownloadWithGeometryTestCase(unittest.TestCase):
         recognize this and download and concatenate several shapefiles
         before merging with our data.
         """
-        gdf = ced.download(
-            self._dataset,
-            self._year,
-            ["NAME", self._name],
-            with_geometry=True,
-            state=["01", "02"],  # Two specific states.
-            tract="*",
-        )
+        for year, num_tracts in (2010, 1348), (2020, 1614):
+            gdf = ced.download(
+                self._dataset,
+                year,
+                ["NAME", self._name],
+                with_geometry=True,
+                state=["01", "02"],  # Two specific states.
+                tract="*",
+            )
 
-        self.assertIsInstance(gdf, geopandas.GeoDataFrame)
+            self.assertIsInstance(gdf, geopandas.GeoDataFrame)
 
-        self.assertEqual((1614, 6), gdf.shape)
+            self.assertEqual((num_tracts, 6), gdf.shape)
 
-        self.assertEqual(
-            ["STATE", "COUNTY", "TRACT", "NAME", "B19001_001E", "geometry"],
-            list(gdf.columns),
-        )
+            self.assertEqual(
+                ["STATE", "COUNTY", "TRACT", "NAME", "B19001_001E", "geometry"],
+                list(gdf.columns),
+            )
 
     def test_download_with_geometry_county(self):
         """Download at the county level with geometry."""
-        gdf = ced.download(
-            self._dataset,
-            self._year,
-            ["NAME", self._name],
-            with_geometry=True,
-            state=states.NJ,
-            county="*",
-        )
+        for year in range(2009, 2023):
+            gdf = ced.download(
+                self._dataset,
+                year,
+                ["NAME", self._name],
+                with_geometry=True,
+                state=states.NJ,
+                county="*",
+            )
 
-        self.assertIsInstance(gdf, geopandas.GeoDataFrame)
+            self.assertIsInstance(gdf, geopandas.GeoDataFrame)
 
-        self.assertEqual((21, 5), gdf.shape)
+            self.assertEqual((21, 5), gdf.shape)
 
-        self.assertEqual(
-            ["STATE", "COUNTY", "NAME", "B19001_001E", "geometry"], list(gdf.columns)
-        )
+            self.assertEqual(
+                ["STATE", "COUNTY", "NAME", "B19001_001E", "geometry"],
+                list(gdf.columns),
+            )
 
     def test_download_with_geometry_county_subdivision(self):
         """Download at the county subdivision level with geometry."""
@@ -455,113 +491,131 @@ class DownloadWithGeometryTestCase(unittest.TestCase):
 
     def test_download_with_geometry_tract(self):
         """Download at the tract level with geometry."""
-        gdf = ced.download(
-            self._dataset,
-            self._year,
-            ["NAME", self._name],
-            with_geometry=True,
-            state=states.NJ,
-            county="001",
-            tract="*",
-        )
+        for year, num_tracts in (
+            (2009, 64),
+            (2010, 70),
+            (2015, 70),
+            (2020, 74),
+            (2022, 74),
+        ):
+            gdf = ced.download(
+                self._dataset,
+                year,
+                ["NAME", self._name],
+                with_geometry=True,
+                state=states.NJ,
+                county="001",
+                tract="*",
+            )
 
-        self.assertIsInstance(gdf, geopandas.GeoDataFrame)
+            self.assertIsInstance(gdf, geopandas.GeoDataFrame)
 
-        self.assertEqual((74, 6), gdf.shape)
+            self.assertEqual((num_tracts, 6), gdf.shape)
 
-        self.assertEqual(
-            ["STATE", "COUNTY", "TRACT", "NAME", "B19001_001E", "geometry"],
-            list(gdf.columns),
-        )
+            self.assertEqual(
+                ["STATE", "COUNTY", "TRACT", "NAME", "B19001_001E", "geometry"],
+                list(gdf.columns),
+            )
 
     def test_download_with_geometry_block_group(self):
         """Download at the county level with geometry."""
-        gdf = ced.download(
-            self._dataset,
-            self._year,
-            ["NAME", self._name],
-            with_geometry=True,
-            state=states.NJ,
-            county="001",
-            block_group="*",
-        )
+        for year, num_bg in (2013, 184), (2020, 194), (2022, 194):
+            gdf = ced.download(
+                self._dataset,
+                year,
+                ["NAME", self._name],
+                with_geometry=True,
+                state=states.NJ,
+                county="001",
+                block_group="*",
+            )
 
-        self.assertIsInstance(gdf, geopandas.GeoDataFrame)
+            self.assertIsInstance(gdf, geopandas.GeoDataFrame)
 
-        self.assertEqual((194, 7), gdf.shape)
+            self.assertEqual((num_bg, 7), gdf.shape)
 
-        self.assertEqual(
-            [
-                "STATE",
-                "COUNTY",
-                "TRACT",
-                "BLOCK_GROUP",
-                "NAME",
-                "B19001_001E",
-                "geometry",
-            ],
-            list(gdf.columns),
-        )
+            self.assertEqual(
+                [
+                    "STATE",
+                    "COUNTY",
+                    "TRACT",
+                    "BLOCK_GROUP",
+                    "NAME",
+                    "B19001_001E",
+                    "geometry",
+                ],
+                list(gdf.columns),
+            )
 
     def test_download_with_geometry_place(self):
         """Download at the PLACE level with geometry."""
-        gdf = ced.download(
-            self._dataset,
-            self._year,
-            ["NAME", self._name],
-            with_geometry=True,
-            state=states.NJ,
-            place="*",
-        )
+        for year, num_place in (2010, 545), (2015, 545), (2020, 701), (2022, 700):
+            gdf = ced.download(
+                self._dataset,
+                year,
+                ["NAME", self._name],
+                with_geometry=True,
+                state=states.NJ,
+                place="*",
+            )
 
-        self.assertIsInstance(gdf, geopandas.GeoDataFrame)
+            self.assertIsInstance(gdf, geopandas.GeoDataFrame)
 
-        self.assertEqual((701, 5), gdf.shape)
+            self.assertEqual((num_place, 5), gdf.shape)
 
-        self.assertEqual(
-            ["STATE", "PLACE", "NAME", "B19001_001E", "geometry"],
-            list(gdf.columns),
-        )
+            self.assertEqual(
+                ["STATE", "PLACE", "NAME", "B19001_001E", "geometry"],
+                list(gdf.columns),
+            )
 
     def test_download_with_geometry_consolidated_city(self):
         """Download at the consolidated city level with geometry."""
-        gdf = ced.download(
-            self._dataset,
-            self._year,
-            ["NAME", self._name],
-            with_geometry=True,
-            state=states.IN,
-            consolidated_city="*",
-        )
+        for year in range(2010, 2023, 2):
+            gdf = ced.download(
+                self._dataset,
+                year,
+                ["NAME", self._name],
+                with_geometry=True,
+                state=states.IN,
+                consolidated_city="*",
+            )
 
-        self.assertIsInstance(gdf, geopandas.GeoDataFrame)
+            self.assertIsInstance(gdf, geopandas.GeoDataFrame)
 
-        self.assertEqual((1, 5), gdf.shape)
+            self.assertEqual((1, 5), gdf.shape)
 
-        self.assertEqual(
-            ["STATE", "CONSOLIDATED_CITY", "NAME", "B19001_001E", "geometry"],
-            list(gdf.columns),
-        )
+            self.assertEqual(
+                ["STATE", "CONSOLIDATED_CITY", "NAME", "B19001_001E", "geometry"],
+                list(gdf.columns),
+            )
 
     def test_download_with_geometry_congressional_district(self):
         """Download at the congressional district level with geometry."""
-        gdf = ced.download(
-            self._dataset,
-            self._year,
-            ["NAME", self._name],
-            with_geometry=True,
-            state=states.NJ,
-            congressional_district="*",
-        )
+        for year, num_districts in (
+            (2009, 13),
+            (2010, 13),
+            (2011, 13),
+            (2012, 12),
+            (2020, 12),
+            (2022, 12),
+        ):
+            gdf = ced.download(
+                self._dataset,
+                year,
+                ["NAME", self._name],
+                with_geometry=True,
+                state=states.NJ,
+                congressional_district="*",
+            )
 
-        self.assertIsInstance(gdf, geopandas.GeoDataFrame)
+            self.assertIsInstance(gdf, geopandas.GeoDataFrame)
 
-        self.assertEqual((12, 5), gdf.shape)
+            self.assertEqual((num_districts, 5), gdf.shape)
 
-        self.assertEqual(
-            ["STATE", "CONGRESSIONAL_DISTRICT", "NAME", "B19001_001E", "geometry"],
-            list(gdf.columns),
-        )
+            self.assertEqual(
+                ["STATE", "CONGRESSIONAL_DISTRICT", "NAME", "B19001_001E", "geometry"],
+                list(gdf.columns),
+            )
 
     def test_download_with_geometry_state_legislative_district_upper(self):
         """Download at the slate legislative district upper chamber level with geometry."""
