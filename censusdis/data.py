@@ -392,34 +392,36 @@ def _congressional_district_from_year(year: int) -> str:
 
 _GEO_QUERY_FROM_DATA_QUERY_INNER_GEO: Dict[
     str,
-    Union[
-        Tuple[Optional[str], str, List[str], List[str]],
-        Callable[[str], Tuple[Optional[str], str, List[str], List[str]]],
-    ],
+    Callable[[str], Tuple[Optional[str], str, List[str], List[str]]],
 ] = {
     # innermost geo: ( shapefile_scope, shapefile_geo_name, df_on, gdf_on )
-    "region": ("us", "region", ["REGION"], ["REGIONCE"]),
-    "division": ("us", "division", ["DIVISION"], ["DIVISIONCE"]),
-    "combined statistical area": (
+    "region": lambda year: ("us", "region", ["REGION"], ["REGIONCE"]),
+    "division": lambda year: ("us", "division", ["DIVISION"], ["DIVISIONCE"]),
+    "combined statistical area": lambda year: (
         "us",
         "csa",
         ["COMBINED_STATISTICAL_AREA"],
         ["CSAFP"],
     ),
-    "metropolitan statistical area/micropolitan statistical area": (
+    "metropolitan statistical area/micropolitan statistical area": lambda year: (
         "us",
         "cbsa",
         ["METROPOLITAN_STATISTICAL_AREA_MICROPOLITAN_STATISTICAL_AREA"],
         ["CBSAFP"],
     ),
-    "state": ("us", "state", ["STATE"], ["STATEFP"]),
-    "consolidated city": (
+    "state": lambda year: ("us", "state", ["STATE"], ["STATEFP"]),
+    "consolidated city": lambda year: (
         "us",
         "concity",
         ["STATE", "CONSOLIDATED_CITY"],
         ["STATEFP", "CONCTYFP"],
     ),
-    "county": ("us", "county", ["STATE", "COUNTY"], ["STATEFP", "COUNTYFP"]),
+    "county": lambda year: (
+        "us",
+        "county",
+        ["STATE", "COUNTY"],
+        ["STATEFP", "COUNTYFP"],
+    ),
     "public use microdata area": lambda year: (
         "us",
         "puma10" if year < 2020 else "puma20",
@@ -441,32 +443,32 @@ _GEO_QUERY_FROM_DATA_QUERY_INNER_GEO: Dict[
     # For these, the shapefiles are at the state level, so `None`
     # indicates that we have to fill it in based on the geometry
     # being queried.
-    "county subdivision": (
+    "county subdivision": lambda year: (
         None,
         "cousub",
         ["STATE", "COUNTY_SUBDIVISION"],
         ["STATEFP", "COUSUBFP"],
     ),
-    "place": (None, "place", ["STATE", "PLACE"], ["STATEFP", "PLACEFP"]),
-    "tract": (
+    "place": lambda year: (None, "place", ["STATE", "PLACE"], ["STATEFP", "PLACEFP"]),
+    "tract": lambda year: (
         None,
         "tract",
         ["STATE", "COUNTY", "TRACT"],
         ["STATEFP", "COUNTYFP", "TRACTCE"],
     ),
-    "block group": (
+    "block group": lambda year: (
         None,
         "bg",
         ["STATE", "COUNTY", "TRACT", "BLOCK_GROUP"],
         ["STATEFP", "COUNTYFP", "TRACTCE", "BLKGRPCE"],
     ),
-    "block": (
+    "block": lambda year: (
         None,
         "tabblock",
         ["STATE", "COUNTY", "TRACT", "BLOCK"],
         ["STATEFP", "COUNTYFP", "TRACTCE", "BLOCKCE"],
     ),
-    "school district (unified)": (
+    "school district (unified)": lambda year: (
         None,
         "unsd",
         ["STATE", "SCHOOL_DISTRICT_UNIFIED"],
@@ -508,7 +510,7 @@ def _geo_query_from_data_query_inner_geo(
 
     Returns
     -------
-        A tuple oof results.
+        A tuple of results.
     """
     if geo_level not in _GEO_QUERY_FROM_DATA_QUERY_INNER_GEO:
         raise CensusApiException(
@@ -517,12 +519,7 @@ def _geo_query_from_data_query_inner_geo(
             f"{list(_GEO_QUERY_FROM_DATA_QUERY_INNER_GEO.keys())}."
         )
 
-    tuple_or_func = _GEO_QUERY_FROM_DATA_QUERY_INNER_GEO[geo_level]
-
-    if callable(tuple_or_func):
-        return tuple_or_func(year)
-
-    return tuple_or_func
+    return _GEO_QUERY_FROM_DATA_QUERY_INNER_GEO[geo_level](year)
 
 
 def _geo_query_from_data_query_inner_geo_items(

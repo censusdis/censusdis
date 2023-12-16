@@ -23,6 +23,7 @@ import censusdis.maps as cem
 import utils.symbolic as sym
 import censusdis.values as cev
 from censusdis import states
+import censusdis.counties.new_jersey
 from censusdis.datasets import ACS3, ACS5
 from censusdis.states import WA, NY, NJ, CT, PA
 
@@ -37,29 +38,12 @@ class DownloadTestCase(unittest.TestCase):
     concerned with the data that comes back.
     """
 
-    PATH_PREFIX = "test_integration_shapefiles_"
-
-    @classmethod
-    def setUpClass(cls) -> None:
-        """Set up our shapefile path once at class load time."""
-        ced.set_shapefile_path(Path(tempfile.mkdtemp(prefix=cls.PATH_PREFIX)))
-
     def setUp(self) -> None:
         """Set up before each test."""
-        self._variable_source = (
-            censusdis.impl.varsource.censusapi.CensusApiVariableSource()
-        )
         self._dataset = "acs/acs5"
         self._year = 2020
         self._group_name = "B19001"
         self._name = f"{self._group_name}_001E"
-
-    def test_path(self):
-        """Are we using the right cache path for shapefiles."""
-        path = ced.get_shapefile_path()
-
-        filename = path.name
-        self.assertTrue(filename.startswith(self.PATH_PREFIX))
 
     def test_download(self):
         """Download just a couple of variables."""
@@ -136,176 +120,6 @@ class DownloadTestCase(unittest.TestCase):
             ).all(),
             "All locations that were cev.INSUFFICIENT_SAMPLE_OBSERVATIONS should be NaN.",
         )
-
-    def test_download_with_geometry_county(self):
-        """Download at the county level with geometry."""
-        gdf = ced.download(
-            self._dataset,
-            self._year,
-            ["NAME", self._name],
-            with_geometry=True,
-            state=states.NJ,
-            county="*",
-        )
-
-        self.assertIsInstance(gdf, geopandas.GeoDataFrame)
-
-        self.assertEqual((21, 5), gdf.shape)
-
-        self.assertEqual(
-            ["STATE", "COUNTY", "NAME", "B19001_001E", "geometry"], list(gdf.columns)
-        )
-
-    def test_download_with_geometry_state(self):
-        """Download at the state level with geometry."""
-        gdf = ced.download(
-            self._dataset,
-            self._year,
-            ["NAME", self._name],
-            with_geometry=True,
-            state="*",
-        )
-
-        self.assertIsInstance(gdf, geopandas.GeoDataFrame)
-
-        self.assertEqual((52, 4), gdf.shape)
-
-        self.assertEqual(
-            ["STATE", "NAME", "B19001_001E", "geometry"], list(gdf.columns)
-        )
-
-    def test_download_with_geometry_multi_state(self):
-        """
-        Download at the tract level for multiplle states with geometry.
-
-        The point of this test is that tract-level shapefiles exist
-        only on a per-state basis, so inside the call we have to
-        recognize this and download and concatenate several shapefiles
-        before merging with our data.
-        """
-        gdf = ced.download(
-            self._dataset,
-            self._year,
-            ["NAME", self._name],
-            with_geometry=True,
-            state=["01", "02"],  # Two specific states.
-            tract="*",
-        )
-
-        self.assertIsInstance(gdf, geopandas.GeoDataFrame)
-
-        self.assertEqual((1614, 6), gdf.shape)
-
-        self.assertEqual(
-            ["STATE", "COUNTY", "TRACT", "NAME", "B19001_001E", "geometry"],
-            list(gdf.columns),
-        )
-
-    def test_download_with_geometry_consolidated_city(self):
-        """Download at the consolidated city level with geometry."""
-        gdf = ced.download(
-            self._dataset,
-            self._year,
-            ["NAME", self._name],
-            with_geometry=True,
-            state=states.IN,
-            consolidated_city="*",
-        )
-
-        self.assertIsInstance(gdf, geopandas.GeoDataFrame)
-
-        self.assertEqual((1, 5), gdf.shape)
-
-        self.assertEqual(
-            ["STATE", "CONSOLIDATED_CITY", "NAME", "B19001_001E", "geometry"],
-            list(gdf.columns),
-        )
-
-    def test_download_with_geometry_tract(self):
-        """Download at the tract level with geometry."""
-        gdf = ced.download(
-            self._dataset,
-            self._year,
-            ["NAME", self._name],
-            with_geometry=True,
-            state=states.NJ,
-            county="001",
-            tract="*",
-        )
-
-        self.assertIsInstance(gdf, geopandas.GeoDataFrame)
-
-        self.assertEqual((74, 6), gdf.shape)
-
-        self.assertEqual(
-            ["STATE", "COUNTY", "TRACT", "NAME", "B19001_001E", "geometry"],
-            list(gdf.columns),
-        )
-
-    def test_download_with_geometry_block_group(self):
-        """Download at the county level with geometry."""
-        gdf = ced.download(
-            self._dataset,
-            self._year,
-            ["NAME", self._name],
-            with_geometry=True,
-            state=states.NJ,
-            county="001",
-            block_group="*",
-        )
-
-        self.assertIsInstance(gdf, geopandas.GeoDataFrame)
-
-        self.assertEqual((194, 7), gdf.shape)
-
-        self.assertEqual(
-            [
-                "STATE",
-                "COUNTY",
-                "TRACT",
-                "BLOCK_GROUP",
-                "NAME",
-                "B19001_001E",
-                "geometry",
-            ],
-            list(gdf.columns),
-        )
-
-    def test_download_with_geometry_not_available(self):
-        """Download at a geography level that has no geometry available."""
-        with self.assertRaises(
-            censusdis.impl.exceptions.CensusApiException
-        ) as assertion:
-            ced.download(
-                self._dataset,
-                self._year,
-                ["NAME", self._name],
-                with_geometry=True,
-                state=states.NJ,
-                combined_statistical_area_or_part="*",
-            )
-
-        self.assertTrue(
-            str(assertion.exception).startswith(
-                "The with_geometry=True flag is only allowed if"
-            )
-        )
-
-        # But it is OK without geometry.
-
-        df = ced.download(
-            self._dataset,
-            self._year,
-            ["NAME", self._name],
-            with_geometry=False,
-            state=states.NJ,
-            combined_statistical_area_or_part="*",
-        )
-
-        self.assertIsInstance(df, pd.DataFrame)
-        self.assertNotIsInstance(df, gpd.GeoDataFrame)
-
-        self.assertEqual((2, 4), df.shape)
 
     def test_multi_state(self):
         """
@@ -461,6 +275,274 @@ class DownloadTestCase(unittest.TestCase):
         self.assertEqual(df_both.shape, df_datasets_for_year.shape)
 
         self.assertTrue((df_both == df_datasets_for_year).all().all())
+
+
+class DownloadWithGeometryTestCase(unittest.TestCase):
+    """
+    Test downloading with geometry at many different geo levels.
+
+    This is similar to `DownloadTestCase` but adds geometry to
+    make sure the mappings to shapefiles and merges happen correctly.
+    """
+
+    PATH_PREFIX = "test_integration_shapefiles_"
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        """Set up our shapefile path once at class load time."""
+        ced.set_shapefile_path(Path(tempfile.mkdtemp(prefix=cls.PATH_PREFIX)))
+
+    def setUp(self) -> None:
+        """Set up before each test."""
+        self._dataset = "acs/acs5"
+        self._year = 2020
+        self._group_name = "B19001"
+        self._name = f"{self._group_name}_001E"
+
+    def test_path(self):
+        """Are we using the right cache path for shapefiles."""
+        path = ced.get_shapefile_path()
+
+        filename = path.name
+        self.assertTrue(filename.startswith(self.PATH_PREFIX))
+
+    def test_download_with_geometry_state(self):
+        """Download at the state level with geometry."""
+        gdf = ced.download(
+            self._dataset,
+            self._year,
+            ["NAME", self._name],
+            with_geometry=True,
+            state="*",
+        )
+
+        self.assertIsInstance(gdf, geopandas.GeoDataFrame)
+
+        self.assertEqual((52, 4), gdf.shape)
+
+        self.assertEqual(
+            ["STATE", "NAME", "B19001_001E", "geometry"], list(gdf.columns)
+        )
+
+    def test_download_with_geometry_multi_state(self):
+        """
+        Download at the tract level for multiple states with geometry.
+
+        The point of this test is that tract-level shapefiles exist
+        only on a per-state basis, so inside the call we have to
+        recognize this and download and concatenate several shapefiles
+        before merging with our data.
+        """
+        gdf = ced.download(
+            self._dataset,
+            self._year,
+            ["NAME", self._name],
+            with_geometry=True,
+            state=["01", "02"],  # Two specific states.
+            tract="*",
+        )
+
+        self.assertIsInstance(gdf, geopandas.GeoDataFrame)
+
+        self.assertEqual((1614, 6), gdf.shape)
+
+        self.assertEqual(
+            ["STATE", "COUNTY", "TRACT", "NAME", "B19001_001E", "geometry"],
+            list(gdf.columns),
+        )
+
+    def test_download_with_geometry_county(self):
+        """Download at the county level with geometry."""
+        gdf = ced.download(
+            self._dataset,
+            self._year,
+            ["NAME", self._name],
+            with_geometry=True,
+            state=states.NJ,
+            county="*",
+        )
+
+        self.assertIsInstance(gdf, geopandas.GeoDataFrame)
+
+        self.assertEqual((21, 5), gdf.shape)
+
+        self.assertEqual(
+            ["STATE", "COUNTY", "NAME", "B19001_001E", "geometry"], list(gdf.columns)
+        )
+
+    def test_download_with_geometry_county_subdivision(self):
+        """Download at the county subdivision level with geometry."""
+        gdf = ced.download(
+            self._dataset,
+            self._year,
+            ["NAME", self._name],
+            with_geometry=True,
+            state=states.NJ,
+            county=censusdis.counties.new_jersey.HUDSON,
+            county_subdivision="*",
+        )
+
+        self.assertIsInstance(gdf, geopandas.GeoDataFrame)
+
+        self.assertEqual((12, 6), gdf.shape)
+
+        self.assertEqual(
+            [
+                "STATE",
+                "COUNTY",
+                "COUNTY_SUBDIVISION",
+                "NAME",
+                "B19001_001E",
+                "geometry",
+            ],
+            list(gdf.columns),
+        )
+
+    def test_download_with_geometry_tract(self):
+        """Download at the tract level with geometry."""
+        gdf = ced.download(
+            self._dataset,
+            self._year,
+            ["NAME", self._name],
+            with_geometry=True,
+            state=states.NJ,
+            county="001",
+            tract="*",
+        )
+
+        self.assertIsInstance(gdf, geopandas.GeoDataFrame)
+
+        self.assertEqual((74, 6), gdf.shape)
+
+        self.assertEqual(
+            ["STATE", "COUNTY", "TRACT", "NAME", "B19001_001E", "geometry"],
+            list(gdf.columns),
+        )
+
+    def test_download_with_geometry_block_group(self):
+        """Download at the county level with geometry."""
+        gdf = ced.download(
+            self._dataset,
+            self._year,
+            ["NAME", self._name],
+            with_geometry=True,
+            state=states.NJ,
+            county="001",
+            block_group="*",
+        )
+
+        self.assertIsInstance(gdf, geopandas.GeoDataFrame)
+
+        self.assertEqual((194, 7), gdf.shape)
+
+        self.assertEqual(
+            [
+                "STATE",
+                "COUNTY",
+                "TRACT",
+                "BLOCK_GROUP",
+                "NAME",
+                "B19001_001E",
+                "geometry",
+            ],
+            list(gdf.columns),
+        )
+
+    def test_download_with_geometry_place(self):
+        """Download at the PLACE level with geometry."""
+        gdf = ced.download(
+            self._dataset,
+            self._year,
+            ["NAME", self._name],
+            with_geometry=True,
+            state=states.NJ,
+            place="*",
+        )
+
+        self.assertIsInstance(gdf, geopandas.GeoDataFrame)
+
+        self.assertEqual((701, 5), gdf.shape)
+
+        self.assertEqual(
+            ["STATE", "PLACE", "NAME", "B19001_001E", "geometry"],
+            list(gdf.columns),
+        )
+
+    def test_download_with_geometry_consolidated_city(self):
+        """Download at the consolidated city level with geometry."""
+        gdf = ced.download(
+            self._dataset,
+            self._year,
+            ["NAME", self._name],
+            with_geometry=True,
+            state=states.IN,
+            consolidated_city="*",
+        )
+
+        self.assertIsInstance(gdf, geopandas.GeoDataFrame)
+
+        self.assertEqual((1, 5), gdf.shape)
+
+        self.assertEqual(
+            ["STATE", "CONSOLIDATED_CITY", "NAME", "B19001_001E", "geometry"],
+            list(gdf.columns),
+        )
+
+    def test_download_with_geometry_congressional_district(self):
+        """Download at the congressional district level with geometry."""
+        gdf = ced.download(
+            self._dataset,
+            self._year,
+            ["NAME", self._name],
+            with_geometry=True,
+            state=states.NJ,
+            congressional_district="*",
+        )
+
+        self.assertIsInstance(gdf, geopandas.GeoDataFrame)
+
+        self.assertEqual((12, 5), gdf.shape)
+
+        self.assertEqual(
+            ["STATE", "CONGRESSIONAL_DISTRICT", "NAME", "B19001_001E", "geometry"],
+            list(gdf.columns),
+        )
+
+    def test_download_with_geometry_not_available(self):
+        """Download at a geography level that has no geometry available."""
+        with self.assertRaises(
+            censusdis.impl.exceptions.CensusApiException
+        ) as assertion:
+            ced.download(
+                self._dataset,
+                self._year,
+                ["NAME", self._name],
+                with_geometry=True,
+                state=states.NJ,
+                combined_statistical_area_or_part="*",
+            )
+
+        self.assertTrue(
+            str(assertion.exception).startswith(
+                "The with_geometry=True flag is only allowed if"
+            )
+        )
+
+        # But it is OK without geometry.
+
+        df = ced.download(
+            self._dataset,
+            self._year,
+            ["NAME", self._name],
+            with_geometry=False,
+            state=states.NJ,
+            combined_statistical_area_or_part="*",
+        )
+
+        self.assertIsInstance(df, pd.DataFrame)
+        self.assertNotIsInstance(df, gpd.GeoDataFrame)
+
+        self.assertEqual((2, 4), df.shape)
 
 
 class DownloadWideTestCase(unittest.TestCase):
