@@ -38,7 +38,7 @@ def isoperimetric_quotient(
         between 0 and 1.
     """
     area = geo.area
-    length = geo.length
+    length = geo.exterior.length
 
     q = 4 * math.pi * area / (length * length)
 
