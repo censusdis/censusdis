@@ -29,6 +29,8 @@ from censusdis.impl.fetch import data_from_url
 from censusdis.impl.us_census_shapefiles import (
     add_geography,
     clip_water,
+    infer_geo_level,
+    geo_query_from_data_query_inner_geo,
 )
 from censusdis.impl.varcache import VariableCache
 from censusdis.impl.varsource.base import VintageType
@@ -1199,3 +1201,74 @@ def contained_within(
         `state = "NJ", place = "01960"` will specify the city of Asbury Park, NJ.
     """
     return ContainedWithin(area_threshold=area_threshold, **kwargs)
+
+
+def add_inferred_geography(
+    df_data: pd.DataFrame, year: Optional[int] = None
+) -> gpd.GeoDataFrame:
+    """
+    Infer the geography level of the given dataframe.
+
+    Add geometry to each row for the inferred level.
+
+    See Also
+    --------
+        :py:ref:`~infer_geo_level` for more on how inference is done.
+
+    Parameters
+    ----------
+    df_data
+        A dataframe of variables with one or more columns that
+        can be used to infer what geometry level the rows represent.
+    year
+        The year for which to fetch geometries. We need this
+        because they change over time. If `None`, look for a
+        `'YEAR'` column in `df_data` and possibly add different
+        geometries for different years as needed.
+
+    Returns
+    -------
+        A geo data frame containing the original data augmented with
+        the appropriate geometry for each row.
+    """
+    if year is None:
+        # We'll try to get the year out of the data.
+        if "YEAR" not in df_data.columns:
+            raise ValueError(
+                "If year is None then there must be a `YEAR` column in the data."
+            )
+
+        return gpd.GeoDataFrame(
+            df_data.groupby("YEAR", group_keys=False)
+            .apply(lambda df_group: add_inferred_geography(df_group, df_group.name))
+            .reset_index(drop=True)
+        )
+
+    geo_level = infer_geo_level(year, df_data)
+
+    (
+        shapefile_scope,
+        _,
+        shapefile_scope_columns,
+        _,
+    ) = geo_query_from_data_query_inner_geo(year, geo_level)
+
+    if shapefile_scope is not None:
+        # The scope is the same across the board.
+        gdf = add_geography(df_data, year, shapefile_scope, geo_level)
+        return gdf
+
+    # We have to group by different values of the shapefile
+    # scope from the appropriate column and add the right
+    # geography to each group.
+    shapefile_scope_column = shapefile_scope_columns[0]
+
+    df_with_geo = (
+        df_data.groupby(shapefile_scope_column, group_keys=False)
+        .apply(lambda g: add_geography(g, year, g.name, geo_level))
+        .reset_index(drop=True)
+    )
+
+    gdf = gpd.GeoDataFrame(df_with_geo)
+
+    return gdf
