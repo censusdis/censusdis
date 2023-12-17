@@ -164,7 +164,7 @@ def geo_query_from_data_query_inner_geo(
     year: int, geo_level: str
 ) -> Tuple[Optional[str], str, List[str], List[str]]:
     """
-    Map lookup and call the value if it is callable to produce the result.
+    Map lookup and call the for the give year to produce the result.
 
     Parameters
     ----------
