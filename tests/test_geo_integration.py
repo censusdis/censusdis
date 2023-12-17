@@ -22,6 +22,15 @@ class DownloadWithGeometryTestCase(unittest.TestCase):
 
     This is similar to `DownloadTestCase` but adds geometry to
     make sure the mappings to shapefiles and merges happen correctly.
+
+    Most of the tests loop over several years in order to catch any
+    year-dependent effects in `_GEO_QUERY_FROM_DATA_QUERY_INNER_GEO`.
+    But we don't do every year for every test to avoid things getting
+    too slow.
+
+    If there is a case we don't cover that breaks, the right thing to
+    do is add the year and details to the corresponding test here so
+    that we track the fix going forward.
     """
 
     PATH_PREFIX = "test_integration_shapefiles_"

@@ -148,8 +148,8 @@ to get the right shapefile for the geography and the columns
 we need to join the data and shapefile on.
 
 The values are functions of the year. Once we locate one, we
-call it with the year as an argument to get the final value. 
-This is necessary for e.g. congressional districts, which have 
+call it with the year as an argument to get the final value.
+This is necessary for e.g. congressional districts, which have
 names that change every two years. It also turns out to be very
 helpful in dealing with little quirks in the data like changing
 the name of the COUSUB/COSUBFP column in just one year.
