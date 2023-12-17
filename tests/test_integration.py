@@ -18,6 +18,7 @@ import pandas as pd
 
 import censusdis.data as ced
 import censusdis.impl.exceptions
+import censusdis.impl.us_census_shapefiles
 import censusdis.impl.varsource.censusapi
 import censusdis.maps as cem
 import utils.symbolic as sym
@@ -290,7 +291,9 @@ class DownloadWithGeometryTestCase(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         """Set up our shapefile path once at class load time."""
-        ced.set_shapefile_path(Path(tempfile.mkdtemp(prefix=cls.PATH_PREFIX)))
+        censusdis.impl.us_census_shapefiles.set_shapefile_path(
+            Path(tempfile.mkdtemp(prefix=cls.PATH_PREFIX))
+        )
 
     def setUp(self) -> None:
         """Set up before each test."""
@@ -301,7 +304,7 @@ class DownloadWithGeometryTestCase(unittest.TestCase):
 
     def test_path(self):
         """Are we using the right cache path for shapefiles."""
-        path = ced.get_shapefile_path()
+        path = censusdis.impl.us_census_shapefiles.get_shapefile_path()
 
         filename = path.name
         self.assertTrue(filename.startswith(self.PATH_PREFIX))
@@ -1253,7 +1256,9 @@ class AddInferredGeographyTestCase(unittest.TestCase):
             columns=["STATE", "metric1", "metric2"],
         )
 
-        gdf_inferred = ced.add_inferred_geography(df_state, self._year0)
+        gdf_inferred = censusdis.impl.us_census_shapefiles.add_inferred_geography(
+            df_state, self._year0
+        )
 
         self._assert_data_unchanged_in_inference(df_state, gdf_inferred)
 
@@ -1275,7 +1280,9 @@ class AddInferredGeographyTestCase(unittest.TestCase):
             columns=["STATE", "COUNTY", "metric1", "metric2"],
         )
 
-        gdf_inferred = ced.add_inferred_geography(df_county, self._year0)
+        gdf_inferred = censusdis.impl.us_census_shapefiles.add_inferred_geography(
+            df_county, self._year0
+        )
 
         self._assert_data_unchanged_in_inference(df_county, gdf_inferred)
 
@@ -1308,7 +1315,9 @@ class AddInferredGeographyTestCase(unittest.TestCase):
             columns=["STATE", "COUNTY", "TRACT", "metric1", "metric2"],
         )
 
-        gdf_inferred = ced.add_inferred_geography(df_tract, self._year0)
+        gdf_inferred = censusdis.impl.us_census_shapefiles.add_inferred_geography(
+            df_tract, self._year0
+        )
 
         self._assert_data_unchanged_in_inference(df_tract, gdf_inferred)
 
@@ -1379,8 +1388,10 @@ class AddInferredGeographyTestCase(unittest.TestCase):
             for year, df_for_year in df_county_multi_year.groupby("YEAR")
         }
 
-        gdf_inferred_geometry_multi_year = ced.add_inferred_geography(
-            df_county_multi_year
+        gdf_inferred_geometry_multi_year = (
+            censusdis.impl.us_census_shapefiles.add_inferred_geography(
+                df_county_multi_year
+            )
         )
 
         self._assert_data_unchanged_in_inference(
@@ -1388,7 +1399,9 @@ class AddInferredGeographyTestCase(unittest.TestCase):
         )
 
         gdf_inferred_geometry_by_year = {
-            year: ced.add_inferred_geography(df_for_year)
+            year: censusdis.impl.us_census_shapefiles.add_inferred_geography(
+                df_for_year
+            )
             for year, df_for_year in df_county_by_year.items()
         }
 
@@ -1421,8 +1434,10 @@ class AddInferredGeographyTestCase(unittest.TestCase):
             columns=["YEAR", "STATE", "COUNTY", "metric1", "metric2"],
         )
 
-        gdf_inferred_geometry_multi_year = ced.add_inferred_geography(
-            df_county_multi_year
+        gdf_inferred_geometry_multi_year = (
+            censusdis.impl.us_census_shapefiles.add_inferred_geography(
+                df_county_multi_year
+            )
         )
 
         self._assert_data_unchanged_in_inference(
@@ -1460,8 +1475,10 @@ class AddInferredGeographyTestCase(unittest.TestCase):
             columns=["YEAR", "STATE", "COUNTY", "metric1", "metric2"],
         )
 
-        gdf_inferred_geometry_multi_year = ced.add_inferred_geography(
-            df_county_multi_year
+        gdf_inferred_geometry_multi_year = (
+            censusdis.impl.us_census_shapefiles.add_inferred_geography(
+                df_county_multi_year
+            )
         )
 
         self._assert_data_unchanged_in_inference(
