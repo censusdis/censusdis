@@ -79,7 +79,7 @@ _GEO_QUERY_FROM_DATA_QUERY_INNER_GEO: Dict[
         None,
         "cousub",
         ["STATE", "COUNTY_SUBDIVISION"],
-        ["STATEFP", "COUSUBFP"],
+        ["STATEFP", "COUSUB" if year == 2010 else "COUSUBFP"],
     ),
     "place": lambda year: (None, "place", ["STATE", "PLACE"], ["STATEFP", "PLACEFP"]),
     "tract": lambda year: (
@@ -147,11 +147,12 @@ to the arguments we need to pass to `get_cb_shapefile`
 to get the right shapefile for the geography and the columns
 we need to join the data and shapefile on.
 
-Most values are tuples, but a few are functions of the year.
-If a value is callable, then we call it with the year as an
-argument to get the final value. This is necessary for e.g.
-congressional districts, which have names that change every
-two years.
+The values are functions of the year. Once we locate one, we
+call it with the year as an argument to get the final value. 
+This is necessary for e.g. congressional districts, which have 
+names that change every two years. It also turns out to be very
+helpful in dealing with little quirks in the data like changing
+the name of the COUSUB/COSUBFP column in just one year.
 
 We should add everything in
 https://www.census.gov/geographies/mapping-files/time-series/geo/cartographic-boundary.html
