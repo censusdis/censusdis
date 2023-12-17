@@ -5,6 +5,7 @@ import unittest
 import pandas as pd
 
 import censusdis.data as ced
+import censusdis.impl.us_census_shapefiles
 from censusdis import CensusApiException
 
 
@@ -37,7 +38,7 @@ class InferGeoTestCase(unittest.TestCase):
         """Match in a df with state only."""
         df = pd.DataFrame([["34"]], columns=["STATE"])
 
-        geo = ced.infer_geo_level(self.year, df)
+        geo = censusdis.impl.us_census_shapefiles.infer_geo_level(self.year, df)
 
         self.assertEqual("state", geo)
 
@@ -45,7 +46,7 @@ class InferGeoTestCase(unittest.TestCase):
         """Match in a df with state and county."""
         df = pd.DataFrame([["34", "013"]], columns=["STATE", "COUNTY"])
 
-        geo = ced.infer_geo_level(self.year, df)
+        geo = censusdis.impl.us_census_shapefiles.infer_geo_level(self.year, df)
 
         self.assertEqual("county", geo)
 
@@ -56,7 +57,7 @@ class InferGeoTestCase(unittest.TestCase):
             columns=["STATE", "COUNTY", "TRACT", "BLOCK_GROUP"],
         )
 
-        geo = ced.infer_geo_level(self.year, df)
+        geo = censusdis.impl.us_census_shapefiles.infer_geo_level(self.year, df)
 
         self.assertEqual("block group", geo)
 
@@ -65,14 +66,14 @@ class InferGeoTestCase(unittest.TestCase):
         df = pd.DataFrame([["013"]], columns=["COUNTY"])
 
         with self.assertRaises(CensusApiException):
-            _ = ced.infer_geo_level(self.year, df)
+            _ = censusdis.impl.us_census_shapefiles.infer_geo_level(self.year, df)
 
     def test_infer_geo_no_match_block_group(self):
         """Missing state and county is ambiguous and does not match."""
         df = pd.DataFrame([["019400", "1"]], columns=["TRACT", "BLOCK_GROUP"])
 
         with self.assertRaises(CensusApiException) as cm:
-            _ = ced.infer_geo_level(self.year, df)
+            _ = censusdis.impl.us_census_shapefiles.infer_geo_level(self.year, df)
 
         # Make sure the text is informative.
         self.assertIn(
@@ -87,7 +88,7 @@ class InferGeoTestCase(unittest.TestCase):
         )
 
         with self.assertRaises(CensusApiException) as cm:
-            _ = ced.infer_geo_level(self.year, df)
+            _ = censusdis.impl.us_census_shapefiles.infer_geo_level(self.year, df)
 
         # Make sure the text is informative.
         self.assertIn("matched state on columns ['STATE']", str(cm.exception))
