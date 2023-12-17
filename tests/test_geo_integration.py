@@ -1,7 +1,5 @@
 # Copyright (c) 2023 Darren Erik Vengroff
-"""
-These are integration tests that test the wit.
-"""
+"""These are integration tests that test the code behind with_geometry=True."""
 import tempfile
 import unittest
 from pathlib import Path
@@ -955,5 +953,5 @@ class RemoveWaterTestCase(unittest.TestCase):
         )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()
