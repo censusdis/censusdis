@@ -72,6 +72,24 @@ _GEO_QUERY_FROM_DATA_QUERY_INNER_GEO: Dict[
         ["ZIP_CODE_TABULATION_AREA"],
         ["ZCTA5CE10" if year < 2020 else "ZCTA5CE20" if year == 2020 else "ZCTA5CE"],
     ),
+    "american indian area/alaska native area/hawaiian home land": lambda year: (
+        "us",
+        "aiannh",
+        ["AMERICAN_INDIAN_AREA_ALASKA_NATIVE_AREA_HAWAIIAN_HOME_LAND"],
+        ["AIANNHCE"],
+    ),
+    "alaska native regional corporation": lambda year: (
+        "us",
+        "anrc",
+        ["ALASKA_NATIVE_REGIONAL_CORPORATION"],
+        ["ANRC"],
+    ),
+    "new england city and town area": lambda year: (
+        "us",
+        "necta",
+        ["NEW_ENGLAND_CITY_AND_TOWN_AREA"],
+        ["NECTAFP"],
+    ),
     # For these, the shapefiles are at the state level, so `None`
     # indicates that we have to fill it in based on the geometry
     # being queried.
@@ -107,16 +125,19 @@ _GEO_QUERY_FROM_DATA_QUERY_INNER_GEO: Dict[
         ["STATEFP", "UNSDLEA"],
     ),
     "school district (elementary)": lambda year: (
+        # CB files from 2016 on exist with the "elsd" name and "ELSDLEA" column.
+        # Earlier tiger files use the name "sda" and "ESDLEA" column.
         None,
-        "sde",
+        "elsd" if year >= 2016 else "sde",
         ["STATE", "SCHOOL_DISTRICT_ELEMENTARY"],
-        ["STATEFP", "ESDLEA"],
+        ["STATEFP", "ELSDLEA" if year >= 2016 else "ESDLEA"],
     ),
     "school district (secondary)": lambda year: (
+        # Similar scenario to school district (secondary).
         None,
-        "sde",
+        "scsd" if year >= 2016 else "sde",
         ["STATE", "SCHOOL_DISTRICT_SECONDARY"],
-        ["STATEFP", "SSDLEA"],
+        ["STATEFP", "SCSDLEA" if year >= 2016 else "SSDLEA"],
     ),
     "state legislative district (upper chamber)": lambda year: (
         None,
@@ -137,6 +158,20 @@ _GEO_QUERY_FROM_DATA_QUERY_INNER_GEO: Dict[
         ["STATEFP20", "COUNTYFP20", "VTDST20"]
         if year >= 2020
         else ["STATEFP10", "COUNTYFP10", "VTDST10"],
+    ),
+    # This one could be a little dangerous if subminor civil
+    # divisions exist in states and are not mapped as subbarios.
+    # It appears the only example of this is the ESTATE in the
+    # USVI. So we are going to punt for the moment and deal with
+    # it at some future time, probably by adding an arg to the
+    # lambdas to take in the bound params so we can look at them.
+    #
+    # Noted in https://github.com/vengroff/censusdis/issues/223.
+    "subminor civil division": lambda year: (
+        None,
+        "subbarrio",
+        ["SUBMINOR_CIVIL_DIVISION"],
+        ["SUBMCDNS"],
     ),
 }
 """
@@ -342,7 +377,7 @@ def add_geography(
             )
             gdf["YEAR"] = query_year
             return gdf
-        except cmap.MapException:
+        except cmap.MapException as ex:
             # If there are some years where we can't find a shapefile,
             # skip over it and those rows will not have geometry in the
             # final result.
@@ -350,6 +385,7 @@ def add_geography(
                 "Unable to load shapefile for scope %s for year %d",
                 sub_scope,
                 query_year,
+                exc_info=ex,
             )
             return gpd.GeoDataFrame()
 
