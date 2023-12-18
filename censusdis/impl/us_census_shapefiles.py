@@ -78,12 +78,6 @@ _GEO_QUERY_FROM_DATA_QUERY_INNER_GEO: Dict[
         ["AMERICAN_INDIAN_AREA_ALASKA_NATIVE_AREA_HAWAIIAN_HOME_LAND"],
         ["AIANNHCE"],
     ),
-    "alaska native regional corporation": lambda year: (
-        "us",
-        "anrc",
-        ["ALASKA_NATIVE_REGIONAL_CORPORATION"],
-        ["ANRC"],
-    ),
     "new england city and town area": lambda year: (
         "us",
         "necta",
@@ -170,8 +164,14 @@ _GEO_QUERY_FROM_DATA_QUERY_INNER_GEO: Dict[
     "subminor civil division": lambda year: (
         None,
         "subbarrio",
-        ["SUBMINOR_CIVIL_DIVISION"],
-        ["SUBMCDNS"],
+        ["STATE", "COUNTY", "COUNTY_SUBDIVISION", "SUBMINOR_CIVIL_DIVISION"],
+        ["STATEFP", "COUNTYFP", "COUSUBFP", "SUBMCDFP"],
+    ),
+    "alaska native regional corporation": lambda year: (
+        None,
+        "anrc",
+        ["ALASKA_NATIVE_REGIONAL_CORPORATION"],
+        ["ANRCFP"],
     ),
 }
 """
