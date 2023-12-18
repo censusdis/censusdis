@@ -498,7 +498,7 @@ class DownloadWithGeometryTestCase(unittest.TestCase):
                 list(gdf.columns),
             )
 
-        self.assert_recorded([2010, 2019, 2020, 2022], [2009, 2011, 2012])
+        self.assert_recorded([2019, 2020, 2022], [2009, 2010, 2011, 2012])
 
     def test_download_with_geometry_state_legislative_district_upper(self):
         """Download at the slate legislative district upper chamber level with geometry."""
