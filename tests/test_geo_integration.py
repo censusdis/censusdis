@@ -444,7 +444,7 @@ class DownloadWithGeometryTestCase(unittest.TestCase):
 
     def test_download_with_geometry_consolidated_city(self):
         """Download at the consolidated city level with geometry."""
-        for year in range(2010, 2023, 2):
+        for year in [2010, 2014, 2020, 2022]:
             gdf = ced.download(
                 ACS5,
                 year,
@@ -456,12 +456,16 @@ class DownloadWithGeometryTestCase(unittest.TestCase):
 
             self.assertIsInstance(gdf, geopandas.GeoDataFrame)
 
+            self.recorder.record(year, gdf)
+
             self.assertEqual((1, 5), gdf.shape)
 
             self.assertEqual(
                 ["STATE", "CONSOLIDATED_CITY", "NAME", "B19001_001E", "geometry"],
                 list(gdf.columns),
             )
+
+        self.assert_recorded([2020, 2022], [2010, 2014])
 
     def test_download_with_geometry_congressional_district(self):
         """Download at the congressional district level with geometry."""
@@ -470,6 +474,7 @@ class DownloadWithGeometryTestCase(unittest.TestCase):
             (2010, 13),
             (2011, 13),
             (2012, 12),
+            (2019, 12),
             (2020, 12),
             (2022, 12),
         ):
@@ -484,6 +489,8 @@ class DownloadWithGeometryTestCase(unittest.TestCase):
 
             self.assertIsInstance(gdf, geopandas.GeoDataFrame)
 
+            self.recorder.record(year, gdf)
+
             self.assertEqual((num_districts, 5), gdf.shape)
 
             self.assertEqual(
@@ -491,9 +498,11 @@ class DownloadWithGeometryTestCase(unittest.TestCase):
                 list(gdf.columns),
             )
 
+        self.assert_recorded([2010, 2019, 2020, 2022], [2009, 2011, 2012])
+
     def test_download_with_geometry_state_legislative_district_upper(self):
         """Download at the slate legislative district upper chamber level with geometry."""
-        for year, num_districts in (2009, 62), (2010, 62), (2020, 63), (2022, 63):
+        for year, num_districts in (2009, 62), (2010, 62), (2018, 63), (2020, 63), (2022, 63):
             gdf = ced.download(
                 ACS5,
                 year,
@@ -504,6 +513,8 @@ class DownloadWithGeometryTestCase(unittest.TestCase):
             )
 
             self.assertIsInstance(gdf, geopandas.GeoDataFrame)
+
+            self.recorder.record(year, gdf)
 
             self.assertEqual((num_districts, 5), gdf.shape)
 
@@ -517,6 +528,8 @@ class DownloadWithGeometryTestCase(unittest.TestCase):
                 ],
                 list(gdf.columns),
             )
+
+        self.assert_recorded([2010, 2018, 2020, 2022], [2009])
 
     def test_download_with_geometry_state_legislative_district_lower(self):
         """Download at the slate legislative district lower chamber level with geometry."""
@@ -532,6 +545,8 @@ class DownloadWithGeometryTestCase(unittest.TestCase):
 
             self.assertIsInstance(gdf, geopandas.GeoDataFrame)
 
+            self.recorder.record(year, gdf)
+
             self.assertEqual((150, 5), gdf.shape)
 
             self.assertEqual(
@@ -545,11 +560,15 @@ class DownloadWithGeometryTestCase(unittest.TestCase):
                 list(gdf.columns),
             )
 
+        self.assert_recorded([2010, 2020, 2022], [2009])
+
     def test_download_with_geometry_voting_district(self):
         """Download at the voting district level with geometry."""
+        year = 2020
+
         gdf = ced.download(
             DECENNIAL_PUBLIC_LAW_94_171,
-            2020,
+            year,
             ["NAME", "P1_001N"],
             with_geometry=True,
             state=states.NJ,
@@ -558,6 +577,8 @@ class DownloadWithGeometryTestCase(unittest.TestCase):
         )
 
         self.assertIsInstance(gdf, geopandas.GeoDataFrame)
+
+        self.recorder.record(year, gdf)
 
         self.assertEqual((452, 6), gdf.shape)
 
@@ -573,6 +594,8 @@ class DownloadWithGeometryTestCase(unittest.TestCase):
             list(gdf.columns),
         )
 
+        self.assert_recorded([2020])
+
     def test_download_with_geometry_school_district_unified(self):
         """Download at the school district unified level with geometry."""
         for year, num_districts in (2010, 234), (2015, 340), (2020, 343):
@@ -586,6 +609,8 @@ class DownloadWithGeometryTestCase(unittest.TestCase):
             )
 
             self.assertIsInstance(gdf, geopandas.GeoDataFrame)
+
+            self.recorder.record(year, gdf)
 
             self.assertEqual((num_districts, 5), gdf.shape)
 
