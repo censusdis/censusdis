@@ -431,12 +431,16 @@ class DownloadWithGeometryTestCase(unittest.TestCase):
 
             self.assertIsInstance(gdf, geopandas.GeoDataFrame)
 
+            self.recorder.record(year, gdf)
+
             self.assertEqual((num_place, 5), gdf.shape)
 
             self.assertEqual(
                 ["STATE", "PLACE", "NAME", "B19001_001E", "geometry"],
                 list(gdf.columns),
             )
+
+        self.assert_recorded([2010, 2015, 2020, 2022])
 
     def test_download_with_geometry_consolidated_city(self):
         """Download at the consolidated city level with geometry."""
