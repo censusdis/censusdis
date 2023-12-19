@@ -563,7 +563,7 @@ DATASET_REFERENCE_URLS = {
     ACS5_SPTPROFILE: "http://api.census.gov/data/2021/acs/acs5/sptprofile",
     ACS5_SUBJECT: "http://api.census.gov/data/2022/acs/acs5/subject",
     ACSSE: "http://api.census.gov/data/2022/acs/acsse",
-    ACS_FLOWS: "http://api.census.gov/data/2020/acs/flows",
+    ACS_FLOWS: "http://api.census.gov/data/2021/acs/flows",
     ASE_CSA: "http://api.census.gov/data/2016/ase/csa",
     ASE_CSCB: "http://api.census.gov/data/2016/ase/cscb",
     ASE_CSCBO: "http://api.census.gov/data/2016/ase/cscbo",

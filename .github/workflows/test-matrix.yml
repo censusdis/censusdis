@@ -46,6 +46,10 @@ jobs:
         run: poetry install --no-interaction --no-root
       - name: Install library
         run: poetry install --no-interaction
+      - name: Log version
+        run: |
+          source $VENV
+          python -c "import censusdis; print(f'censusdis version: {censusdis.version}')"
       - name: Run tests
         run: |
           source $VENV
