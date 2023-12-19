@@ -32,4 +32,4 @@ except importlib.metadata.PackageNotFoundError:
         version = version + "+"
 
 
-__all__ = ("CensusApiException",)
+__all__ = ("CensusApiException", "version")
