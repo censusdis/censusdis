@@ -18,7 +18,7 @@ try:
     package = Path(__file__).parent.name
     _DISTRIBUTION_METADATA = importlib.metadata.metadata(package)
 
-    version = _DISTRIBUTION_METADATA['Version']
+    version = _DISTRIBUTION_METADATA["Version"]
 except importlib.metadata.PackageNotFoundError:
     # Fall back on getting it from a local pyproject.toml.
     # This works in a development environment where the
