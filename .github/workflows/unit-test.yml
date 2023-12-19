@@ -66,6 +66,14 @@ jobs:
       - name: Install library
         run: poetry install --no-interaction
       #----------------------------------------------
+      #              log the version
+      #----------------------------------------------
+      - name: Log version
+        id: logVersions
+        run: |
+          source .venv/bin/activate
+          python -c "import censusdis; print(f'censusdis version: {censusdis.version}')"
+      #----------------------------------------------
       #              run test suite
       #----------------------------------------------
       - name: Run tests
