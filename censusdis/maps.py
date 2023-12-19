@@ -379,7 +379,7 @@ class ShapeReader:
         resolution: str = "500k",
         crs=None,
         *,
-        timeout: int = 30,
+        timeout: int = 60,
     ) -> gpd.GeoDataFrame:
         """
         Try to retrieve CB file.
