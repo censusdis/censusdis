@@ -8,6 +8,7 @@ import censusdis
 
 class VersionTestCase(unittest.TestCase):
     """Test censusdis.version."""
+
     def test_version(self):
         """Test censusdis.version."""
         version = censusdis.version
@@ -19,5 +20,5 @@ class VersionTestCase(unittest.TestCase):
         self.assertTrue(pattern.match(version))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()
