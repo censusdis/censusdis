@@ -474,6 +474,16 @@ class DataSpecTestCase(unittest.TestCase):
         # There are unique states.
         self.assertSetEqual({NY, NJ, PA}, set(df["STATE"].unique()))
 
+    def test_download_from_yaml_dataspec_frac_group_variable(self):
+        """Test with a fraction for a variable and for a group."""
+        dataspec = DataSpec.load_yaml(self.directory / "frac_group_var.yaml")
+
+        self.assertIsInstance(dataspec, DataSpec)
+
+        df = dataspec.download()
+
+        print(df.head())
+
 
 if __name__ == "__main__":
     unittest.main()
