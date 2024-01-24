@@ -484,7 +484,7 @@ class VariableSpecCollection(VariableSpec):
         Parameters
         ----------
         df_downloaded
-            A data frame of variables that were downloaded. Any systhesized variables
+            A data frame of variables that were downloaded. Any synthesized variables
             are added as new columns.
 
         Returns

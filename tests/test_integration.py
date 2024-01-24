@@ -778,6 +778,33 @@ class ContainedWithinTestCase(unittest.TestCase):
             list(df.columns),
         )
 
+    def test_state_county_contained_within_cbsa_2(self):
+        """Test state and county contained within a CBSA with syntax 2."""
+        df = ced.download(
+            self.dataset,
+            self.year,
+            ["NAME", "B03002_001E"],
+            state="*",
+            county="*",
+            download_contained_within=dict(
+                # New York-Newark-Jersey City
+                metropolitan_statistical_area_micropolitan_statistical_area="35620"
+            ),
+        )
+
+        self.assertEqual((23, 5), df.shape)
+
+        self.assertEqual(
+            [
+                "METROPOLITAN_STATISTICAL_AREA_MICROPOLITAN_STATISTICAL_AREA",
+                "STATE",
+                "COUNTY",
+                "NAME",
+                "B03002_001E",
+            ],
+            list(df.columns),
+        )
+
     def test_tract_contained_within_place(self):
         """Test tracts contained within places."""
         gdf = ced.contained_within(
