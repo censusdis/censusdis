@@ -328,6 +328,8 @@ def download(
     skip_annotations: bool = True,
     with_geometry: bool = False,
     remove_water: bool = False,
+    download_contained_within: Optional[Dict[str, cgeo.InSpecType]] = None,
+    area_threshold: float = 0.8,
     api_key: Optional[str] = None,
     variable_cache: Optional["VariableCache"] = None,
     row_keys: Optional[Union[str, Iterable[str]]] = None,
@@ -397,6 +399,13 @@ def download(
     remove_water
         If `True` and if with_geometry=True, will query TIGER for AREAWATER shapefiles and
         remove water areas from returned geometry.
+    download_contained_within
+        A dictionary specifying the geography or geographies that our results
+        should be filtered down to be contained within.
+    area_threshold
+        What fraction of the area of other geographies must be contained
+        in our geography to be included. Ignored if `download_contained_within` is
+        `None`.
     api_key
         An optional API key. If you don't have or don't use a key, the number
         of calls you can make will be limited to 500 per day.
@@ -415,6 +424,26 @@ def download(
     -------
         A :py:class:`~pd.DataFrame` or `~gpd.GeoDataFrame` containing the requested US Census data.
     """
+    if download_contained_within is not None:
+        # Put the contained_within context around it.
+        return contained_within(
+            area_threshold=area_threshold, **download_contained_within
+        ).download(
+            dataset,
+            vintage,
+            download_variables,
+            group=group,
+            leaves_of_group=leaves_of_group,
+            set_to_nan=set_to_nan,
+            skip_annotations=skip_annotations,
+            with_geometry=with_geometry,
+            remove_water=remove_water,
+            api_key=api_key,
+            variable_cache=variable_cache,
+            row_keys=row_keys,
+            **kwargs,
+        )
+
     if variable_cache is None:
         variable_cache = variables
 
