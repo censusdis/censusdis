@@ -54,6 +54,7 @@ class VariableSpec(ABC):
         *,
         denominator: Union[str, bool] = False,
         frac_prefix: Optional[str] = None,
+        frac_not: bool = False,
     ):
         self._denominator = denominator
 
@@ -61,6 +62,8 @@ class VariableSpec(ABC):
             frac_prefix = "frac_"
 
         self._frac_prefix = frac_prefix
+
+        self._frac_not = frac_not
 
     @property
     def denominator(self) -> Union[str, bool]:
@@ -71,6 +74,11 @@ class VariableSpec(ABC):
     def frac_prefix(self) -> str:
         """The prefix to prepend to fractional variables."""
         return self._frac_prefix
+
+    @property
+    def frac_not(self) -> str:
+        """Should we return 1 - fraction instead of fraction."""
+        return self._frac_not
 
     def variables_to_download(self) -> List[str]:
         """Return a list of the variables that need to be downloaded from the U.S. Census API."""
@@ -255,8 +263,11 @@ class VariableList(VariableSpec):
         *,
         denominator: Union[str, bool] = False,
         frac_prefix: Optional[str] = None,
+        frac_not: Optional[bool] = False,
     ):
-        super().__init__(denominator=denominator, frac_prefix=frac_prefix)
+        super().__init__(
+            denominator=denominator, frac_prefix=frac_prefix, frac_not=frac_not
+        )
         if isinstance(variables, str):
             self._variables = [variables]
         else:
@@ -301,15 +312,19 @@ class VariableList(VariableSpec):
 
         if isinstance(self.denominator, str):
             for variable in self._variables:
-                df_downloaded[f"{self.frac_prefix}{variable}"] = (
-                    df_downloaded[variable] / df_downloaded[self.denominator]
-                )
+                frac = df_downloaded[variable] / df_downloaded[self.denominator]
+                if self.frac_not:
+                    df_downloaded[f"{self.frac_prefix}{variable}"] = 1.0 - frac
+                else:
+                    df_downloaded[f"{self.frac_prefix}{variable}"] = frac
         elif self.denominator:
             denominator = df_downloaded[self._variables].sum(axis="columns")
             for variable in self._variables:
-                df_downloaded[f"{self.frac_prefix}{variable}"] = (
-                    df_downloaded[variable] / denominator
-                )
+                frac = df_downloaded[variable] / denominator
+                if self.frac_not:
+                    df_downloaded[f"{self.frac_prefix}{variable}"] = 1.0 - frac
+                else:
+                    df_downloaded[f"{self.frac_prefix}{variable}"] = frac
 
     def __eq__(self, other) -> bool:
         """Are two `VariableList`'s equal."""
@@ -353,11 +368,14 @@ class CensusGroup(VariableSpec):
         leaves_only: bool = False,
         denominator: Optional[str] = None,
         frac_prefix: Optional[str] = None,
+        frac_not: bool = False,
     ):
         if denominator is None:
             denominator = False
 
-        super().__init__(denominator=denominator, frac_prefix=frac_prefix)
+        super().__init__(
+            denominator=denominator, frac_prefix=frac_prefix, frac_not=frac_not
+        )
         self._group = [group] if isinstance(group, str) else list(group)
         self._leaves_only = leaves_only
 
@@ -393,9 +411,11 @@ class CensusGroup(VariableSpec):
             for group in self._group:
                 for variable in df_downloaded.columns:
                     if variable.startswith(group):
-                        df_downloaded[f"{self.frac_prefix}{variable}"] = (
-                            df_downloaded[variable] / df_downloaded[self.denominator]
-                        )
+                        frac = df_downloaded[variable] / df_downloaded[self.denominator]
+                        if self.frac_not:
+                            df_downloaded[f"{self.frac_prefix}{variable}"] = 1.0 - frac
+                        else:
+                            df_downloaded[f"{self.frac_prefix}{variable}"] = frac
         elif self.denominator:
             for group in self._group:
                 denominator = df_downloaded[
@@ -407,9 +427,11 @@ class CensusGroup(VariableSpec):
                 ].sum(axis="columns")
                 for variable in df_downloaded.columns:
                     if variable.startswith(group):
-                        df_downloaded[f"{self.frac_prefix}{variable}"] = (
-                            df_downloaded[variable] / denominator
-                        )
+                        frac = df_downloaded[variable] / denominator
+                        if self.frac_not:
+                            df_downloaded[f"{self.frac_prefix}{variable}"] = 1.0 - frac
+                        else:
+                            df_downloaded[f"{self.frac_prefix}{variable}"] = frac
 
     def __eq__(self, other) -> bool:
         """Are two `CensusGroup`'s equal."""
@@ -484,7 +506,7 @@ class VariableSpecCollection(VariableSpec):
         Parameters
         ----------
         df_downloaded
-            A data frame of variables that were downloaded. Any synthesized variables
+            A data frame of variables that were downloaded. Any systhesized variables
             are added as new columns.
 
         Returns
