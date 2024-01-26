@@ -23,7 +23,7 @@ jobs:
       #       check out repo
       #----------------------------------------------
       - name: Check out repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           ssh-key:
             ${{secrets.DEPLOY_ACTION_SECRET}}
@@ -32,7 +32,7 @@ jobs:
       #----------------------------------------------
       - name: Set up python
         id: setup-python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: 3.12
       #----------------------------------------------
@@ -50,7 +50,7 @@ jobs:
       #----------------------------------------------
       - name: Load cached venv
         id: cached-poetry-dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: .venv
           key: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/poetry.lock') }}
@@ -78,7 +78,7 @@ jobs:
       #----------------------------------------------
       - name: Archive test artifacts
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: test_artifacts
           path: tests/_test_artifacts
