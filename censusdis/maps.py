@@ -1145,12 +1145,12 @@ def sjoin_mostly_contains(
 
     # Keep the original geos around in EPSG 3857 so
     # we can check intersection areas.
-    gdf_large_geos[
-        f"_original_large_geos_{area_epsg}"
-    ] = gdf_large_geos.geometry.to_crs(epsg=area_epsg)
-    gdf_small_geos[
-        f"_original_small_geos_{area_epsg}"
-    ] = gdf_small_geos.geometry.to_crs(epsg=area_epsg)
+    gdf_large_geos[f"_original_large_geos_{area_epsg}"] = (
+        gdf_large_geos.geometry.to_crs(epsg=area_epsg)
+    )
+    gdf_small_geos[f"_original_small_geos_{area_epsg}"] = (
+        gdf_small_geos.geometry.to_crs(epsg=area_epsg)
+    )
 
     # Do an intersection join.
     gdf_intersection = gdf_small_geos.sjoin(
