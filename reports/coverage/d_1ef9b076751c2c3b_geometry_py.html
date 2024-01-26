@@ -65,7 +65,7 @@
             <a id="nextFileLink" class="nav" href="d_1ef9b076751c2c3b_us_census_shapefiles_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io">coverage.py v6.5.0</a>,
-            created at 2024-01-25 20:02 +0000
+            created at 2024-01-26 21:42 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"/>
@@ -201,11 +201,11 @@
     <p class="pln"><span class="n"><a id="t119" href="#t119">119</a></span><span class="t"><span class="str">        The series with all slivers removed.</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t120" href="#t120">120</a></span><span class="t"><span class="str">    """</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t121" href="#t121">121</a></span><span class="t">    <span class="key">return</span> <span class="nam">gs_geo</span><span class="op">.</span><span class="nam">map</span><span class="op">(</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t122" href="#t122">122</a></span><span class="t">        <span class="key">lambda</span> <span class="nam">s</span><span class="op">:</span> <span class="nam">drop_slivers_multi_polygon</span><span class="op">(</span><span class="nam">s</span><span class="op">,</span> <span class="nam">threshold</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t123" href="#t123">123</a></span><span class="t">        <span class="key">if</span> <span class="nam">isinstance</span><span class="op">(</span><span class="nam">s</span><span class="op">,</span> <span class="nam">MultiPolygon</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t124" href="#t124">124</a></span><span class="t">        <span class="key">else</span> <span class="nam">drop_polygon_if_sliver</span><span class="op">(</span><span class="nam">s</span><span class="op">,</span> <span class="nam">threshold</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t125" href="#t125">125</a></span><span class="t">        <span class="key">if</span> <span class="nam">isinstance</span><span class="op">(</span><span class="nam">s</span><span class="op">,</span> <span class="nam">Polygon</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t126" href="#t126">126</a></span><span class="t">        <span class="key">else</span> <span class="nam">s</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t122" href="#t122">122</a></span><span class="t">        <span class="key">lambda</span> <span class="nam">s</span><span class="op">:</span> <span class="op">(</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t123" href="#t123">123</a></span><span class="t">            <span class="nam">drop_slivers_multi_polygon</span><span class="op">(</span><span class="nam">s</span><span class="op">,</span> <span class="nam">threshold</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t124" href="#t124">124</a></span><span class="t">            <span class="key">if</span> <span class="nam">isinstance</span><span class="op">(</span><span class="nam">s</span><span class="op">,</span> <span class="nam">MultiPolygon</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t125" href="#t125">125</a></span><span class="t">            <span class="key">else</span> <span class="nam">drop_polygon_if_sliver</span><span class="op">(</span><span class="nam">s</span><span class="op">,</span> <span class="nam">threshold</span><span class="op">)</span> <span class="key">if</span> <span class="nam">isinstance</span><span class="op">(</span><span class="nam">s</span><span class="op">,</span> <span class="nam">Polygon</span><span class="op">)</span> <span class="key">else</span> <span class="nam">s</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t126" href="#t126">126</a></span><span class="t">        <span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t127" href="#t127">127</a></span><span class="t">    <span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t128" href="#t128">128</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t129" href="#t129">129</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
@@ -278,7 +278,7 @@
             <a id="nextFileLink" class="nav" href="d_1ef9b076751c2c3b_us_census_shapefiles_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io">coverage.py v6.5.0</a>,
-            created at 2024-01-25 20:02 +0000
+            created at 2024-01-26 21:42 +0000
         </p>
     </div>
 </footer>
