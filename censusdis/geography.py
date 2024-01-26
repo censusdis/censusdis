@@ -206,9 +206,9 @@ class PathSpec:
             f"Census API request to {request.url} failed with status {request.status_code}. {request.text}"
         )
 
-    _PATH_SPECS_BY_DATASET_YEAR: DefaultDict[
-        str, Dict[int, Dict[str, "PathSpec"]]
-    ] = defaultdict(dict)
+    _PATH_SPECS_BY_DATASET_YEAR: DefaultDict[str, Dict[int, Dict[str, "PathSpec"]]] = (
+        defaultdict(dict)
+    )
 
     _PATH_SPEC_SNAKE_MAP: DefaultDict[str, Dict[int, Dict[str, str]]] = defaultdict(
         dict
@@ -221,9 +221,9 @@ class PathSpec:
     def get_path_specs(dataset: str, vintage: int) -> Dict[str, "PathSpec"]:
         """Fet all the path specifications for the given dataset and vintage."""
         if vintage not in PathSpec._PATH_SPECS_BY_DATASET_YEAR[dataset]:
-            PathSpec._PATH_SPECS_BY_DATASET_YEAR[dataset][
-                vintage
-            ] = PathSpec._fetch_path_specs(dataset, vintage)
+            PathSpec._PATH_SPECS_BY_DATASET_YEAR[dataset][vintage] = (
+                PathSpec._fetch_path_specs(dataset, vintage)
+            )
             PathSpec._PATH_SPEC_SNAKE_MAP[dataset][vintage] = {
                 component.replace(" ", "_")
                 .replace("/", "_")

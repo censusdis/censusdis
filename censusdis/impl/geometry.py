@@ -119,11 +119,11 @@ def drop_slivers_from_geo_series(
         The series with all slivers removed.
     """
     return gs_geo.map(
-        lambda s: drop_slivers_multi_polygon(s, threshold)
-        if isinstance(s, MultiPolygon)
-        else drop_polygon_if_sliver(s, threshold)
-        if isinstance(s, Polygon)
-        else s
+        lambda s: (
+            drop_slivers_multi_polygon(s, threshold)
+            if isinstance(s, MultiPolygon)
+            else drop_polygon_if_sliver(s, threshold) if isinstance(s, Polygon) else s
+        )
     )
 
 

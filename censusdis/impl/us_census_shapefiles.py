@@ -149,9 +149,11 @@ _GEO_QUERY_FROM_DATA_QUERY_INNER_GEO: Dict[
         None,
         "vtd",
         ["STATE", "COUNTY", "VOTING_DISTRICT"],
-        ["STATEFP20", "COUNTYFP20", "VTDST20"]
-        if year >= 2020
-        else ["STATEFP10", "COUNTYFP10", "VTDST10"],
+        (
+            ["STATEFP20", "COUNTYFP20", "VTDST20"]
+            if year >= 2020
+            else ["STATEFP10", "COUNTYFP10", "VTDST10"]
+        ),
     ),
     # This one could be a little dangerous if subminor civil
     # divisions exist in states and are not mapped as subbarios.
