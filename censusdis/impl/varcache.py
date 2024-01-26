@@ -31,12 +31,12 @@ class VariableCache:
             variable_source = CensusApiVariableSource()
 
         self._variable_source = variable_source
-        self._variable_cache: DefaultDict[
-            str, DefaultDict[int, Dict[str, Any]]
-        ] = defaultdict(lambda: defaultdict(dict))
-        self._group_cache: DefaultDict[
-            str, DefaultDict[int, Dict[str, Any]]
-        ] = defaultdict(lambda: defaultdict(dict))
+        self._variable_cache: DefaultDict[str, DefaultDict[int, Dict[str, Any]]] = (
+            defaultdict(lambda: defaultdict(dict))
+        )
+        self._group_cache: DefaultDict[str, DefaultDict[int, Dict[str, Any]]] = (
+            defaultdict(lambda: defaultdict(dict))
+        )
 
         self._all_data_sets_cache: Optional[pd.DataFrame] = None
         self._data_sets_by_year_cache: Dict[int, pd.DataFrame] = {}
@@ -385,9 +385,11 @@ class VariableCache:
                     "DATASET": "/".join(dataset["c_dataset"]),
                     "TITLE": dataset.get("title", None),
                     "DESCRIPTION": dataset.get("description", None),
-                    "API BASE URL": dataset["distribution"][0].get("accessURL", None)
-                    if dataset.get("distribution")
-                    else None,
+                    "API BASE URL": (
+                        dataset["distribution"][0].get("accessURL", None)
+                        if dataset.get("distribution")
+                        else None
+                    ),
                 }
                 for dataset in datasets
             ]
