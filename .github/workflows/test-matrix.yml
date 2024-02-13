@@ -58,6 +58,6 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: test_artifacts-${{ matrix.os }}- ${{ matrix.python-version }}
+          name: test_artifacts-${{ matrix.os }}-${{ matrix.python-version }}
           path: tests/_test_artifacts
           retention-days: 7
