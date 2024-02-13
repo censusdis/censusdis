@@ -106,7 +106,7 @@ CPS_ARTS = "cps/arts/feb"
 
 CPS_ASEC = "cps/asec/mar"
 
-CPS_BASIC = "cps/basic/sep"
+CPS_BASIC = "cps/basic/jan"
 
 CPS_CIVIC = "cps/civic/nov"
 
@@ -492,6 +492,10 @@ SBO_CSCB = "sbo/cscb"
 
 SBO_CSCBO = "sbo/cscbo"
 
+SIPP_CORE = "sipp/core/2008panel/wave9"
+
+SIPP_TOPICAL = "sipp/topical/2008panel/wave9"
+
 TIMESERIES_ASM = "timeseries/asm/value2017"
 
 TIMESERIES_BDS = "timeseries/bds"
@@ -534,8 +538,8 @@ DATASET_REFERENCE_URLS = {
     ABS_CBO: "http://api.census.gov/data/2021/abscbo",
     ABS_CS: "http://api.census.gov/data/2021/abscs",
     ABS_MCB: "http://api.census.gov/data/2021/absmcb",
-    ABS_NESD: "http://api.census.gov/data/2019/absnesd",
-    ABS_NESDO: "http://api.census.gov/data/2019/absnesdo",
+    ABS_NESD: "http://api.census.gov/data/2020/absnesd",
+    ABS_NESDO: "http://api.census.gov/data/2020/absnesdo",
     ABS_TCB: "http://api.census.gov/data/2018/abstcb",
     ACS1: "http://api.census.gov/data/2022/acs/acs1",
     ACS1_CD113: "http://api.census.gov/data/2011/acs1/cd113",
@@ -575,7 +579,7 @@ DATASET_REFERENCE_URLS = {
     CFSTEMP: "http://api.census.gov/data/2017/cfstemp",
     CPS_ARTS: "http://api.census.gov/data/2020/cps/arts/feb",
     CPS_ASEC: "http://api.census.gov/data/2023/cps/asec/mar",
-    CPS_BASIC: "http://api.census.gov/data/2023/cps/basic/sep",
+    CPS_BASIC: "http://api.census.gov/data/2024/cps/basic/jan",
     CPS_CIVIC: "http://api.census.gov/data/2013/cps/civic/nov",
     CPS_CONTWORKER: "http://api.census.gov/data/2017/cps/contworker/may",
     CPS_DISABILITY: "http://api.census.gov/data/2021/cps/disability/jul",
@@ -595,7 +599,7 @@ DATASET_REFERENCE_URLS = {
     CPS_VOLUNTEER: "http://api.census.gov/data/2021/cps/volunteer/sep",
     CPS_VOTING: "http://api.census.gov/data/2022/cps/voting/nov",
     CPS_WORKSCHED: "http://api.census.gov/data/2004/cps/worksched/may",
-    CRE: "http://api.census.gov/data/2021/cre",
+    CRE: "http://api.census.gov/data/2022/cre",
     DECENNIAL_AIAN: "http://api.census.gov/data/2010/dec/aian",
     DECENNIAL_AIANPROFILE: "http://api.census.gov/data/2000/dec/aianprofile",
     DECENNIAL_AS: "http://api.census.gov/data/2010/dec/as",
@@ -768,6 +772,8 @@ DATASET_REFERENCE_URLS = {
     SBO_CS: "http://api.census.gov/data/2012/sbo/cs",
     SBO_CSCB: "http://api.census.gov/data/2012/sbo/cscb",
     SBO_CSCBO: "http://api.census.gov/data/2012/sbo/cscbo",
+    SIPP_CORE: "http://api.census.gov/data/2008/sipp/core/2008panel/wave9",
+    SIPP_TOPICAL: "http://api.census.gov/data/2008/sipp/topical/2008panel/wave9",
     TIMESERIES_ASM: "http://api.census.gov/data/timeseries/asm/value2017",
     TIMESERIES_BDS: "http://api.census.gov/data/timeseries/bds",
     TIMESERIES_EITS: "http://api.census.gov/data/timeseries/eits/vip",
