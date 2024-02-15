@@ -178,6 +178,14 @@ DECENNIAL_CD118 = "dec/cd118"
 
 DECENNIAL_CQR = "dec/cqr"
 
+DECENNIAL_CROSSTABAS = "dec/crosstabas"
+
+DECENNIAL_CROSSTABGU = "dec/crosstabgu"
+
+DECENNIAL_CROSSTABMP = "dec/crosstabmp"
+
+DECENNIAL_CROSSTABVI = "dec/crosstabvi"
+
 DECENNIAL_DDHCA = "dec/ddhca"
 
 DECENNIAL_DHC = "dec/dhc"
@@ -496,6 +504,8 @@ SIPP_CORE = "sipp/core/2008panel/wave9"
 
 SIPP_TOPICAL = "sipp/topical/2008panel/wave9"
 
+SIPP_TOPICALRES = "sipp/topicalres/2001panel/wave8"
+
 TIMESERIES_ASM = "timeseries/asm/value2017"
 
 TIMESERIES_BDS = "timeseries/bds"
@@ -615,6 +625,10 @@ DATASET_REFERENCE_URLS = {
     DECENNIAL_CD116: "http://api.census.gov/data/2010/dec/cd116",
     DECENNIAL_CD118: "http://api.census.gov/data/2020/dec/cd118",
     DECENNIAL_CQR: "http://api.census.gov/data/2000/dec/cqr",
+    DECENNIAL_CROSSTABAS: "http://api.census.gov/data/2020/dec/crosstabas",
+    DECENNIAL_CROSSTABGU: "http://api.census.gov/data/2020/dec/crosstabgu",
+    DECENNIAL_CROSSTABMP: "http://api.census.gov/data/2020/dec/crosstabmp",
+    DECENNIAL_CROSSTABVI: "http://api.census.gov/data/2020/dec/crosstabvi",
     DECENNIAL_DDHCA: "http://api.census.gov/data/2020/dec/ddhca",
     DECENNIAL_DHC: "http://api.census.gov/data/2020/dec/dhc",
     DECENNIAL_DHCAS: "http://api.census.gov/data/2020/dec/dhcas",
@@ -774,6 +788,7 @@ DATASET_REFERENCE_URLS = {
     SBO_CSCBO: "http://api.census.gov/data/2012/sbo/cscbo",
     SIPP_CORE: "http://api.census.gov/data/2008/sipp/core/2008panel/wave9",
     SIPP_TOPICAL: "http://api.census.gov/data/2008/sipp/topical/2008panel/wave9",
+    SIPP_TOPICALRES: "http://api.census.gov/data/2001/sipp/topicalres/2001panel/wave8",
     TIMESERIES_ASM: "http://api.census.gov/data/timeseries/asm/value2017",
     TIMESERIES_BDS: "http://api.census.gov/data/timeseries/bds",
     TIMESERIES_EITS: "http://api.census.gov/data/timeseries/eits/vip",
