@@ -3502,6 +3502,20 @@ socks = ["pysocks (>=1.5.6,!=1.5.7,<2.0)"]
 zstd = ["zstandard (>=0.18.0)"]
 
 [[package]]
+name = "usingversion"
+version = "0.1.1"
+description = "A package to make it easy for other packages to report their version."
+optional = false
+python-versions = ">=3.9,<4.0"
+files = [
+    {file = "usingversion-0.1.1-py3-none-any.whl", hash = "sha256:fdd02720c40ecc02f72ebf0d9a22a788c7de3056d51134cb9ff59f1d197554a4"},
+    {file = "usingversion-0.1.1.tar.gz", hash = "sha256:be25d2dc981052cff813c16fcd9053516402da5ba78ec67f7dd95f84f36cddaf"},
+]
+
+[package.dependencies]
+toml = ">=0.10.2,<0.11.0"
+
+[[package]]
 name = "wcwidth"
 version = "0.2.13"
 description = "Measures the displayed width of unicode strings in a terminal"
@@ -3634,4 +3648,5 @@ docs = ["Sphinx", "sphinx-copybutton", "sphinx-rtd-theme", "sphinxcontrib-napole
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "c933cf9f8df78d276678cc94518a10ec468494cb12c845ae83e58e3214a7eda3"
+content-hash = "61f86a6170017518ada88a612791e809e8524b9c4275a452570c48391fd60b55"
+
