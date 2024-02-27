@@ -44,9 +44,10 @@ usingversion = "^0.1.1"
 mapclassify = { version = "^2.6.1", optional = true }
 ipyleaflet = { version = "^0.18.2", optional = true }
 folium = { version = "^0.15.1", optional = true }
+branca = { version = "^0.7.1", optional = true }
 
 [tool.poetry.extras]
-explore = ["mapclassify", "ipyleaflet", "folium"]
+explore = ["mapclassify", "ipyleaflet", "folium", "branca"]
 docs = ["Sphinx", "sphinx-rtd-theme", "sphinx-copybutton", "sphinxcontrib-napoleon", "toml"]
 
 [tool.poetry.group.test.dependencies]

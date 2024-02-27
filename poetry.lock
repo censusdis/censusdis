@@ -3835,9 +3835,9 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 
 [extras]
 docs = ["Sphinx", "sphinx-copybutton", "sphinx-rtd-theme", "sphinxcontrib-napoleon", "toml"]
-explore = ["folium", "ipyleaflet", "mapclassify"]
+explore = ["branca", "folium", "ipyleaflet", "mapclassify"]
 
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "ea2e9c911a28a8fada121a84ca4997c275c49376c7a78ef015b2f29db9e80106"
+content-hash = "0bf35a23d0d76f3975f04def11c0f5c094fbae8a7b2d9733f0b8ad53cc14b38d"
