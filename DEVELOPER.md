@@ -42,7 +42,13 @@ and then use
 ```shell
 poetry install
 ```
-to install all the necessary dependencies for your project.
+to install all the necessary dependencies for your project. 
+
+If you want to use `geopandas.GeoDataFrame.explore` in notebooks, install
+with the necessary extras using 
+```shell
+poetry install -E explore
+```
 
 Next, you can use
 ```shell
