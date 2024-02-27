@@ -61,7 +61,7 @@ jobs:
       #----------------------------------------------
       - name: Install dependencies
         if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
-        run: poetry install --no-interaction --no-root
+        run: poetry install --extras=explore --no-interaction --no-root
       #----------------------------------------------
       # install your root project, if required
       #----------------------------------------------
