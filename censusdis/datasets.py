@@ -516,6 +516,8 @@ TIMESERIES_GOVS = "timeseries/govs"
 
 TIMESERIES_HEALTHINS = "timeseries/healthins/sahie"
 
+TIMESERIES_HHPULSE = "timeseries/hhpulse"
+
 TIMESERIES_HPS = "timeseries/hps"
 
 TIMESERIES_IDB = "timeseries/idb/5year"
@@ -527,6 +529,8 @@ TIMESERIES_POVERTY = "timeseries/poverty/saipe/schdist"
 TIMESERIES_PSEO = "timeseries/pseo/flows"
 
 TIMESERIES_QWI = "timeseries/qwi/se"
+
+TIMESERIES_SOMA = "timeseries/soma"
 
 VIUSA = "viusa"
 
@@ -794,12 +798,14 @@ DATASET_REFERENCE_URLS = {
     TIMESERIES_EITS: "http://api.census.gov/data/timeseries/eits/vip",
     TIMESERIES_GOVS: "http://api.census.gov/data/timeseries/govs",
     TIMESERIES_HEALTHINS: "http://api.census.gov/data/timeseries/healthins/sahie",
+    TIMESERIES_HHPULSE: "http://api.census.gov/data/timeseries/hhpulse",
     TIMESERIES_HPS: "http://api.census.gov/data/timeseries/hps",
     TIMESERIES_IDB: "http://api.census.gov/data/timeseries/idb/5year",
     TIMESERIES_INTLTRADE: "http://api.census.gov/data/timeseries/intltrade/imports/usda",
     TIMESERIES_POVERTY: "http://api.census.gov/data/timeseries/poverty/saipe/schdist",
     TIMESERIES_PSEO: "http://api.census.gov/data/timeseries/pseo/flows",
     TIMESERIES_QWI: "http://api.census.gov/data/timeseries/qwi/se",
+    TIMESERIES_SOMA: "http://api.census.gov/data/timeseries/soma",
     VIUSA: "http://api.census.gov/data/2021/viusa",
     VIUSB: "http://api.census.gov/data/2021/viusb",
     VIUSC: "http://api.census.gov/data/2021/viusc",
