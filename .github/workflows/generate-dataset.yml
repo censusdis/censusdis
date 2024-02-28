@@ -16,7 +16,7 @@ on:
 
 jobs:
   generate-dataset:
-    if: ${{ github.event.pull_request.merged }}
+    if: ${{ github.event_name == 'schedule' || github.event.pull_request.merged }}
     runs-on: ubuntu-latest
     steps:
       #----------------------------------------------
