@@ -926,7 +926,9 @@ def plot_map(
     return ax
 
 
-def _add_plot_map_geo_labels(ax: plt.Axes, gdf: gpd.GeoDataFrame, geo_label: str) -> plt.Axes:
+def _add_plot_map_geo_labels(
+    ax: plt.Axes, gdf: gpd.GeoDataFrame, geo_label: str
+) -> plt.Axes:
     """
     Add labels to each geometry in a plot.
 
