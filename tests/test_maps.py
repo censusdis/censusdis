@@ -235,7 +235,7 @@ class MapPlotTestCase(unittest.TestCase):
 
         ax.axis("off")
 
-        png_file_name = f"plot_us_continental_labeled.png"
+        png_file_name = "plot_us_continental_labeled.png"
 
         output_file = self.output_dir / png_file_name
 
@@ -248,7 +248,7 @@ class MapPlotTestCase(unittest.TestCase):
         self.assert_structurally_similar(
             expected_file,
             output_file,
-            msg=f"Labeled map should be similar.",
+            msg="Labeled map should be similar.",
         )
 
     def test_plot_us(self):
