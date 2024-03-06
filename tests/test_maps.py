@@ -231,7 +231,7 @@ class MapPlotTestCase(unittest.TestCase):
             & ~self.gdf["STATEFP"].isin([AK, HI, PR])
         ]
 
-        ax = cmap.plot_map(gdf_continental, label="NAME", color="beige")
+        ax = cmap.plot_map(gdf_continental, geo_label="NAME", color="beige")
 
         ax.axis("off")
 
@@ -259,6 +259,20 @@ class MapPlotTestCase(unittest.TestCase):
         output_file = self.output_dir / png_file_name
 
         ax = cmap.plot_us(self.gdf, color="green")
+        ax.axis("off")
+        fig = ax.get_figure()
+        fig.savefig(output_file)
+
+        self.assert_structurally_similar(expected_file, output_file)
+
+    def test_plot_us_with_labels(self):
+        """Test calling plot_us."""
+        png_file_name = "plot_us_labels.png"
+        expected_file = self.expected_dir / png_file_name
+
+        output_file = self.output_dir / png_file_name
+
+        ax = cmap.plot_us(self.gdf, geo_label="NAME", color="green")
         ax.axis("off")
         fig = ax.get_figure()
         fig.savefig(output_file)

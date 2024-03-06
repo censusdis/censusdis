@@ -15,6 +15,7 @@ from zipfile import BadZipFile, ZipFile
 
 import contextily as cx
 import geopandas as gpd
+import matplotlib.pyplot as plt
 import requests
 import shapely.affinity
 from haversine import haversine
@@ -871,11 +872,11 @@ def _closest_epsg(
 def plot_map(
     gdf: gpd.GeoDataFrame,
     *args,
-    label: Optional[str] = None,
+    geo_label: Optional[str] = None,
     with_background: bool = False,
     epsg: Optional[int] = None,  # 3309, # 4269,
     **kwargs,
-):
+) -> plt.Axes:
     """
     Plot a map, optionally with a background.
 
@@ -885,7 +886,7 @@ def plot_map(
         The geo data frame to plot
     args
         Optional args to matplotlib
-    label
+    geo_label
         Name of a column in `gdf` that has labels for each geometry.
     with_background
         Should we put in a background map from Open Street maps?
@@ -906,22 +907,8 @@ def plot_map(
 
     ax = gdf.plot(*args, **kwargs)
 
-    if label is not None:
-        for _, row in gdf.iterrows():
-            rep = row["geometry"].representative_point()
-
-            name = row[label]
-
-            ax.text(
-                rep.x,
-                rep.y,
-                name,
-                ha="center",
-                va="center",
-                color="#333",
-                size=9,
-                path_effects=[pe.withStroke(linewidth=4, foreground="white")],
-            )
+    if geo_label is not None:
+        _add_plot_map_geo_labels(ax, gdf, geo_label)
 
     ax.tick_params(
         left=False,
@@ -939,14 +926,52 @@ def plot_map(
     return ax
 
 
+def _add_plot_map_geo_labels(ax: plt.Axes, gdf: gpd.GeoDataFrame, geo_label: str) -> plt.Axes:
+    """
+    Add labels to each geometry in a plot.
+
+    Internal utility function behind `plot_map` and `plot_us`.
+
+    Parameters
+    ----------
+    ax
+        The ax we already plotted on.
+    gdf
+        The geographic data frame we are plotting.
+    geo_label
+        The column in `gdf` that contains the labels to add to the plot.
+    Returns
+    -------
+        `ax`
+    """
+    for _, row in gdf.iterrows():
+        rep = row["geometry"].representative_point()
+
+        name = row[geo_label]
+
+        ax.text(
+            rep.x,
+            rep.y,
+            name,
+            ha="center",
+            va="center",
+            color="#333",
+            size=9,
+            path_effects=[pe.withStroke(linewidth=4, foreground="white")],
+        )
+
+    return ax
+
+
 def plot_us(
     gdf: gpd.GeoDataFrame,
     *args,
     do_relocate_ak_hi_pr: bool = True,
     with_background: bool = False,
     epsg: int = 9311,
+    geo_label: Optional[str] = None,
     **kwargs,
-):
+) -> plt.Axes:
     """
     Plot a map of the US with AK and HI relocated.
 
@@ -978,6 +1003,8 @@ def plot_us(
     epsg:
         The EPSG CRS to project to before plotting. Default is 9311, which
         is equal area. See https://epsg.io/9311.
+    geo_label
+        Name of a column in `gdf` that has labels for each geometry.
     kwargs
         Keyword args to pass to the plot.
 
@@ -999,6 +1026,9 @@ def plot_us(
     gdf = gdf.to_crs(epsg=epsg)
 
     ax = gdf.plot(*args, **kwargs)
+
+    if geo_label is not None:
+        _add_plot_map_geo_labels(ax, gdf, geo_label)
 
     if with_background:
         provider = cx.providers.OpenStreetMap.Mapnik
