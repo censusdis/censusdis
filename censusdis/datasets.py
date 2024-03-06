@@ -504,6 +504,12 @@ SIPP_CORE = "sipp/core/2008panel/wave9"
 
 SIPP_TOPICAL = "sipp/topical/2008panel/wave9"
 
+SIPP_TOPICALED = "sipp/topicaled/1993panel/wave8"
+
+SIPP_TOPICALEDEX = "sipp/topicaledex/1993panel/wave8"
+
+SIPP_TOPICALEX = "sipp/topicalex/1993panel/wave3"
+
 SIPP_TOPICALRES = "sipp/topicalres/2001panel/wave8"
 
 TIMESERIES_ASM = "timeseries/asm/value2017"
@@ -792,6 +798,9 @@ DATASET_REFERENCE_URLS = {
     SBO_CSCBO: "http://api.census.gov/data/2012/sbo/cscbo",
     SIPP_CORE: "http://api.census.gov/data/2008/sipp/core/2008panel/wave9",
     SIPP_TOPICAL: "http://api.census.gov/data/2008/sipp/topical/2008panel/wave9",
+    SIPP_TOPICALED: "http://api.census.gov/data/1993/sipp/topicaled/1993panel/wave8",
+    SIPP_TOPICALEDEX: "http://api.census.gov/data/1993/sipp/topicaledex/1993panel/wave8",
+    SIPP_TOPICALEX: "http://api.census.gov/data/1993/sipp/topicalex/1993panel/wave3",
     SIPP_TOPICALRES: "http://api.census.gov/data/2001/sipp/topicalres/2001panel/wave8",
     TIMESERIES_ASM: "http://api.census.gov/data/timeseries/asm/value2017",
     TIMESERIES_BDS: "http://api.census.gov/data/timeseries/bds",
