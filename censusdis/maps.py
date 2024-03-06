@@ -942,6 +942,7 @@ def _add_plot_map_geo_labels(
         The geographic data frame we are plotting.
     geo_label
         The column in `gdf` that contains the labels to add to the plot.
+
     Returns
     -------
         `ax`
