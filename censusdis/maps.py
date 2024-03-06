@@ -10,7 +10,7 @@ import importlib.resources
 import shutil
 from logging import getLogger
 from pathlib import Path
-from typing import Optional, Tuple, Union
+from typing import Dict, Optional, Tuple, Union, Any
 from zipfile import BadZipFile, ZipFile
 
 import contextily as cx
@@ -872,9 +872,10 @@ def _closest_epsg(
 def plot_map(
     gdf: gpd.GeoDataFrame,
     *args,
-    geo_label: Optional[str] = None,
     with_background: bool = False,
     epsg: Optional[int] = None,  # 3309, # 4269,
+    geo_label: Optional[str] = None,
+    geo_label_text_kwargs: Optional[Dict[str, Any]] = None,
     **kwargs,
 ) -> plt.Axes:
     """
@@ -886,13 +887,15 @@ def plot_map(
         The geo data frame to plot
     args
         Optional args to matplotlib
-    geo_label
-        Name of a column in `gdf` that has labels for each geometry.
     with_background
         Should we put in a background map from Open Street maps?
     epsg
         The EPSG to project to. Otherwise a suitable one for the
         geometry will be inferred.
+    geo_label
+        Name of a column in `gdf` that has labels for each geometry.
+    geo_label_text_kwargs
+        kwargs to pass for label text, e.g. `{"color": "333". "size": 9}`
     kwargs
         keyword args to pass on to matplotlib
 
@@ -908,7 +911,7 @@ def plot_map(
     ax = gdf.plot(*args, **kwargs)
 
     if geo_label is not None:
-        _add_plot_map_geo_labels(ax, gdf, geo_label)
+        _add_plot_map_geo_labels(ax, gdf, geo_label, geo_label_text_kwargs)
 
     ax.tick_params(
         left=False,
@@ -927,7 +930,10 @@ def plot_map(
 
 
 def _add_plot_map_geo_labels(
-    ax: plt.Axes, gdf: gpd.GeoDataFrame, geo_label: str
+    ax: plt.Axes,
+    gdf: gpd.GeoDataFrame,
+    geo_label: str,
+    geo_label_text_kwargs: Optional[Dict[str, Any]],
 ) -> plt.Axes:
     """
     Add labels to each geometry in a plot.
@@ -942,26 +948,32 @@ def _add_plot_map_geo_labels(
         The geographic data frame we are plotting.
     geo_label
         The column in `gdf` that contains the labels to add to the plot.
+    geo_label_text_kwargs
+        kwargs to pass for label text, e.g. `{"color": "333". "size": 9}`
 
     Returns
     -------
         `ax`
     """
+    if geo_label_text_kwargs is None:
+        geo_label_text_kwargs = {}
+
+    default_text_kwargs = dict(
+        ha="center",
+        va="center",
+        color="#333",
+        size=9,
+        path_effects=[pe.withStroke(linewidth=4, foreground="white")],
+    )
+
+    geo_label_text_kwargs = dict(**default_text_kwargs) | geo_label_text_kwargs
+
     for _, row in gdf.iterrows():
         rep = row["geometry"].representative_point()
 
         name = row[geo_label]
 
-        ax.text(
-            rep.x,
-            rep.y,
-            name,
-            ha="center",
-            va="center",
-            color="#333",
-            size=9,
-            path_effects=[pe.withStroke(linewidth=4, foreground="white")],
-        )
+        ax.text(rep.x, rep.y, name, **geo_label_text_kwargs)
 
     return ax
 
@@ -973,6 +985,7 @@ def plot_us(
     with_background: bool = False,
     epsg: int = 9311,
     geo_label: Optional[str] = None,
+    geo_label_text_kwargs: Optional[Dict[str, Any]] = None,
     **kwargs,
 ) -> plt.Axes:
     """
@@ -1008,6 +1021,8 @@ def plot_us(
         is equal area. See https://epsg.io/9311.
     geo_label
         Name of a column in `gdf` that has labels for each geometry.
+    geo_label_text_kwargs
+        kwargs to pass for label text, e.g. `{"color": "333". "size": 9}`
     kwargs
         Keyword args to pass to the plot.
 
@@ -1031,7 +1046,7 @@ def plot_us(
     ax = gdf.plot(*args, **kwargs)
 
     if geo_label is not None:
-        _add_plot_map_geo_labels(ax, gdf, geo_label)
+        _add_plot_map_geo_labels(ax, gdf, geo_label, geo_label_text_kwargs)
 
     if with_background:
         provider = cx.providers.OpenStreetMap.Mapnik
