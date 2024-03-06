@@ -20,6 +20,7 @@ import shapely.affinity
 from haversine import haversine
 from shapely.geometry import MultiPolygon, Point, Polygon
 from shapely.geometry.base import BaseGeometry
+import matplotlib.patheffects as pe
 
 from censusdis.impl.exceptions import CensusApiException
 from censusdis.states import AK, HI, NAMES_FROM_IDS, PR
@@ -870,6 +871,7 @@ def _closest_epsg(
 def plot_map(
     gdf: gpd.GeoDataFrame,
     *args,
+    label: Optional[str] = None,
     with_background: bool = False,
     epsg: Optional[int] = None,  # 3309, # 4269,
     **kwargs,
@@ -883,6 +885,8 @@ def plot_map(
         The geo data frame to plot
     args
         Optional args to matplotlib
+    label
+        Name of a column in `gdf` that has labels for each geometry.
     with_background
         Should we put in a background map from Open Street maps?
     epsg
@@ -901,6 +905,23 @@ def plot_map(
     gdf = gdf.to_crs(epsg=epsg)
 
     ax = gdf.plot(*args, **kwargs)
+
+    if label is not None:
+        for _, row in gdf.iterrows():
+            rep = row["geometry"].representative_point()
+
+            name = row[label]
+
+            ax.text(
+                rep.x,
+                rep.y,
+                name,
+                ha="center",
+                va="center",
+                color="#333",
+                size=9,
+                path_effects=[pe.withStroke(linewidth=4, foreground="white")],
+            )
 
     ax.tick_params(
         left=False,
