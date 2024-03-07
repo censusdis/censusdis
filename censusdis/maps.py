@@ -932,7 +932,7 @@ def plot_map(
 
 def _add_plot_map_geo_labels(
     ax: plt.Axes,
-    gdf: Union[gpd.GeoDataFrame, gpd.GeoSeries],
+    gdf: gpd.GeoDataFrame,
     geo_label: Union[str, pd.Series],
     geo_label_text_kwargs: Optional[Dict[str, Any]],
 ) -> plt.Axes:
@@ -956,10 +956,6 @@ def _add_plot_map_geo_labels(
     -------
         `ax`
     """
-    if isinstance(gdf, gpd.GeoSeries):
-        gdf = gpd.GeoDataFrame(gdf)
-        print("CCC", list(gdf.columns))
-
     if geo_label_text_kwargs is None:
         geo_label_text_kwargs = {}
 
