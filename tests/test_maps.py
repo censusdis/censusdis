@@ -224,6 +224,33 @@ class MapPlotTestCase(unittest.TestCase):
                 msg=f"Maps for {ABBREVIATIONS_FROM_IDS[state]} should be similar.",
             )
 
+    def test_plot_map_with_labels(self):
+        """Plot states with labels."""
+        gdf_continental = self.gdf[
+            self.gdf["STATEFP"].isin(ALL_STATES_DC_AND_PR)
+            & ~self.gdf["STATEFP"].isin([AK, HI, PR])
+        ]
+
+        ax = cmap.plot_map(gdf_continental, geo_label="NAME", color="beige")
+
+        ax.axis("off")
+
+        png_file_name = "plot_us_continental_labeled.png"
+
+        output_file = self.output_dir / png_file_name
+
+        fig = ax.get_figure()
+        fig.savefig(output_file)
+        plt.close(fig)
+
+        expected_file = self.expected_dir / png_file_name
+
+        self.assert_structurally_similar(
+            expected_file,
+            output_file,
+            msg="Labeled map should be similar.",
+        )
+
     def test_plot_us(self):
         """Test calling plot_us."""
         png_file_name = "plot_us.png"
@@ -232,6 +259,25 @@ class MapPlotTestCase(unittest.TestCase):
         output_file = self.output_dir / png_file_name
 
         ax = cmap.plot_us(self.gdf, color="green")
+        ax.axis("off")
+        fig = ax.get_figure()
+        fig.savefig(output_file)
+
+        self.assert_structurally_similar(expected_file, output_file)
+
+    def test_plot_us_with_labels(self):
+        """Test calling plot_us."""
+        png_file_name = "plot_us_labels.png"
+        expected_file = self.expected_dir / png_file_name
+
+        output_file = self.output_dir / png_file_name
+
+        ax = cmap.plot_us(
+            self.gdf,
+            geo_label=self.gdf["NAME"],
+            color="green",
+            geo_label_text_kwargs={"size": 6},
+        )
         ax.axis("off")
         fig = ax.get_figure()
         fig.savefig(output_file)

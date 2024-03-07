@@ -10,16 +10,19 @@ import importlib.resources
 import shutil
 from logging import getLogger
 from pathlib import Path
-from typing import Optional, Tuple, Union
+from typing import Dict, Optional, Tuple, Union, Any
 from zipfile import BadZipFile, ZipFile
 
 import contextily as cx
 import geopandas as gpd
+import matplotlib.pyplot as plt
+import pandas as pd
 import requests
 import shapely.affinity
 from haversine import haversine
 from shapely.geometry import MultiPolygon, Point, Polygon
 from shapely.geometry.base import BaseGeometry
+import matplotlib.patheffects as pe
 
 from censusdis.impl.exceptions import CensusApiException
 from censusdis.states import AK, HI, NAMES_FROM_IDS, PR
@@ -872,8 +875,10 @@ def plot_map(
     *args,
     with_background: bool = False,
     epsg: Optional[int] = None,  # 3309, # 4269,
+    geo_label: Optional[Union[str, pd.Series]] = None,
+    geo_label_text_kwargs: Optional[Dict[str, Any]] = None,
     **kwargs,
-):
+) -> plt.Axes:
     """
     Plot a map, optionally with a background.
 
@@ -888,6 +893,10 @@ def plot_map(
     epsg
         The EPSG to project to. Otherwise a suitable one for the
         geometry will be inferred.
+    geo_label
+        Name of a column in `gdf` that has labels for each geometry.
+    geo_label_text_kwargs
+        kwargs to pass for label text, e.g. `{"color": "333". "size": 9}`
     kwargs
         keyword args to pass on to matplotlib
 
@@ -901,6 +910,9 @@ def plot_map(
     gdf = gdf.to_crs(epsg=epsg)
 
     ax = gdf.plot(*args, **kwargs)
+
+    if geo_label is not None:
+        _add_plot_map_geo_labels(ax, gdf, geo_label, geo_label_text_kwargs)
 
     ax.tick_params(
         left=False,
@@ -918,14 +930,72 @@ def plot_map(
     return ax
 
 
+def _add_plot_map_geo_labels(
+    ax: plt.Axes,
+    gdf: Union[gpd.GeoDataFrame, gpd.GeoSeries],
+    geo_label: Union[str, pd.Series],
+    geo_label_text_kwargs: Optional[Dict[str, Any]],
+) -> plt.Axes:
+    """
+    Add labels to each geometry in a plot.
+
+    Internal utility function behind `plot_map` and `plot_us`.
+
+    Parameters
+    ----------
+    ax
+        The ax we already plotted on.
+    gdf
+        The geographic data frame we are plotting.
+    geo_label
+        The column in `gdf` that contains the labels to add to the plot.
+    geo_label_text_kwargs
+        kwargs to pass for label text, e.g. `{"color": "333". "size": 9}`
+
+    Returns
+    -------
+        `ax`
+    """
+    if isinstance(gdf, gpd.GeoSeries):
+        gdf = gpd.GeoDataFrame(gdf)
+        print("CCC", list(gdf.columns))
+
+    if geo_label_text_kwargs is None:
+        geo_label_text_kwargs = {}
+
+    default_text_kwargs = dict(
+        ha="center",
+        va="center",
+        color="#333",
+        size=9,
+        path_effects=[pe.withStroke(linewidth=4, foreground="white")],
+    )
+
+    geo_label_text_kwargs = dict(**default_text_kwargs) | geo_label_text_kwargs
+
+    for idx, row in gdf.iterrows():
+        rep = row["geometry"].representative_point()
+
+        if isinstance(geo_label, str):
+            name = row[geo_label]
+        else:
+            name = geo_label.loc[idx]
+
+        ax.text(rep.x, rep.y, name, **geo_label_text_kwargs)
+
+    return ax
+
+
 def plot_us(
     gdf: gpd.GeoDataFrame,
     *args,
     do_relocate_ak_hi_pr: bool = True,
     with_background: bool = False,
     epsg: int = 9311,
+    geo_label: Optional[Union[str, pd.Series]] = None,
+    geo_label_text_kwargs: Optional[Dict[str, Any]] = None,
     **kwargs,
-):
+) -> plt.Axes:
     """
     Plot a map of the US with AK and HI relocated.
 
@@ -957,6 +1027,10 @@ def plot_us(
     epsg:
         The EPSG CRS to project to before plotting. Default is 9311, which
         is equal area. See https://epsg.io/9311.
+    geo_label
+        Name of a column in `gdf` that has labels for each geometry.
+    geo_label_text_kwargs
+        kwargs to pass for label text, e.g. `{"color": "333". "size": 9}`
     kwargs
         Keyword args to pass to the plot.
 
@@ -978,6 +1052,9 @@ def plot_us(
     gdf = gdf.to_crs(epsg=epsg)
 
     ax = gdf.plot(*args, **kwargs)
+
+    if geo_label is not None:
+        _add_plot_map_geo_labels(ax, gdf, geo_label, geo_label_text_kwargs)
 
     if with_background:
         provider = cx.providers.OpenStreetMap.Mapnik
