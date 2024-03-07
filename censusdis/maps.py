@@ -16,6 +16,7 @@ from zipfile import BadZipFile, ZipFile
 import contextily as cx
 import geopandas as gpd
 import matplotlib.pyplot as plt
+import pandas as pd
 import requests
 import shapely.affinity
 from haversine import haversine
@@ -874,7 +875,7 @@ def plot_map(
     *args,
     with_background: bool = False,
     epsg: Optional[int] = None,  # 3309, # 4269,
-    geo_label: Optional[str] = None,
+    geo_label: Optional[Union[str, pd.Series]] = None,
     geo_label_text_kwargs: Optional[Dict[str, Any]] = None,
     **kwargs,
 ) -> plt.Axes:
@@ -931,8 +932,8 @@ def plot_map(
 
 def _add_plot_map_geo_labels(
     ax: plt.Axes,
-    gdf: gpd.GeoDataFrame,
-    geo_label: str,
+    gdf: Union[gpd.GeoDataFrame, gpd.GeoSeries],
+    geo_label: Union[str, pd.Series],
     geo_label_text_kwargs: Optional[Dict[str, Any]],
 ) -> plt.Axes:
     """
@@ -955,6 +956,10 @@ def _add_plot_map_geo_labels(
     -------
         `ax`
     """
+    if isinstance(gdf, gpd.GeoSeries):
+        gdf = gpd.GeoDataFrame(gdf)
+        print("CCC", list(gdf.columns))
+
     if geo_label_text_kwargs is None:
         geo_label_text_kwargs = {}
 
@@ -968,10 +973,13 @@ def _add_plot_map_geo_labels(
 
     geo_label_text_kwargs = dict(**default_text_kwargs) | geo_label_text_kwargs
 
-    for _, row in gdf.iterrows():
+    for idx, row in gdf.iterrows():
         rep = row["geometry"].representative_point()
 
-        name = row[geo_label]
+        if isinstance(geo_label, str):
+            name = row[geo_label]
+        else:
+            name = geo_label.loc[idx]
 
         ax.text(rep.x, rep.y, name, **geo_label_text_kwargs)
 
@@ -984,7 +992,7 @@ def plot_us(
     do_relocate_ak_hi_pr: bool = True,
     with_background: bool = False,
     epsg: int = 9311,
-    geo_label: Optional[str] = None,
+    geo_label: Optional[Union[str, pd.Series]] = None,
     geo_label_text_kwargs: Optional[Dict[str, Any]] = None,
     **kwargs,
 ) -> plt.Axes:
