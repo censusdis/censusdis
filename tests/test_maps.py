@@ -273,7 +273,10 @@ class MapPlotTestCase(unittest.TestCase):
         output_file = self.output_dir / png_file_name
 
         ax = cmap.plot_us(
-            self.gdf, geo_label=self.gdf["NAME"], color="green", geo_label_text_kwargs={"size": 6}
+            self.gdf,
+            geo_label=self.gdf["NAME"],
+            color="green",
+            geo_label_text_kwargs={"size": 6},
         )
         ax.axis("off")
         fig = ax.get_figure()
