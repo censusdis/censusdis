@@ -8,8 +8,8 @@
 ![PyPI - Format](https://img.shields.io/pypi/format/censusdis?label=PyPI%20Format)
 ![PyPI - Downloads](https://img.shields.io/pypi/dm/censusdis?label=PyPI%20Downloads)
 
-![GitHub last commit](https://img.shields.io/github/last-commit/vengroff/censusdis)
-[![Tests Badge](../reports/junit/tests-badge.svg)](https://vengroff.github.io/censusdis/)
+![GitHub last commit](https://img.shields.io/github/last-commit/censusdis/censusdis)
+[![Tests Badge](../reports/junit/tests-badge.svg)](https://censusdis.github.io/censusdis/)
 [![Coverage Badge](../reports/coverage/coverage-badge.svg)](https://censusdis.github.io/censusdis/)
 [![Documentation Status](https://readthedocs.org/projects/censusdis/badge/?version=latest)](https://censusdis.readthedocs.io/en/latest/?badge=latest)
 
