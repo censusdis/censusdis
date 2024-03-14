@@ -75,8 +75,8 @@ jobs:
       #----------------------------------------------
       - name: Commit newly generated datasets file
         run: |
-          /usr/bin/git config --local user.email "action@github.com"
-          /usr/bin/git config --local user.name "GitHub Action"
+          /usr/bin/git config --local user.email "censusdis@gmail.com"
+          /usr/bin/git config --local user.name "Censusdis GitHub Action"
           /usr/bin/git add censusdis/datasets.py
           /usr/bin/git diff --staged --quiet || /usr/bin/git commit -m "Update datasets [github action]"
       - name: Update git
