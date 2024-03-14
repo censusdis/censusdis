@@ -182,10 +182,16 @@ class PathSpec:
             return f"https://api.census.gov/data/{dataset}/geography.json"
 
     @staticmethod
-    def _fetch_path_specs(dataset: str, year: int) -> Dict[str, "PathSpec"]:
+    def _fetch_path_specs(
+            dataset: str,
+            year: int,
+            *,
+            verify: Union[bool, str] = True,
+            cert: Optional[Union[str, Tuple[str, str]]] = None
+    ) -> Dict[str, "PathSpec"]:
         url = PathSpec._geo_url(dataset, year)
 
-        request = requests.get(url)
+        request = requests.get(url, verify=verify, cert=cert)
 
         if request.status_code == 200:
             parsed_json = request.json()

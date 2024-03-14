@@ -12,7 +12,7 @@ A useful resource for tracking down the names is
 https://www2.census.gov/geo/tiger/GENZ2020/2020_file_name_def.pdf?#
 """
 
-from typing import Iterable
+from typing import Iterable, Union, Optional, Tuple
 import requests
 import re
 from logging import getLogger
@@ -27,14 +27,19 @@ from censusdis.impl.us_census_shapefiles import (
 logger = getLogger(__name__)
 
 
-def scan_cb(year: int):
+def scan_cb(
+        year: int,
+        *,
+        verify: Union[bool, str] = True,
+        cert: Optional[Union[str, Tuple[str, str]]] = None
+):
     """Scan CB files for a given year."""
     if year < 2014:
         dir_url = f"https://www2.census.gov/geo/tiger/GENZ{year}"
     else:
         dir_url = f"https://www2.census.gov/geo/tiger/GENZ{year}/shp"
 
-    response = requests.get(dir_url)
+    response = requests.get(dir_url, verify=verify, cert=cert)
 
     if response.status_code != 200:
         logger.warning(

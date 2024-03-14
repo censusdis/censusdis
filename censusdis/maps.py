@@ -440,6 +440,8 @@ class ShapeReader:
         base_url: str,
         *,
         timeout: int,
+        verify: Union[bool, str] = True,
+        cert: Optional[Union[str, Tuple[str, str]]] = None
     ) -> None:
         dir_path = self._shapefile_root / name
 
@@ -468,7 +470,7 @@ class ShapeReader:
         zip_url = f"{base_url}/{name}.zip"
 
         # Fetch the zip file and write it.
-        response = requests.get(zip_url, timeout=timeout)
+        response = requests.get(zip_url, timeout=timeout, verify=verify, cert=cert)
 
         if response.status_code == 404:
             raise MapException(

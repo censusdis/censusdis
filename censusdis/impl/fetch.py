@@ -2,7 +2,7 @@
 """Utilities for loading census data."""
 
 from logging import getLogger
-from typing import Any, Mapping, Optional
+from typing import Any, Mapping, Optional, Union, Tuple
 
 import pandas as pd
 import requests
@@ -12,9 +12,15 @@ from censusdis.impl.exceptions import CensusApiException
 logger = getLogger(__name__)
 
 
-def json_from_url(url: str, params: Optional[Mapping[str, str]] = None) -> Any:
+def json_from_url(
+        url: str,
+        params: Optional[Mapping[str, str]] = None,
+        *,
+        verify: Union[bool, str] = True,
+        cert: Optional[Union[str, Tuple[str, str]]] = None
+) -> Any:
     """Get json from a URL."""
-    request = requests.get(url, params=params)
+    request = requests.get(url, params=params, verify=verify, cert=cert)
 
     if request.status_code == 200:
         parsed_json = request.json()
@@ -26,11 +32,17 @@ def json_from_url(url: str, params: Optional[Mapping[str, str]] = None) -> Any:
     )
 
 
-def data_from_url(url: str, params: Optional[Mapping[str, str]] = None) -> pd.DataFrame:
+def data_from_url(
+        url: str,
+        params: Optional[Mapping[str, str]] = None,
+        *,
+        verify: Union[bool, str] = True,
+        cert: Optional[Union[str, Tuple[str, str]]] = None
+) -> pd.DataFrame:
     """Get json from a URL and parse into a data frame."""
     logger.info(f"Downloading data from {url} with {params}.")
 
-    parsed_json = json_from_url(url, params)
+    parsed_json = json_from_url(url, params, verify=verify, cert=cert)
 
     return _df_from_census_json(parsed_json)
 
