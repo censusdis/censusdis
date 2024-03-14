@@ -75,10 +75,19 @@ class ShapeReader:
         return self._shapefile_root
 
     def _read_shapefile(
-        self, base_name: str, base_url: str, crs, timeout: int
+        self,
+        base_name: str,
+        base_url: str,
+        crs,
+        timeout: int,
+        *,
+        verify: Union[bool, str] = True,
+        cert: Optional[Union[str, Tuple[str, str]]] = None,
     ) -> gpd.GeoDataFrame:
         """Read a shapefile."""
-        self._auto_fetch_file(base_name, base_url, timeout=timeout)
+        self._auto_fetch_file(
+            base_name, base_url, timeout=timeout, verify=verify, cert=cert
+        )
 
         path = self._shapefile_full_path(base_name)
 
@@ -210,7 +219,15 @@ class ShapeReader:
         return base_url, name
 
     def _cartographic_bound(
-        self, shapefile_scope, geography, resolution, crs, *, timeout: int
+        self,
+        shapefile_scope,
+        geography,
+        resolution,
+        crs,
+        *,
+        timeout: int,
+        verify: Union[bool, str] = True,
+        cert: Optional[Union[str, Tuple[str, str]]] = None,
     ) -> gpd.GeoDataFrame:
         if self._year <= 2010:
             base_url, name = self._through_2010_cb(
@@ -219,7 +236,9 @@ class ShapeReader:
         else:
             base_url, name = self._post_2010_cb(shapefile_scope, geography, resolution)
 
-        gdf = self._read_shapefile(name, base_url, crs, timeout=timeout)
+        gdf = self._read_shapefile(
+            name, base_url, crs, timeout=timeout, verify=verify, cert=cert
+        )
 
         # Some files on the server, like
         # https://www2.census.gov/geo/tiger/GENZ2010/gz_2010_us_050_00_500k.zip
@@ -383,6 +402,8 @@ class ShapeReader:
         crs=None,
         *,
         timeout: int = 60,
+        verify: Union[bool, str] = True,
+        cert: Optional[Union[str, Tuple[str, str]]] = None,
     ) -> gpd.GeoDataFrame:
         """
         Try to retrieve CB file.
@@ -398,7 +419,13 @@ class ShapeReader:
         """
         try:
             gdf = self._cartographic_bound(
-                shapefile_scope, geography, resolution, crs, timeout=timeout
+                shapefile_scope,
+                geography,
+                resolution,
+                crs,
+                timeout=timeout,
+                verify=verify,
+                cert=cert,
             )
         except MapException as e:
             logger.debug("Exception loading cb file. Trying tiger instead.", e)
@@ -406,11 +433,19 @@ class ShapeReader:
 
         return gdf
 
-    def _auto_fetch_file(self, name: str, base_url: str, *, timeout: int):
+    def _auto_fetch_file(
+        self,
+        name: str,
+        base_url: str,
+        *,
+        timeout: int,
+        verify: Union[bool, str] = True,
+        cert: Optional[Union[str, Tuple[str, str]]] = None,
+    ):
         if not self._auto_fetch:
             return
 
-        self._fetch_file(name, base_url, timeout=timeout)
+        self._fetch_file(name, base_url, timeout=timeout, verify=verify, cert=cert)
 
     def _url_for_file(self, name: str) -> str:
         if name.startswith("cb_"):

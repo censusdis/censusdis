@@ -640,7 +640,9 @@ def _download_remote(
         geo_level = bound_path.path_spec.path[-1]
         shapefile_scope = bound_path.bindings[bound_path.path_spec.path[0]]
 
-        gdf_data = add_geography(df_data, vintage, shapefile_scope, geo_level)
+        gdf_data = add_geography(
+            df_data, vintage, shapefile_scope, geo_level, cert=cert, verify=verify
+        )
 
         if remove_water:
             gdf_data = clip_water(gdf_data, vintage)

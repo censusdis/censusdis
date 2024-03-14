@@ -336,6 +336,9 @@ def add_geography(
     year: Optional[VintageType],
     shapefile_scope: str,
     geo_level: str,
+    *,
+    verify: Union[bool, str] = True,
+    cert: Optional[Union[str, Tuple[str, str]]] = None,
 ) -> Union[pd.DataFrame, gpd.GeoDataFrame]:
     """
     Add geography to data.
@@ -354,6 +357,14 @@ def add_geography(
         such as `NJ` or the string `"us"`.
     geo_level
         The geography level we want to add.
+    cert
+        Optional certificate arg passed to `requests.get`. If you don't normally
+        need to pass a certificate arg to `requests.get` then you will not need this.
+        Most callers will not.
+    verify
+        Optional verification override passed to `requests.get`. If you don't normally
+        need to pass a certificate arg to `requests.get` then you will not need this.
+        Most callers will not.
 
     Returns
     -------
@@ -371,11 +382,14 @@ def add_geography(
     if query_shapefile_scope is not None:
         shapefile_scope = query_shapefile_scope
 
-    def individual_shapefile(sub_scope: str, query_year: int) -> gpd.GeoDataFrame:
+    def individual_shapefile(
+        sub_scope: str,
+        query_year: int,
+    ) -> gpd.GeoDataFrame:
         """Read the relevant shapefile and add a YEAR column to it."""
         try:
             gdf = __shapefile_reader(query_year).try_cb_tiger_shapefile(
-                sub_scope, shapefile_geo_level
+                sub_scope, shapefile_geo_level, verify=verify, cert=cert
             )
             gdf["YEAR"] = query_year
             return gdf
