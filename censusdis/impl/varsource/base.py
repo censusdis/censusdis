@@ -8,7 +8,7 @@ from the U.S. Census API.
 """
 
 from abc import ABC, abstractmethod
-from typing import Any, Dict, List, Literal, Optional, Union
+from typing import Any, Dict, List, Literal, Optional, Union, Tuple
 
 VintageType = Union[int, Literal["timeseries"]]
 """
@@ -37,6 +37,9 @@ class VariableSource(ABC):
         dataset: str,
         year: int,
         name: str,
+        *,
+        verify: Union[bool, str] = True,
+        cert: Optional[Union[str, Tuple[str, str]]] = None
     ) -> Dict[str, Any]:
         """
         Get information on a variable for a given dataset in a given year.
@@ -82,6 +85,14 @@ class VariableSource(ABC):
             The name of the variable to get information about. For example,
             `B03002_001E` is a variable from the ACS5 data set that represents
             total population in a geographic area.
+        cert
+            Optional certificate arg passed to `requests.get`. If you don't normally
+            need to pass a certificate arg to `requests.get` then you will not need this.
+            Most callers will not.
+        verify
+            Optional verification override passed to `requests.get`. If you don't normally
+            need to pass a certificate arg to `requests.get` then you will not need this.
+            Most callers will not.
 
         Returns
         -------
@@ -95,6 +106,9 @@ class VariableSource(ABC):
         dataset: str,
         year: int,
         name: str,
+        *,
+        verify: Union[bool, str] = True,
+        cert: Optional[Union[str, Tuple[str, str]]] = None
     ) -> Dict[str, Dict]:
         """
         Get information on a group of variables for a given dataset in a given year.
@@ -121,6 +135,14 @@ class VariableSource(ABC):
             `B03002` is a group from the ACS5 data set that contains
             variables that represent the population of various racial and
             ethnic groups in a geographic area.
+        cert
+            Optional certificate arg passed to `requests.get`. If you don't normally
+            need to pass a certificate arg to `requests.get` then you will not need this.
+            Most callers will not.
+        verify
+            Optional verification override passed to `requests.get`. If you don't normally
+            need to pass a certificate arg to `requests.get` then you will not need this.
+            Most callers will not.
 
         Returns
         -------
@@ -133,7 +155,14 @@ class VariableSource(ABC):
         raise NotImplementedError("Abstract method.")
 
     @abstractmethod
-    def get_all_groups(self, dataset: str, year: int) -> Dict[str, List]:
+    def get_all_groups(
+        self,
+        dataset: str,
+        year: int,
+        *,
+        verify: Union[bool, str] = True,
+        cert: Optional[Union[str, Tuple[str, str]]] = None
+    ) -> Dict[str, List]:
         """
         Get information on a group of variables for a given dataset in a given year.
 
@@ -152,6 +181,14 @@ class VariableSource(ABC):
             https://api.census.gov/data/2020/dec/pl.html)
         year
             The year
+        cert
+            Optional certificate arg passed to `requests.get`. If you don't normally
+            need to pass a certificate arg to `requests.get` then you will not need this.
+            Most callers will not.
+        verify
+            Optional verification override passed to `requests.get`. If you don't normally
+            need to pass a certificate arg to `requests.get` then you will not need this.
+            Most callers will not.
 
         Returns
         -------
@@ -163,7 +200,13 @@ class VariableSource(ABC):
         raise NotImplementedError("Abstract method.")
 
     @abstractmethod
-    def get_datasets(self, year: Optional[int]) -> Dict[str, Any]:
+    def get_datasets(
+        self,
+        year: Optional[int],
+        *,
+        verify: Union[bool, str] = True,
+        cert: Optional[Union[str, Tuple[str, str]]] = None
+    ) -> Dict[str, Any]:
         """
         Get descriptions of all the datasets available for a given year.
 
@@ -171,6 +214,14 @@ class VariableSource(ABC):
         ----------
         year
             The year. If `None`, get all datasets for all years.
+        cert
+            Optional certificate arg passed to `requests.get`. If you don't normally
+            need to pass a certificate arg to `requests.get` then you will not need this.
+            Most callers will not.
+        verify
+            Optional verification override passed to `requests.get`. If you don't normally
+            need to pass a certificate arg to `requests.get` then you will not need this.
+            Most callers will not.
 
         Returns
         -------

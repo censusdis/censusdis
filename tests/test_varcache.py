@@ -1,7 +1,7 @@
 # Copyright (c) 2023 Darren Erik Vengroff
 """Test the variable cache."""
 import unittest
-from typing import Any, Dict, Iterable, List, Optional
+from typing import Any, Dict, Iterable, List, Optional, Union, Tuple
 
 from censusdis.impl.varcache import VariableCache
 from censusdis.impl.varsource.base import VariableSource
@@ -43,7 +43,15 @@ class VariableCacheTestCase(unittest.TestCase):
             self._group_gets = 0
             self._all_group_gets = 0
 
-        def get(self, source: str, year: int, name: str) -> Dict[str, Any]:
+        def get(
+            self,
+            source: str,
+            year: int,
+            name: str,
+            *,
+            verify: Union[bool, str] = True,
+            cert: Optional[Union[str, Tuple[str, str]]] = None,
+        ) -> Dict[str, Any]:
             """
             Construct a mock variable.
 
@@ -62,7 +70,15 @@ class VariableCacheTestCase(unittest.TestCase):
                 "attributes": f"{name}A,{name}M,{name}MA",
             }
 
-        def get_group(self, source: str, year: int, group_name: str) -> Dict[str, Dict]:
+        def get_group(
+            self,
+            source: str,
+            year: int,
+            group_name: str,
+            *,
+            verify: Union[bool, str] = True,
+            cert: Optional[Union[str, Tuple[str, str]]] = None,
+        ) -> Dict[str, Dict]:
             """
             Construct a mock group.
 
@@ -106,7 +122,14 @@ class VariableCacheTestCase(unittest.TestCase):
                 }
             }
 
-        def get_all_groups(self, dataset: str, year: int) -> Dict[str, List]:
+        def get_all_groups(
+            self,
+            dataset: str,
+            year: int,
+            *,
+            verify: Union[bool, str] = True,
+            cert: Optional[Union[str, Tuple[str, str]]] = None,
+        ) -> Dict[str, List]:
             """
             Construct a collection (of size 1) of groups.
 
@@ -132,7 +155,13 @@ class VariableCacheTestCase(unittest.TestCase):
                 ]
             }
 
-        def get_datasets(self, year: Optional[int]) -> Dict[str, Any]:
+        def get_datasets(
+            self,
+            year: Optional[int],
+            *,
+            verify: Union[bool, str] = True,
+            cert: Optional[Union[str, Tuple[str, str]]] = None,
+        ) -> Dict[str, Any]:
             """Get mock datasets."""
             return {
                 "dataset": [

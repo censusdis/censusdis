@@ -1,7 +1,7 @@
 # Copyright (c) 2022 Darren Erik Vengroff
 """A variable source that loads metadata about variables from the U.S. Census API."""
 
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Union, Tuple
 
 from censusdis.impl.fetch import json_from_url
 from censusdis.impl.varsource.base import VariableSource
@@ -135,19 +135,33 @@ class CensusApiVariableSource(VariableSource):
         """
         return f"https://api.census.gov/data/{CensusApiVariableSource._url_part(dataset, year)}/groups.json"
 
-    def get(self, dataset: str, year: int, name: str) -> Dict[str, Any]:
+    def get(
+        self,
+        dataset: str,
+        year: int,
+        name: str,
+        *,
+        verify: Union[bool, str] = True,
+        cert: Optional[Union[str, Tuple[str, str]]] = None,
+    ) -> Dict[str, Any]:
         """Get info on a dataset via a remote query to the U.S. Census API."""
         url = self.url(dataset, year, name)
-        value = json_from_url(url)
+        value = json_from_url(url, verify=verify, cert=cert)
 
         return value
 
     def get_group(
-        self, dataset: str, year: int, name: Optional[str]
+        self,
+        dataset: str,
+        year: int,
+        name: Optional[str],
+        *,
+        verify: Union[bool, str] = True,
+        cert: Optional[Union[str, Tuple[str, str]]] = None,
     ) -> Dict[str, Dict]:
         """Get info on the groups in a dataset via a remote query to the U.S. Census API."""
         url = self.group_url(dataset, year, name)
-        value = json_from_url(url)
+        value = json_from_url(url, verify=verify, cert=cert)
 
         # Filter out psuedo-variables like 'for' and 'in'.
         value["variables"] = {
@@ -163,20 +177,33 @@ class CensusApiVariableSource(VariableSource):
 
         return value
 
-    def get_all_groups(self, dataset: str, year: int) -> Dict[str, List]:
+    def get_all_groups(
+        self,
+        dataset: str,
+        year: int,
+        *,
+        verify: Union[bool, str] = True,
+        cert: Optional[Union[str, Tuple[str, str]]] = None,
+    ) -> Dict[str, List]:
         """Get info on all the groups in a dataset via a remote query to the U.S. Census API."""
         url = self.all_groups_url(dataset, year)
-        value = json_from_url(url)
+        value = json_from_url(url, verify=verify, cert=cert)
 
         return value
 
-    def get_datasets(self, year: Optional[int]) -> Dict[str, Any]:
+    def get_datasets(
+        self,
+        year: Optional[int],
+        *,
+        verify: Union[bool, str] = True,
+        cert: Optional[Union[str, Tuple[str, str]]] = None,
+    ) -> Dict[str, Any]:
         """Get info on all the datasets for a given year via a remote query to the U.S. Census API."""
         if year is not None:
             url = f"https://api.census.gov/data/{year}.json"
         else:
             url = "https://api.census.gov/data.json"
 
-        json = json_from_url(url)
+        json = json_from_url(url, verify=verify, cert=cert)
 
         return json
