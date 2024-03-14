@@ -745,7 +745,7 @@ DATASET_REFERENCE_URLS = {
     EWKS: "http://api.census.gov/data/2012/ewks",
     INTLTRADE_IMP_EXP: "http://api.census.gov/data/2018/intltrade/imp_exp",
     LANGUAGE: "http://api.census.gov/data/2013/language",
-    NONEMP: "http://api.census.gov/data/2020/nonemp",
+    NONEMP: "http://api.census.gov/data/2021/nonemp",
     PDB_BLOCKGROUP: "http://api.census.gov/data/2022/pdb/blockgroup",
     PDB_STATECOUNTY: "http://api.census.gov/data/2020/pdb/statecounty",
     PDB_TRACT: "http://api.census.gov/data/2022/pdb/tract",
