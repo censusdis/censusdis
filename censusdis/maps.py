@@ -441,7 +441,7 @@ class ShapeReader:
         *,
         timeout: int,
         verify: Union[bool, str] = True,
-        cert: Optional[Union[str, Tuple[str, str]]] = None
+        cert: Optional[Union[str, Tuple[str, str]]] = None,
     ) -> None:
         dir_path = self._shapefile_root / name
 

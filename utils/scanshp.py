@@ -28,10 +28,10 @@ logger = getLogger(__name__)
 
 
 def scan_cb(
-        year: int,
-        *,
-        verify: Union[bool, str] = True,
-        cert: Optional[Union[str, Tuple[str, str]]] = None
+    year: int,
+    *,
+    verify: Union[bool, str] = True,
+    cert: Optional[Union[str, Tuple[str, str]]] = None,
 ):
     """Scan CB files for a given year."""
     if year < 2014:

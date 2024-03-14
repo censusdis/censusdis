@@ -13,11 +13,11 @@ logger = getLogger(__name__)
 
 
 def json_from_url(
-        url: str,
-        params: Optional[Mapping[str, str]] = None,
-        *,
-        verify: Union[bool, str] = True,
-        cert: Optional[Union[str, Tuple[str, str]]] = None
+    url: str,
+    params: Optional[Mapping[str, str]] = None,
+    *,
+    verify: Union[bool, str] = True,
+    cert: Optional[Union[str, Tuple[str, str]]] = None,
 ) -> Any:
     """Get json from a URL."""
     request = requests.get(url, params=params, verify=verify, cert=cert)
@@ -33,11 +33,11 @@ def json_from_url(
 
 
 def data_from_url(
-        url: str,
-        params: Optional[Mapping[str, str]] = None,
-        *,
-        verify: Union[bool, str] = True,
-        cert: Optional[Union[str, Tuple[str, str]]] = None
+    url: str,
+    params: Optional[Mapping[str, str]] = None,
+    *,
+    verify: Union[bool, str] = True,
+    cert: Optional[Union[str, Tuple[str, str]]] = None,
 ) -> pd.DataFrame:
     """Get json from a URL and parse into a data frame."""
     logger.info(f"Downloading data from {url} with {params}.")

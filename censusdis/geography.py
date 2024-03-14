@@ -183,11 +183,11 @@ class PathSpec:
 
     @staticmethod
     def _fetch_path_specs(
-            dataset: str,
-            year: int,
-            *,
-            verify: Union[bool, str] = True,
-            cert: Optional[Union[str, Tuple[str, str]]] = None
+        dataset: str,
+        year: int,
+        *,
+        verify: Union[bool, str] = True,
+        cert: Optional[Union[str, Tuple[str, str]]] = None,
     ) -> Dict[str, "PathSpec"]:
         url = PathSpec._geo_url(dataset, year)
 
