@@ -333,6 +333,8 @@ def download(
     api_key: Optional[str] = None,
     variable_cache: Optional["VariableCache"] = None,
     row_keys: Optional[Union[str, Iterable[str]]] = None,
+    verify: Union[bool, str] = True,
+    cert: Optional[Union[str, Tuple[str, str]]] = None,
     **kwargs: cgeo.InSpecType,
 ) -> Union[pd.DataFrame, gpd.GeoDataFrame]:
     """
@@ -415,6 +417,14 @@ def download(
         An optional set of identifier keys to help merge together requests for more than the census API limit of
         50 variables per query. These keys are useful for census datasets such as the Current Population Survey
         where the geographic identifiers do not uniquely identify each row.
+    cert
+        Optional certificate arg passed to `requests.get`. If you don't normally
+        need to pass a certificate arg to `requests.get` then you will not need this.
+        Most callers will not.
+    verify
+        Optional verification override passed to `requests.get`. If you don't normally
+        need to pass a certificate arg to `requests.get` then you will not need this.
+        Most callers will not.
     kwargs
         A specification of the geometry that we want data for. For example,
         `state = "*", county = "*"` will download county-level data for
@@ -441,6 +451,8 @@ def download(
             api_key=api_key,
             variable_cache=variable_cache,
             row_keys=row_keys,
+            cert=cert,
+            verify=verify,
             **kwargs,
         )
 
@@ -514,6 +526,8 @@ def download(
         remove_water=remove_water,
         api_key=api_key,
         variable_cache=variable_cache,
+        cert=cert,
+        verify=verify,
         **string_kwargs,
     )
 
@@ -528,6 +542,8 @@ def _download_remote(
     remove_water: bool,
     api_key: Optional[str],
     variable_cache: "VariableCache",
+    verify: Union[bool, str] = True,
+    cert: Optional[Union[str, Tuple[str, str]]] = None,
     **kwargs,
 ) -> Union[pd.DataFrame, gpd.GeoDataFrame]:
     """
@@ -563,6 +579,14 @@ def _download_remote(
         of calls you can make will be limited.
     variable_cache
         A cache of metadata about variables.
+    cert
+        Optional certificate arg passed to `requests.get`. If you don't normally
+        need to pass a certificate arg to `requests.get` then you will not need this.
+        Most callers will not.
+    verify
+        Optional verification override passed to `requests.get`. If you don't normally
+        need to pass a certificate arg to `requests.get` then you will not need this.
+        Most callers will not.
     kwargs
         A specification of the geometry that we want data for.
 
@@ -574,7 +598,7 @@ def _download_remote(
     url, params, bound_path = census_table_url(
         dataset, vintage, download_variables, api_key=api_key, **kwargs
     )
-    df_data = data_from_url(url, params)
+    df_data = data_from_url(url, params, cert=cert, verify=verify)
 
     # Coerce the types based on metadata about the variables.
     _coerce_downloaded_variable_types(
