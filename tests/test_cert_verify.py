@@ -1,4 +1,18 @@
-"""Test that we can pass verify and cert through our API to requests.get."""
+"""
+Test that we can pass verify and cert through our API to requests.get.
+
+The overall strategy here is to use `unittest.mock` to intercept calls
+to `requests.get` and make sure that the `cert` and `verify` arguments we
+pass in through public `censusdis` APIs make it down to them. Since these
+APIs typically end up making several calls to `requests.get`, we don't go
+to the trouble of trying to completely mock out their return values. Instead,
+we pass the arguments on to the real `requests.get` after filtering out
+the `cert` and `verify` arguments we just verified.
+
+These tests are designed to be run in an environment where `cert` and `verify`
+are not actually needed. In an environment where they are needed, things will
+probably fail as we filter them out before making the actual call.
+"""
 
 import unittest
 from typing import Callable, Union, Optional, Tuple
@@ -38,7 +52,6 @@ def verified_requests_get_side_effect(
         **kwargs
     ) -> Response:
         """Verify that we got the verify and cert we expected, then return actual `requests.get` results."""
-
         # These should have been passed all the way down the stack.
         test_case.assertEqual(expected_verify, verify)
         test_case.assertEqual(expected_cert, cert)
@@ -55,6 +68,7 @@ class VerifyCertTestCase(unittest.TestCase):
     """Test that we pass `verify` and `cert` from `ced.download` through to `requests.get`."""
 
     def test_download_with_defaults(self) -> None:
+        """Make sure default cert and verify values are as expected in calls to `requests.get`."""
         with mock.patch(
             "requests.get",
             side_effect=verified_requests_get_side_effect(self, True, None),
@@ -71,6 +85,7 @@ class VerifyCertTestCase(unittest.TestCase):
             self.assertEqual((52, 3), gdf_states.shape)
 
     def test_download_with_verify_false(self) -> None:
+        """Make sure a modified verify value is as expected in calls to `requests.get`."""
         with mock.patch(
             "requests.get",
             side_effect=verified_requests_get_side_effect(self, False, None),
@@ -88,6 +103,7 @@ class VerifyCertTestCase(unittest.TestCase):
             self.assertEqual((52, 3), gdf_states.shape)
 
     def test_download_with_cert(self) -> None:
+        """Make sure a modified cert value is as expected in calls to `requests.get`."""
         cert = "my_certificate_file.pem"
 
         with mock.patch(
@@ -139,7 +155,6 @@ class VerifyCertTestCase(unittest.TestCase):
 
     def test_metadata(self):
         """Test that the metadata APIs pass cert correctly down the stack."""
-
         cert = "my_certificate_file.pem"
 
         with mock.patch(
@@ -161,13 +176,14 @@ class VerifyCertTestCase(unittest.TestCase):
 
 class UnMockedTestCase(unittest.TestCase):
     """
-    This repeats the tests above but passes `verify=False` through to `requests.get`.
+    Repeats the tests above but passes `verify=False` through to `requests.get`.
 
     This should work even in environments where there are not firewalls or proxies
     mucking around with certs.
     """
 
     def test_download_with_verify_false(self) -> None:
+        """Test that `verify=False` when passed all the way through to `requests.get`."""
         gdf_states = ced.download(
             dataset=ACS5,
             vintage=2020,
