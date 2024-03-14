@@ -289,7 +289,7 @@ class DownloadWideTestCase(unittest.TestCase):
         The goal is to trigger a call to
         `_download_multiple`. This version is for a scenario
         that will trigger the merge strategy because each
-        sub-query will have rows with a unique geogrpahic key.
+        sub-query will have rows with a unique geographic key.
         """
         dataset = "acs/acs1/spp"
         year = 2019

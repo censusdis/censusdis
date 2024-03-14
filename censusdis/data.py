@@ -114,6 +114,8 @@ def _download_multiple(
     census_variables: "VariableCache",
     with_geometry: bool = False,
     row_keys: Optional[Union[str, Iterable[str]]] = None,
+    verify: Union[bool, str] = True,
+    cert: Optional[Union[str, Tuple[str, str]]] = None,
     **kwargs: cgeo.InSpecType,
 ) -> pd.DataFrame:
     """
@@ -149,6 +151,14 @@ def _download_multiple(
         An optional set of identifier keys to help merge together requests for more than the census API limit of
         50 variables per query. These keys are useful for census datasets such as the Current Population Survey
         where the geographic identifiers do not uniquely identify each row.
+    cert
+        Optional certificate arg passed to `requests.get`. If you don't normally
+        need to pass a certificate arg to `requests.get` then you will not need this.
+        Most callers will not.
+    verify
+        Optional verification override passed to `requests.get`. If you don't normally
+        need to pass a certificate arg to `requests.get` then you will not need this.
+        Most callers will not.
     kwargs
         A specification of the geometry that we want data for.
 
@@ -201,6 +211,8 @@ def _download_multiple(
             api_key=key,
             variable_cache=census_variables,
             with_geometry=with_geometry and (ii == 0),
+            verify=verify,
+            cert=cert,
             **kwargs,
         )
         for ii, variable_group in enumerate(variable_groups)
@@ -464,7 +476,7 @@ def download(
         row_keys = list(row_keys)
 
     # The side effect here is to prime the cache.
-    cgeo.geo_path_snake_specs(dataset, vintage)
+    cgeo.geo_path_snake_specs(dataset, vintage, verify=verify, cert=cert)
 
     if set_to_nan is True:
         set_to_nan = ALL_SPECIAL_VALUES
@@ -503,12 +515,16 @@ def download(
             census_variables=variable_cache,
             with_geometry=with_geometry,
             row_keys=row_keys,
+            verify=verify,
+            cert=cert,
             **kwargs,
         )
 
     # Prefetch all the types before we load the data.
     # That way we fail fast if a field is not known.
-    _prefetch_variable_types(dataset, vintage, download_variables, variable_cache)
+    _prefetch_variable_types(
+        dataset, vintage, download_variables, variable_cache, verify=verify, cert=cert
+    )
     # Also check that the row_keys, if supplied, are present in the dataset
     if row_keys:
         _prefetch_variable_types(dataset, vintage, row_keys, variable_cache)
@@ -702,6 +718,9 @@ def _prefetch_variable_types(
     vintage: VintageType,
     download_variables: List[str],
     variable_cache: "VariableCache",
+    *,
+    verify: Union[bool, str] = True,
+    cert: Optional[Union[str, Tuple[str, str]]] = None,
 ) -> None:
     """
     Prefetch the types of all the variables we are going to try to download.
@@ -727,7 +746,7 @@ def _prefetch_variable_types(
     """
     for variable in download_variables:
         try:
-            variable_cache.get(dataset, vintage, variable)
+            variable_cache.get(dataset, vintage, variable, cert=cert, verify=verify)
         except Exception as exc:
             census_url = CensusApiVariableSource.url(
                 dataset, vintage, variable, response_format="html"

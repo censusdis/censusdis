@@ -224,11 +224,17 @@ class PathSpec:
     )
 
     @staticmethod
-    def get_path_specs(dataset: str, vintage: int) -> Dict[str, "PathSpec"]:
-        """Fet all the path specifications for the given dataset and vintage."""
+    def get_path_specs(
+        dataset: str,
+        vintage: int,
+        *,
+        verify: Union[bool, str] = True,
+        cert: Optional[Union[str, Tuple[str, str]]] = None,
+    ) -> Dict[str, "PathSpec"]:
+        """Fetch all the path specifications for the given dataset and vintage."""
         if vintage not in PathSpec._PATH_SPECS_BY_DATASET_YEAR[dataset]:
             PathSpec._PATH_SPECS_BY_DATASET_YEAR[dataset][vintage] = (
-                PathSpec._fetch_path_specs(dataset, vintage)
+                PathSpec._fetch_path_specs(dataset, vintage, verify=verify, cert=cert)
             )
             PathSpec._PATH_SPEC_SNAKE_MAP[dataset][vintage] = {
                 component.replace(" ", "_")
@@ -455,9 +461,17 @@ def path_component_from_snake(dataset: str, year: int, component: str) -> str:
     return PathSpec._PATH_SPEC_SNAKE_MAP[dataset][year].get(component, component)
 
 
-def geo_path_snake_specs(dataset: str, year: int) -> Dict[str, List[str]]:
-    """Construc a map to snake case for all know geo path specs."""
+def geo_path_snake_specs(
+    dataset: str,
+    year: int,
+    *,
+    verify: Union[bool, str] = True,
+    cert: Optional[Union[str, Tuple[str, str]]] = None,
+) -> Dict[str, List[str]]:
+    """Construct a map to snake case for all know geo path specs."""
     return {
         name: [path_component_to_snake(dataset, year, c) for c in path_spec.path]
-        for name, path_spec in PathSpec.get_path_specs(dataset, year).items()
+        for name, path_spec in PathSpec.get_path_specs(
+            dataset, year, verify=verify, cert=cert
+        ).items()
     }

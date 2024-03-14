@@ -3,7 +3,17 @@
 
 from collections import defaultdict
 from logging import getLogger
-from typing import Any, DefaultDict, Dict, Generator, Iterable, List, Optional, Tuple
+from typing import (
+    Any,
+    DefaultDict,
+    Dict,
+    Generator,
+    Iterable,
+    List,
+    Optional,
+    Tuple,
+    Union,
+)
 
 import numpy as np
 import pandas as pd
@@ -46,6 +56,9 @@ class VariableCache:
         dataset: str,
         year: int,
         name: str,
+        *,
+        verify: Union[bool, str] = True,
+        cert: Optional[Union[str, Tuple[str, str]]] = None,
     ) -> Dict[str, Dict]:
         """
         Get the description of a given variable.
@@ -63,6 +76,12 @@ class VariableCache:
             The year
         name
             The name of the variable.
+        verify
+            Optional value that makes its way down to `requests.get`. If you
+            are not sure what that means you probably don't need it.
+        cert
+            Optional value that makes its way down to `requests.get`. If you
+            are not sure what that means you probably don't need it.
 
         Returns
         -------
@@ -73,7 +92,7 @@ class VariableCache:
         if cached_value is not None:
             return cached_value
 
-        value = self._variable_source.get(dataset, year, name)
+        value = self._variable_source.get(dataset, year, name, verify=verify, cert=cert)
 
         self._variable_cache[dataset][year][name] = value
 
@@ -84,6 +103,9 @@ class VariableCache:
         dataset: str,
         year: int,
         name: Optional[str],
+        *,
+        verify: Union[bool, str] = True,
+        cert: Optional[Union[str, Tuple[str, str]]] = None,
     ) -> Dict[str, Dict]:
         """
         Get information on the variables in a group.
@@ -97,6 +119,12 @@ class VariableCache:
         name
             The name of the group. Or None if this data set does not have
             groups.
+        verify
+            Optional value that makes its way down to `requests.get`. If you
+            are not sure what that means you probably don't need it.
+        cert
+            Optional value that makes its way down to `requests.get`. If you
+            are not sure what that means you probably don't need it.
 
         Returns
         -------
@@ -110,7 +138,9 @@ class VariableCache:
 
         if group_variable_names is None:
             # Missed in the cache, so go fetch it.
-            value = self._variable_source.get_group(dataset, year, name)
+            value = self._variable_source.get_group(
+                dataset, year, name, verify=verify, cert=cert
+            )
 
             # Cache all the variables in the group.
             group_variables = value["variables"]
@@ -318,7 +348,12 @@ class VariableCache:
             """Return the representation of the node."""
             return str(self)
 
-    def _all_data_sets(self) -> pd.DataFrame:
+    def _all_data_sets(
+        self,
+        *,
+        verify: Union[bool, str] = True,
+        cert: Optional[Union[str, Tuple[str, str]]] = None,
+    ) -> pd.DataFrame:
         """
         Get all the data sets.
 
@@ -329,13 +364,21 @@ class VariableCache:
             A data frame of all the data sets for all years.
         """
         if self._all_data_sets_cache is None:
-            datasets = self._variable_source.get_datasets(year=None)
+            datasets = self._variable_source.get_datasets(
+                year=None, verify=verify, cert=cert
+            )
 
             self._all_data_sets_cache = self._datasets_from_source_dict(datasets)
 
         return self._all_data_sets_cache
 
-    def _data_sets_for_year(self, year: int) -> pd.DataFrame:
+    def _data_sets_for_year(
+        self,
+        year: int,
+        *,
+        verify: Union[bool, str] = True,
+        cert: Optional[Union[str, Tuple[str, str]]] = None,
+    ) -> pd.DataFrame:
         """
         Get all data sets for a given year.
 
@@ -396,7 +439,13 @@ class VariableCache:
         )
         return df_datasets.sort_values(["YEAR", "DATASET"]).reset_index(drop=True)
 
-    def all_data_sets(self, *, year: Optional[int] = None) -> pd.DataFrame:
+    def all_data_sets(
+        self,
+        *,
+        year: Optional[int] = None,
+        verify: Union[bool, str] = True,
+        cert: Optional[Union[str, Tuple[str, str]]] = None,
+    ) -> pd.DataFrame:
         """
         Retrieve a description of available data sets.
 
@@ -405,20 +454,29 @@ class VariableCache:
         year
             The year to query. If not provided, all data sets for all
             years are queried.
+        verify
+            Optional value that makes its way down to `requests.get`. If you
+            are not sure what that means you probably don't need it.
+        cert
+            Optional value that makes its way down to `requests.get`. If you
+            are not sure what that means you probably don't need it.
 
         Returns
         -------
             A data frame describing the data sets that are available.
         """
         if year is not None:
-            return self._data_sets_for_year(year)
+            return self._data_sets_for_year(year, cert=cert, verify=verify)
 
-        return self._all_data_sets()
+        return self._all_data_sets(cert=cert, verify=verify)
 
     def all_groups(
         self,
         dataset: str,
         year: int,
+        *,
+        verify: Union[bool, str] = True,
+        cert: Optional[Union[str, Tuple[str, str]]] = None,
     ) -> pd.DataFrame:
         """
         Get descriptions of all the groups in the data set.
@@ -429,12 +487,20 @@ class VariableCache:
             The data set.
         year
             The year.
+        verify
+            Optional value that makes its way down to `requests.get`. If you
+            are not sure what that means you probably don't need it.
+        cert
+            Optional value that makes its way down to `requests.get`. If you
+            are not sure what that means you probably don't need it.
 
         Returns
         -------
             Metadata on all the groups in the data set.
         """
-        groups = self._variable_source.get_all_groups(dataset, year)
+        groups = self._variable_source.get_all_groups(
+            dataset, year, cert=cert, verify=verify
+        )
 
         # Some data sets have no groups.
         if len(groups["groups"]) == 0:
@@ -457,7 +523,13 @@ class VariableCache:
         )
 
     def all_variables(
-        self, dataset: str, year: int, group_name: Optional[str]
+        self,
+        dataset: str,
+        year: int,
+        group_name: Optional[str],
+        *,
+        verify: Union[bool, str] = True,
+        cert: Optional[Union[str, Tuple[str, str]]] = None,
     ) -> pd.DataFrame:
         """
         Produce a data frame of metadata on all variables in a group.
@@ -470,12 +542,20 @@ class VariableCache:
             The year.
         group_name
             The group.
+        verify
+            Optional value that makes its way down to `requests.get`. If you
+            are not sure what that means you probably don't need it.
+        cert
+            Optional value that makes its way down to `requests.get`. If you
+            are not sure what that means you probably don't need it.
 
         Returns
         -------
             Metadata on all variables in the group.
         """
-        group_variables = self.group_variables(dataset, year, group_name)
+        group_variables = self.group_variables(
+            dataset, year, group_name, verify=verify, cert=cert
+        )
 
         def variable_items(variable_dict: Dict) -> Optional[Dict[str, str]]:
             if "values" in variable_dict:
@@ -510,6 +590,8 @@ class VariableCache:
         group_name: Optional[str],
         *,
         skip_annotations: bool = True,
+        verify: Union[bool, str] = True,
+        cert: Optional[Union[str, Tuple[str, str]]] = None,
     ) -> "VariableCache.GroupTreeNode":
         """
         Construct a tree that embodies the parent/child relationships of all the variables in a group.
@@ -525,12 +607,18 @@ class VariableCache:
         skip_annotations
             If `True`, skip variables that are annotations of others, like
             margin of error.
+        verify
+            Optional value that makes its way down to `requests.get`. If you
+            are not sure what that means you probably don't need it.
+        cert
+            Optional value that makes its way down to `requests.get`. If you
+            are not sure what that means you probably don't need it.
 
         Returns
         -------
             A tree that can be printed or walked.
         """
-        group = self.get_group(dataset, year, group_name)
+        group = self.get_group(dataset, year, group_name, verify=verify, cert=cert)
 
         root = VariableCache.GroupTreeNode()
 
@@ -561,7 +649,14 @@ class VariableCache:
         return root
 
     def group_leaves(
-        self, dataset: str, year: int, name: str, *, skip_annotations: bool = True
+        self,
+        dataset: str,
+        year: int,
+        name: str,
+        *,
+        skip_annotations: bool = True,
+        verify: Union[bool, str] = True,
+        cert: Optional[Union[str, Tuple[str, str]]] = None,
     ) -> List[str]:
         """
         Find the leaves of a given group.
@@ -579,6 +674,12 @@ class VariableCache:
             annotations rather than actual values, by skipping
             those with labels that begin with "Annotation" or
             "Margin of Error".
+        verify
+            Optional value that makes its way down to `requests.get`. If you
+            are not sure what that means you probably don't need it.
+        cert
+            Optional value that makes its way down to `requests.get`. If you
+            are not sure what that means you probably don't need it.
 
         Returns
         -------
@@ -598,12 +699,12 @@ class VariableCache:
             to the total. We can use these directly in diversity and integration
             calculations using the `divintseg` package.
         """
-        tree = self.group_tree(dataset, year, name)
+        tree = self.group_tree(dataset, year, name, verify=verify, cert=cert)
 
         leaves = tree.leaf_variables()
 
         if skip_annotations:
-            group = self.get_group(dataset, year, name)
+            group = self.get_group(dataset, year, name, verify=verify, cert=cert)
             leaves = (
                 leaf
                 for leaf in leaves
@@ -614,7 +715,14 @@ class VariableCache:
         return sorted(leaves)
 
     def group_variables(
-        self, dataset: str, year: int, group_name: str, *, skip_annotations: bool = True
+        self,
+        dataset: str,
+        year: int,
+        group_name: str,
+        *,
+        skip_annotations: bool = True,
+        verify: Union[bool, str] = True,
+        cert: Optional[Union[str, Tuple[str, str]]] = None,
     ) -> List[str]:
         """
         Find the variables of a given group.
@@ -632,12 +740,18 @@ class VariableCache:
             annotations rather than actual values, by skipping
             those with labels that begin with "Annotation" or
             "Margin of Error".
+        verify
+            Optional value that makes its way down to `requests.get`. If you
+            are not sure what that means you probably don't need it.
+        cert
+            Optional value that makes its way down to `requests.get`. If you
+            are not sure what that means you probably don't need it.
 
         Returns
         -------
             A list of the variables in the group.
         """
-        tree = self.get_group(dataset, year, group_name)
+        tree = self.get_group(dataset, year, group_name, cert=cert, verify=verify)
 
         if skip_annotations:
             group_variables = [
