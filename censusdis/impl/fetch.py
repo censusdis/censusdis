@@ -2,7 +2,7 @@
 """Utilities for loading census data."""
 from contextlib import contextmanager
 from logging import getLogger
-from typing import Any, Mapping, Optional, Union, Tuple, Generator
+from typing import Any, Mapping, Optional, Union, Tuple
 
 import pandas as pd
 import requests
@@ -46,7 +46,7 @@ class CertificateManager:
 
     @property
     def data_verify(self) -> Union[bool, str]:
-        """Value to pass to `requests.get` in the `verify=` argument for data API calls to `https://api.census.gov`."""
+        """Value to pass to `requests.get` in the `verify=` argument for data from `https://api.census.gov`."""
         return self._data_verify
 
     @data_verify.setter
@@ -55,7 +55,7 @@ class CertificateManager:
 
     @property
     def data_cert(self) -> Union[str, Tuple[str, str], None]:
-        """Value to pass to `requests.get` in the `cert=` argument for data API calls to `https://api.census.gov`."""
+        """Value to pass to `requests.get` in the `cert=` argument for data from `https://api.census.gov`."""
         return self._data_cert
 
     @data_cert.setter
@@ -64,7 +64,7 @@ class CertificateManager:
 
     @property
     def map_verify(self) -> Union[bool, str]:
-        """Value to pass to `requests.get` in the `verify=` argument for getting map data with calls to `https://www2.census.gov`."""
+        """Value to pass to `requests.get` in the `verify=` argument for maps from `https://www2.census.gov`."""
         return self._map_verify
 
     @map_verify.setter
@@ -73,7 +73,7 @@ class CertificateManager:
 
     @property
     def map_cert(self) -> Union[str, Tuple[str, str], None]:
-        """Value to pass to `requests.get` in the `cert=` argument for getting map data with calls to `https://www2.census.gov`."""
+        """Value to pass to `requests.get` in the `cert=` argument for maps from `https://www2.census.gov`."""
         return self._map_cert
 
     @map_cert.setter
