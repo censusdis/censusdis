@@ -1307,13 +1307,3 @@ def add_inferred_geography(
 
 
 certificates = censusdis.impl.fetch.certificates
-"""
-A container for the certificates and verification flags used when we make calls to the U.S. Census servers.
-
-Unless you are working behind a security proxy or firewall that manipulates certificates in
-some way, you will never have to use this.
-
-If you would not normally use the `verify=` or `cert=` arguments when using `requests.get` then
-you need not worry about this. If you would, then use the values you would pass for accessing
-`https://api.census.gov` or `https://www2.census.gov`.
-"""

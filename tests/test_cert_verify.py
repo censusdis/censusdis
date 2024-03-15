@@ -38,15 +38,6 @@ def verify_requests_gets(
     map_cert: Optional[Union[str, Tuple[str, str]]] = None,
 ):
     """Verify that `cert` and `verify` flags make it down to `request.get` call in a context."""
-    saved_data_verify = ced.certificates.data_verify
-    saved_data_cert = ced.certificates.data_cert
-    saved_map_verify = ced.certificates.map_verify
-    saved_map_cert = ced.certificates.map_cert
-
-    ced.certificates.data_verify = data_verify
-    ced.certificates.data_cert = data_cert
-    ced.certificates.map_verify = map_verify
-    ced.certificates.map_cert = map_cert
 
     def verified_requests_get(url: str, *args, **kwargs) -> Response:
         """Verify that we got the verify and cert we expected, then return actual `requests.get` results."""
@@ -79,14 +70,14 @@ def verify_requests_gets(
         kwargs2 = {k: v for k, v in kwargs.items() if k not in ["verify", "cert"]}
         return requests_get(url, *args, **kwargs2)
 
-    try:
+    with ced.certificates.use(
+        data_verify=data_verify,
+        data_cert=data_cert,
+        map_verify=map_verify,
+        map_cert=map_cert,
+    ):
         with mock.patch("requests.get", side_effect=verified_requests_get):
             yield
-    finally:
-        ced.certificates.data_verify = saved_data_verify
-        ced.certificates.data_cert = saved_data_cert
-        ced.certificates.map_verify = saved_map_verify
-        ced.certificates.map_cert = saved_map_cert
 
 
 class VerifyCertTestCase(unittest.TestCase):
