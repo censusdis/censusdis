@@ -37,6 +37,9 @@ from censusdis.impl.varsource.base import VintageType
 from censusdis.impl.varsource.censusapi import CensusApiVariableSource
 from censusdis.values import ALL_SPECIAL_VALUES
 
+import censusdis.impl.fetch
+
+
 logger = getLogger(__name__)
 
 
@@ -1301,3 +1304,16 @@ def add_inferred_geography(
     gdf = gpd.GeoDataFrame(df_with_geo)
 
     return gdf
+
+
+certificates = censusdis.impl.fetch.certificates
+"""
+A container for the certificates and verification flags used when we make calls to the U.S. Census servers.
+
+Unless you are working behind a security proxy or firewall that manipulates certificates in
+some way, you will never have to use this.
+
+If you would not normally use the `verify=` or `cert=` arguments when using `requests.get` then
+you need not worry about this. If you would, then use the values you would pass for accessing
+`https://api.census.gov` or `https://www2.census.gov`.
+"""

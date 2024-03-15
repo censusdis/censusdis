@@ -21,6 +21,8 @@ from typing import (
 import requests
 
 from .impl.exceptions import CensusApiException
+from .impl.fetch import certificates
+
 
 InSpecType = Union[str, Iterable[str]]
 
@@ -185,7 +187,9 @@ class PathSpec:
     def _fetch_path_specs(dataset: str, year: int) -> Dict[str, "PathSpec"]:
         url = PathSpec._geo_url(dataset, year)
 
-        request = requests.get(url)
+        request = requests.get(
+            url, cert=certificates.data_cert, verify=certificates.data_verify
+        )
 
         if request.status_code == 200:
             parsed_json = request.json()
