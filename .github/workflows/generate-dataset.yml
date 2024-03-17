@@ -8,7 +8,9 @@ name: generate-dataset
 
 on:
   schedule:
-    - cron: '47 2 * * *'
+    # The census servers update ad midnight ET. Let's try to be just
+    # after that regardless of whether we are in EST or EDT.
+    - cron: '17 5 * * *'
   pull_request:
     branches:
       - main
