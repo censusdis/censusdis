@@ -18,6 +18,7 @@ from typing import MutableMapping
 MOCK_MODULES = [
     "geopandas",
     "matplotlib",
+    "matplotlib.patheffects",
     "matplotlib.pyplot",
     "matplotlib.ticker",
     "pandas",
