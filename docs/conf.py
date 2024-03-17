@@ -60,7 +60,7 @@ pyproject = get_pyproject()
 
 project = pyproject["tool"]["poetry"]["name"]
 author = ",".join(pyproject["tool"]["poetry"]["authors"])
-copyright = f"2022, {author}"
+copyright = f"2022-24, {author}"
 release = pyproject["tool"]["poetry"]["version"]
 
 # -- General configuration ---------------------------------------------------
