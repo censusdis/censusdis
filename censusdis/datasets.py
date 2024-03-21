@@ -528,7 +528,7 @@ TIMESERIES_HPS = "timeseries/hps"
 
 TIMESERIES_IDB = "timeseries/idb/5year"
 
-TIMESERIES_INTLTRADE = "timeseries/intltrade/imports/usda"
+TIMESERIES_INTLTRADE = "timeseries/intltrade/imports/usdaimport"
 
 TIMESERIES_POVERTY = "timeseries/poverty/saipe/schdist"
 
@@ -810,7 +810,7 @@ DATASET_REFERENCE_URLS = {
     TIMESERIES_HHPULSE: "http://api.census.gov/data/timeseries/hhpulse",
     TIMESERIES_HPS: "http://api.census.gov/data/timeseries/hps",
     TIMESERIES_IDB: "http://api.census.gov/data/timeseries/idb/5year",
-    TIMESERIES_INTLTRADE: "http://api.census.gov/data/timeseries/intltrade/imports/usda",
+    TIMESERIES_INTLTRADE: "http://api.census.gov/data/timeseries/intltrade/imports/usdaimport",
     TIMESERIES_POVERTY: "http://api.census.gov/data/timeseries/poverty/saipe/schdist",
     TIMESERIES_PSEO: "http://api.census.gov/data/timeseries/pseo/flows",
     TIMESERIES_QWI: "http://api.census.gov/data/timeseries/qwi/se",
