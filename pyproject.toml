@@ -44,6 +44,7 @@ usingversion = "^0.1.1"
 mapclassify = { version = "^2.6.1", optional = true }
 ipyleaflet = { version = "^0.18.2", optional = true }
 folium = { version = "^0.15.1", optional = true }
+pyogrio = "^0.7.2"
 
 [tool.poetry.extras]
 explore = ["mapclassify", "ipyleaflet", "folium"]
