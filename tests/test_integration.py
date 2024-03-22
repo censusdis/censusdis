@@ -843,6 +843,29 @@ class ContainedWithinTestCase(unittest.TestCase):
         self.assertIsInstance(gdf, gpd.GeoDataFrame)
         self.assertEqual((593, 5), gdf.shape)
 
+    def test_contained_within_context(self):
+        """Test contained within in a with statement context."""
+        with ced.contained_within(
+            # New York-Newark-Jersey City
+            metropolitan_statistical_area_micropolitan_statistical_area="35620"
+        ) as cw:
+            df = cw.download(
+                self.dataset, self.year, ["NAME", "B03002_001E"], state="*", county="*"
+            )
+
+        self.assertEqual((23, 5), df.shape)
+
+        self.assertEqual(
+            [
+                "METROPOLITAN_STATISTICAL_AREA_MICROPOLITAN_STATISTICAL_AREA",
+                "STATE",
+                "COUNTY",
+                "NAME",
+                "B03002_001E",
+            ],
+            list(df.columns),
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

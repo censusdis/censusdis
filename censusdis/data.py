@@ -1057,6 +1057,20 @@ class ContainedWithin:
             and self._containing_kwargs == other._containing_kwargs
         )
 
+    def __enter__(self) -> "ContainedWithin":
+        """
+        Enter the context.
+
+        Returns
+        -------
+            The ContainedWithin object for use within the context.
+        """
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb) -> None:
+        """Exit the context."""
+        pass
+
     def download(
         self,
         dataset: str,
