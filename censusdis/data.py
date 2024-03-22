@@ -37,6 +37,9 @@ from censusdis.impl.varsource.base import VintageType
 from censusdis.impl.varsource.censusapi import CensusApiVariableSource
 from censusdis.values import ALL_SPECIAL_VALUES
 
+import censusdis.impl.fetch
+
+
 logger = getLogger(__name__)
 
 
@@ -1315,3 +1318,6 @@ def add_inferred_geography(
     gdf = gpd.GeoDataFrame(df_with_geo)
 
     return gdf
+
+
+certificates = censusdis.impl.fetch.certificates

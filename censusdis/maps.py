@@ -25,6 +25,7 @@ from shapely.geometry.base import BaseGeometry
 import matplotlib.patheffects as pe
 
 from censusdis.impl.exceptions import CensusApiException
+from censusdis.impl.fetch import certificates
 from censusdis.states import AK, HI, NAMES_FROM_IDS, PR
 
 logger = getLogger(__name__)
@@ -468,7 +469,12 @@ class ShapeReader:
         zip_url = f"{base_url}/{name}.zip"
 
         # Fetch the zip file and write it.
-        response = requests.get(zip_url, timeout=timeout)
+        response = requests.get(
+            zip_url,
+            timeout=timeout,
+            cert=certificates.map_cert,
+            verify=certificates.map_verify,
+        )
 
         if response.status_code == 404:
             raise MapException(
