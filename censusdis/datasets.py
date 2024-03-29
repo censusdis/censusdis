@@ -617,7 +617,7 @@ DATASET_REFERENCE_URLS = {
     CPS_SCHOOL: "http://api.census.gov/data/2022/cps/school/oct",
     CPS_TOBACCO: "http://api.census.gov/data/2019/cps/tobacco/may",
     CPS_UNBANK: "http://api.census.gov/data/2021/cps/unbank/jun",
-    CPS_VETS: "http://api.census.gov/data/2022/cps/vets/aug",
+    CPS_VETS: "http://api.census.gov/data/2023/cps/vets/aug",
     CPS_VOLUNTEER: "http://api.census.gov/data/2021/cps/volunteer/sep",
     CPS_VOTING: "http://api.census.gov/data/2022/cps/voting/nov",
     CPS_WORKSCHED: "http://api.census.gov/data/2004/cps/worksched/may",
