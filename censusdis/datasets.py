@@ -134,7 +134,7 @@ CPS_RACE = "cps/race/may"
 
 CPS_SCHOOL = "cps/school/oct"
 
-CPS_TOBACCO = "cps/tobacco/may"
+CPS_TOBACCO = "cps/tobacco/sep"
 
 CPS_UNBANK = "cps/unbank/jun"
 
@@ -615,7 +615,7 @@ DATASET_REFERENCE_URLS = {
     CPS_PUBARTS: "http://api.census.gov/data/2022/cps/pubarts/jul",
     CPS_RACE: "http://api.census.gov/data/1995/cps/race/may",
     CPS_SCHOOL: "http://api.census.gov/data/2022/cps/school/oct",
-    CPS_TOBACCO: "http://api.census.gov/data/2019/cps/tobacco/may",
+    CPS_TOBACCO: "http://api.census.gov/data/2022/cps/tobacco/sep",
     CPS_UNBANK: "http://api.census.gov/data/2021/cps/unbank/jun",
     CPS_VETS: "http://api.census.gov/data/2023/cps/vets/aug",
     CPS_VOLUNTEER: "http://api.census.gov/data/2021/cps/volunteer/sep",
