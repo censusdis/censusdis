@@ -106,7 +106,7 @@ CPS_ARTS = "cps/arts/feb"
 
 CPS_ASEC = "cps/asec/mar"
 
-CPS_BASIC = "cps/basic/jan"
+CPS_BASIC = "cps/basic/mar"
 
 CPS_CIVIC = "cps/civic/nov"
 
@@ -601,7 +601,7 @@ DATASET_REFERENCE_URLS = {
     CFSTEMP: "http://api.census.gov/data/2017/cfstemp",
     CPS_ARTS: "http://api.census.gov/data/2020/cps/arts/feb",
     CPS_ASEC: "http://api.census.gov/data/2023/cps/asec/mar",
-    CPS_BASIC: "http://api.census.gov/data/2024/cps/basic/jan",
+    CPS_BASIC: "http://api.census.gov/data/2024/cps/basic/mar",
     CPS_CIVIC: "http://api.census.gov/data/2013/cps/civic/nov",
     CPS_CONTWORKER: "http://api.census.gov/data/2017/cps/contworker/may",
     CPS_DISABILITY: "http://api.census.gov/data/2021/cps/disability/jul",
