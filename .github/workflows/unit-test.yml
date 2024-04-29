@@ -24,7 +24,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - id: test-matrix
-        run: echo "matrix=$(cd tests && find . -name "test_*.py" | jq -R -s -c 'split("\n")[:-1]')" >> $GITHUB_OUTPUT
+        run: echo "matrix=$(find tests -name "*.py" | sed -e s/^tests\\/// | jq -R -s -c 'split("\n")[:-1]')" >> $GITHUB_OUTPUT
   unit-test:
     needs: list-tests
     runs-on: ubuntu-latest
