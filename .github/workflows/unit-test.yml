@@ -16,8 +16,22 @@ on:
   workflow_dispatch:
 
 jobs:
-  unit-test:
+  # List the notebooks
+  list-tests:
     runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.test-matrix.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: test-matrix
+        run: echo "matrix=$(find tests -name "*.py" | sed -e s/^tests\\/// | jq -R -s -c 'split("\n")[:-1]')" >> $GITHUB_OUTPUT
+  unit-test:
+    needs: list-tests
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        test: ${{ fromJson(needs.list-tests.outputs.matrix) }}
+      fail-fast: false
     steps:
       #----------------------------------------------
       #       check out repo
@@ -80,7 +94,8 @@ jobs:
         id: runTests
         run: |
           source .venv/bin/activate
-          python -m pytest
+          echo "${{matrix.test}}"
+          python -m pytest "tests/${{matrix.test}}"
       #----------------------------------------------
       #              archive test artifacts
       #----------------------------------------------
@@ -88,6 +103,6 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: test_artifacts
+          name: test_artifacts-${{ matrix.test }}
           path: tests/_test_artifacts
           retention-days: 7
