@@ -179,7 +179,7 @@ class VerifyCertTestCase(unittest.TestCase):
         with verify_requests_gets(self, data_cert=cert):
             df_all_datasets = ced.variables.all_data_sets()
 
-            self.assertEqual(5, len(df_all_datasets.columns))
+            self.assertEqual(6, len(df_all_datasets.columns))
 
             df_groups = ced.variables.all_groups(ACS5, 2020)
 

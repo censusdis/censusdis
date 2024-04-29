@@ -392,7 +392,7 @@ class VariableCacheTestCase(unittest.TestCase):
         """
         df_datasets_first_time = self.variables.all_data_sets()
 
-        self.assertEqual((1, 5), df_datasets_first_time.shape)
+        self.assertEqual((1, 6), df_datasets_first_time.shape)
 
         df_datasets_cached = self.variables.all_data_sets()
 
@@ -403,7 +403,7 @@ class VariableCacheTestCase(unittest.TestCase):
         self.assertTrue((df_datasets_first_time == df_datasets_cached).all().all())
 
         self.assertEqual(
-            ["YEAR", "DATASET", "TITLE", "DESCRIPTION", "API BASE URL"],
+            ["YEAR", "SYMBOL", "DATASET", "TITLE", "DESCRIPTION", "API BASE URL"],
             list(df_datasets_cached.columns),
         )
 
