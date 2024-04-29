@@ -270,7 +270,15 @@ class DownloadTestCase(unittest.TestCase):
 
         self.assertEqual(df_both.shape, df_datasets_for_year.shape)
 
-        self.assertTrue((df_both == df_datasets_for_year).all().all())
+        self.assertTrue(
+            (
+                (df_both == df_datasets_for_year)
+                # == does not think they are equal when both are missing.
+                | (df_both.isna() & df_datasets_for_year.isna())
+            )
+            .all()
+            .all()
+        )
 
 
 class DownloadWideTestCase(unittest.TestCase):

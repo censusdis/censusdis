@@ -11,6 +11,9 @@ import pandas as pd
 from censusdis.impl.varsource.base import VariableSource
 from censusdis.impl.varsource.censusapi import CensusApiVariableSource
 
+import censusdis.datasets
+
+
 logger = getLogger(__name__)
 
 
@@ -394,6 +397,26 @@ class VariableCache:
                 for dataset in datasets
             ]
         )
+
+        symbol_dict_reversed = {
+            value: symbol
+            for symbol, value in censusdis.datasets.__dict__.items()
+            if isinstance(value, str)
+        }
+
+        df_datasets["SYMBOL"] = df_datasets["DATASET"].apply(
+            lambda name: symbol_dict_reversed.get(name, None)
+        )
+
+        df_datasets = df_datasets[
+            ["YEAR", "SYMBOL", "DATASET"]
+            + [
+                col
+                for col in df_datasets.columns
+                if col not in ["YEAR", "SYMBOL", "DATASET"]
+            ]
+        ]
+
         return df_datasets.sort_values(["YEAR", "DATASET"]).reset_index(drop=True)
 
     def all_data_sets(self, *, year: Optional[int] = None) -> pd.DataFrame:
