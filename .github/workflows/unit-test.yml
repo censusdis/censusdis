@@ -24,7 +24,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - id: test-matrix
-        run: echo "matrix=$(find tests -name "test_*.py" | jq -R -s -c 'split("\n")[:-1]')" >> $GITHUB_OUTPUT
+        run: echo "matrix=$(cd test && find . -name "test_*.py" | jq -R -s -c 'split("\n")[:-1]')" >> $GITHUB_OUTPUT
   unit-test:
     needs: list-tests
     runs-on: ubuntu-latest
@@ -95,7 +95,7 @@ jobs:
         run: |
           source .venv/bin/activate
           echo "${{matrix.test}}"
-          python -m pytest "${{matrix.test}}"
+          python -m pytest "tests/${{matrix.test}}"
       #----------------------------------------------
       #              archive test artifacts
       #----------------------------------------------
