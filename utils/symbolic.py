@@ -50,7 +50,20 @@ But you can always use raw strings. For example, even for `ACS5` you can use
 """
         )
 
-    MONTHS = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec']
+    MONTHS = [
+        "jan",
+        "feb",
+        "mar",
+        "apr",
+        "may",
+        "jun",
+        "jul",
+        "aug",
+        "sep",
+        "oct",
+        "nov",
+        "dec",
+    ]
 
     def store_dataset(self, dataset_list: list, url_list: list):
         """
@@ -72,38 +85,40 @@ But you can always use raw strings. For example, even for `ACS5` you can use
         """
         for item, link in zip(dataset_list, url_list):
             if item not in self.dictionary.values():
-                temp = item.split("/")
+                components = item.split("/")
                 # Different cases of naming according to dataset names like 'acs/acs5'
                 # and special cases for clearer names
-                if len(temp) == 1:
-                    if temp[0][:3] == "ecn" or temp[0][:3] == "abs":
-                        name = temp[0][:3].upper() + "_" + temp[0][3:].upper()
-                    elif temp[0] == "surname":
+                if len(components) == 1:
+                    if components[0][:3] == "ecn" or components[0][:3] == "abs":
+                        name = (
+                            components[0][:3].upper() + "_" + components[0][3:].upper()
+                        )
+                    elif components[0] == "surname":
                         name = "DECENNIAL_SURNAME"
-                    elif temp[0] == "pubschlfin":
+                    elif components[0] == "pubschlfin":
                         name = "PUBLIC_PK12_EDUCATION_FINANCE"
                     else:
-                        name = temp[0].upper()
-                elif len(temp) == 2:
-                    if temp[0][:3] == temp[1][:3]:
-                        if temp[0] == "popproj":
-                            name = temp[0].upper()
+                        name = components[0].upper()
+                elif len(components) == 2:
+                    if components[0][:3] == components[1][:3]:
+                        if components[0] == "popproj":
+                            name = components[0].upper()
                         else:
-                            name = temp[1].upper()
+                            name = components[1].upper()
                     else:
-                        if temp[0] == "dec":
-                            temp[0] = "decennial"
-                            if temp[1] == "pl":
-                                temp[1] = "PUBLIC_LAW_94_171"
-                        name = "_".join(temp).upper()
-                elif len(temp) == 3 and temp[2] in self.MONTHS:
+                        if components[0] == "dec":
+                            components[0] = "decennial"
+                            if components[1] == "pl":
+                                components[1] = "PUBLIC_LAW_94_171"
+                        name = "_".join(components).upper()
+                elif len(components) == 3 and components[2] in self.MONTHS:
                     # This is the case for monthly data sets.
-                    name = "_".join(temp).upper()
+                    name = "_".join(components).upper()
                 else:
-                    if temp[0][:3] == temp[1][:3]:
-                        name = "_".join(temp[1:]).upper()
+                    if components[0][:3] == components[1][:3]:
+                        name = "_".join(components[1:]).upper()
                     else:
-                        name = "_".join(temp[:2]).upper()
+                        name = "_".join(components[:2]).upper()
                 item, link = f'"{item}"', f'"{link}"'
                 self.dictionary[name] = [item, link]
         return self.dictionary
