@@ -27,6 +27,7 @@ _GEO_QUERY_FROM_DATA_QUERY_INNER_GEO: Dict[
     Callable[[int], Tuple[Optional[str], str, List[str], List[str]]],
 ] = {
     # innermost geo: ( shapefile_scope, shapefile_geo_name, df_on, gdf_on )
+    "us": lambda year: ("us", "nation", ["US"], ["US"]),
     "region": lambda year: ("us", "region", ["REGION"], ["REGIONCE"]),
     "division": lambda year: ("us", "division", ["DIVISION"], ["DIVISIONCE"]),
     "combined statistical area": lambda year: (
@@ -373,9 +374,11 @@ def add_geography(
 
     def individual_shapefile(sub_scope: str, query_year: int) -> gpd.GeoDataFrame:
         """Read the relevant shapefile and add a YEAR column to it."""
+        resolution = "5m" if shapefile_geo_level == "nation" else "500k"
+
         try:
             gdf = __shapefile_reader(query_year).try_cb_tiger_shapefile(
-                sub_scope, shapefile_geo_level
+                sub_scope, shapefile_geo_level, resolution=resolution
             )
             gdf["YEAR"] = query_year
             return gdf
@@ -396,7 +399,7 @@ def add_geography(
     # one per year, and concatenate them.
     #
     # Whether there is a single or multiple years, there could also
-    # me mutliple scopes, e.g. states, for which we have to download
+    # me multiple scopes, e.g. states, for which we have to download
     # shapefiles. If so, by the time we get here, they are encoded in
     # one string with comma separators.
     if isinstance(year, int):
@@ -425,6 +428,11 @@ def add_geography(
         df_data["TRACT"] = df_data["TRACT"].str.ljust(
             6, "0"
         )  # Pre 2010 data has inconsistencies in TRACT string length
+
+    # The nation-level shapefile is missing a column
+    # to merge on.
+    if shapefile_geo_level == "nation":
+        gdf_shapefile["US"] = "1"
 
     gdf_data = gdf_shapefile[merge_gdf_on + ["geometry"]].merge(
         df_data, how="right", left_on=merge_gdf_on, right_on=df_on
