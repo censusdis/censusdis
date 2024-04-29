@@ -50,6 +50,8 @@ But you can always use raw strings. For example, even for `ACS5` you can use
 """
         )
 
+    MONTHS = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec']
+
     def store_dataset(self, dataset_list: list, url_list: list):
         """
         Construct symbolic names and store as keys mapping to values of dataset and url.
@@ -94,6 +96,9 @@ But you can always use raw strings. For example, even for `ACS5` you can use
                             if temp[1] == "pl":
                                 temp[1] = "PUBLIC_LAW_94_171"
                         name = "_".join(temp).upper()
+                elif len(temp) == 3 and temp[2] in self.MONTHS:
+                    # This is the case for monthly data sets.
+                    name = "_".join(temp).upper()
                 else:
                     if temp[0][:3] == temp[1][:3]:
                         name = "_".join(temp[1:]).upper()

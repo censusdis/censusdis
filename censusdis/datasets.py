@@ -102,49 +102,109 @@ CFSPRELIM = "cfsprelim"
 
 CFSTEMP = "cfstemp"
 
-CPS_ARTS = "cps/arts/feb"
+CPS_ARTS_FEB = "cps/arts/feb"
 
-CPS_ASEC = "cps/asec/mar"
+CPS_ASEC_MAR = "cps/asec/mar"
 
-CPS_BASIC = "cps/basic/mar"
+CPS_BASIC_APR = "cps/basic/apr"
 
-CPS_CIVIC = "cps/civic/nov"
+CPS_BASIC_AUG = "cps/basic/aug"
 
-CPS_CONTWORKER = "cps/contworker/may"
+CPS_BASIC_DEC = "cps/basic/dec"
 
-CPS_DISABILITY = "cps/disability/jul"
+CPS_BASIC_FEB = "cps/basic/feb"
 
-CPS_DWJT = "cps/dwjt/jan"
+CPS_BASIC_JAN = "cps/basic/jan"
 
-CPS_FERTILITY = "cps/fertility/jun"
+CPS_BASIC_JUL = "cps/basic/jul"
 
-CPS_FOODSEC = "cps/foodsec/dec"
+CPS_BASIC_JUN = "cps/basic/jun"
 
-CPS_IMMIGRATION = "cps/immigration/aug"
+CPS_BASIC_MAR = "cps/basic/mar"
 
-CPS_INTERNET = "cps/internet/nov"
+CPS_BASIC_MAY = "cps/basic/may"
 
-CPS_LIBRARY = "cps/library/oct"
+CPS_BASIC_NOV = "cps/basic/nov"
 
-CPS_MARITAL = "cps/marital/jun"
+CPS_BASIC_OCT = "cps/basic/oct"
 
-CPS_PUBARTS = "cps/pubarts/jul"
+CPS_BASIC_SEP = "cps/basic/sep"
 
-CPS_RACE = "cps/race/may"
+CPS_CIVIC_NOV = "cps/civic/nov"
 
-CPS_SCHOOL = "cps/school/oct"
+CPS_CONTWORKER_FEB = "cps/contworker/feb"
 
-CPS_TOBACCO = "cps/tobacco/sep"
+CPS_CONTWORKER_MAY = "cps/contworker/may"
 
-CPS_UNBANK = "cps/unbank/jun"
+CPS_DISABILITY_JUL = "cps/disability/jul"
 
-CPS_VETS = "cps/vets/aug"
+CPS_DISABILITY_MAY = "cps/disability/may"
 
-CPS_VOLUNTEER = "cps/volunteer/sep"
+CPS_DWJT_FEB = "cps/dwjt/feb"
 
-CPS_VOTING = "cps/voting/nov"
+CPS_DWJT_JAN = "cps/dwjt/jan"
 
-CPS_WORKSCHED = "cps/worksched/may"
+CPS_FERTILITY_JUN = "cps/fertility/jun"
+
+CPS_FOODSEC_APR = "cps/foodsec/apr"
+
+CPS_FOODSEC_AUG = "cps/foodsec/aug"
+
+CPS_FOODSEC_DEC = "cps/foodsec/dec"
+
+CPS_FOODSEC_SEP = "cps/foodsec/sep"
+
+CPS_IMMIGRATION_AUG = "cps/immigration/aug"
+
+CPS_INTERNET_AUG = "cps/internet/aug"
+
+CPS_INTERNET_DEC = "cps/internet/dec"
+
+CPS_INTERNET_JUL = "cps/internet/jul"
+
+CPS_INTERNET_NOV = "cps/internet/nov"
+
+CPS_INTERNET_OCT = "cps/internet/oct"
+
+CPS_INTERNET_SEP = "cps/internet/sep"
+
+CPS_LIBRARY_OCT = "cps/library/oct"
+
+CPS_MARITAL_JUN = "cps/marital/jun"
+
+CPS_PUBARTS_AUG = "cps/pubarts/aug"
+
+CPS_PUBARTS_JUL = "cps/pubarts/jul"
+
+CPS_RACE_MAY = "cps/race/may"
+
+CPS_SCHOOL_OCT = "cps/school/oct"
+
+CPS_TOBACCO_AUG = "cps/tobacco/aug"
+
+CPS_TOBACCO_JAN = "cps/tobacco/jan"
+
+CPS_TOBACCO_JUL = "cps/tobacco/jul"
+
+CPS_TOBACCO_MAY = "cps/tobacco/may"
+
+CPS_TOBACCO_SEP = "cps/tobacco/sep"
+
+CPS_UNBANK_JAN = "cps/unbank/jan"
+
+CPS_UNBANK_JUN = "cps/unbank/jun"
+
+CPS_VETS_AUG = "cps/vets/aug"
+
+CPS_VETS_JUL = "cps/vets/jul"
+
+CPS_VETS_SEP = "cps/vets/sep"
+
+CPS_VOLUNTEER_SEP = "cps/volunteer/sep"
+
+CPS_VOTING_NOV = "cps/voting/nov"
+
+CPS_WORKSCHED_MAY = "cps/worksched/may"
 
 CRE = "cre"
 
@@ -599,28 +659,58 @@ DATASET_REFERENCE_URLS = {
     CFSHAZMAT: "http://api.census.gov/data/2017/cfshazmat",
     CFSPRELIM: "http://api.census.gov/data/2017/cfsprelim",
     CFSTEMP: "http://api.census.gov/data/2017/cfstemp",
-    CPS_ARTS: "http://api.census.gov/data/2020/cps/arts/feb",
-    CPS_ASEC: "http://api.census.gov/data/2023/cps/asec/mar",
-    CPS_BASIC: "http://api.census.gov/data/2024/cps/basic/mar",
-    CPS_CIVIC: "http://api.census.gov/data/2013/cps/civic/nov",
-    CPS_CONTWORKER: "http://api.census.gov/data/2017/cps/contworker/may",
-    CPS_DISABILITY: "http://api.census.gov/data/2021/cps/disability/jul",
-    CPS_DWJT: "http://api.census.gov/data/2022/cps/dwjt/jan",
-    CPS_FERTILITY: "http://api.census.gov/data/2022/cps/fertility/jun",
-    CPS_FOODSEC: "http://api.census.gov/data/2022/cps/foodsec/dec",
-    CPS_IMMIGRATION: "http://api.census.gov/data/2008/cps/immigration/aug",
-    CPS_INTERNET: "http://api.census.gov/data/2021/cps/internet/nov",
-    CPS_LIBRARY: "http://api.census.gov/data/2002/cps/library/oct",
-    CPS_MARITAL: "http://api.census.gov/data/1995/cps/marital/jun",
-    CPS_PUBARTS: "http://api.census.gov/data/2022/cps/pubarts/jul",
-    CPS_RACE: "http://api.census.gov/data/1995/cps/race/may",
-    CPS_SCHOOL: "http://api.census.gov/data/2022/cps/school/oct",
-    CPS_TOBACCO: "http://api.census.gov/data/2022/cps/tobacco/sep",
-    CPS_UNBANK: "http://api.census.gov/data/2021/cps/unbank/jun",
-    CPS_VETS: "http://api.census.gov/data/2023/cps/vets/aug",
-    CPS_VOLUNTEER: "http://api.census.gov/data/2021/cps/volunteer/sep",
-    CPS_VOTING: "http://api.census.gov/data/2022/cps/voting/nov",
-    CPS_WORKSCHED: "http://api.census.gov/data/2004/cps/worksched/may",
+    CPS_ARTS_FEB: "http://api.census.gov/data/2020/cps/arts/feb",
+    CPS_ASEC_MAR: "http://api.census.gov/data/2023/cps/asec/mar",
+    CPS_BASIC_APR: "http://api.census.gov/data/2023/cps/basic/apr",
+    CPS_BASIC_AUG: "http://api.census.gov/data/2023/cps/basic/aug",
+    CPS_BASIC_DEC: "http://api.census.gov/data/2023/cps/basic/dec",
+    CPS_BASIC_FEB: "http://api.census.gov/data/2024/cps/basic/feb",
+    CPS_BASIC_JAN: "http://api.census.gov/data/2024/cps/basic/jan",
+    CPS_BASIC_JUL: "http://api.census.gov/data/2023/cps/basic/jul",
+    CPS_BASIC_JUN: "http://api.census.gov/data/2023/cps/basic/jun",
+    CPS_BASIC_MAR: "http://api.census.gov/data/2024/cps/basic/mar",
+    CPS_BASIC_MAY: "http://api.census.gov/data/2023/cps/basic/may",
+    CPS_BASIC_NOV: "http://api.census.gov/data/2023/cps/basic/nov",
+    CPS_BASIC_OCT: "http://api.census.gov/data/2023/cps/basic/oct",
+    CPS_BASIC_SEP: "http://api.census.gov/data/2023/cps/basic/sep",
+    CPS_CIVIC_NOV: "http://api.census.gov/data/2013/cps/civic/nov",
+    CPS_CONTWORKER_FEB: "http://api.census.gov/data/2005/cps/contworker/feb",
+    CPS_CONTWORKER_MAY: "http://api.census.gov/data/2017/cps/contworker/may",
+    CPS_DISABILITY_JUL: "http://api.census.gov/data/2021/cps/disability/jul",
+    CPS_DISABILITY_MAY: "http://api.census.gov/data/2012/cps/disability/may",
+    CPS_DWJT_FEB: "http://api.census.gov/data/2000/cps/dwjt/feb",
+    CPS_DWJT_JAN: "http://api.census.gov/data/2022/cps/dwjt/jan",
+    CPS_FERTILITY_JUN: "http://api.census.gov/data/2022/cps/fertility/jun",
+    CPS_FOODSEC_APR: "http://api.census.gov/data/2001/cps/foodsec/apr",
+    CPS_FOODSEC_AUG: "http://api.census.gov/data/1998/cps/foodsec/aug",
+    CPS_FOODSEC_DEC: "http://api.census.gov/data/2022/cps/foodsec/dec",
+    CPS_FOODSEC_SEP: "http://api.census.gov/data/2000/cps/foodsec/sep",
+    CPS_IMMIGRATION_AUG: "http://api.census.gov/data/2008/cps/immigration/aug",
+    CPS_INTERNET_AUG: "http://api.census.gov/data/2000/cps/internet/aug",
+    CPS_INTERNET_DEC: "http://api.census.gov/data/1998/cps/internet/dec",
+    CPS_INTERNET_JUL: "http://api.census.gov/data/2015/cps/internet/jul",
+    CPS_INTERNET_NOV: "http://api.census.gov/data/2021/cps/internet/nov",
+    CPS_INTERNET_OCT: "http://api.census.gov/data/2012/cps/internet/oct",
+    CPS_INTERNET_SEP: "http://api.census.gov/data/2001/cps/internet/sep",
+    CPS_LIBRARY_OCT: "http://api.census.gov/data/2002/cps/library/oct",
+    CPS_MARITAL_JUN: "http://api.census.gov/data/1995/cps/marital/jun",
+    CPS_PUBARTS_AUG: "http://api.census.gov/data/2002/cps/pubarts/aug",
+    CPS_PUBARTS_JUL: "http://api.census.gov/data/2022/cps/pubarts/jul",
+    CPS_RACE_MAY: "http://api.census.gov/data/1995/cps/race/may",
+    CPS_SCHOOL_OCT: "http://api.census.gov/data/2022/cps/school/oct",
+    CPS_TOBACCO_AUG: "http://api.census.gov/data/2010/cps/tobacco/aug",
+    CPS_TOBACCO_JAN: "http://api.census.gov/data/2019/cps/tobacco/jan",
+    CPS_TOBACCO_JUL: "http://api.census.gov/data/2018/cps/tobacco/jul",
+    CPS_TOBACCO_MAY: "http://api.census.gov/data/2019/cps/tobacco/may",
+    CPS_TOBACCO_SEP: "http://api.census.gov/data/2022/cps/tobacco/sep",
+    CPS_UNBANK_JAN: "http://api.census.gov/data/2009/cps/unbank/jan",
+    CPS_UNBANK_JUN: "http://api.census.gov/data/2021/cps/unbank/jun",
+    CPS_VETS_AUG: "http://api.census.gov/data/2023/cps/vets/aug",
+    CPS_VETS_JUL: "http://api.census.gov/data/2010/cps/vets/jul",
+    CPS_VETS_SEP: "http://api.census.gov/data/1999/cps/vets/sep",
+    CPS_VOLUNTEER_SEP: "http://api.census.gov/data/2021/cps/volunteer/sep",
+    CPS_VOTING_NOV: "http://api.census.gov/data/2022/cps/voting/nov",
+    CPS_WORKSCHED_MAY: "http://api.census.gov/data/2004/cps/worksched/may",
     CRE: "http://api.census.gov/data/2022/cre",
     DECENNIAL_AIAN: "http://api.census.gov/data/2010/dec/aian",
     DECENNIAL_AIANPROFILE: "http://api.census.gov/data/2000/dec/aianprofile",
