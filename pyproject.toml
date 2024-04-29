@@ -73,7 +73,7 @@ pyogrio = "^0.7.2"
 # rasterio/_err.pyx:182: CPLE_NotSupportedError
 #
 # Pinning for now pending further investigation.
-rasterio = "1.3.9"
+rasterio = "1.3.10"
 
 [tool.poetry.extras]
 explore = ["mapclassify", "ipyleaflet", "folium"]
