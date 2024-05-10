@@ -661,7 +661,7 @@ DATASET_REFERENCE_URLS = {
     CFSTEMP: "http://api.census.gov/data/2017/cfstemp",
     CPS_ARTS_FEB: "http://api.census.gov/data/2020/cps/arts/feb",
     CPS_ASEC_MAR: "http://api.census.gov/data/2023/cps/asec/mar",
-    CPS_BASIC_APR: "http://api.census.gov/data/2023/cps/basic/apr",
+    CPS_BASIC_APR: "http://api.census.gov/data/2024/cps/basic/apr",
     CPS_BASIC_AUG: "http://api.census.gov/data/2023/cps/basic/aug",
     CPS_BASIC_DEC: "http://api.census.gov/data/2023/cps/basic/dec",
     CPS_BASIC_FEB: "http://api.census.gov/data/2024/cps/basic/feb",
