@@ -612,6 +612,8 @@ VIUSE = "viuse"
 
 VIUSF = "viusf"
 
+VIUSPUF = "viuspuf"
+
 ZBP = "zbp"
 
 
@@ -914,5 +916,6 @@ DATASET_REFERENCE_URLS = {
     VIUSD: "http://api.census.gov/data/2021/viusd",
     VIUSE: "http://api.census.gov/data/2021/viuse",
     VIUSF: "http://api.census.gov/data/2021/viusf",
+    VIUSPUF: "http://api.census.gov/data/2021/viuspuf",
     ZBP: "http://api.census.gov/data/2018/zbp",
 }
