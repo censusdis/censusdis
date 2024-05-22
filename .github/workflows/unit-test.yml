@@ -96,12 +96,11 @@ jobs:
           source .venv/bin/activate
           echo "${{matrix.test}}"
           python -m pytest "tests/${{matrix.test}}"
-          mkdir -p tests/_test_artifacts
       #----------------------------------------------
       #              archive test artifacts
       #----------------------------------------------
       - name: Archive test artifacts
-        if: always()
+        if: ${{ hashFiles('tests/_test_artifacts') != '' }}
         uses: actions/upload-artifact@v4
         with:
           name: test_artifacts-${{ matrix.test }}
