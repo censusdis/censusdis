@@ -243,7 +243,11 @@ class DownloadTestCase(unittest.TestCase):
 
         df_variables = ced.variables.all_variables(self._dataset, self._year, group)
 
-        self.assertEqual((49, 7), df_variables.shape)
+        # FIX: #270
+        # There is a transition going on and depneding where the load balancer
+        # sends us we get one or the other.
+        self.assertIn(df_variables.shape[0], [49, 330])
+        self.assertEqual(7, df_variables.shape[1])
 
         self.assertEqual(
             [
