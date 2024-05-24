@@ -306,6 +306,18 @@ class DownloadWideTestCase(unittest.TestCase):
     depending on the details of the scenario.
     """
 
+    # FIX: #270.
+    # There are other problems caused by the server side change that we
+    # want to fix, so temporarily disabling this test to get those out.
+    # I tried lowering `ced._MAX_VARIABLES_PER_DOWNLOAD` all the way down
+    # to 10 and still saw failures. But I was manually able to download
+    # problematic variables by further shrinking the number of vars in the URL,
+    # and could cover all the vars. So wait and see on the server side for now.
+    @unittest.skip(
+        reason='Since 4/24/2024. server producing "failed with status 500. '
+        "There was an error while running your query. "
+        "We've logged the error and we'll correct it ASAP.  Sorry for the inconvenience."
+    )
     def test_wide_merge(self):
         """
         Download a really wide set of variables.
