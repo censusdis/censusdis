@@ -109,10 +109,22 @@ class DownloadTestCase(unittest.TestCase):
         self.assertFalse(df_raw[median_income_variable].isna().any())
         self.assertTrue(df_nan[median_income_variable].isna().any())
 
+        df_merged = df_raw.merge(
+            df_nan,
+            on=["NAME", "STATE", "COUNTY", "TRACT"],
+            suffixes=["_raw", "_nan"],
+            how="inner",
+        )
+
+        self.assertEqual(len(df_raw.index), len(df_merged.index))
+
         self.assertTrue(
             (
-                (df_raw[median_income_variable] == cev.INSUFFICIENT_SAMPLE_OBSERVATIONS)
-                == df_nan[median_income_variable].isna()
+                (
+                    df_merged[median_income_variable + "_raw"]
+                    == cev.INSUFFICIENT_SAMPLE_OBSERVATIONS
+                )
+                == df_merged[median_income_variable + "_nan"].isna()
             ).all(),
             "All locations that were cev.INSUFFICIENT_SAMPLE_OBSERVATIONS should be NaN.",
         )

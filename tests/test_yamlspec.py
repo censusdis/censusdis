@@ -416,7 +416,14 @@ class DataSpecTestCase(unittest.TestCase):
 
         # 50 states + DC + PR = 52
         # Columns and frac_ columns add up to 39.
-        self.assertEqual((52, 39), gdf_data.shape)
+
+        # It seems the server side is rolling out a change where
+        # 'NAME' and 'GEO_ID' are returned from all queries whether
+        # explicitly requested or not.
+        if "NAME" in gdf_data.columns and "GEO_ID" in gdf_data.columns:
+            self.assertEqual((52, 41), gdf_data.shape)
+        else:
+            self.assertEqual((52, 39), gdf_data.shape)
 
         frac_variables = set(
             variable for variable in gdf_data.columns if variable.startswith("frac")
@@ -450,18 +457,35 @@ class DataSpecTestCase(unittest.TestCase):
         df = dataspec.download()
 
         # There are 23 counties in the CBSA
-        self.assertEqual((23, 5), df.shape)
+        # It seems the server side is rolling out a change where
+        # 'NAME' and 'GEO_ID' are returned from all queries whether
+        # explicitly requested or not.
 
-        self.assertEqual(
-            [
-                "METROPOLITAN_STATISTICAL_AREA_MICROPOLITAN_STATISTICAL_AREA",
-                "STATE",
-                "COUNTY",
-                "NAME",
-                "B01003_001E",
-            ],
-            list(df.columns),
-        )
+        if "GEO_ID" in df.columns:
+            self.assertEqual((23, 6), df.shape)
+            self.assertEqual(
+                [
+                    "METROPOLITAN_STATISTICAL_AREA_MICROPOLITAN_STATISTICAL_AREA",
+                    "STATE",
+                    "COUNTY",
+                    "NAME",
+                    "B01003_001E",
+                    "GEO_ID",
+                ],
+                list(df.columns),
+            )
+        else:
+            self.assertEqual((23, 5), df.shape)
+            self.assertEqual(
+                [
+                    "METROPOLITAN_STATISTICAL_AREA_MICROPOLITAN_STATISTICAL_AREA",
+                    "STATE",
+                    "COUNTY",
+                    "NAME",
+                    "B01003_001E",
+                ],
+                list(df.columns),
+            )
 
         # All match the query.
         self.assertTrue(
