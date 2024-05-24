@@ -262,7 +262,7 @@ class DownloadTestCase(unittest.TestCase):
         df = spec.download(dataset=self.dataset, vintage=self.vintage, state=NJ)
 
         # Issue #267
-        if 'NAME' in df.columns and 'GEO_ID' in df.columns:
+        if "NAME" in df.columns and "GEO_ID" in df.columns:
             self.assertEqual((1, 45), df.shape)
         else:
             self.assertEqual((1, 43), df.shape)
