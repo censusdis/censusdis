@@ -208,6 +208,8 @@ CPS_WORKSCHED_MAY = "cps/worksched/may"
 
 CRE = "cre"
 
+CREPUERTORICO = "crepuertorico"
+
 DECENNIAL_AIAN = "dec/aian"
 
 DECENNIAL_AIANPROFILE = "dec/aianprofile"
@@ -714,6 +716,7 @@ DATASET_REFERENCE_URLS = {
     CPS_VOTING_NOV: "http://api.census.gov/data/2022/cps/voting/nov",
     CPS_WORKSCHED_MAY: "http://api.census.gov/data/2004/cps/worksched/may",
     CRE: "http://api.census.gov/data/2022/cre",
+    CREPUERTORICO: "http://api.census.gov/data/2022/crepuertorico",
     DECENNIAL_AIAN: "http://api.census.gov/data/2010/dec/aian",
     DECENNIAL_AIANPROFILE: "http://api.census.gov/data/2000/dec/aianprofile",
     DECENNIAL_AS: "http://api.census.gov/data/2010/dec/as",
