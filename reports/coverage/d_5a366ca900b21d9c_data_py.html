@@ -65,7 +65,7 @@
             <a id="nextFileLink" class="nav" href="d_5a366ca900b21d9c_datasets_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io">coverage.py v6.5.0</a>,
-            created at 2024-05-23 05:41 +0000
+            created at 2024-05-25 14:41 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"/>
@@ -730,7 +730,7 @@
     <p class="run"><span class="n"><a id="t648" href="#t648">648</a></span><span class="t">        <span class="key">if</span> <span class="str">"predicateType"</span> <span class="key">in</span> <span class="nam">variable_cache</span><span class="op">.</span><span class="nam">get</span><span class="op">(</span><span class="nam">dataset</span><span class="op">,</span> <span class="nam">vintage</span><span class="op">,</span> <span class="nam">variable</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t649" href="#t649">649</a></span><span class="t">            <span class="nam">field_type</span> <span class="op">=</span> <span class="nam">variable_cache</span><span class="op">.</span><span class="nam">get</span><span class="op">(</span><span class="nam">dataset</span><span class="op">,</span> <span class="nam">vintage</span><span class="op">,</span> <span class="nam">variable</span><span class="op">)</span><span class="op">[</span><span class="str">"predicateType"</span><span class="op">]</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t650" href="#t650">650</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t651" href="#t651">651</a></span><span class="t">            <span class="key">if</span> <span class="nam">field_type</span> <span class="op">==</span> <span class="str">"int"</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t651" href="#t651">651</a></span><span class="t">            <span class="key">if</span> <span class="nam">field_type</span> <span class="op">==</span> <span class="str">"int"</span> <span class="key">or</span> <span class="nam">field_type</span> <span class="op">==</span> <span class="str">"long"</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t652" href="#t652">652</a></span><span class="t">                <span class="key">if</span> <span class="nam">df_data</span><span class="op">[</span><span class="nam">variable</span><span class="op">]</span><span class="op">.</span><span class="nam">isnull</span><span class="op">(</span><span class="op">)</span><span class="op">.</span><span class="nam">any</span><span class="op">(</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t653" href="#t653">653</a></span><span class="t">                    <span class="com"># Some Census data sets put in null in int fields.</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t654" href="#t654">654</a></span><span class="t">                    <span class="com"># We have to go with a float to make this a NaN.</span>&nbsp;</span><span class="r"></span></p>
@@ -1412,7 +1412,7 @@
             <a id="nextFileLink" class="nav" href="d_5a366ca900b21d9c_datasets_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io">coverage.py v6.5.0</a>,
-            created at 2024-05-23 05:41 +0000
+            created at 2024-05-25 14:41 +0000
         </p>
     </div>
 </footer>
