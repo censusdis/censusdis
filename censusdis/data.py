@@ -648,7 +648,7 @@ def _coerce_downloaded_variable_types(
         if "predicateType" in variable_cache.get(dataset, vintage, variable):
             field_type = variable_cache.get(dataset, vintage, variable)["predicateType"]
 
-            if field_type == "int":
+            if field_type == "int" or field_type == "long":
                 if df_data[variable].isnull().any():
                     # Some Census data sets put in null in int fields.
                     # We have to go with a float to make this a NaN.
