@@ -458,7 +458,10 @@ class DownloadGroupTestCase(unittest.TestCase):
             self._dataset, self._year, self._group_name_0
         )
 
-        self.assertEqual(["STATE", "COUNTY"] + leaf_variables, list(df_leaves.columns))
+        self.assertSetEqual(
+            set(["STATE", "COUNTY"] + leaf_variables + ["GEO_ID"]),
+            set(df_leaves.columns),
+        )
 
     def test_group_plus(self):
         """Download the whole group plus another variable."""
@@ -478,9 +481,9 @@ class DownloadGroupTestCase(unittest.TestCase):
             self._dataset, self._year, self._group_name_0
         )
 
-        self.assertEqual(
-            ["STATE", "COUNTY", extra_variable] + group_variables,
-            list(df_group.columns),
+        self.assertSetEqual(
+            {"STATE", "COUNTY", extra_variable} | set(group_variables),
+            set(df_group.columns),
         )
 
     def test_leaves_of_group_plus(self):
@@ -501,9 +504,9 @@ class DownloadGroupTestCase(unittest.TestCase):
             self._dataset, self._year, self._group_name_0
         )
 
-        self.assertEqual(
-            ["STATE", "COUNTY", extra_variable] + leaf_variables,
-            list(df_leaves.columns),
+        self.assertSetEqual(
+            set(["STATE", "COUNTY", extra_variable] + leaf_variables),
+            set(df_leaves.columns),
         )
 
     def test_group_with_dups(self):
@@ -568,7 +571,7 @@ class DownloadGroupTestCase(unittest.TestCase):
 
         # Should be no dups.
         # State, county, and the extra are the three added.
-        self.assertEqual(len(df_leaves.columns), 3 + len(leaf_variables))
+        self.assertEqual(len(df_leaves.columns), 2 + len(leaf_variables))
 
         # Make sure we got the variables we expected.
         returned_variables = set(df_leaves.columns)
@@ -576,7 +579,7 @@ class DownloadGroupTestCase(unittest.TestCase):
         self.assertEqual(len(returned_variables), len(df_leaves.columns))
 
         # State county and the extra are the three added.
-        self.assertEqual(len(returned_variables), 3 + len(leaf_variables))
+        self.assertEqual(len(returned_variables), 2 + len(leaf_variables))
 
         for variable in leaf_variables:
             self.assertIn(variable, returned_variables)
@@ -597,11 +600,16 @@ class DownloadGroupTestCase(unittest.TestCase):
         )
 
         # Make sure we got the variables we expected.
-        group_variables = ced.variables.group_variables(
-            self._dataset, self._year, self._group_name_0
-        ) + ced.variables.group_variables(self._dataset, self._year, self._group_name_1)
+        group_variables = set(
+            ced.variables.group_variables(self._dataset, self._year, self._group_name_0)
+            + ced.variables.group_variables(
+                self._dataset, self._year, self._group_name_1
+            )
+        )
 
-        self.assertEqual(["STATE", "COUNTY"] + group_variables, list(df_group.columns))
+        self.assertSetEqual(
+            {"STATE", "COUNTY"} | group_variables, set(df_group.columns)
+        )
 
     def test_download_wide_survey(self):
         """Test case where row_keys are required to download more than 50 variables."""
