@@ -169,9 +169,9 @@ def json_from_url(url: str, params: Optional[Mapping[str, str]] = None) -> Any:
         return parsed_json
 
     # Do our best to tell the user something informative.
-    raise CensusApiException(
-        f"Census API request to {request.url} failed with status {request.status_code}. {request.text}"
-    )
+    message = f"Census API request to {request.url} failed with status {request.status_code}. {request.text}"
+    logger.debug(message)
+    raise CensusApiException(message)
 
 
 def data_from_url(url: str, params: Optional[Mapping[str, str]] = None) -> pd.DataFrame:
