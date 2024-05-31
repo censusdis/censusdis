@@ -323,6 +323,8 @@ class DownloadWideTestCase(unittest.TestCase):
     # to 10 and still saw failures. But I was manually able to download
     # problematic variables by further shrinking the number of vars in the URL,
     # and could cover all the vars. So wait and see on the server side for now.
+    #
+    # Working with census.data@census.gov to resolve.
     @unittest.skip(
         reason='Since 4/24/2024. server producing "failed with status 500. '
         "There was an error while running your query. "
