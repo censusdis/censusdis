@@ -13,11 +13,22 @@ name: test-matrix
 on: pull_request
 
 jobs:
+  # List the tests
+  list-tests:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.test-matrix.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: test-matrix
+        run: echo "matrix=$(find tests -name "*.py" | sed -e s/^tests\\/// | jq -R -s -c 'split("\n")[:-1]')" >> $GITHUB_OUTPUT
   test-matrix:
+    needs: list-tests
     strategy:
       matrix:
         python-version: ["3.9", "3.10", "3.11", "3.12"]
         os: [ "ubuntu-latest", "macos-latest", "windows-latest" ]
+        test: ${{ fromJson(needs.list-tests.outputs.matrix) }}
       fail-fast: false
     defaults:
       run:
@@ -53,11 +64,12 @@ jobs:
       - name: Run tests
         run: |
           source $VENV
-          pytest
+          echo "${{matrix.test}}"
+          python -m pytest "tests/${{matrix.test}}"
       - name: Archive test artifacts
-        if: always()
+        if: ${{ hashFiles('tests/_test_artifacts') != '' }}
         uses: actions/upload-artifact@v4
         with:
-          name: test_artifacts-${{ matrix.os }}-${{ matrix.python-version }}
+          name: test_artifacts-${{ matrix.os }}-${{ matrix.python-version }}-${{ matrix.test }}
           path: tests/_test_artifacts
           retention-days: 7

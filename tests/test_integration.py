@@ -13,6 +13,8 @@ import geopandas as gpd
 import numpy as np
 import pandas as pd
 
+import logging
+
 import censusdis.data as ced
 import censusdis.impl.exceptions
 import censusdis.impl.varsource.censusapi
@@ -22,6 +24,14 @@ from censusdis import states
 import censusdis.counties.new_jersey
 from censusdis.datasets import ACS3, ACS5
 from censusdis.states import WA, NY, NJ, CT, PA
+
+
+# Set to DEBUG logging to help diagnose test issues.
+# Set to WARNING for normal low-volume output.
+logging.basicConfig(
+    # level=logging.DEBUG
+    level=logging.WARNING
+)
 
 
 class DownloadTestCase(unittest.TestCase):
@@ -313,6 +323,8 @@ class DownloadWideTestCase(unittest.TestCase):
     # to 10 and still saw failures. But I was manually able to download
     # problematic variables by further shrinking the number of vars in the URL,
     # and could cover all the vars. So wait and see on the server side for now.
+    #
+    # Working with census.data@census.gov to resolve.
     @unittest.skip(
         reason='Since 4/24/2024. server producing "failed with status 500. '
         "There was an error while running your query. "
@@ -458,7 +470,15 @@ class DownloadGroupTestCase(unittest.TestCase):
             self._dataset, self._year, self._group_name_0
         )
 
-        self.assertEqual(["STATE", "COUNTY"] + leaf_variables, list(df_leaves.columns))
+        # FIX: #270
+        # Sometimes we get a response from the metadata that is out
+        # of sync with what we get from the data. Once this settles
+        # down we can remove the  + ["NAME", "GEO_ID"] in both sides
+        # of this assertion.
+        self.assertSetEqual(
+            set(["STATE", "COUNTY"] + leaf_variables + ["NAME", "GEO_ID"]),
+            set(list(df_leaves.columns) + ["NAME", "GEO_ID"]),
+        )
 
     def test_group_plus(self):
         """Download the whole group plus another variable."""
@@ -478,9 +498,9 @@ class DownloadGroupTestCase(unittest.TestCase):
             self._dataset, self._year, self._group_name_0
         )
 
-        self.assertEqual(
-            ["STATE", "COUNTY", extra_variable] + group_variables,
-            list(df_group.columns),
+        self.assertSetEqual(
+            {"STATE", "COUNTY", extra_variable} | set(group_variables),
+            set(df_group.columns),
         )
 
     def test_leaves_of_group_plus(self):
@@ -501,9 +521,9 @@ class DownloadGroupTestCase(unittest.TestCase):
             self._dataset, self._year, self._group_name_0
         )
 
-        self.assertEqual(
-            ["STATE", "COUNTY", extra_variable] + leaf_variables,
-            list(df_leaves.columns),
+        self.assertSetEqual(
+            set(["STATE", "COUNTY", extra_variable] + leaf_variables),
+            set(df_leaves.columns),
         )
 
     def test_group_with_dups(self):
@@ -566,17 +586,21 @@ class DownloadGroupTestCase(unittest.TestCase):
             county="*",
         )
 
-        # Should be no dups.
-        # State, county, and the extra are the three added.
-        self.assertEqual(len(df_leaves.columns), 3 + len(leaf_variables))
+        # FIX: #270
+        # Sometimes we get a response from the metadata that is out
+        # of sync with what we get from the data. In particular, sometimes
+        # we hit an old version of the metadata without `GEO_ID` and `NAME`,
+        # but when we get the data they are there. Once this settles
+        # down we can re-enable this assertion.
+        # self.assertEqual(len(df_leaves.columns), 2 + len(leaf_variables))
 
         # Make sure we got the variables we expected.
         returned_variables = set(df_leaves.columns)
 
         self.assertEqual(len(returned_variables), len(df_leaves.columns))
 
-        # State county and the extra are the three added.
-        self.assertEqual(len(returned_variables), 3 + len(leaf_variables))
+        # FIX: #270 same as above.
+        # self.assertEqual(len(returned_variables), 2 + len(leaf_variables))
 
         for variable in leaf_variables:
             self.assertIn(variable, returned_variables)
@@ -597,11 +621,16 @@ class DownloadGroupTestCase(unittest.TestCase):
         )
 
         # Make sure we got the variables we expected.
-        group_variables = ced.variables.group_variables(
-            self._dataset, self._year, self._group_name_0
-        ) + ced.variables.group_variables(self._dataset, self._year, self._group_name_1)
+        group_variables = set(
+            ced.variables.group_variables(self._dataset, self._year, self._group_name_0)
+            + ced.variables.group_variables(
+                self._dataset, self._year, self._group_name_1
+            )
+        )
 
-        self.assertEqual(["STATE", "COUNTY"] + group_variables, list(df_group.columns))
+        self.assertSetEqual(
+            {"STATE", "COUNTY"} | group_variables, set(df_group.columns)
+        )
 
     def test_download_wide_survey(self):
         """Test case where row_keys are required to download more than 50 variables."""

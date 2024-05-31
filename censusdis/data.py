@@ -479,7 +479,7 @@ def download(
 
     if len(download_variables) <= _MAX_VARIABLES_PER_DOWNLOAD and row_keys:
         warnings.warn(
-            "\n The row_keys arguement is intended to be used only when the number of requested"
+            "\n The row_keys argument is intended to be used only when the number of requested"
             "\n variables exceeds the Census defined limit of 50"
             "\n The supplied value(s) will be ignored",
             UserWarning,
