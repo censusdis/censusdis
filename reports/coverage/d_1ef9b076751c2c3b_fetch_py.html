@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>Coverage for censusdis/impl/fetch.py: 98%</title>
+    <title>Coverage for censusdis/impl/fetch.py: 99%</title>
     <link rel="icon" sizes="32x32" href="favicon_32.png">
     <link rel="stylesheet" href="style.css" type="text/css">
     <script type="text/javascript" src="coverage_html.js" defer></script>
@@ -12,7 +12,7 @@
     <div class="content">
         <h1>
             <span class="text">Coverage for </span><b>censusdis/impl/fetch.py</b>:
-            <span class="pc_cov">98%</span>
+            <span class="pc_cov">99%</span>
         </h1>
         <aside id="help_panel_wrapper">
             <input id="help_panel_state" type="checkbox">
@@ -54,8 +54,8 @@
             </div>
         </aside>
         <h2>
-            <span class="text">66 statements &nbsp;</span>
-            <button type="button" class="run button_toggle_run" value="run" data-shortcut="r" title="Toggle lines run">65<span class="text"> run</span></button>
+            <span class="text">68 statements &nbsp;</span>
+            <button type="button" class="run button_toggle_run" value="run" data-shortcut="r" title="Toggle lines run">67<span class="text"> run</span></button>
             <button type="button" class="mis show_mis button_toggle_mis" value="mis" data-shortcut="m" title="Toggle lines missing">1<span class="text"> missing</span></button>
             <button type="button" class="exc show_exc button_toggle_exc" value="exc" data-shortcut="x" title="Toggle lines excluded">0<span class="text"> excluded</span></button>
         </h2>
@@ -65,7 +65,7 @@
             <a id="nextFileLink" class="nav" href="d_1ef9b076751c2c3b_geometry_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io">coverage.py v6.5.0</a>,
-            created at 2024-05-31 05:43 +0000
+            created at 2024-05-31 17:31 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"/>
@@ -251,9 +251,9 @@
     <p class="run"><span class="n"><a id="t169" href="#t169">169</a></span><span class="t">        <span class="key">return</span> <span class="nam">parsed_json</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t170" href="#t170">170</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t171" href="#t171">171</a></span><span class="t">    <span class="com"># Do our best to tell the user something informative.</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t172" href="#t172">172</a></span><span class="t">    <span class="key">raise</span> <span class="nam">CensusApiException</span><span class="op">(</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t173" href="#t173">173</a></span><span class="t">        <span class="fst">f"</span><span class="fst">Census API request to </span><span class="op">{</span><span class="nam">request</span><span class="op">.</span><span class="nam">url</span><span class="op">}</span><span class="fst"> failed with status </span><span class="op">{</span><span class="nam">request</span><span class="op">.</span><span class="nam">status_code</span><span class="op">}</span><span class="fst">. </span><span class="op">{</span><span class="nam">request</span><span class="op">.</span><span class="nam">text</span><span class="op">}</span><span class="fst">"</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t174" href="#t174">174</a></span><span class="t">    <span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t172" href="#t172">172</a></span><span class="t">    <span class="nam">message</span> <span class="op">=</span> <span class="fst">f"</span><span class="fst">Census API request to </span><span class="op">{</span><span class="nam">request</span><span class="op">.</span><span class="nam">url</span><span class="op">}</span><span class="fst"> failed with status </span><span class="op">{</span><span class="nam">request</span><span class="op">.</span><span class="nam">status_code</span><span class="op">}</span><span class="fst">. </span><span class="op">{</span><span class="nam">request</span><span class="op">.</span><span class="nam">text</span><span class="op">}</span><span class="fst">"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t173" href="#t173">173</a></span><span class="t">    <span class="nam">logger</span><span class="op">.</span><span class="nam">debug</span><span class="op">(</span><span class="nam">message</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t174" href="#t174">174</a></span><span class="t">    <span class="key">raise</span> <span class="nam">CensusApiException</span><span class="op">(</span><span class="nam">message</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t175" href="#t175">175</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t176" href="#t176">176</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t177" href="#t177">177</a></span><span class="t"><span class="key">def</span> <span class="nam">data_from_url</span><span class="op">(</span><span class="nam">url</span><span class="op">:</span> <span class="nam">str</span><span class="op">,</span> <span class="nam">params</span><span class="op">:</span> <span class="nam">Optional</span><span class="op">[</span><span class="nam">Mapping</span><span class="op">[</span><span class="nam">str</span><span class="op">,</span> <span class="nam">str</span><span class="op">]</span><span class="op">]</span> <span class="op">=</span> <span class="key">None</span><span class="op">)</span> <span class="op">-></span> <span class="nam">pd</span><span class="op">.</span><span class="nam">DataFrame</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
@@ -296,7 +296,7 @@
             <a id="nextFileLink" class="nav" href="d_1ef9b076751c2c3b_geometry_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io">coverage.py v6.5.0</a>,
-            created at 2024-05-31 05:43 +0000
+            created at 2024-05-31 17:31 +0000
         </p>
     </div>
 </footer>

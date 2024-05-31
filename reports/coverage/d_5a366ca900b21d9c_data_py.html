@@ -55,8 +55,8 @@
         </aside>
         <h2>
             <span class="text">227 statements &nbsp;</span>
-            <button type="button" class="run button_toggle_run" value="run" data-shortcut="r" title="Toggle lines run">212<span class="text"> run</span></button>
-            <button type="button" class="mis show_mis button_toggle_mis" value="mis" data-shortcut="m" title="Toggle lines missing">15<span class="text"> missing</span></button>
+            <button type="button" class="run button_toggle_run" value="run" data-shortcut="r" title="Toggle lines run">211<span class="text"> run</span></button>
+            <button type="button" class="mis show_mis button_toggle_mis" value="mis" data-shortcut="m" title="Toggle lines missing">16<span class="text"> missing</span></button>
             <button type="button" class="exc show_exc button_toggle_exc" value="exc" data-shortcut="x" title="Toggle lines excluded">0<span class="text"> excluded</span></button>
         </h2>
         <p class="text">
@@ -65,7 +65,7 @@
             <a id="nextFileLink" class="nav" href="d_5a366ca900b21d9c_datasets_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io">coverage.py v6.5.0</a>,
-            created at 2024-05-31 05:43 +0000
+            created at 2024-05-31 17:31 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"/>
@@ -561,7 +561,7 @@
     <p class="pln"><span class="n"><a id="t479" href="#t479">479</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t480" href="#t480">480</a></span><span class="t">    <span class="key">if</span> <span class="nam">len</span><span class="op">(</span><span class="nam">download_variables</span><span class="op">)</span> <span class="op">&lt;=</span> <span class="nam">_MAX_VARIABLES_PER_DOWNLOAD</span> <span class="key">and</span> <span class="nam">row_keys</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="mis show_mis"><span class="n"><a id="t481" href="#t481">481</a></span><span class="t">        <span class="nam">warnings</span><span class="op">.</span><span class="nam">warn</span><span class="op">(</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t482" href="#t482">482</a></span><span class="t">            <span class="str">"\n The row_keys arguement is intended to be used only when the number of requested"</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t482" href="#t482">482</a></span><span class="t">            <span class="str">"\n The row_keys argument is intended to be used only when the number of requested"</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t483" href="#t483">483</a></span><span class="t">            <span class="str">"\n variables exceeds the Census defined limit of 50"</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t484" href="#t484">484</a></span><span class="t">            <span class="str">"\n The supplied value(s) will be ignored"</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t485" href="#t485">485</a></span><span class="t">            <span class="nam">UserWarning</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
@@ -750,7 +750,7 @@
     <p class="pln"><span class="n"><a id="t668" href="#t668">668</a></span><span class="t">                        <span class="com"># Some long IDs are actually better handled as strings.</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t669" href="#t669">669</a></span><span class="t">                        <span class="nam">df_data</span><span class="op">[</span><span class="nam">variable</span><span class="op">]</span> <span class="op">=</span> <span class="nam">df_data</span><span class="op">[</span><span class="nam">variable</span><span class="op">]</span><span class="op">.</span><span class="nam">astype</span><span class="op">(</span><span class="nam">str</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t670" href="#t670">670</a></span><span class="t">            <span class="key">elif</span> <span class="nam">field_type</span> <span class="op">==</span> <span class="str">"float"</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t671" href="#t671">671</a></span><span class="t">                <span class="nam">df_data</span><span class="op">[</span><span class="nam">variable</span><span class="op">]</span> <span class="op">=</span> <span class="nam">df_data</span><span class="op">[</span><span class="nam">variable</span><span class="op">]</span><span class="op">.</span><span class="nam">astype</span><span class="op">(</span><span class="nam">float</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis show_mis"><span class="n"><a id="t671" href="#t671">671</a></span><span class="t">                <span class="nam">df_data</span><span class="op">[</span><span class="nam">variable</span><span class="op">]</span> <span class="op">=</span> <span class="nam">df_data</span><span class="op">[</span><span class="nam">variable</span><span class="op">]</span><span class="op">.</span><span class="nam">astype</span><span class="op">(</span><span class="nam">float</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t672" href="#t672">672</a></span><span class="t">            <span class="key">elif</span> <span class="nam">field_type</span> <span class="op">==</span> <span class="str">"string"</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t673" href="#t673">673</a></span><span class="t">                <span class="key">pass</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t674" href="#t674">674</a></span><span class="t">            <span class="key">else</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
@@ -1412,7 +1412,7 @@
             <a id="nextFileLink" class="nav" href="d_5a366ca900b21d9c_datasets_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io">coverage.py v6.5.0</a>,
-            created at 2024-05-31 05:43 +0000
+            created at 2024-05-31 17:31 +0000
         </p>
     </div>
 </footer>
