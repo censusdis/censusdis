@@ -146,8 +146,8 @@ class VerifyCertTestCase(unittest.TestCase):
     # to resolve.
     @unittest.skip(
         reason='Since 4/24/2024. server producing "failed with status 500. '
-               "There was an error while running your query. "
-               "We've logged the error and we'll correct it ASAP.  Sorry for the inconvenience."
+        "There was an error while running your query. "
+        "We've logged the error and we'll correct it ASAP.  Sorry for the inconvenience."
     )
     def test_wide_download_with_cert(self) -> None:
         """Make sure the cert gets through multiples downloads."""
