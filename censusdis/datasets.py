@@ -804,7 +804,7 @@ DATASET_REFERENCE_URLS = {
     ECN_INSTR: "http://api.census.gov/data/2017/ecninstr",
     ECN_INVVAL: "http://api.census.gov/data/2017/ecninvval",
     ECN_IPA: "http://api.census.gov/data/2012/ecnipa",
-    ECN_ISLANDAREAS: "http://api.census.gov/data/2017/ecn/islandareas/napcs",
+    ECN_ISLANDAREAS: "http://api.census.gov/data/2022/ecn/islandareas/napcs",
     ECN_KOB: "http://api.census.gov/data/2017/ecnkob",
     ECN_LABOR: "http://api.census.gov/data/2017/ecnlabor",
     ECN_LIFOMFG: "http://api.census.gov/data/2017/ecnlifomfg",
