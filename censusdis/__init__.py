@@ -12,4 +12,4 @@ from usingversion import getattr_with_version
 __all__ = ("CensusApiException",)
 
 # Generate a version number.
-__getattr__ = getattr_with_version("impactchart", __file__, __name__)
+__getattr__ = getattr_with_version("censusdis", __file__, __name__)
