@@ -3,15 +3,28 @@
 
 from collections import defaultdict
 from logging import getLogger
-from typing import Any, DefaultDict, Dict, Generator, Iterable, List, Optional, Tuple
+from typing import (
+    Any,
+    DefaultDict,
+    Dict,
+    Generator,
+    Iterable,
+    List,
+    Optional,
+    Tuple,
+    Union,
+)
 
 import numpy as np
 import pandas as pd
 
+from censusdis import CensusApiException
 from censusdis.impl.varsource.base import VariableSource
 from censusdis.impl.varsource.censusapi import CensusApiVariableSource
 
 import censusdis.datasets
+
+import re
 
 
 logger = getLogger(__name__)
@@ -525,6 +538,94 @@ class VariableCache:
                 for variable_name in group_variables
             ]
         )
+
+    def search(
+        self,
+        dataset: str,
+        vintage: Union[int, Iterable[int]],
+        *,
+        group_name: Optional[str] = None,
+        name: Optional[Union[str, Iterable[str]]] = None,
+        pattern: Optional[Union[str, re.Pattern]] = None,
+        case: bool = False,
+    ) -> pd.DataFrame:
+        """
+        Retrieve information about the evolution of one of more variables in a data set over one or more vintages.
+
+        Parameters
+        ----------
+        dataset
+            The data set.
+        vintage
+            One or more Vintages to explore.
+        group_name
+            The group if we should explore only a single group. If `None` all groups
+            will be explored.
+        name
+            The name of one of more variables to explore. If `None` all variables are considered.
+            Normally at most one of `name` and `re` will be used.
+        pattern
+            A regular expression to match against the name and description of a variable. This
+            is used to filter down results. Normally at most one of `name` and `re` will be used.
+        case:
+            If `patters` is not `None` then indicates whether the regular expression match is
+            case sensitive. Does not affect the `name` match.
+
+        Returns
+        -------
+            A data frame of matching variables.
+        """
+        if isinstance(vintage, int):
+            vintage = [vintage]
+
+        def _all_variables_eat_404(year: int):
+            """
+            Skip bad year and return no results.
+
+            We assume it is a bad year if we get a 404.
+            """
+            try:
+                return self.all_variables(dataset, year, group_name)
+            except CensusApiException as e:
+                if "404" in str(e):
+                    return pd.DataFrame()
+                else:
+                    raise e
+
+        df_all_variables = pd.concat(
+            (_all_variables_eat_404(year) for year in vintage), ignore_index=True
+        )
+
+        # If we were given names to match on, then match on them.
+        if name is not None:
+            if isinstance(name, str):
+                name = [name]
+
+            df_name_matches = pd.concat(
+                [
+                    df_all_variables[df_all_variables["VARIABLE"] == var_name]
+                    for var_name in name
+                ],
+                axis="rows",
+            )
+        else:
+            df_name_matches = df_all_variables
+
+        if pattern is not None:
+            if isinstance(pattern, str):
+                flags = re.IGNORECASE if not case else 0
+                pattern = re.compile(pattern, flags=flags)
+
+            df_matches = df_name_matches[
+                (
+                    df_name_matches["VARIABLE"].str.contains(pattern)
+                    | df_name_matches["LABEL"].str.contains(pattern)
+                )
+            ]
+        else:
+            df_matches = df_name_matches
+
+        return pd.DataFrame(df_matches).reset_index(drop=True)
 
     def group_tree(
         self,
