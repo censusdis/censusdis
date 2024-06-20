@@ -456,7 +456,7 @@ class VariableCacheTestCase(unittest.TestCase):
 
         self.assertTrue(df_equal_or_both_null.all().all())
 
-    def test_history(self):
+    def test_search(self):
         """Test the history API for variables."""
         df_datasets = self.variables.all_data_sets()
 
