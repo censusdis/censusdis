@@ -6,6 +6,8 @@ from typing import Any, Dict, Iterable, List, Optional
 from censusdis.impl.varcache import VariableCache
 from censusdis.impl.varsource.base import VariableSource
 
+from pandas.testing import assert_frame_equal
+
 
 class VariableCacheTestCase(unittest.TestCase):
     """Variable cache tests."""
@@ -453,6 +455,43 @@ class VariableCacheTestCase(unittest.TestCase):
         )
 
         self.assertTrue(df_equal_or_both_null.all().all())
+
+    def test_history(self):
+        """Test the history API for variables."""
+        df_datasets = self.variables.all_data_sets()
+
+        dataset = df_datasets.iloc[0]["DATASET"]
+        year = int(df_datasets.iloc[0]["YEAR"])
+
+        df_groups = self.variables.all_groups(dataset, year)
+
+        group = df_groups.iloc[0]["GROUP"]
+
+        df_all_vars = self.variables.all_variables(dataset, year, group)
+        # All the history, no filters.
+        df_all_history_vars = self.variables.search(dataset, year, group_name=group)
+
+        assert_frame_equal(df_all_vars, df_all_history_vars[df_all_vars.columns])
+
+        # Extra year:
+        df_extra_year_history = self.variables.search(
+            dataset, [year, year + 1], group_name=group
+        )
+        self.assertEqual((6, 7), df_extra_year_history.shape)
+
+        # Filter with a regex:
+        df_white_vars = self.variables.search(
+            dataset, year, group_name=group, pattern=r"White alone"
+        )
+
+        self.assertEqual((1, 7), df_white_vars.shape)
+
+        # Extra years and filter with a regex:
+        df_white_vars_extra_years = self.variables.search(
+            dataset, range(year - 3, year + 1), group_name=group, pattern=r"White alone"
+        )
+
+        self.assertEqual((4, 7), df_white_vars_extra_years.shape)
 
 
 if __name__ == "__main__":
