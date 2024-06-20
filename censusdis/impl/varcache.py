@@ -451,6 +451,60 @@ class VariableCache:
 
         return self._all_data_sets()
 
+    @staticmethod
+    def _compile_pattern(pattern, case):
+        """Compile patterns passed to search methods with case flag."""
+        if isinstance(pattern, str):
+            flags = re.IGNORECASE if not case else 0
+            pattern = re.compile(pattern, flags=flags)
+        return pattern
+
+    def search_data_sets(
+        self,
+        *,
+        vintage: Optional[Union[int, Iterable[int]]] = None,
+        pattern: Optional[Union[str, re.Pattern]] = None,
+        case: bool = False,
+    ) -> pd.DataFrame:
+        """
+        Search for data sets over one or more vintages.
+
+        Parameters
+        ----------
+        vintage
+            One or more Vintages to explore.
+        pattern
+            A regular expression to match against the name and description of a variable. This
+            is used to filter down results. Normally at most one of `name` and `re` will be used.
+        case:
+            If `patters` is not `None` then indicates whether the regular expression match is
+            case sensitive. Does not affect the `name` match.
+
+        Returns
+        -------
+            A data frame of matching variables.
+        """
+        if vintage is None or isinstance(vintage, int):
+            vintage = [vintage]
+
+        df_datasets = pd.concat(
+            (self.all_data_sets(year=year) for year in vintage), ignore_index=True
+        )
+
+        if pattern is not None:
+            pattern = self._compile_pattern(pattern, case)
+
+            df_matches = df_datasets[
+                df_datasets["SYMBOL"].str.contains(pattern)
+                | df_datasets["DATASET"].str.contains(pattern)
+                | df_datasets["TITLE"].str.contains(pattern)
+                | df_datasets["DESCRIPTION"].str.contains(pattern)
+            ]
+        else:
+            df_matches = df_datasets
+
+        return df_matches.reset_index(drop=True)
+
     def all_groups(
         self,
         dataset: str,
@@ -491,6 +545,67 @@ class VariableCache:
             .sort_values(["DATASET", "YEAR", "GROUP"])
             .reset_index(drop=True)
         )
+
+    def search_groups(
+        self,
+        dataset: str,
+        vintage: Union[int, Iterable[int]],
+        *,
+        pattern: Optional[Union[str, re.Pattern]] = None,
+        case: bool = False,
+    ) -> pd.DataFrame:
+        """
+        Search for groups in a data set over one or more vintages.
+
+        Parameters
+        ----------
+        dataset
+            The data set.
+        vintage
+            One or more Vintages to explore.
+        pattern
+            A regular expression to match against the name and description of a variable. This
+            is used to filter down results. Normally at most one of `name` and `re` will be used.
+        case:
+            If `patters` is not `None` then indicates whether the regular expression match is
+            case sensitive. Does not affect the `name` match.
+
+        Returns
+        -------
+            A data frame of matching variables.
+        """
+        if vintage is None or isinstance(vintage, int):
+            vintage = [vintage]
+
+        def _all_groups_eat_404(year: int):
+            """
+            Skip bad year and return no results.
+
+            We assume it is a bad year if we get a 404.
+            """
+            try:
+                return self.all_groups(dataset, year)
+            except CensusApiException as e:
+                if "404" in str(e):
+                    return pd.DataFrame()
+                else:
+                    raise e
+
+        df_groups = pd.concat(
+            (_all_groups_eat_404(year) for year in vintage), ignore_index=True
+        )
+
+        if pattern is not None:
+            pattern = self._compile_pattern(pattern, case)
+
+            df_matches = df_groups[
+                df_groups["GROUP"].str.contains(pattern)
+                | df_groups["DESCRIPTION"].str.contains(pattern)
+            ]
+        else:
+            df_matches = df_groups
+
+        return df_matches.reset_index(drop=True)
 
     def all_variables(
         self, dataset: str, year: int, group_name: Optional[str]
@@ -550,7 +665,7 @@ class VariableCache:
         case: bool = False,
     ) -> pd.DataFrame:
         """
-        Retrieve information about the evolution of one of more variables in a data set over one or more vintages.
+        Search for variables in a data set over one or more vintages.
 
         Parameters
         ----------
@@ -612,9 +727,7 @@ class VariableCache:
             df_name_matches = df_all_variables
 
         if pattern is not None:
-            if isinstance(pattern, str):
-                flags = re.IGNORECASE if not case else 0
-                pattern = re.compile(pattern, flags=flags)
+            pattern = self._compile_pattern(pattern, case)
 
             df_matches = df_name_matches[
                 (
