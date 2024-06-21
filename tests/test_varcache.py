@@ -64,7 +64,12 @@ class VariableCacheTestCase(unittest.TestCase):
                 "attributes": f"{name}A,{name}M,{name}MA",
             }
 
-        def get_group(self, source: str, year: int, group_name: str) -> Dict[str, Dict]:
+        def get_group(
+            self,
+            source: str,
+            year: int,
+            group_name: str,
+        ) -> Dict[str, Dict]:
             """
             Construct a mock group.
 
