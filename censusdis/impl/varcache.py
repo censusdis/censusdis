@@ -649,6 +649,19 @@ class VariableCache:
             The year.
         group_name
             The group.
+        skip_annotations
+            If `True` try to filter out variables that are
+            annotations rather than actual values, by skipping
+            those with labels that begin with "Annotation" or
+            "Margin of Error".
+        skip_subgroup_variables
+            If this is `True`, then we will ignore variables from alphabetical
+            subgroups. These are relatively common in the ACS, where there are
+            groups like `B01001` that have subgroups `B01001A`, `B01001B` and
+            so on. The underlying census API sometimes reports variables like
+            `B01001A_001E` from these as members of `B01001` and other times as
+            members of `B01001A`. Setting this `True`, which is the default,
+            does not report `B01001A_001E` when the group name `name='B01001'`.
 
         Returns
         -------
@@ -697,6 +710,8 @@ class VariableCache:
         name: Optional[Union[str, Iterable[str]]] = None,
         pattern: Optional[Union[str, re.Pattern]] = None,
         case: bool = False,
+        skip_annotations: bool = True,
+        skip_subgroup_variables: bool = True,
     ) -> pd.DataFrame:
         """
         Search for variables in a data set over one or more vintages.
@@ -719,6 +734,19 @@ class VariableCache:
         case:
             If `patters` is not `None` then indicates whether the regular expression match is
             case sensitive. Does not affect the `name` match.
+        skip_annotations
+            If `True` try to filter out variables that are
+            annotations rather than actual values, by skipping
+            those with labels that begin with "Annotation" or
+            "Margin of Error".
+        skip_subgroup_variables
+            If this is `True`, then we will ignore variables from alphabetical
+            subgroups. These are relatively common in the ACS, where there are
+            groups like `B01001` that have subgroups `B01001A`, `B01001B` and
+            so on. The underlying census API sometimes reports variables like
+            `B01001A_001E` from these as members of `B01001` and other times as
+            members of `B01001A`. Setting this `True`, which is the default,
+            does not report `B01001A_001E` when the group name `name='B01001'`.
 
         Returns
         -------
@@ -734,7 +762,11 @@ class VariableCache:
             We assume it is a bad year if we get a 404.
             """
             try:
-                return self.all_variables(dataset, year, group_name)
+                return self.all_variables(
+                    dataset, year, group_name,
+                    skip_annotations=skip_annotations,
+                    skip_subgroup_variables=skip_subgroup_variables
+                )
             except CensusApiException as e:
                 if "404" in str(e):
                     return pd.DataFrame()
@@ -909,6 +941,14 @@ class VariableCache:
             annotations rather than actual values, by skipping
             those with labels that begin with "Annotation" or
             "Margin of Error".
+        skip_subgroup_variables
+            If this is `True`, then we will ignore variables from alphabetical
+            subgroups. These are relatively common in the ACS, where there are
+            groups like `B01001` that have subgroups `B01001A`, `B01001B` and
+            so on. The underlying census API sometimes reports variables like
+            `B01001A_001E` from these as members of `B01001` and other times as
+            members of `B01001A`. Setting this `True`, which is the default,
+            does not report `B01001A_001E` when the group name `name='B01001'`.
 
         Returns
         -------
