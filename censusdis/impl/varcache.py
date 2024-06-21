@@ -100,6 +100,7 @@ class VariableCache:
         dataset: str,
         year: int,
         name: Optional[str],
+        skip_subgroup_variables: bool = True,
     ) -> Dict[str, Dict]:
         """
         Get information on the variables in a group.
@@ -113,6 +114,14 @@ class VariableCache:
         name
             The name of the group. Or None if this data set does not have
             groups.
+        skip_subgroup_variables
+            If this is `True`, then we will ignore variables from alphabetical
+            subgroups. These are relatively common in the ACS, where there are
+            groups like `B01001` that have subgroups `B01001A`, `B01001B` and
+            so on. The underlying census API sometimes reports variables like
+            `B01001A_001E` from these as members of `B01001` and other times as
+            members of `B01001A`. Setting this `True`, which is the default,
+            does not report `B01001A_001E` when the group name `name='B01001'`.
 
         Returns
         -------
@@ -139,6 +148,19 @@ class VariableCache:
                 variable_name for variable_name in group_variables
             )
             self._group_cache[dataset][year][name] = group_variable_names
+
+        # Optionally filter out the variables that are in
+        # alphabetical subgroups.
+        if skip_subgroup_variables and name is not None:
+            subgroup_var_pattern = re.compile(f"^{name}[A-Z]_.*$")
+            group_variable_names = [
+                group_variable_name
+                for group_variable_name in group_variable_names
+                if not (
+                    group_variable_name.startswith(name)
+                    and subgroup_var_pattern.match(group_variable_name)
+                )
+            ]
 
         # Reformat what we return so it includes the full
         # details on each variable.
@@ -608,7 +630,13 @@ class VariableCache:
         return df_matches.reset_index(drop=True)
 
     def all_variables(
-        self, dataset: str, year: int, group_name: Optional[str]
+        self,
+        dataset: str,
+        year: int,
+        group_name: Optional[str],
+        *,
+        skip_annotations: bool = True,
+        skip_subgroup_variables: bool = True,
     ) -> pd.DataFrame:
         """
         Produce a data frame of metadata on all variables in a group.
@@ -626,7 +654,13 @@ class VariableCache:
         -------
             Metadata on all variables in the group.
         """
-        group_variables = self.group_variables(dataset, year, group_name)
+        group_variables = self.group_variables(
+            dataset,
+            year,
+            group_name,
+            skip_annotations=skip_annotations,
+            skip_subgroup_variables=skip_subgroup_variables,
+        )
 
         def variable_items(variable_dict: Dict) -> Optional[Dict[str, str]]:
             if "values" in variable_dict:
@@ -851,7 +885,13 @@ class VariableCache:
         return sorted(leaves)
 
     def group_variables(
-        self, dataset: str, year: int, group_name: str, *, skip_annotations: bool = True
+        self,
+        dataset: str,
+        year: int,
+        group_name: str,
+        *,
+        skip_annotations: bool = True,
+        skip_subgroup_variables: bool = True,
     ) -> List[str]:
         """
         Find the variables of a given group.
@@ -874,7 +914,9 @@ class VariableCache:
         -------
             A list of the variables in the group.
         """
-        tree = self.get_group(dataset, year, group_name)
+        tree = self.get_group(
+            dataset, year, group_name, skip_subgroup_variables=skip_subgroup_variables
+        )
 
         if skip_annotations:
             group_variables = [

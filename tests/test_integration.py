@@ -251,13 +251,21 @@ class DownloadTestCase(unittest.TestCase):
 
         group = df_groups.iloc[0]["GROUP"]
 
-        df_variables = ced.variables.all_variables(self._dataset, self._year, group)
+        df_variables = ced.variables.all_variables(
+            self._dataset,
+            self._year,
+            group,
+        )
 
-        # FIX: #270
-        # There is a transition going on and depneding where the load balancer
-        # sends us we get one or the other.
-        self.assertIn(df_variables.shape[0], [49, 330])
-        self.assertEqual(7, df_variables.shape[1])
+        df_variables_with_subgroups = ced.variables.all_variables(
+            self._dataset,
+            self._year,
+            group,
+            skip_subgroup_variables=False,
+        )
+
+        self.assertEqual((51, 7), df_variables.shape)
+        self.assertEqual((330, 7), df_variables_with_subgroups.shape)
 
         self.assertEqual(
             [
