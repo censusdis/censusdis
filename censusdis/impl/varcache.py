@@ -763,9 +763,11 @@ class VariableCache:
             """
             try:
                 return self.all_variables(
-                    dataset, year, group_name,
+                    dataset,
+                    year,
+                    group_name,
                     skip_annotations=skip_annotations,
-                    skip_subgroup_variables=skip_subgroup_variables
+                    skip_subgroup_variables=skip_subgroup_variables,
                 )
             except CensusApiException as e:
                 if "404" in str(e):
