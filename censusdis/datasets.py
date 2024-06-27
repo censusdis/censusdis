@@ -657,7 +657,7 @@ DATASET_REFERENCE_URLS = {
     ASE_CSA: "http://api.census.gov/data/2016/ase/csa",
     ASE_CSCB: "http://api.census.gov/data/2016/ase/cscb",
     ASE_CSCBO: "http://api.census.gov/data/2016/ase/cscbo",
-    CBP: "http://api.census.gov/data/2021/cbp",
+    CBP: "http://api.census.gov/data/2022/cbp",
     CFSAREA: "http://api.census.gov/data/2017/cfsarea",
     CFSEXPORT: "http://api.census.gov/data/2017/cfsexport",
     CFSHAZMAT: "http://api.census.gov/data/2017/cfshazmat",
