@@ -113,7 +113,8 @@ def _download_multiple(
     vintage: VintageType,
     download_variables: List[str],
     *,
-    key: Optional[str],
+    query_filter: Optional[Dict[str, str]] = None,
+    api_key: Optional[str],
     census_variables: "VariableCache",
     with_geometry: bool = False,
     row_keys: Optional[Union[str, Iterable[str]]] = None,
@@ -137,6 +138,15 @@ def _download_multiple(
         a timeseries data set, pass the string `'timeseries'`.
     download_variables
         The census variables to download, for example `["NAME", "B01001_001E"]`.
+    query_filter
+        A dictionary of values to filter on. For example, if
+        `query_filter={'NAICS2017': '72251'}` then only rows
+        where the variable `NAICS2017` has a value of `'72251'`
+        will be returned.
+
+        This filtering is done on the server side, not the client
+        side, so it is far more efficient than querying without a
+        query filter and then manually filtering the results.
     with_geometry
         If `True` a :py:class:`gpd.GeoDataFrame` will be returned and each row
         will have a geometry that is a cartographic boundary suitable for platting
@@ -201,7 +211,8 @@ def _download_multiple(
             dataset,
             vintage,
             variable_group,
-            api_key=key,
+            query_filter=query_filter,
+            api_key=api_key,
             variable_cache=census_variables,
             with_geometry=with_geometry and (ii == 0),
             **kwargs,
@@ -329,6 +340,7 @@ def download(
     leaves_of_group: Optional[Union[str, Iterable[str]]] = None,
     set_to_nan: Union[bool, Iterable[int]] = True,
     skip_annotations: bool = True,
+    query_filter: Optional[Dict[str, str]] = None,
     with_geometry: bool = False,
     remove_water: bool = False,
     download_contained_within: Optional[Dict[str, cgeo.InSpecType]] = None,
@@ -393,6 +405,15 @@ def download(
         annotations rather than actual values. See :py:meth:`VariableCache.group_variables`
         for more details. Variable names passed in `download_variables` are not
         affected by this flag.
+    query_filter
+        A dictionary of values to filter on. For example, if
+        `query_filter={'NAICS2017': '72251'}` then only rows
+        where the variable `NAICS2017` has a value of `'72251'`
+        will be returned.
+
+        This filtering is done on the server side, not the client
+        side, so it is far more efficient than querying without a
+        query filter and then manually filtering the results.
     with_geometry
         If `True` a :py:class:`gpd.GeoDataFrame` will be returned and each row
         will have a geometry that is a cartographic boundary suitable for platting
@@ -439,6 +460,7 @@ def download(
             leaves_of_group=leaves_of_group,
             set_to_nan=set_to_nan,
             skip_annotations=skip_annotations,
+            query_filter=query_filter,
             with_geometry=with_geometry,
             remove_water=remove_water,
             api_key=api_key,
@@ -490,8 +512,9 @@ def download(
             dataset,
             vintage,
             download_variables,
-            key=api_key,
+            api_key=api_key,
             census_variables=variable_cache,
+            query_filter=query_filter,
             with_geometry=with_geometry,
             row_keys=row_keys,
             **kwargs,
@@ -513,6 +536,7 @@ def download(
         vintage,
         download_variables=download_variables,
         set_to_nan=set_to_nan,
+        query_filter=query_filter,
         with_geometry=with_geometry,
         remove_water=remove_water,
         api_key=api_key,
@@ -527,6 +551,7 @@ def _download_remote(
     *,
     download_variables: List[str],
     set_to_nan: Union[bool, Iterable[float]] = True,
+    query_filter: Optional[Dict[str, str]] = None,
     with_geometry: bool,
     remove_water: bool,
     api_key: Optional[str],
@@ -555,6 +580,15 @@ def _download_remote(
         values that the U.S. Census API sometimes returns. If `True`, then all
         values in :py:ref:`censusdis.values.ALL_SPECIAL_VALUES` will be replaced.
         If `False`, no replacements will be made.
+    query_filter
+        A dictionary of values to filter on. For example, if
+        `query_filter={'NAICS2017': '72251'}` then only rows
+        where the variable `NAICS2017` has a value of `'72251'`
+        will be returned.
+
+        This filtering is done on the server side, not the client
+        side, so it is far more efficient than querying without a
+        query filter and then manually filtering the results.
     with_geometry
         If `True` a :py:class:`gpd.GeoDataFrame` will be returned and each row
         will have a geometry that is a cartographic boundary suitable for platting
@@ -575,7 +609,12 @@ def _download_remote(
         either a `pd.DataFrame` or `gpd.GeoDataFrame`.
     """
     url, params, bound_path = census_table_url(
-        dataset, vintage, download_variables, api_key=api_key, **kwargs
+        dataset,
+        vintage,
+        download_variables,
+        query_filter=query_filter,
+        api_key=api_key,
+        **kwargs,
     )
     df_data = data_from_url(url, params)
 
@@ -815,6 +854,7 @@ def census_table_url(
     vintage: VintageType,
     download_variables: Iterable[str],
     *,
+    query_filter: Optional[Dict[str, str]] = None,
     api_key: Optional[str] = None,
     **kwargs: cgeo.InSpecType,
 ) -> Tuple[str, Mapping[str, str], cgeo.BoundGeographyPath]:
@@ -832,6 +872,15 @@ def census_table_url(
         a timeseries data set, pass the string `'timeseries'`.
     download_variables
         The census variables to download, for example `["NAME", "B01001_001E"]`.
+    query_filter
+        A dictionary of values to filter on. For example, if
+        `query_filter={'NAICS2017': '72251'}` then only rows
+        where the variable `NAICS2017` has a value of `'72251'`
+        will be returned.
+
+        This filtering is done on the server side, not the client
+        side, so it is far more efficient than querying without a
+        query filter and then manually filtering the results.
     api_key
         An optional API key. If you don't have or don't use a key, the number
         of calls you can make will be limited.
@@ -849,7 +898,7 @@ def census_table_url(
         dataset, vintage, list(download_variables), bound_path, api_key=api_key
     )
 
-    url, params = query_spec.table_url()
+    url, params = query_spec.table_url(query_filter=query_filter)
 
     return url, params, bound_path
 
@@ -1084,6 +1133,7 @@ class ContainedWithin:
         leaves_of_group: Optional[Union[str, Iterable[str]]] = None,
         set_to_nan: Union[bool, Iterable[int]] = True,
         skip_annotations: bool = True,
+        query_filter: Optional[Dict[str, str]] = None,
         with_geometry: bool = False,
         remove_water: bool = False,
         api_key: Optional[str] = None,
@@ -1127,6 +1177,15 @@ class ContainedWithin:
             annotations rather than actual values. See :py:meth:`VariableCache.group_variables`
             for more details. Variable names passed in `download_variables` are not
             affected by this flag.
+        query_filter
+            A dictionary of values to filter on. For example, if
+            `query_filter={'NAICS2017': '72251'}` then only rows
+            where the variable `NAICS2017` has a value of `'72251'`
+            will be returned.
+
+            This filtering is done on the server side, not the client
+            side, so it is far more efficient than querying without a
+            query filter and then manually filtering the results.
         with_geometry
             If `True` a :py:class:`gpd.GeoDataFrame` will be returned and each row
             will have a geometry that is a cartographic boundary suitable for platting
@@ -1166,6 +1225,7 @@ class ContainedWithin:
             leaves_of_group=leaves_of_group,
             set_to_nan=set_to_nan,
             skip_annotations=skip_annotations,
+            query_filter=query_filter,
             with_geometry=True,
             remove_water=remove_water,
             api_key=api_key,

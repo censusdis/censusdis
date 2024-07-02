@@ -407,9 +407,23 @@ class CensusGeographyQuerySpec:
 
         return None
 
-    def table_url(self) -> Tuple[str, Mapping[str, str]]:
+    def table_url(
+        self, *, query_filter: Optional[Dict[str, str]] = None
+    ) -> Tuple[str, Mapping[str, str]]:
         """
         Construct the URL to query census data.
+
+        Parameters
+        ----------
+        query_filter
+            A dictionary of values to filter on. For example, if
+            `query_filter={'NAICS2017': '72251'}` then only rows
+            where the variable `NAICS2017` has a value of `'72251'`
+            will be returned.
+
+            This filtering is done on the server side, not the client
+            side, so it is far more efficient than querying without a
+            query filter and then manually filtering the results.
 
         Returns
         -------
@@ -424,6 +438,9 @@ class CensusGeographyQuerySpec:
             "get": ",".join(self.variables),
             "for": self.for_component,
         }
+
+        if query_filter is not None:
+            params.update(query_filter)
 
         in_components = self.in_components
         if in_components is not None:
