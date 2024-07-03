@@ -69,9 +69,10 @@ class QueryFilterTestCase(unittest.TestCase):
 
 
 class EwksTestCase(unittest.TestCase):
+    """Test geographies of EWKS data set."""
 
     def test_ewks_geography(self):
-
+        """Test geographies of EWKS data set."""
         year_to_geograpy_count = {
             1997: 6,
             2002: 10,
