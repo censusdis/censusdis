@@ -13,7 +13,7 @@ import unittest
 from pandas.testing import assert_frame_equal
 
 import censusdis.data as ced
-from censusdis.datasets import CBP
+from censusdis.datasets import CBP, EWKS
 from censusdis.states import NJ
 
 
@@ -66,6 +66,22 @@ class QueryFilterTestCase(unittest.TestCase):
         )
 
         assert_frame_equal(df_filtered_cbp, df_both)
+
+
+class EwksTestCase(unittest.TestCase):
+
+    def test_ewks_geography(self):
+
+        year_to_geograpy_count = {
+            1997: 6,
+            2002: 10,
+            2007: 10,
+            2012: 11,
+        }
+
+        for year, count in year_to_geograpy_count.items():
+            geographies = ced.geographies(EWKS, year)
+            self.assertEqual(count, len(geographies))
 
 
 if __name__ == "__main__":

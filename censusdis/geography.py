@@ -197,11 +197,15 @@ class PathSpec:
             path_specs = {}
 
             for row in parsed_json["fips"]:
-                level = row["geoLevelDisplay"]
-                path = row.get("requires", [])
-                path.append(row["name"])
+                level = row.get("geoLevelId", None)
+                if level is None:
+                    level = row.get("geoLevelDisplay", None)
 
-                path_specs[level] = PathSpec(path, PathSpec.__init_key)
+                if level is not None:
+                    path = row.get("requires", [])
+                    path.append(row["name"])
+
+                    path_specs[level] = PathSpec(path, PathSpec.__init_key)
 
             return path_specs
 
