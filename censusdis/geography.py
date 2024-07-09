@@ -99,10 +99,10 @@ class PathSpec:
 
     def fill_in(self, **kwargs: InSpecType) -> InSpecType:
         """
-        Fill in missing levels in a parial specification.
+        Fill in missing levels in a partial specification.
 
         This can only be done if a unique partial match can be found
-        amony the set of all valid paths.
+        among the set of all valid paths.
         """
         if not self._partial_match(is_prefix=False, **kwargs):
             raise ValueError("Must be at least a partial match to fill in.")
