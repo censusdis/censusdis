@@ -333,7 +333,7 @@ class MapPlotTestCase(unittest.TestCase):
             linewidth=0.5,
             with_background=True,
             figsize=(20, 6),
-            epsg=6893,  # 6893 is Mercator. 4544 is another option that is fun.
+            epsg=3847,
         )
 
         ax.axis("off")
@@ -356,7 +356,7 @@ class MapPlotTestCase(unittest.TestCase):
             linewidth=0.5,
             with_background=True,
             figsize=(20, 6),
-            epsg=6893,  # 6893 is Mercator. 4544 is another option that is fun.
+            epsg=3847,
         )
 
         ax.axis("off")

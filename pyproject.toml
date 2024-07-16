@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "censusdis"
-version = "1.1.15"
+version = "1.2.0"
 description = "US Census utilities for a variety of data loading, analysis, and mapping purposes."
 license = "HL3-CL-ECO-EXTR-FFD-LAW-MIL-SV"
 authors = ["Darren Vengroff"]
@@ -21,12 +21,12 @@ classifiers = [
 
 [tool.poetry.dependencies]
 python = "^3.9"
-divintseg = "^0.6.1"
+divintseg = "^0.7.0"
 logargparser = "^0.1.1"
-geopandas = "^0.14.1"
+geopandas = "1.0.1"
 pyarrow = "^16.0.0"  # Will become required when pandas hits 3.0.
 Rtree = "^1.0.0"
-matplotlib = "^3.8.2"
+matplotlib = "^3.9.1"
 Sphinx = { version = "^6.1.3", optional = true }
 sphinx-rtd-theme = { version = "2.0.0", optional = true }
 sphinx-copybutton = { version = "^0.5.1", optional = true }
@@ -41,57 +41,31 @@ contextily = "^1.3.0"
 haversine = "^2.8.0"
 PyYAML = "^6.0"
 usingversion = "^0.1.1"
-mapclassify = { version = "^2.6.1", optional = true }
+mapclassify = { version = "^2.7.0", optional = true }
 ipyleaflet = { version = "^0.19.0", optional = true }
 folium = { version = "^0.17.0", optional = true }
 pyogrio = "^0.9.0"
-# rasterio is pinned because with rasterio 1.3.10 the following tests fail:
-#
-#    test_maps.py::MapPlotTestCase::test_plot_us_boundary_with_background_no_relocate
-#    test_maps.py::MapPlotTestCase::test_plot_us_with_background_no_relocate
-#
-# with the error
-#
-#  _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
-# ../censusdis/maps.py:1142: in plot_us_boundary
-#     cx.add_basemap(ax, crs=gdf.crs.to_string(), source=provider)
-# ../../../Library/Caches/pypoetry/virtualenvs/censusdis-brFxk0td-py3.9/lib/python3.9/site-packages/contextily/plotting.py:139: in add_basemap
-#     image, extent = warp_tiles(image, extent, t_crs=crs, resampling=resampling)
-# ../../../Library/Caches/pypoetry/virtualenvs/censusdis-brFxk0td-py3.9/lib/python3.9/site-packages/contextily/tile.py:336: in warp_tiles
-#     w_img, bounds, _ = _warper(
-# ../../../Library/Caches/pypoetry/virtualenvs/censusdis-brFxk0td-py3.9/lib/python3.9/site-packages/contextily/tile.py:401: in _warper
-#     with WarpedVRT(mraster, crs=t_crs, resampling=resampling) as vrt:
-# rasterio/_warp.pyx:1029: in rasterio._warp.WarpedVRTReaderBase.__init__
-#     ???
-# rasterio/_warp.pyx:772: in rasterio._warp.auto_create_warped_vrt
-#     ???
-# _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
-#
-# >   ???
-# E   rasterio._err.CPLE_NotSupportedError: Cannot find coordinate operations from 'EPSG:3857' to 'EPSG:6893'
-#
-# rasterio/_err.pyx:182: CPLE_NotSupportedError
-#
-# Pinning for now pending further investigation.
-rasterio = "1.3.9"
-#
+rasterio = "^1.3.10"
 # Jinja2 is a recursive dependency along several paths. Make sure
 # we have a patched version that fixes a security issue raised by
 # dependabot. Once intermediate packages get this dependency upgrade
 # we can delete it here.
 jinja2 = ">=3.1.4"
-jupyter = "^1.0.0"
+jupyterlab = { version = "^4.2.3", optional = true }
+ipywidgets = { version = "^8.1.3", optional = true }
+numpy = "^2.0.0"
 
 [tool.poetry.extras]
 explore = ["mapclassify", "ipyleaflet", "folium"]
 docs = ["Sphinx", "sphinx-rtd-theme", "sphinx-copybutton", "sphinxcontrib-napoleon", "toml"]
+jupyterlab = ["jupyterlab", "ipywidgets"]
 
 [tool.poetry.group.test.dependencies]
 pytest = "^7.1.3"
 coverage = {extras = ["toml"], version = "^6.5.0"}
 pytest-cov = "^3.0.0"
 nbmake = "^1.3.5"
-scikit-image = "^0.22.0"
+scikit-image = "^0.24.0"
 
 [tool.poetry.group.lint.dependencies]
 ruff = "^0.1.14"
