@@ -342,6 +342,7 @@ def download(
     skip_annotations: bool = True,
     query_filter: Optional[Dict[str, str]] = None,
     with_geometry: bool = False,
+    with_geometry_columns: bool = False,
     remove_water: bool = False,
     download_contained_within: Optional[Dict[str, cgeo.InSpecType]] = None,
     area_threshold: float = 0.8,
@@ -420,6 +421,9 @@ def download(
         a map. See https://www.census.gov/geographies/mapping-files/time-series/geo/cartographic-boundary.2020.html
         for details of the shapefiles that will be downloaded on your behalf to
         generate these boundaries.
+    with_geometry_columns
+        If `True` keep all the additional columns that come with shapefiles
+        downloaded to get geometry information.
     remove_water
         If `True` and if with_geometry=True, will query TIGER for AREAWATER shapefiles and
         remove water areas from returned geometry.
@@ -462,6 +466,7 @@ def download(
             skip_annotations=skip_annotations,
             query_filter=query_filter,
             with_geometry=with_geometry,
+            with_geometry_columns=with_geometry_columns,
             remove_water=remove_water,
             api_key=api_key,
             variable_cache=variable_cache,
@@ -538,6 +543,7 @@ def download(
         set_to_nan=set_to_nan,
         query_filter=query_filter,
         with_geometry=with_geometry,
+        with_geometry_columns=with_geometry_columns,
         remove_water=remove_water,
         api_key=api_key,
         variable_cache=variable_cache,
@@ -553,6 +559,7 @@ def _download_remote(
     set_to_nan: Union[bool, Iterable[float]] = True,
     query_filter: Optional[Dict[str, str]] = None,
     with_geometry: bool,
+    with_geometry_columns: bool,
     remove_water: bool,
     api_key: Optional[str],
     variable_cache: "VariableCache",
@@ -595,6 +602,9 @@ def _download_remote(
         a map. See https://www.census.gov/geographies/mapping-files/time-series/geo/cartographic-boundary.2020.html
         for details of the shapefiles that will be downloaded on your behalf to
         generate these boundaries.
+    with_geometry_columns
+        If `True` keep all the additional columns that come with shapefiles
+        downloaded to get geometry information.
     api_key
         An optional API key. If you don't have or don't use a key, the number
         of calls you can make will be limited.
@@ -642,7 +652,13 @@ def _download_remote(
         geo_level = bound_path.path_spec.path[-1]
         shapefile_scope = bound_path.bindings[bound_path.path_spec.path[0]]
 
-        gdf_data = add_geography(df_data, vintage, shapefile_scope, geo_level)
+        gdf_data = add_geography(
+            df_data,
+            vintage,
+            shapefile_scope,
+            geo_level,
+            with_geometry_columns=with_geometry_columns,
+        )
 
         if remove_water:
             gdf_data = clip_water(gdf_data, vintage)
@@ -1135,6 +1151,7 @@ class ContainedWithin:
         skip_annotations: bool = True,
         query_filter: Optional[Dict[str, str]] = None,
         with_geometry: bool = False,
+        with_geometry_columns: bool = False,
         remove_water: bool = False,
         api_key: Optional[str] = None,
         variable_cache: Optional["VariableCache"] = None,
@@ -1192,6 +1209,9 @@ class ContainedWithin:
             a map. See https://www.census.gov/geographies/mapping-files/time-series/geo/cartographic-boundary.2020.html
             for details of the shapefiles that will be downloaded on your behalf to
             generate these boundaries.
+        with_geometry_columns
+            If `True` keep all the additional columns that come with shapefiles
+            downloaded to get geometry information.
         remove_water
             If `True` and if with_geometry=True, will query TIGER for AREAWATER shapefiles and
             remove water areas from returned geometry.
@@ -1227,6 +1247,7 @@ class ContainedWithin:
             skip_annotations=skip_annotations,
             query_filter=query_filter,
             with_geometry=True,
+            with_geometry_columns=with_geometry_columns,
             remove_water=remove_water,
             api_key=api_key,
             variable_cache=variable_cache,

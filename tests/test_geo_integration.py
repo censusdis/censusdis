@@ -869,6 +869,50 @@ class DownloadWithGeometryTestCase(unittest.TestCase):
 
         self.assertEqual((2, 4), df.shape)
 
+    def test_download_with_geometry_with_geometry_columns(self):
+        """Download at the state level with geometry and geometry columns."""
+        gdf = ced.download(
+            DECENNIAL_PUBLIC_LAW_94_171,
+            2020,
+            ["NAME"],
+            with_geometry=True,
+            with_geometry_columns=True,
+            state=states.NJ,
+            county=censusdis.counties.new_jersey.ATLANTIC,
+            block="*",
+        )
+
+        self.assertIsInstance(gdf, geopandas.GeoDataFrame)
+
+        self.assertEqual((7302, 19), gdf.shape)
+
+        self.assertEqual(
+            [
+                # From the data
+                "STATE",
+                "COUNTY",
+                "TRACT",
+                "BLOCK",
+                "NAME",
+                # From the shapefile
+                "GEOID",
+                "MTFCC",
+                "UR",
+                "UACE",
+                "UATYPE",
+                "FUNCSTAT",
+                "ALAND",
+                "AWATER",
+                "INTPTLAT",
+                "INTPTLON",
+                "HOUSING",
+                "POP",
+                "YEAR",
+                "geometry",
+            ],
+            list(gdf.columns),
+        )
+
 
 class ShapefileTestCase(unittest.TestCase):
     """Test shapefile functionality."""
@@ -1259,3 +1303,25 @@ class RemoveWaterTestCase(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class UsNationTestCase(unittest.TestCase):
+    """Unit tests for downloading data and maps at the national level."""
+
+    def test_download(self):
+        """Test getting a single geometry for the entire US."""
+        gdf = ced.download(
+            dataset=ACS5,
+            vintage=2022,
+            download_variables=["NAME"],
+            # The entire country at once.
+            us="*",
+            with_geometry=True,
+        )
+
+        self.assertEqual((1, 3), gdf.shape)
+        self.assertIn("US", gdf.columns)
+        self.assertIn("NAME", gdf.columns)
+        self.assertIn("geometry", gdf.columns)
+
+        self.assertTrue((gdf["US"] == "1").all())
