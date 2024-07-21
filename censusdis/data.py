@@ -36,6 +36,7 @@ from censusdis.impl.varcache import VariableCache
 from censusdis.impl.varsource.base import VintageType
 from censusdis.impl.varsource.censusapi import CensusApiVariableSource
 from censusdis.values import ALL_SPECIAL_VALUES
+from censusdis.datasets import ACS5, DECENNIAL_PUBLIC_LAW_94_171
 
 import censusdis.impl.fetch
 
@@ -113,11 +114,13 @@ def _download_multiple(
     vintage: VintageType,
     download_variables: List[str],
     *,
-    query_filter: Optional[Dict[str, str]] = None,
+    query_filter: Dict[str, str],
     api_key: Optional[str],
     census_variables: "VariableCache",
-    with_geometry: bool = False,
-    row_keys: Optional[Union[str, Iterable[str]]] = None,
+    with_geometry: bool,
+    with_geometry_columns: bool,
+    tiger_shapefiles_only: bool,
+    row_keys: Union[str, Iterable[str]],
     **kwargs: cgeo.InSpecType,
 ) -> pd.DataFrame:
     """
@@ -153,6 +156,20 @@ def _download_multiple(
         a map. See https://www.census.gov/geographies/mapping-files/time-series/geo/cartographic-boundary.2020.html
         for details of the shapefiles that will be downloaded on your behalf to
         generate these boundaries.
+    with_geometry_columns
+        If `True` keep all the additional columns that come with shapefiles
+        downloaded to get geometry information.
+    tiger_shapefiles_only
+        If `True` only look for TIGER shapefiles. If `False`, first look
+        for CB shapefiles
+        (https://www.census.gov/geographies/mapping-files/time-series/geo/carto-boundary-file.html),
+        which are more suitable for plotting maps, then fall back on the full
+        TIGER files
+        (https://www.census.gov/geographies/mapping-files/time-series/geo/tiger-line-file.html)
+        only if CB is not available. This is mainly set to `True` only
+        when `with_geometry_columns` is also set to `True`. The reason
+        is that the additional columns in the shapefiles are different
+        in the CB files than in the TIGER files.
     api_key
         An optional API key. If you don't have or don't use a key, the number
         of calls you can make will be limited.
@@ -205,7 +222,10 @@ def _download_multiple(
             "use download instead."
         )
 
-    # Get the data for each chunk.
+    # Get the data for each chunk. Note that we leave out
+    # extra geometry columns at this point. We will get them
+    # later if we need them, but they get in the way at this
+    # point.
     dfs = [
         download(
             dataset,
@@ -215,6 +235,7 @@ def _download_multiple(
             api_key=api_key,
             variable_cache=census_variables,
             with_geometry=with_geometry and (ii == 0),
+            with_geometry_columns=False,
             **kwargs,
         )
         for ii, variable_group in enumerate(variable_groups)
@@ -226,6 +247,22 @@ def _download_multiple(
     # be these variables if we did a county-level query to
     # the census API.
     geo_key_variables = [f for f in dfs[0].columns if f not in set(variable_groups[0])]
+
+    # Now that we know the geometry keys, we may have to get back the other
+    # geometry columns we left out the first time.
+    if with_geometry and with_geometry_columns:
+        dfs[0] = download(
+            dataset,
+            vintage,
+            variable_groups[0],
+            query_filter=query_filter,
+            api_key=api_key,
+            variable_cache=census_variables,
+            with_geometry=with_geometry,
+            with_geometry_columns=with_geometry_columns,
+            tiger_shapefiles_only=tiger_shapefiles_only,
+            **kwargs,
+        )
 
     # If we put in the geometry column, it's not part of the
     # key.
@@ -265,6 +302,17 @@ def _download_multiple(
             merge_strategy = False
             break
 
+    if with_geometry and with_geometry_columns and not merge_strategy:
+        raise ValueError(
+            "`with_geometry_columns=True` is only supported for very wide results "
+            "when the merge_strategy can be used. This merge strategy is used when every "
+            "row of the result is for a unique geography, as is the case in data sets like "
+            f'ACS5 ("{ACS5}") and DECENNIAL_PUBLIC_LAW_94_171 ("{DECENNIAL_PUBLIC_LAW_94_171}"). '
+            "If this functionality is really important to you (note that it would create a lot "
+            "of duplicate geoemetry values, we suggest you set `with_geometry=False` in this call "
+            "and then merge with a `GeoDatFrame` with the geometries you want after the fact."
+        )
+
     if merge_strategy:
         # We can do the merge strategy.
 
@@ -273,7 +321,17 @@ def _download_multiple(
         df_data = dfs[0]
 
         for df_right in dfs[1:]:
-            df_data = df_data.merge(df_right, on=merge_keys)
+            df_data_columns = set(df_data.columns)
+            df_data = df_data.merge(
+                df_right[
+                    [
+                        col
+                        for col in df_right.columns
+                        if (col in merge_keys) or (col not in df_data_columns)
+                    ]
+                ],
+                on=merge_keys,
+            )
     else:
         # We are going to have to fall back on the concat
         # strategy. Before we do the concat, however, let's
@@ -534,6 +592,8 @@ def download(
             census_variables=variable_cache,
             query_filter=query_filter,
             with_geometry=with_geometry,
+            with_geometry_columns=with_geometry_columns,
+            tiger_shapefiles_only=tiger_shapefiles_only,
             row_keys=row_keys,
             **kwargs,
         )
