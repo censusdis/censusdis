@@ -361,7 +361,7 @@ def add_geography(
         If `True` keep all the additional columns that come with shapefiles
         downloaded to get geometry information.
     tiger_shapefiles_only
-        If `True` only  look for TIGER shapefiles. If `False`, first look
+        If `True` only look for TIGER shapefiles. If `False`, first look
         for CB shapefiles
         (https://www.census.gov/geographies/mapping-files/time-series/geo/carto-boundary-file.html),
         which are more suitable for plotting maps, then fall back on the full
