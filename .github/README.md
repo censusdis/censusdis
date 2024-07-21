@@ -1,7 +1,7 @@
 # censusdis
 
 ## IMPORTANT NOTE [May 25, 2024] 
-**The census bureau recently changed their server side code in a way that caused some issues for censusdis. 
+**The census bureau recently changed their server side code in a way that caused some issues for `censusdis`. 
 We have updated `censusdis` to resolve the problem. Please be sure you are using version 1.1.8 or higher.**
 
 [![Hippocratic License HL3-CL-ECO-EXTR-FFD-LAW-MIL-SV](https://img.shields.io/static/v1?label=Hippocratic%20License&message=HL3-CL-ECO-EXTR-FFD-LAW-MIL-SV&labelColor=5e2751&color=bc8c3d)](https://firstdonoharm.dev/version/3/0/cl-eco-extr-ffd-law-mil-sv.html)
@@ -80,16 +80,33 @@ There are many more examples in the tuturial and in the sample notebooks.
 
 ## Tutorial (A Great Place to Start!)
 
-For a tutorial, please see the [censusdis-tutorial](https://github.com/vengroff/censusdis-tutorial) repository.
+We presented a [half-day tutorial](https://cfp.scipy.org/2024/talk/BTG9U3/) 
+on `censusdis` at [SciPy '24](https://www.scipy2024.scipy.org/). All the 
+material covered in the tutorial is available as in a github repo at
+https://github.com/censusdis/censusdis-tutorial-2024.
+The tutorial consists of a series of five lessons, 
+each with worked exercises, and two choices for a final project. If you 
+really want to learn the ins and outs of what `censusdis` can do, from the
+most basic queries all the way through some relatively advanced topics, this
+is the tutorial for you.
+
+
+### An Older Tutorial
+
+For an older tutorial that is shorter but does not include some of the newest features, 
+please see the [censusdis-tutorial](https://github.com/vengroff/censusdis-tutorial) repository.
 This tutorial was presented at [PyData Seattle 2023](https://pydata.org/seattle2023/). If you want to try it out for yourself, the README.md
 contains links that let you run the tutorial notebooks live on [mybinder.org](https://mybinder.org/) in your browser without needing to set up a
 local development environment or download or install any code.
 
 ### Tutorial Video
 
+We expect a vireo of the [SciPy '24 tutorial](https://github.com/censusdis/censusdis-tutorial-2024) to be available soon, 
+hopefully by some time in August '24.
+
 A 86 minute 
 [video](https://www.youtube.com/watch?v=3vyC7ON0Tvg) 
-of the tutorial as presented at 
+of the older tutorial as presented at 
 [PyData Seattle 2023](https://pydata.org/seattle2023/)
 is also available.
 
