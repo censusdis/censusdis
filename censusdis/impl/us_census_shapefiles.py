@@ -337,6 +337,8 @@ def add_geography(
     year: Optional[VintageType],
     shapefile_scope: str,
     geo_level: str,
+    with_geometry_columns: bool = False,
+    tiger_shapefiles_only: bool = False,
 ) -> Union[pd.DataFrame, gpd.GeoDataFrame]:
     """
     Add geography to data.
@@ -355,6 +357,20 @@ def add_geography(
         such as `NJ` or the string `"us"`.
     geo_level
         The geography level we want to add.
+    with_geometry_columns
+        If `True` keep all the additional columns that come with shapefiles
+        downloaded to get geometry information.
+    tiger_shapefiles_only
+        If `True` only look for TIGER shapefiles. If `False`, first look
+        for CB shapefiles
+        (https://www.census.gov/geographies/mapping-files/time-series/geo/carto-boundary-file.html),
+        which are more suitable for plotting maps, then fall back on the full
+        TIGER files
+        (https://www.census.gov/geographies/mapping-files/time-series/geo/tiger-line-file.html)
+        only if CB is not available. This is mainly set to `True` only
+        when `with_geometry_columns` is also set to `True`. The reason
+        is that the additional columns in the shapefiles are different
+        in the CB files than in the TIGER files.
 
     Returns
     -------
@@ -377,9 +393,14 @@ def add_geography(
         resolution = "5m" if shapefile_geo_level == "nation" else "500k"
 
         try:
-            gdf = __shapefile_reader(query_year).try_cb_tiger_shapefile(
-                sub_scope, shapefile_geo_level, resolution=resolution
-            )
+            if tiger_shapefiles_only:
+                gdf = __shapefile_reader(query_year).read_shapefile(
+                    sub_scope, shapefile_geo_level
+                )
+            else:
+                gdf = __shapefile_reader(query_year).try_cb_tiger_shapefile(
+                    sub_scope, shapefile_geo_level, resolution=resolution
+                )
             gdf["YEAR"] = query_year
             return gdf
         except cmap.MapException as ex:
@@ -434,13 +455,34 @@ def add_geography(
     if shapefile_geo_level == "nation":
         gdf_shapefile["US"] = "1"
 
-    gdf_data = gdf_shapefile[merge_gdf_on + ["geometry"]].merge(
-        df_data, how="right", left_on=merge_gdf_on, right_on=df_on
+    final_data_columns = df_data.columns.tolist()
+
+    # Strip out extra columns unless told to keep them.
+    if with_geometry_columns:
+        final_data_columns = final_data_columns + [
+            col
+            for col in gdf_shapefile.columns
+            if col not in merge_gdf_on
+            and col not in final_data_columns
+            and (col != "geometry")
+        ]
+    else:
+        gdf_shapefile = gdf_shapefile[merge_gdf_on + ["geometry"]]
+
+    gdf_data = gdf_shapefile.merge(
+        # There is a `NAME` column in the shapefile, so we use suffixes
+        # to avoid confusing it with the `NAME` that might be in df_data.
+        # Similar for any other conflict in names that are not being merged on.
+        df_data,
+        how="right",
+        left_on=merge_gdf_on,
+        right_on=df_on,
+        suffixes=("_shapefile", ""),
     )
 
     # Get the columns we want in a reasonable order matching
     # how they are in the data, with geometry at the end.
-    gdf_data = gdf_data[list(df_data.columns) + ["geometry"]]
+    gdf_data = gdf_data[final_data_columns + ["geometry"]]
 
     # Rearrange columns so geometry is at the end.
     gdf_data = gdf_data[

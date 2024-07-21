@@ -940,27 +940,5 @@ class ContainedWithinTestCase(unittest.TestCase):
         )
 
 
-class UsNationTestCase(unittest.TestCase):
-    """Unit tests for downloading data and maps at the national level."""
-
-    def test_download(self):
-        """Test getting a single geometry for the entire US."""
-        gdf = ced.download(
-            dataset=ACS5,
-            vintage=2022,
-            download_variables=["NAME"],
-            # The entire country at once.
-            us="*",
-            with_geometry=True,
-        )
-
-        self.assertEqual((1, 3), gdf.shape)
-        self.assertIn("US", gdf.columns)
-        self.assertIn("NAME", gdf.columns)
-        self.assertIn("geometry", gdf.columns)
-
-        self.assertTrue((gdf["US"] == "1").all())
-
-
 if __name__ == "__main__":
     unittest.main()

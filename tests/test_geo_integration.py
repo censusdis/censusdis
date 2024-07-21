@@ -870,6 +870,242 @@ class DownloadWithGeometryTestCase(unittest.TestCase):
         self.assertEqual((2, 4), df.shape)
 
 
+class TestDownloadWithGeometryVariations(unittest.TestCase):
+    """Test various combinations of `with_geometry_column=` and `tiger_shapefiles_only=`."""
+
+    def test_download_blocks(self):
+        """
+        Download at the block level with geometry and geometry columns.
+
+        There are no CB files at the block level, so we should get
+        TIGER shapefiles whether we ask for them or not.
+        """
+        for tiger_shapefiles_only in [True, False]:
+            gdf = ced.download(
+                DECENNIAL_PUBLIC_LAW_94_171,
+                2020,
+                ["NAME"],
+                with_geometry=True,
+                with_geometry_columns=True,
+                tiger_shapefiles_only=tiger_shapefiles_only,
+                state=states.NJ,
+                county=censusdis.counties.new_jersey.ATLANTIC,
+                block="*",
+            )
+
+            self.assertIsInstance(gdf, geopandas.GeoDataFrame)
+
+            self.assertEqual((7302, 19), gdf.shape)
+
+            self.assertEqual(
+                [
+                    # From the data
+                    "STATE",
+                    "COUNTY",
+                    "TRACT",
+                    "BLOCK",
+                    "NAME",
+                    # From the shapefile
+                    "GEOID",
+                    "MTFCC",
+                    "UR",
+                    "UACE",
+                    "UATYPE",
+                    "FUNCSTAT",
+                    "ALAND",
+                    "AWATER",
+                    "INTPTLAT",
+                    "INTPTLON",
+                    "HOUSING",
+                    "POP",
+                    "YEAR",
+                    "geometry",
+                ],
+                list(gdf.columns),
+            )
+
+    def test_download_block_groups_tiger(self):
+        """Download at the block group level with geometry and geometry columns from TIGER files."""
+        gdf = ced.download(
+            DECENNIAL_PUBLIC_LAW_94_171,
+            2020,
+            ["NAME"],
+            with_geometry=True,
+            with_geometry_columns=True,
+            tiger_shapefiles_only=True,
+            state=states.NJ,
+            county=censusdis.counties.new_jersey.ATLANTIC,
+            block_group="*",
+        )
+
+        self.assertIsInstance(gdf, geopandas.GeoDataFrame)
+
+        self.assertEqual((194, 15), gdf.shape)
+
+        self.assertEqual(
+            [
+                # From the data
+                "STATE",
+                "COUNTY",
+                "TRACT",
+                "BLOCK_GROUP",
+                "NAME",
+                # From the shapefile
+                "GEOID",
+                "NAMELSAD",
+                "MTFCC",
+                "FUNCSTAT",
+                "ALAND",
+                "AWATER",
+                "INTPTLAT",
+                "INTPTLON",
+                "YEAR",
+                "geometry",
+            ],
+            list(gdf.columns),
+        )
+
+    def test_download_block_groups_cb(self):
+        """
+        Download at the block group level with geometry and geometry columns.
+
+        There are CB files at the block group level, so we should be
+        able to get them or get CB files.
+        """
+        gdf = ced.download(
+            DECENNIAL_PUBLIC_LAW_94_171,
+            2020,
+            ["NAME"],
+            with_geometry=True,
+            with_geometry_columns=True,
+            tiger_shapefiles_only=False,
+            state=states.NJ,
+            county=censusdis.counties.new_jersey.ATLANTIC,
+            block_group="*",
+        )
+
+        self.assertIsInstance(gdf, geopandas.GeoDataFrame)
+
+        self.assertEqual((194, 13), gdf.shape)
+
+        self.assertEqual(
+            [
+                # From the data
+                "STATE",
+                "COUNTY",
+                "TRACT",
+                "BLOCK_GROUP",
+                "NAME",
+                # From the shapefile
+                "AFFGEOID",
+                "GEOID",
+                "NAMELSAD",
+                "LSAD",
+                "ALAND",
+                "AWATER",
+                "YEAR",
+                "geometry",
+            ],
+            list(gdf.columns),
+        )
+
+
+class TestWideMergeWithGeometry(unittest.TestCase):
+    """Test the wide merging strategy with geography."""
+
+    def setUp(self):
+        """Set up before each test."""
+        self.year = 2022
+
+        # Collect a set of variables from a bunch of related groups.
+        self.variables = set(
+            ced.variables.group_variables(ACS5, self.year, group_name="B01001")
+        )
+        for suffix in "ABCDEFGHI":
+            self.variables |= set(
+                ced.variables.group_variables(
+                    ACS5, self.year, group_name=f"B01001{suffix}"
+                )
+            )
+
+    def test_wide_merge_with_geometry(self):
+        """Download a wide set of variables with geometry both without geometry columns."""
+        self.assertEqual(330, len(self.variables))
+        self.assertGreater(len(self.variables), ced._MAX_VARIABLES_PER_DOWNLOAD)
+
+        gdf_without_geo_columns = ced.download(
+            ACS5,
+            self.year,
+            download_variables=self.variables,
+            state="*",
+            with_geometry=True,
+        )
+
+        # The  other columns are STATE and geography.
+        self.assertEqual((52, len(self.variables) + 2), gdf_without_geo_columns.shape)
+        self.assertSetEqual(
+            self.variables | {"STATE", "geometry"}, set(gdf_without_geo_columns.columns)
+        )
+
+    def test_wide_merge_with_geometry_and_geometry_columns(self):
+        """Download a wide set of variables with geometry with geometry columns."""
+        self.assertEqual(330, len(self.variables))
+        self.assertGreater(len(self.variables), ced._MAX_VARIABLES_PER_DOWNLOAD)
+
+        gdf_with_geo_columns = ced.download(
+            ACS5,
+            self.year,
+            download_variables=self.variables,
+            state="*",
+            with_geometry=True,
+            with_geometry_columns=True,
+        )
+
+        self.assertEqual((52, len(self.variables) + 10), gdf_with_geo_columns.shape)
+        self.assertSetEqual(
+            {
+                "YEAR",
+                "STATE",
+                "geometry",
+                "GEOID",
+                "STATENS",
+                "LSAD",
+                "ALAND",
+                "AWATER",
+                "AFFGEOID",
+                "STUSPS",
+            },
+            set(gdf_with_geo_columns.columns) - self.variables,
+        )
+
+    def test_wide_concat(self):
+        """
+        Download a really wide set of variables with geometry from TIGER.
+
+        This should raise an exception. It is a corner case that would be a pain
+        to support, and as the exception says, we recommend merging in the
+        geometry later, as there will be a lot of duplicates at this phase.
+        """
+        dataset = "cps/basic/nov"
+        year = 2020
+
+        variables = ced.variables.group_variables(dataset, year, None)
+
+        self.assertEqual(389, len(variables))
+        self.assertGreater(len(variables), ced._MAX_VARIABLES_PER_DOWNLOAD)
+
+        with self.assertRaises(ValueError):
+            ced.download(
+                dataset,
+                year,
+                variables,
+                state=states.NJ,
+                with_geometry=True,
+                with_geometry_columns=True,
+                tiger_shapefiles_only=True,
+            )
+
+
 class ShapefileTestCase(unittest.TestCase):
     """Test shapefile functionality."""
 
@@ -1259,3 +1495,25 @@ class RemoveWaterTestCase(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class UsNationTestCase(unittest.TestCase):
+    """Unit tests for downloading data and maps at the national level."""
+
+    def test_download(self):
+        """Test getting a single geometry for the entire US."""
+        gdf = ced.download(
+            dataset=ACS5,
+            vintage=2022,
+            download_variables=["NAME"],
+            # The entire country at once.
+            us="*",
+            with_geometry=True,
+        )
+
+        self.assertEqual((1, 3), gdf.shape)
+        self.assertIn("US", gdf.columns)
+        self.assertIn("NAME", gdf.columns)
+        self.assertIn("geometry", gdf.columns)
+
+        self.assertTrue((gdf["US"] == "1").all())
