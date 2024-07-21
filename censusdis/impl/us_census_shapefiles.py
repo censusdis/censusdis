@@ -338,6 +338,7 @@ def add_geography(
     shapefile_scope: str,
     geo_level: str,
     with_geometry_columns: bool = False,
+    tiger_shapefiles_only: bool = False,
 ) -> Union[pd.DataFrame, gpd.GeoDataFrame]:
     """
     Add geography to data.
@@ -359,6 +360,17 @@ def add_geography(
     with_geometry_columns
         If `True` keep all the additional columns that come with shapefiles
         downloaded to get geometry information.
+    tiger_shapefiles_only
+        If `True` only  look for TIGER shapefiles. If `False`, first look
+        for CB shapefiles
+        (https://www.census.gov/geographies/mapping-files/time-series/geo/carto-boundary-file.html),
+        which are more suitable for plotting maps, then fall back on the full
+        TIGER files
+        (https://www.census.gov/geographies/mapping-files/time-series/geo/tiger-line-file.html)
+        only if CB is not available. This is mainly set to `True` only
+        when `with_geometry_columns` is also set to `True`. The reason
+        is that the additional columns in the shapefiles are different
+        in the CB files than in the TIGER files.
 
     Returns
     -------
@@ -381,9 +393,14 @@ def add_geography(
         resolution = "5m" if shapefile_geo_level == "nation" else "500k"
 
         try:
-            gdf = __shapefile_reader(query_year).try_cb_tiger_shapefile(
-                sub_scope, shapefile_geo_level, resolution=resolution
-            )
+            if tiger_shapefiles_only:
+                gdf = __shapefile_reader(query_year).read_shapefile(
+                    sub_scope, shapefile_geo_level
+                )
+            else:
+                gdf = __shapefile_reader(query_year).try_cb_tiger_shapefile(
+                    sub_scope, shapefile_geo_level, resolution=resolution
+                )
             gdf["YEAR"] = query_year
             return gdf
         except cmap.MapException as ex:

@@ -343,6 +343,7 @@ def download(
     query_filter: Optional[Dict[str, str]] = None,
     with_geometry: bool = False,
     with_geometry_columns: bool = False,
+    tiger_shapefiles_only: bool = False,
     remove_water: bool = False,
     download_contained_within: Optional[Dict[str, cgeo.InSpecType]] = None,
     area_threshold: float = 0.8,
@@ -424,6 +425,17 @@ def download(
     with_geometry_columns
         If `True` keep all the additional columns that come with shapefiles
         downloaded to get geometry information.
+    tiger_shapefiles_only
+        If `True` only  look for TIGER shapefiles. If `False`, first look
+        for CB shapefiles
+        (https://www.census.gov/geographies/mapping-files/time-series/geo/carto-boundary-file.html),
+        which are more suitable for plotting maps, then fall back on the full
+        TIGER files
+        (https://www.census.gov/geographies/mapping-files/time-series/geo/tiger-line-file.html)
+        only if CB is not available. This is mainly set to `True` only
+        when `with_geometry_columns` is also set to `True`. The reason
+        is that the additional columns in the shapefiles are different
+        in the CB files than in the TIGER files.
     remove_water
         If `True` and if with_geometry=True, will query TIGER for AREAWATER shapefiles and
         remove water areas from returned geometry.
@@ -467,6 +479,7 @@ def download(
             query_filter=query_filter,
             with_geometry=with_geometry,
             with_geometry_columns=with_geometry_columns,
+            tiger_shapefiles_only=tiger_shapefiles_only,
             remove_water=remove_water,
             api_key=api_key,
             variable_cache=variable_cache,
@@ -544,6 +557,7 @@ def download(
         query_filter=query_filter,
         with_geometry=with_geometry,
         with_geometry_columns=with_geometry_columns,
+        tiger_shapefiles_only=tiger_shapefiles_only,
         remove_water=remove_water,
         api_key=api_key,
         variable_cache=variable_cache,
@@ -560,6 +574,7 @@ def _download_remote(
     query_filter: Optional[Dict[str, str]] = None,
     with_geometry: bool,
     with_geometry_columns: bool,
+    tiger_shapefiles_only: bool,
     remove_water: bool,
     api_key: Optional[str],
     variable_cache: "VariableCache",
@@ -605,6 +620,17 @@ def _download_remote(
     with_geometry_columns
         If `True` keep all the additional columns that come with shapefiles
         downloaded to get geometry information.
+    tiger_shapefiles_only
+        If `True` only  look for TIGER shapefiles. If `False`, first look
+        for CB shapefiles
+        (https://www.census.gov/geographies/mapping-files/time-series/geo/carto-boundary-file.html),
+        which are more suitable for plotting maps, then fall back on the full
+        TIGER files
+        (https://www.census.gov/geographies/mapping-files/time-series/geo/tiger-line-file.html)
+        only if CB is not available. This is mainly set to `True` only
+        when `with_geometry_columns` is also set to `True`. The reason
+        is that the additional columns in the shapefiles are different
+        in the CB files than in the TIGER files.
     api_key
         An optional API key. If you don't have or don't use a key, the number
         of calls you can make will be limited.
@@ -658,6 +684,7 @@ def _download_remote(
             shapefile_scope,
             geo_level,
             with_geometry_columns=with_geometry_columns,
+            tiger_shapefiles_only=tiger_shapefiles_only,
         )
 
         if remove_water:
@@ -1152,6 +1179,7 @@ class ContainedWithin:
         query_filter: Optional[Dict[str, str]] = None,
         with_geometry: bool = False,
         with_geometry_columns: bool = False,
+        tiger_shapefiles_only: bool = False,
         remove_water: bool = False,
         api_key: Optional[str] = None,
         variable_cache: Optional["VariableCache"] = None,
@@ -1212,6 +1240,17 @@ class ContainedWithin:
         with_geometry_columns
             If `True` keep all the additional columns that come with shapefiles
             downloaded to get geometry information.
+        tiger_shapefiles_only
+            If `True` only  look for TIGER shapefiles. If `False`, first look
+            for CB shapefiles
+            (https://www.census.gov/geographies/mapping-files/time-series/geo/carto-boundary-file.html),
+            which are more suitable for plotting maps, then fall back on the full
+            TIGER files
+            (https://www.census.gov/geographies/mapping-files/time-series/geo/tiger-line-file.html)
+            only if CB is not available. This is mainly set to `True` only
+            when `with_geometry_columns` is also set to `True`. The reason
+            is that the additional columns in the shapefiles are different
+            in the CB files than in the TIGER files.
         remove_water
             If `True` and if with_geometry=True, will query TIGER for AREAWATER shapefiles and
             remove water areas from returned geometry.
@@ -1248,6 +1287,7 @@ class ContainedWithin:
             query_filter=query_filter,
             with_geometry=True,
             with_geometry_columns=with_geometry_columns,
+            tiger_shapefiles_only=tiger_shapefiles_only,
             remove_water=remove_water,
             api_key=api_key,
             variable_cache=variable_cache,
@@ -1331,7 +1371,11 @@ def contained_within(
 
 
 def add_inferred_geography(
-    df_data: pd.DataFrame, year: Optional[int] = None
+    df_data: pd.DataFrame,
+    year: Optional[int] = None,
+    *,
+    with_geometry_columns: bool = False,
+    tiger_shapefiles_only: bool = False,
 ) -> gpd.GeoDataFrame:
     """
     Infer the geography level of the given dataframe.
@@ -1352,6 +1396,20 @@ def add_inferred_geography(
         because they change over time. If `None`, look for a
         `'YEAR'` column in `df_data` and possibly add different
         geometries for different years as needed.
+    with_geometry_columns
+        If `True` keep all the additional columns that come with shapefiles
+        downloaded to get geometry information.
+    tiger_shapefiles_only
+        If `True` only  look for TIGER shapefiles. If `False`, first look
+        for CB shapefiles
+        (https://www.census.gov/geographies/mapping-files/time-series/geo/carto-boundary-file.html),
+        which are more suitable for plotting maps, then fall back on the full
+        TIGER files
+        (https://www.census.gov/geographies/mapping-files/time-series/geo/tiger-line-file.html)
+        only if CB is not available. This is mainly set to `True` only
+        when `with_geometry_columns` is also set to `True`. The reason
+        is that the additional columns in the shapefiles are different
+        in the CB files than in the TIGER files.
 
     Returns
     -------
@@ -1367,7 +1425,14 @@ def add_inferred_geography(
 
         return gpd.GeoDataFrame(
             df_data.groupby("YEAR", group_keys=False)
-            .apply(lambda df_group: add_inferred_geography(df_group, df_group.name))
+            .apply(
+                lambda df_group: add_inferred_geography(
+                    df_group,
+                    df_group.name,
+                    with_geometry_columns=with_geometry_columns,
+                    tiger_shapefiles_only=tiger_shapefiles_only,
+                )
+            )
             .reset_index(drop=True)
         )
 
@@ -1382,7 +1447,14 @@ def add_inferred_geography(
 
     if shapefile_scope is not None:
         # The scope is the same across the board.
-        gdf = add_geography(df_data, year, shapefile_scope, geo_level)
+        gdf = add_geography(
+            df_data,
+            year,
+            shapefile_scope,
+            geo_level,
+            with_geometry_columns=with_geometry_columns,
+            tiger_shapefiles_only=tiger_shapefiles_only,
+        )
         return gdf
 
     # We have to group by different values of the shapefile
@@ -1392,7 +1464,16 @@ def add_inferred_geography(
 
     df_with_geo = (
         df_data.groupby(shapefile_scope_column, group_keys=False)
-        .apply(lambda g: add_geography(g, year, g.name, geo_level))
+        .apply(
+            lambda g: add_geography(
+                g,
+                year,
+                g.name,
+                geo_level,
+                with_geometry_columns=with_geometry_columns,
+                tiger_shapefiles_only=tiger_shapefiles_only,
+            )
+        )
         .reset_index(drop=True)
     )
 

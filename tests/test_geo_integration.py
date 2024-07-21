@@ -869,22 +869,78 @@ class DownloadWithGeometryTestCase(unittest.TestCase):
 
         self.assertEqual((2, 4), df.shape)
 
-    def test_download_with_geometry_with_geometry_columns(self):
-        """Download at the state level with geometry and geometry columns."""
+
+class TestDownloadWithGeometryVariations(unittest.TestCase):
+    """Test various combinations of `with_geometry_column=` and `tiger_shapefiles_only=`."""
+
+    def test_download_blocks(self):
+        """
+        Download at the block level with geometry and geometry columns.
+
+        There are no CB files at the block level, so we should get
+        TIGER shapefiles whether we ask for them or not.
+        """
+        for tiger_shapefiles_only in [True, False]:
+            gdf = ced.download(
+                DECENNIAL_PUBLIC_LAW_94_171,
+                2020,
+                ["NAME"],
+                with_geometry=True,
+                with_geometry_columns=True,
+                tiger_shapefiles_only=tiger_shapefiles_only,
+                state=states.NJ,
+                county=censusdis.counties.new_jersey.ATLANTIC,
+                block="*",
+            )
+
+            self.assertIsInstance(gdf, geopandas.GeoDataFrame)
+
+            self.assertEqual((7302, 19), gdf.shape)
+
+            self.assertEqual(
+                [
+                    # From the data
+                    "STATE",
+                    "COUNTY",
+                    "TRACT",
+                    "BLOCK",
+                    "NAME",
+                    # From the shapefile
+                    "GEOID",
+                    "MTFCC",
+                    "UR",
+                    "UACE",
+                    "UATYPE",
+                    "FUNCSTAT",
+                    "ALAND",
+                    "AWATER",
+                    "INTPTLAT",
+                    "INTPTLON",
+                    "HOUSING",
+                    "POP",
+                    "YEAR",
+                    "geometry",
+                ],
+                list(gdf.columns),
+            )
+
+    def test_download_block_groups_tiger(self):
+        """Download at the block group level with geometry and geometry columns from TIGER files."""
         gdf = ced.download(
             DECENNIAL_PUBLIC_LAW_94_171,
             2020,
             ["NAME"],
             with_geometry=True,
             with_geometry_columns=True,
+            tiger_shapefiles_only=True,
             state=states.NJ,
             county=censusdis.counties.new_jersey.ATLANTIC,
-            block="*",
+            block_group="*",
         )
 
         self.assertIsInstance(gdf, geopandas.GeoDataFrame)
 
-        self.assertEqual((7302, 19), gdf.shape)
+        self.assertEqual((194, 15), gdf.shape)
 
         self.assertEqual(
             [
@@ -892,21 +948,61 @@ class DownloadWithGeometryTestCase(unittest.TestCase):
                 "STATE",
                 "COUNTY",
                 "TRACT",
-                "BLOCK",
+                "BLOCK_GROUP",
                 "NAME",
                 # From the shapefile
                 "GEOID",
+                "NAMELSAD",
                 "MTFCC",
-                "UR",
-                "UACE",
-                "UATYPE",
                 "FUNCSTAT",
                 "ALAND",
                 "AWATER",
                 "INTPTLAT",
                 "INTPTLON",
-                "HOUSING",
-                "POP",
+                "YEAR",
+                "geometry",
+            ],
+            list(gdf.columns),
+        )
+
+    def test_download_block_groups_cb(self):
+        """
+        Download at the block group level with geometry and geometry columns.
+
+        There are CB files at the block group level, so we should be
+        able to get them or get CB files.
+        """
+        gdf = ced.download(
+            DECENNIAL_PUBLIC_LAW_94_171,
+            2020,
+            ["NAME"],
+            with_geometry=True,
+            with_geometry_columns=True,
+            tiger_shapefiles_only=False,
+            state=states.NJ,
+            county=censusdis.counties.new_jersey.ATLANTIC,
+            block_group="*",
+        )
+
+        self.assertIsInstance(gdf, geopandas.GeoDataFrame)
+
+        self.assertEqual((194, 13), gdf.shape)
+
+        self.assertEqual(
+            [
+                # From the data
+                "STATE",
+                "COUNTY",
+                "TRACT",
+                "BLOCK_GROUP",
+                "NAME",
+                # From the shapefile
+                "AFFGEOID",
+                "GEOID",
+                "NAMELSAD",
+                "LSAD",
+                "ALAND",
+                "AWATER",
                 "YEAR",
                 "geometry",
             ],
