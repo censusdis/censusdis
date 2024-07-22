@@ -15,7 +15,7 @@
 ![Coverage Badge](https://github.com/vengroff/censusdis/raw/main/reports/coverage/coverage-badge.svg)
 [![Documentation Status](https://readthedocs.org/projects/censusdis/badge/?version=latest)](https://censusdis.readthedocs.io/en/latest/?badge=latest)
 
-censusdis is a package for discovering, loading, analyzing, and computing diversity, integration, and segregation metrics to U.S. Census demographic data. 
+censusdis is a package for discovering, loading, and analyzing U.S. Census data. 
 It is designed
 
 - to support **every dataset**, **every geography, and every year**. It's not just about ACS data through the last time the software
