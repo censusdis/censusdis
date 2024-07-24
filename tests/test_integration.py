@@ -265,7 +265,12 @@ class DownloadTestCase(unittest.TestCase):
         )
 
         self.assertEqual((51, 7), df_variables.shape)
-        self.assertEqual((330, 7), df_variables_with_subgroups.shape)
+        # On July 23, 2024, the U.S. Census Bureau reverted the
+        # change that made the `skip_subgroup_variables` arg
+        # necessary. This may take some time to reach all servers.
+        # We accept either result for the moment, but will deprecate and
+        # remove this flag in the future.
+        self.assertIn(df_variables_with_subgroups.shape, [(330, 7), (51, 7)])
 
         self.assertEqual(
             [
