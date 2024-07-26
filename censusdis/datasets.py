@@ -564,6 +564,8 @@ SBO_CSCB = "sbo/cscb"
 
 SBO_CSCBO = "sbo/cscbo"
 
+SIPP = "sipp"
+
 SIPP_BENEFIT = "sipp/benefit/1991panel"
 
 SIPP_CORE = "sipp/core/2008panel/wave9"
@@ -896,6 +898,7 @@ DATASET_REFERENCE_URLS = {
     SBO_CS: "http://api.census.gov/data/2012/sbo/cs",
     SBO_CSCB: "http://api.census.gov/data/2012/sbo/cscb",
     SBO_CSCBO: "http://api.census.gov/data/2012/sbo/cscbo",
+    SIPP: "http://api.census.gov/data/2022/sipp",
     SIPP_BENEFIT: "http://api.census.gov/data/1991/sipp/benefit/1991panel",
     SIPP_CORE: "http://api.census.gov/data/2008/sipp/core/2008panel/wave9",
     SIPP_TOPICAL: "http://api.census.gov/data/2008/sipp/topical/2008panel/wave9",
