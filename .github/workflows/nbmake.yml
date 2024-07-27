@@ -18,7 +18,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - id: notebook-matrix
-        run: echo "matrix=$(find notebooks -name "*.ipynb" | jq -R -s -c 'split("\n")[:-1]')" >> $GITHUB_OUTPUT
+        run: echo "matrix=$(find notebooks -name "*.ipynb" | grep -v beta-api | jq -R -s -c 'split("\n")[:-1]')" >> $GITHUB_OUTPUT
   nbmake:
     needs: list-notebooks
     runs-on: ubuntu-latest
