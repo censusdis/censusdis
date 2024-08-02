@@ -250,6 +250,8 @@ DECENNIAL_CROSSTABVI = "dec/crosstabvi"
 
 DECENNIAL_DDHCA = "dec/ddhca"
 
+DECENNIAL_DDHCB = "dec/ddhcb"
+
 DECENNIAL_DHC = "dec/dhc"
 
 DECENNIAL_DHCAS = "dec/dhcas"
@@ -741,6 +743,7 @@ DATASET_REFERENCE_URLS = {
     DECENNIAL_CROSSTABMP: "http://api.census.gov/data/2020/dec/crosstabmp",
     DECENNIAL_CROSSTABVI: "http://api.census.gov/data/2020/dec/crosstabvi",
     DECENNIAL_DDHCA: "http://api.census.gov/data/2020/dec/ddhca",
+    DECENNIAL_DDHCB: "http://api.census.gov/data/2020/dec/ddhcb",
     DECENNIAL_DHC: "http://api.census.gov/data/2020/dec/dhc",
     DECENNIAL_DHCAS: "http://api.census.gov/data/2020/dec/dhcas",
     DECENNIAL_DHCGU: "http://api.census.gov/data/2020/dec/dhcgu",
