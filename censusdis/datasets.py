@@ -460,6 +460,8 @@ ECN_VALCON = "ecnvalcon"
 
 EWKS = "ewks"
 
+GEOINFO = "geoinfo"
+
 INTLTRADE_IMP_EXP = "intltrade/imp_exp"
 
 LANGUAGE = "language"
@@ -559,6 +561,8 @@ POPPROJ_NAT = "popproj/nat"
 POPPROJ_NIM = "popproj/nim"
 
 PUBLIC_PK12_EDUCATION_FINANCE = "pubschlfin"
+
+RHFS = "rhfs"
 
 SBO_CS = "sbo/cs"
 
@@ -848,6 +852,7 @@ DATASET_REFERENCE_URLS = {
     ECN_TYPOP: "http://api.census.gov/data/2017/ecntypop",
     ECN_VALCON: "http://api.census.gov/data/2017/ecnvalcon",
     EWKS: "http://api.census.gov/data/2012/ewks",
+    GEOINFO: "http://api.census.gov/data/2023/geoinfo",
     INTLTRADE_IMP_EXP: "http://api.census.gov/data/2018/intltrade/imp_exp",
     LANGUAGE: "http://api.census.gov/data/2013/language",
     NONEMP: "http://api.census.gov/data/2021/nonemp",
@@ -898,6 +903,7 @@ DATASET_REFERENCE_URLS = {
     POPPROJ_NAT: "http://api.census.gov/data/2017/popproj/nat",
     POPPROJ_NIM: "http://api.census.gov/data/2017/popproj/nim",
     PUBLIC_PK12_EDUCATION_FINANCE: "http://api.census.gov/data/2012/pubschlfin",
+    RHFS: "http://api.census.gov/data/2021/rhfs",
     SBO_CS: "http://api.census.gov/data/2012/sbo/cs",
     SBO_CSCB: "http://api.census.gov/data/2012/sbo/cscb",
     SBO_CSCBO: "http://api.census.gov/data/2012/sbo/cscbo",
