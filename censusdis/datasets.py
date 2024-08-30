@@ -711,7 +711,7 @@ DATASET_REFERENCE_URLS = {
     CPS_PUBARTS_AUG: "http://api.census.gov/data/2002/cps/pubarts/aug",
     CPS_PUBARTS_JUL: "http://api.census.gov/data/2022/cps/pubarts/jul",
     CPS_RACE_MAY: "http://api.census.gov/data/1995/cps/race/may",
-    CPS_SCHOOL_OCT: "http://api.census.gov/data/2022/cps/school/oct",
+    CPS_SCHOOL_OCT: "http://api.census.gov/data/2023/cps/school/oct",
     CPS_TOBACCO_AUG: "http://api.census.gov/data/2010/cps/tobacco/aug",
     CPS_TOBACCO_JAN: "http://api.census.gov/data/2019/cps/tobacco/jan",
     CPS_TOBACCO_JUL: "http://api.census.gov/data/2018/cps/tobacco/jul",
