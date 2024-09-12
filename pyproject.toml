@@ -79,6 +79,10 @@ types-requests = "^2.28.10"
 [tool.poetry.group.dist.dependencies]
 genbadge = {extras = ["all"], version = "^1.1.0"}
 
+
+[tool.poetry.group.dev.dependencies]
+notebook = "^7.2.2"
+
 [tool.poetry.scripts]
 censusdis = "censusdis.cli.cli:main"
 
