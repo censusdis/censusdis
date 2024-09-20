@@ -288,6 +288,8 @@ DECENNIAL_PUBLIC_LAW_94_171 = "dec/pl"
 
 DECENNIAL_RESPONSERATE = "dec/responserate"
 
+DECENNIAL_SDHC = "dec/sdhc"
+
 DECENNIAL_SELFRESPONSERATE = "dec/selfresponserate"
 
 DECENNIAL_SF1 = "dec/sf1"
@@ -766,6 +768,7 @@ DATASET_REFERENCE_URLS = {
     DECENNIAL_PLNAT: "http://api.census.gov/data/2010/dec/plnat",
     DECENNIAL_PUBLIC_LAW_94_171: "http://api.census.gov/data/2020/dec/pl",
     DECENNIAL_RESPONSERATE: "http://api.census.gov/data/2020/dec/responserate",
+    DECENNIAL_SDHC: "http://api.census.gov/data/2020/dec/sdhc",
     DECENNIAL_SELFRESPONSERATE: "http://api.census.gov/data/2020/dec/selfresponserate",
     DECENNIAL_SF1: "http://api.census.gov/data/2010/dec/sf1",
     DECENNIAL_SF2: "http://api.census.gov/data/2010/dec/sf2",
