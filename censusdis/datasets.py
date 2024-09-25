@@ -699,7 +699,7 @@ DATASET_REFERENCE_URLS = {
     CPS_FERTILITY_JUN: "http://api.census.gov/data/2022/cps/fertility/jun",
     CPS_FOODSEC_APR: "http://api.census.gov/data/2001/cps/foodsec/apr",
     CPS_FOODSEC_AUG: "http://api.census.gov/data/1998/cps/foodsec/aug",
-    CPS_FOODSEC_DEC: "http://api.census.gov/data/2022/cps/foodsec/dec",
+    CPS_FOODSEC_DEC: "http://api.census.gov/data/2023/cps/foodsec/dec",
     CPS_FOODSEC_SEP: "http://api.census.gov/data/2000/cps/foodsec/sep",
     CPS_IMMIGRATION_AUG: "http://api.census.gov/data/2008/cps/immigration/aug",
     CPS_INTERNET_AUG: "http://api.census.gov/data/2000/cps/internet/aug",
