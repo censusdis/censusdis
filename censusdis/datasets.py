@@ -705,7 +705,7 @@ DATASET_REFERENCE_URLS = {
     CPS_INTERNET_AUG: "http://api.census.gov/data/2000/cps/internet/aug",
     CPS_INTERNET_DEC: "http://api.census.gov/data/1998/cps/internet/dec",
     CPS_INTERNET_JUL: "http://api.census.gov/data/2015/cps/internet/jul",
-    CPS_INTERNET_NOV: "http://api.census.gov/data/2021/cps/internet/nov",
+    CPS_INTERNET_NOV: "http://api.census.gov/data/2023/cps/internet/nov",
     CPS_INTERNET_OCT: "http://api.census.gov/data/2012/cps/internet/oct",
     CPS_INTERNET_SEP: "http://api.census.gov/data/2001/cps/internet/sep",
     CPS_LIBRARY_OCT: "http://api.census.gov/data/2002/cps/library/oct",
