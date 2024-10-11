@@ -688,7 +688,7 @@ DATASET_REFERENCE_URLS = {
     CPS_BASIC_MAY: "http://api.census.gov/data/2024/cps/basic/may",
     CPS_BASIC_NOV: "http://api.census.gov/data/2023/cps/basic/nov",
     CPS_BASIC_OCT: "http://api.census.gov/data/2023/cps/basic/oct",
-    CPS_BASIC_SEP: "http://api.census.gov/data/2023/cps/basic/sep",
+    CPS_BASIC_SEP: "http://api.census.gov/data/2024/cps/basic/sep",
     CPS_CIVIC_NOV: "http://api.census.gov/data/2013/cps/civic/nov",
     CPS_CONTWORKER_FEB: "http://api.census.gov/data/2005/cps/contworker/feb",
     CPS_CONTWORKER_MAY: "http://api.census.gov/data/2017/cps/contworker/may",
