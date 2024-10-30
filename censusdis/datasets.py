@@ -100,6 +100,10 @@ CFSHAZMAT = "cfshazmat"
 
 CFSPRELIM = "cfsprelim"
 
+CFSPUMDEST = "cfspum/cfspumdest"
+
+CFSPUMORIG = "cfspum/cfspumorig"
+
 CFSTEMP = "cfstemp"
 
 CPS_ARTS_FEB = "cps/arts/feb"
@@ -674,6 +678,8 @@ DATASET_REFERENCE_URLS = {
     CFSEXPORT: "http://api.census.gov/data/2017/cfsexport",
     CFSHAZMAT: "http://api.census.gov/data/2017/cfshazmat",
     CFSPRELIM: "http://api.census.gov/data/2017/cfsprelim",
+    CFSPUMDEST: "http://api.census.gov/data/2017/cfspum/cfspumdest",
+    CFSPUMORIG: "http://api.census.gov/data/2017/cfspum/cfspumorig",
     CFSTEMP: "http://api.census.gov/data/2017/cfstemp",
     CPS_ARTS_FEB: "http://api.census.gov/data/2020/cps/arts/feb",
     CPS_ASEC_MAR: "http://api.census.gov/data/2024/cps/asec/mar",
