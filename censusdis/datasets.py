@@ -198,6 +198,8 @@ CPS_UNBANK_JAN = "cps/unbank/jan"
 
 CPS_UNBANK_JUN = "cps/unbank/jun"
 
+CPS_UNEMPINS_MAY = "cps/unempins/may"
+
 CPS_VETS_AUG = "cps/vets/aug"
 
 CPS_VETS_JUL = "cps/vets/jul"
@@ -727,6 +729,7 @@ DATASET_REFERENCE_URLS = {
     CPS_TOBACCO_SEP: "http://api.census.gov/data/2022/cps/tobacco/sep",
     CPS_UNBANK_JAN: "http://api.census.gov/data/2009/cps/unbank/jan",
     CPS_UNBANK_JUN: "http://api.census.gov/data/2021/cps/unbank/jun",
+    CPS_UNEMPINS_MAY: "http://api.census.gov/data/2022/cps/unempins/may",
     CPS_VETS_AUG: "http://api.census.gov/data/2023/cps/vets/aug",
     CPS_VETS_JUL: "http://api.census.gov/data/2010/cps/vets/jul",
     CPS_VETS_SEP: "http://api.census.gov/data/1999/cps/vets/sep",
