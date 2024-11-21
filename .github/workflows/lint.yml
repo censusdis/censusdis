@@ -38,4 +38,4 @@ jobs:
           flake8 --show-source .
           black . --check
           isort --profile black .
-          ruff check .
+          ruff check --show-source .
