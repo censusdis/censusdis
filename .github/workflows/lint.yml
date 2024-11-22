@@ -41,4 +41,4 @@ jobs:
       - run: |
           isort --profile black .
       - run: |
-          ruff check --show-source .
+          ruff check .
