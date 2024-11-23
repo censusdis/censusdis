@@ -428,7 +428,7 @@ def download_lodes(
 
     if state == "*":
         # TODO - we could just concatenate them all.
-        raise ValueError(f"Wildcards not supported for state LODES data.")
+        raise ValueError("Wildcards not supported for state LODES data.")
 
     if state not in ABBREVIATIONS_FROM_IDS:
         raise ValueError(f"Unknown state id {state}")
