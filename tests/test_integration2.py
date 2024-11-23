@@ -85,5 +85,23 @@ class EwksTestCase(unittest.TestCase):
             self.assertEqual(count, len(geographies))
 
 
+class NoGeographyTestCase(unittest.TestCase):
+    """Test a timeseries data set with no geography."""
+
+    def test_exports_hs(self):
+        """Test a timeseries data set with no geography."""
+        dataset = "timeseries/intltrade/exports/hs"
+        vintage = "timeseries"
+        variables = ["YEAR", "MONTH", "ALL_VAL_MO", "VES_WGT_MO", "AIR_WGT_MO"]
+
+        df_ts = ced.download(
+            dataset,
+            vintage,
+            variables,
+        )
+
+        self.assertEqual(len(variables), df_ts.shape[1])
+
+
 if __name__ == "__main__":
     unittest.main()

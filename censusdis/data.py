@@ -1014,14 +1014,20 @@ def _bind_path_if_possible(dataset, vintage, **kwargs):
     """
     bound_path = cgeo.PathSpec.partial_prefix_match(dataset, vintage, **kwargs)
     if bound_path is None:
-        raise CensusApiException(
-            f"Unable to match the geography specification {kwargs}.\n"
-            f"Supported geographies for dataset='{dataset}' in year={vintage} are:\n"
-            + "\n".join(
-                f"{path_spec}"
-                for path_spec in cgeo.geo_path_snake_specs(dataset, vintage).values()
+        if kwargs:
+            raise CensusApiException(
+                f"Unable to match the geography specification {kwargs}.\n"
+                f"Supported geographies for dataset='{dataset}' in year={vintage} are:\n"
+                + "\n".join(
+                    f"{path_spec}"
+                    for path_spec in cgeo.geo_path_snake_specs(
+                        dataset, vintage
+                    ).values()
+                )
             )
-        )
+        else:
+            bound_path = cgeo.BoundGeographyPath("000", cgeo.PathSpec.empty_path_spec())
+
     return bound_path
 
 

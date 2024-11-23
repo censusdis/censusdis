@@ -81,6 +81,10 @@ class PathSpec:
         is_prefix: bool = True,
         **kwargs: InSpecType,
     ) -> bool:
+        # An empty path is matched by no kwargs.
+        if not kwargs and not self._path:
+            return True
+
         kwargs = self._u2s(**kwargs)
         path_elements_in_kwargs = [key for key in self._path if key in kwargs]
         keys_from_kwargs = list(kwargs)
@@ -184,6 +188,11 @@ class PathSpec:
             return f"https://api.census.gov/data/{dataset}/geography.json"
 
     @staticmethod
+    def empty_path_spec() -> "PathSpec":
+        """Construct an empty path spec."""
+        return PathSpec([], PathSpec.__init_key)
+
+    @staticmethod
     def _fetch_path_specs(dataset: str, year: int) -> Dict[str, "PathSpec"]:
         url = PathSpec._geo_url(dataset, year)
 
@@ -196,16 +205,17 @@ class PathSpec:
 
             path_specs = {}
 
-            for row in parsed_json["fips"]:
-                level = row.get("geoLevelId", None)
-                if level is None:
-                    level = row.get("geoLevelDisplay", None)
+            if "fips" in parsed_json:
+                for row in parsed_json["fips"]:
+                    level = row.get("geoLevelId", None)
+                    if level is None:
+                        level = row.get("geoLevelDisplay", None)
 
-                if level is not None:
-                    path = row.get("requires", [])
-                    path.append(row["name"])
+                    if level is not None:
+                        path = row.get("requires", [])
+                        path.append(row["name"])
 
-                    path_specs[level] = PathSpec(path, PathSpec.__init_key)
+                        path_specs[level] = PathSpec(path, PathSpec.__init_key)
 
             return path_specs
 
@@ -404,6 +414,9 @@ class CensusGeographyQuerySpec:
     @property
     def in_components(self) -> Optional[str]:
         """The part of the query string specifying the `in` components."""
+        if not self.bound_path.bindings:
+            return None
+
         *components, _ = self.bound_path.bindings.items()
 
         if components:
@@ -440,8 +453,10 @@ class CensusGeographyQuerySpec:
 
         params = {
             "get": ",".join(self.variables),
-            "for": self.for_component,
         }
+
+        if self.bound_path.bindings:
+            params["for"] = self.for_component
 
         if query_filter is not None:
             params.update(query_filter)
