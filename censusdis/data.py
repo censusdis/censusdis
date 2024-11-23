@@ -18,6 +18,10 @@ from typing import (
     Union,
 )
 
+import io
+import requests
+import gzip
+
 import geopandas as gpd
 import numpy as np
 import pandas as pd
@@ -37,6 +41,7 @@ from censusdis.impl.varsource.base import VintageType
 from censusdis.impl.varsource.censusapi import CensusApiVariableSource
 from censusdis.values import ALL_SPECIAL_VALUES
 from censusdis.datasets import ACS5, DECENNIAL_PUBLIC_LAW_94_171
+from censusdis.states import ABBREVIATIONS_FROM_IDS
 
 import censusdis.impl.fetch
 
@@ -389,6 +394,63 @@ def _download_multiple(
     return df_data
 
 
+def download_lodes(
+    dataset: str,
+    vintage: VintageType,
+    download_variables: Optional[Union[str, Iterable[str]]] = None,
+    version: Optional[str] = None,
+    **kwargs: cgeo.InSpecType,
+) -> Union[pd.DataFrame, gpd.GeoDataFrame]:
+    """
+    Download LODES data from the US Census API.
+
+    Parameters
+    ----------
+    dataset
+        The dataset to download from. For example `"acs/acs5"`,
+        `"dec/pl"`, or `"timeseries/poverty/saipe/schdist"`. There are
+        symbolic names for datasets, like `ACS5` for `"acs/acs5"
+        in :py:module:`censusdis.datasets`.
+    vintage
+        The vintage to download data for. For most data sets this is
+        an integer year, for example, `2020`. But for
+        a timeseries data set, pass the string `'timeseries'`.
+    download_variables
+        The census variables to download, for example `["NAME", "B01001_001E"]`.
+    """
+    if version is None:
+        version = "LODES8"
+
+    if len(kwargs) != 1 or "state" not in kwargs:
+        raise ValueError("The only geography allowed for LODES data is `state=`.")
+
+    state = kwargs["state"]
+
+    if state == "*":
+        # TODO - we could just concatenate them all.
+        raise ValueError(f"Wildcards not supported for state LODES data.")
+
+    if state not in ABBREVIATIONS_FROM_IDS:
+        raise ValueError(f"Unknown state id {state}")
+
+    state_name = ABBREVIATIONS_FROM_IDS[state].lower()
+
+    _, data_set_type, part_or_segment, job_type = dataset.split("/")
+
+    url = (
+        f"https://lehd.ces.census.gov/data/lodes/{version}/{state_name}/{data_set_type}/{state_name}_{data_set_type}_"
+        f"{part_or_segment}_{job_type.upper()}_{vintage}.csv.gz"
+    )
+
+    logger.info(f"Downloading LODES data from {url}")
+
+    gz_content = requests.get(url).content
+    content = gzip.decompress(gz_content)
+    df_lodes = pd.read_csv(io.StringIO(content.decode("utf-8")))
+
+    return df_lodes
+
+
 def download(
     dataset: str,
     vintage: VintageType,
@@ -522,6 +584,16 @@ def download(
     -------
         A :py:class:`~pd.DataFrame` or `~gpd.GeoDataFrame` containing the requested US Census data.
     """
+    if dataset.startswith("lodes/"):
+        # Special case for the LODES data sets, which go down a completely
+        # different path.
+        if download_contained_within is not None:
+            raise ValueError(
+                "`download_contained_within` not supported for LODES data sets."
+            )
+
+        return download_lodes(dataset, vintage, download_variables, **kwargs)
+
     if download_contained_within is not None:
         # Put the contained_within context around it.
         return contained_within(
