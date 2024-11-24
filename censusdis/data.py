@@ -486,12 +486,6 @@ def download_lodes(
     if data_set_type == "od":
         map_geo_cols(from_prefix="h_", to_suffix="_H")
 
-    print("CCC", list(df_lodes.columns))
-
-    print("SSS", df_lodes["STATE"].unique())
-    if data_set_type == "od":
-        print("TTT", df_lodes["STATE_H"].unique())
-
     for geocode_col in ["w_geocode", "h_geocode"]:
         if geocode_col in df_lodes.columns:
             df_lodes.drop(geocode_col, axis="columns")
@@ -520,8 +514,6 @@ def download_lodes(
                 group_keys.append(f"{geo.upper()}_H")
                 if binding != "*":
                     selectors[f"{geo.upper()}_H"] = binding
-
-    print("GGG", group_keys)
 
     # Filter down based on fixed bindings.
     if selectors:
