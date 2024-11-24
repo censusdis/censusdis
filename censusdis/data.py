@@ -399,7 +399,7 @@ def download_lodes(
     vintage: VintageType,
     download_variables: Optional[Union[str, Iterable[str]]] = None,
     version: Optional[str] = None,
-    home_geo_constraints: Optional[Union[bool, Dict[str, str]]] = True,
+    home_geography: Optional[Union[bool, Dict[str, str]]] = None,
     **kwargs: cgeo.InSpecType,
 ) -> Union[pd.DataFrame, gpd.GeoDataFrame]:
     """
@@ -421,6 +421,12 @@ def download_lodes(
     """
     if version is None:
         version = "LODES8"
+
+    if isinstance(home_geography, bool):
+        if home_geography:
+            home_geography = dict(**kwargs)
+        else:
+            home_geography = None
 
     bound_path = cgeo.PathSpec.partial_prefix_match(dataset, vintage, **kwargs)
     geo_bindings = bound_path.bindings
@@ -480,6 +486,12 @@ def download_lodes(
     if data_set_type == "od":
         map_geo_cols(from_prefix="h_", to_suffix="_H")
 
+    print("CCC", list(df_lodes.columns))
+
+    print("SSS", df_lodes["STATE"].unique())
+    if data_set_type == "od":
+        print("TTT", df_lodes["STATE_H"].unique())
+
     for geocode_col in ["w_geocode", "h_geocode"]:
         if geocode_col in df_lodes.columns:
             df_lodes.drop(geocode_col, axis="columns")
@@ -493,20 +505,21 @@ def download_lodes(
             selectors[f"{geo.upper()}"] = binding
 
     if data_set_type == "od":
-        # There is more grouping to do.
-        if home_geo_constraints is None:
-            home_geo_constraints = dict(state=state, block="*")
-        elif home_geo_constraints is True:
-            # Same as the geo constraints on the workplace.
-            home_geo_constraints = dict(**kwargs)
+        if home_geography is None:
+            for col in df_lodes.columns:
+                if col.endswith("_H"):
+                    group_keys.append(col)
+        else:
+            # There is more grouping to do.
+            home_bound_path = cgeo.PathSpec.partial_prefix_match(
+                dataset, vintage, **home_geography
+            )
+            home_geo_bindings = home_bound_path.bindings
 
-        home_bound_path = cgeo.PathSpec.partial_prefix_match(
-            dataset, vintage, **home_geo_constraints
-        )
-        home_geo_bindings = home_bound_path.bindings
-
-        for geo, binding in home_geo_bindings.items():
-            group_keys.append(f"{geo.upper()}_H")
+            for geo, binding in home_geo_bindings.items():
+                group_keys.append(f"{geo.upper()}_H")
+                if binding != "*":
+                    selectors[f"{geo.upper()}_H"] = binding
 
     print("GGG", group_keys)
 
