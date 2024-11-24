@@ -34,11 +34,23 @@ class LodesTestCase(unittest.TestCase):
 
         self.assertEqual((21, 43), df_lodes.shape)
 
-    def test_download_lodes_tracts(self):
-        """Test download_lodes() for all counties in a state."""
+    def test_download_lodes_tracts_in_state(self):
+        """Test download_lodes() for all tracts in a state."""
         df_lodes = ced.download(LODES_WAC_S000_JT05, 2020, state=NJ, tract="*")
 
         self.assertEqual((537, 54), df_lodes.shape)
+
+    def test_download_lodes_tracts_in_county(self):
+        """Test download_lodes() for all tracts in a county."""
+        df_lodes = ced.download(LODES_OD_AUX_JT00, 2020, state=NJ, county=ESSEX, tract="*")
+
+        self.assertEqual((208, 13), df_lodes.shape)
+
+    def test_download_lodes_blocks_in_county(self):
+        """Test download_lodes() for all tracts in a county."""
+        df_lodes = ced.download(LODES_OD_AUX_JT00, 2020, state=NJ, county=ESSEX, block="*")
+
+        self.assertEqual((2225, 14), df_lodes.shape)
 
 
 if __name__ == "__main__":
