@@ -399,7 +399,7 @@ def download_lodes(
     vintage: VintageType,
     download_variables: Optional[Union[str, Iterable[str]]] = None,
     version: Optional[str] = None,
-    geo_location: Optional[str] = None,
+    home_geo_constraints: Optional[Union[bool, Dict[str, str]]] = True,
     **kwargs: cgeo.InSpecType,
 ) -> Union[pd.DataFrame, gpd.GeoDataFrame]:
     """
@@ -438,12 +438,6 @@ def download_lodes(
 
     _, data_set_type, part_or_segment, job_type = dataset.split("/")
 
-    if geo_location is None:
-        if data_set_type == "rac":
-            geo_location = "H"
-        else:
-            geo_location = "W"
-
     if data_set_type in ["rac", "wac"]:
         part_or_segment = part_or_segment.upper()
 
@@ -470,28 +464,51 @@ def download_lodes(
     # We don't need the date.
     df_lodes = df_lodes.drop("createdate", axis="columns")
 
-    # Map the geographies to the conventions censusdis uses but suffix with
-    # _H or _W for home or work.
-    if "w_geocode" in df_lodes.columns:
-        df_lodes["STATE_W"] = df_lodes["w_geocode"].str[:2]
-        df_lodes["COUNTY_W"] = df_lodes["w_geocode"].str[2:5]
-        df_lodes["TRACT_W"] = df_lodes["w_geocode"].str[5:11]
-        df_lodes["BLOCK_W"] = df_lodes["w_geocode"].str[11:15]
-        df_lodes = df_lodes.drop("w_geocode", axis="columns")
-    if "h_geocode" in df_lodes.columns:
-        df_lodes["STATE_H"] = df_lodes["h_geocode"].str[:2]
-        df_lodes["COUNTY_H"] = df_lodes["h_geocode"].str[2:5]
-        df_lodes["TRACT_H"] = df_lodes["h_geocode"].str[5:11]
-        df_lodes["BLOCK_H"] = df_lodes["h_geocode"].str[11:15]
-        df_lodes = df_lodes.drop("h_geocode", axis="columns")
+    # Map the geographies to the conventions censusdis uses.
+
+    def map_geo_cols(*, from_prefix: str, to_suffix: str = ""):
+        df_lodes[f"STATE{to_suffix}"] = df_lodes[f"{from_prefix}geocode"].str[:2]
+        df_lodes[f"COUNTY{to_suffix}"] = df_lodes[f"{from_prefix}geocode"].str[2:5]
+        df_lodes[f"TRACT{to_suffix}"] = df_lodes[f"{from_prefix}geocode"].str[5:11]
+        df_lodes[f"BLOCK{to_suffix}"] = df_lodes[f"{from_prefix}geocode"].str[11:15]
+
+    if data_set_type in ["od", "wac"]:
+        map_geo_cols(from_prefix="w_")
+    else:
+        map_geo_cols(from_prefix="h_")
+
+    if data_set_type == "od":
+        map_geo_cols(from_prefix="h_", to_suffix="_H")
+
+    for geocode_col in ["w_geocode", "h_geocode"]:
+        if geocode_col in df_lodes.columns:
+            df_lodes.drop(geocode_col, axis="columns")
 
     group_keys = []
     selectors = {}
 
     for geo, binding in geo_bindings.items():
-        group_keys.append(f"{geo.upper()}_{geo_location}")
+        group_keys.append(f"{geo.upper()}")
         if binding != "*":
-            selectors[f"{geo.upper()}_{geo_location}"] = binding
+            selectors[f"{geo.upper()}"] = binding
+
+    if data_set_type == "od":
+        # There is more grouping to do.
+        if home_geo_constraints is None:
+            home_geo_constraints = dict(state=state, block="*")
+        elif home_geo_constraints is True:
+            # Same as the geo constraints on the workplace.
+            home_geo_constraints = dict(**kwargs)
+
+        home_bound_path = cgeo.PathSpec.partial_prefix_match(
+            dataset, vintage, **home_geo_constraints
+        )
+        home_geo_bindings = home_bound_path.bindings
+
+        for geo, binding in home_geo_bindings.items():
+            group_keys.append(f"{geo.upper()}_H")
+
+    print("GGG", group_keys)
 
     # Filter down based on fixed bindings.
     if selectors:
@@ -503,11 +520,13 @@ def download_lodes(
                 criteria = criteria & (df_lodes[col] == binding)
         df_lodes = df_lodes[criteria]
 
-    data_cols = [col for col in df_lodes.columns if df_lodes[col].dtype != object]
+    if download_variables is None:
+        download_variables = [
+            col for col in df_lodes.columns if df_lodes[col].dtype != object
+        ]
 
     # Group based on group keys.
-    if group_keys:
-        df_lodes = df_lodes.groupby(group_keys)[data_cols].sum().reset_index()
+    df_lodes = df_lodes.groupby(group_keys)[download_variables].sum().reset_index()
 
     return df_lodes
 
