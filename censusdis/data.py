@@ -399,6 +399,7 @@ def download_lodes(
     vintage: VintageType,
     download_variables: Optional[Union[str, Iterable[str]]] = None,
     version: Optional[str] = None,
+    geo_location: Optional[str] = None,
     **kwargs: cgeo.InSpecType,
 ) -> Union[pd.DataFrame, gpd.GeoDataFrame]:
     """
@@ -421,10 +422,10 @@ def download_lodes(
     if version is None:
         version = "LODES8"
 
-    if len(kwargs) != 1 or "state" not in kwargs:
-        raise ValueError("The only geography allowed for LODES data is `state=`.")
+    bound_path = cgeo.PathSpec.partial_prefix_match(dataset, vintage, **kwargs)
+    geo_bindings = bound_path.bindings
 
-    state = kwargs["state"]
+    state = geo_bindings["state"]
 
     if state == "*":
         # TODO - we could just concatenate them all.
@@ -437,6 +438,15 @@ def download_lodes(
 
     _, data_set_type, part_or_segment, job_type = dataset.split("/")
 
+    if geo_location is None:
+        if data_set_type == "rac":
+            geo_location = "H"
+        else:
+            geo_location = "W"
+
+    if data_set_type in ["rac", "wac"]:
+        part_or_segment = part_or_segment.upper()
+
     url = (
         f"https://lehd.ces.census.gov/data/lodes/{version}/{state_name}/{data_set_type}/{state_name}_{data_set_type}_"
         f"{part_or_segment}_{job_type.upper()}_{vintage}.csv.gz"
@@ -444,9 +454,60 @@ def download_lodes(
 
     logger.info(f"Downloading LODES data from {url}")
 
+    results = requests.get(url)
+    if results.status_code != requests.status_codes.codes.OK:
+        raise CensusApiException(
+            f"Unable to get LODES data. Attempted to fetch from {url}. "
+            f"Status: {results.status_code}; {results.reason}"
+        )
+
     gz_content = requests.get(url).content
     content = gzip.decompress(gz_content)
-    df_lodes = pd.read_csv(io.StringIO(content.decode("utf-8")))
+    df_lodes = pd.read_csv(
+        io.StringIO(content.decode("utf-8")), dtype={"w_geocode": str, "h_geocode": str}
+    )
+
+    # We don't need the date.
+    df_lodes = df_lodes.drop("createdate", axis="columns")
+
+    # Map the geographies to the conventions censusdis uses but suffix with
+    # _H or _W for home or work.
+    if "w_geocode" in df_lodes.columns:
+        df_lodes["STATE_W"] = df_lodes["w_geocode"].str[:2]
+        df_lodes["COUNTY_W"] = df_lodes["w_geocode"].str[2:5]
+        df_lodes["TRACT_W"] = df_lodes["w_geocode"].str[5:11]
+        df_lodes["BLOCK_W"] = df_lodes["w_geocode"].str[11:15]
+        df_lodes = df_lodes.drop("w_geocode", axis="columns")
+    if "h_geocode" in df_lodes.columns:
+        df_lodes["STATE_H"] = df_lodes["h_geocode"].str[:2]
+        df_lodes["COUNTY_H"] = df_lodes["h_geocode"].str[2:5]
+        df_lodes["TRACT_H"] = df_lodes["h_geocode"].str[5:11]
+        df_lodes["BLOCK_H"] = df_lodes["h_geocode"].str[11:15]
+        df_lodes = df_lodes.drop("h_geocode", axis="columns")
+
+    group_keys = []
+    selectors = {}
+
+    for geo, binding in geo_bindings.items():
+        group_keys.append(f"{geo.upper()}_{geo_location}")
+        if binding != "*":
+            selectors[f"{geo.upper()}_{geo_location}"] = binding
+
+    # Filter down based on fixed bindings.
+    if selectors:
+        criteria = None
+        for col, binding in selectors.items():
+            if criteria is None:
+                criteria = df_lodes[col] == binding
+            else:
+                criteria = criteria & (df_lodes[col] == binding)
+        df_lodes = df_lodes[criteria]
+
+    data_cols = [col for col in df_lodes.columns if df_lodes[col].dtype != object]
+
+    # Group based on group keys.
+    if group_keys:
+        df_lodes = df_lodes.groupby(group_keys)[data_cols].sum().reset_index()
 
     return df_lodes
 

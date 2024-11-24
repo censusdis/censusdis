@@ -235,9 +235,29 @@ class PathSpec:
         dict
     )
 
+    _LODES_PATH_SPECS: Optional[Dict[str, "PathSpec"]] = None
+
     @staticmethod
     def get_path_specs(dataset: str, vintage: int) -> Dict[str, "PathSpec"]:
-        """Fet all the path specifications for the given dataset and vintage."""
+        """Fetch all the path specifications for the given dataset and vintage."""
+        if dataset.startswith("lodes/"):
+            # Special case for the LODES data sets, which go down a completely
+            # different path.
+            if PathSpec._LODES_PATH_SPECS is None:
+                PathSpec._LODES_PATH_SPECS = {
+                    "040": PathSpec(["state"], PathSpec.__init_key),
+                    "050": PathSpec(["state", "county"], PathSpec.__init_key),
+                    "100": PathSpec(
+                        ["state", "county", "tract", "block"], PathSpec.__init_key
+                    ),
+                    "140": PathSpec(["state", "county", "tract"], PathSpec.__init_key),
+                    "150": PathSpec(
+                        ["state", "county", "tract", "block group"], PathSpec.__init_key
+                    ),
+                }
+
+            return PathSpec._LODES_PATH_SPECS
+
         if vintage not in PathSpec._PATH_SPECS_BY_DATASET_YEAR[dataset]:
             PathSpec._PATH_SPECS_BY_DATASET_YEAR[dataset][vintage] = (
                 PathSpec._fetch_path_specs(dataset, vintage)
