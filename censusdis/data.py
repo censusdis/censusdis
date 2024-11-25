@@ -400,10 +400,18 @@ def download_lodes(
     download_variables: Optional[Union[str, Iterable[str]]] = None,
     version: Optional[str] = None,
     home_geography: Optional[Union[bool, Dict[str, str]]] = None,
+    with_geometry: bool = False,
+    with_geometry_columns: bool = False,
+    tiger_shapefiles_only: bool = False,
+    remove_water: bool = False,
     **kwargs: cgeo.InSpecType,
 ) -> Union[pd.DataFrame, gpd.GeoDataFrame]:
     """
     Download LODES data from the US Census API.
+
+    This is typically not called directly, but instead LODES data
+    is obtained by calling :py:func:`~download`, which then calls
+    this as needed for LODES data sets.
 
     Parameters
     ----------
@@ -418,6 +426,29 @@ def download_lodes(
         a timeseries data set, pass the string `'timeseries'`.
     download_variables
         The census variables to download, for example `["NAME", "B01001_001E"]`.
+    with_geometry
+        If `True` a :py:class:`gpd.GeoDataFrame` will be returned and each row
+        will have a geometry that is a cartographic boundary suitable for platting
+        a map. See https://www.census.gov/geographies/mapping-files/time-series/geo/cartographic-boundary.2020.html
+        for details of the shapefiles that will be downloaded on your behalf to
+        generate these boundaries.
+    with_geometry_columns
+        If `True` keep all the additional columns that come with shapefiles
+        downloaded to get geometry information.
+    tiger_shapefiles_only
+        If `True` only look for TIGER shapefiles. If `False`, first look
+        for CB shapefiles
+        (https://www.census.gov/geographies/mapping-files/time-series/geo/carto-boundary-file.html),
+        which are more suitable for plotting maps, then fall back on the full
+        TIGER files
+        (https://www.census.gov/geographies/mapping-files/time-series/geo/tiger-line-file.html)
+        only if CB is not available. This is mainly set to `True` only
+        when `with_geometry_columns` is also set to `True`. The reason
+        is that the additional columns in the shapefiles are different
+        in the CB files than in the TIGER files.
+    remove_water
+        If `True` and if with_geometry=True, will query TIGER for AREAWATER shapefiles and
+        remove water areas from returned geometry.
     """
     if version is None:
         version = "LODES8"
@@ -532,6 +563,25 @@ def download_lodes(
 
     # Group based on group keys.
     df_lodes = df_lodes.groupby(group_keys)[download_variables].sum().reset_index()
+
+    if with_geometry:
+        # We need to get the geometry and merge it in.
+        geo_level = bound_path.path_spec.path[-1]
+        shapefile_scope = bound_path.bindings[bound_path.path_spec.path[0]]
+
+        gdf_data = add_geography(
+            df_lodes,
+            vintage,
+            shapefile_scope,
+            geo_level,
+            with_geometry_columns=with_geometry_columns,
+            tiger_shapefiles_only=tiger_shapefiles_only,
+        )
+
+        if remove_water:
+            gdf_data = clip_water(gdf_data, vintage)
+
+        return gdf_data
 
     return df_lodes
 
@@ -677,7 +727,16 @@ def download(
                 "`download_contained_within` not supported for LODES data sets."
             )
 
-        return download_lodes(dataset, vintage, download_variables, **kwargs)
+        return download_lodes(
+            dataset,
+            vintage,
+            download_variables,
+            with_geometry=with_geometry,
+            with_geometry_columns=with_geometry_columns,
+            tiger_shapefiles_only=tiger_shapefiles_only,
+            remove_water=remove_water,
+            **kwargs,
+        )
 
     if download_contained_within is not None:
         # Put the contained_within context around it.

@@ -22,6 +22,12 @@ class LodesTestCase(unittest.TestCase):
 
         self.assertEqual((1, 52), df_lodes.shape)
 
+    def test_download_lodes_state_with_geometry(self):
+        """Test download_lodes() for a single state."""
+        df_lodes = ced.download(LODES_WAC_S000_JT05, 2020, state=NJ, with_geometry=True)
+
+        self.assertEqual((1, 53), df_lodes.shape)
+
     def test_download_lodes_county(self):
         """Test download_lodes() for a single county."""
         df_lodes = ced.download(LODES_RAC_SI03_JT03, 2020, state=NJ, county=ESSEX)
