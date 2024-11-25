@@ -949,3 +949,405 @@ DATASET_REFERENCE_URLS = {
     VIUSPUF: "http://api.census.gov/data/2021/viuspuf",
     ZBP: "http://api.census.gov/data/2018/zbp",
 }
+
+# LODES are special data sets with their own base URL.
+
+LODES_OD_MAIN_JT00 = "lodes/od/main/jt00"
+
+LODES_OD_MAIN_JT01 = "lodes/od/main/jt01"
+
+LODES_OD_MAIN_JT02 = "lodes/od/main/jt02"
+
+LODES_OD_MAIN_JT03 = "lodes/od/main/jt03"
+
+LODES_OD_MAIN_JT04 = "lodes/od/main/jt04"
+
+LODES_OD_MAIN_JT05 = "lodes/od/main/jt05"
+
+LODES_OD_AUX_JT00 = "lodes/od/aux/jt00"
+
+LODES_OD_AUX_JT01 = "lodes/od/aux/jt01"
+
+LODES_OD_AUX_JT02 = "lodes/od/aux/jt02"
+
+LODES_OD_AUX_JT03 = "lodes/od/aux/jt03"
+
+LODES_OD_AUX_JT04 = "lodes/od/aux/jt04"
+
+LODES_OD_AUX_JT05 = "lodes/od/aux/jt05"
+
+LODES_RAC_S000_JT00 = "lodes/rac/s000/jt00"
+
+LODES_RAC_S000_JT01 = "lodes/rac/s000/jt01"
+
+LODES_RAC_S000_JT02 = "lodes/rac/s000/jt02"
+
+LODES_RAC_S000_JT03 = "lodes/rac/s000/jt03"
+
+LODES_RAC_S000_JT04 = "lodes/rac/s000/jt04"
+
+LODES_RAC_S000_JT05 = "lodes/rac/s000/jt05"
+
+LODES_RAC_SA01_JT00 = "lodes/rac/sa01/jt00"
+
+LODES_RAC_SA01_JT01 = "lodes/rac/sa01/jt01"
+
+LODES_RAC_SA01_JT02 = "lodes/rac/sa01/jt02"
+
+LODES_RAC_SA01_JT03 = "lodes/rac/sa01/jt03"
+
+LODES_RAC_SA01_JT04 = "lodes/rac/sa01/jt04"
+
+LODES_RAC_SA01_JT05 = "lodes/rac/sa01/jt05"
+
+LODES_RAC_SA02_JT00 = "lodes/rac/sa02/jt00"
+
+LODES_RAC_SA02_JT01 = "lodes/rac/sa02/jt01"
+
+LODES_RAC_SA02_JT02 = "lodes/rac/sa02/jt02"
+
+LODES_RAC_SA02_JT03 = "lodes/rac/sa02/jt03"
+
+LODES_RAC_SA02_JT04 = "lodes/rac/sa02/jt04"
+
+LODES_RAC_SA02_JT05 = "lodes/rac/sa02/jt05"
+
+LODES_RAC_SA03_JT00 = "lodes/rac/sa03/jt00"
+
+LODES_RAC_SA03_JT01 = "lodes/rac/sa03/jt01"
+
+LODES_RAC_SA03_JT02 = "lodes/rac/sa03/jt02"
+
+LODES_RAC_SA03_JT03 = "lodes/rac/sa03/jt03"
+
+LODES_RAC_SA03_JT04 = "lodes/rac/sa03/jt04"
+
+LODES_RAC_SA03_JT05 = "lodes/rac/sa03/jt05"
+
+LODES_RAC_SE01_JT00 = "lodes/rac/se01/jt00"
+
+LODES_RAC_SE01_JT01 = "lodes/rac/se01/jt01"
+
+LODES_RAC_SE01_JT02 = "lodes/rac/se01/jt02"
+
+LODES_RAC_SE01_JT03 = "lodes/rac/se01/jt03"
+
+LODES_RAC_SE01_JT04 = "lodes/rac/se01/jt04"
+
+LODES_RAC_SE01_JT05 = "lodes/rac/se01/jt05"
+
+LODES_RAC_SE02_JT00 = "lodes/rac/se02/jt00"
+
+LODES_RAC_SE02_JT01 = "lodes/rac/se02/jt01"
+
+LODES_RAC_SE02_JT02 = "lodes/rac/se02/jt02"
+
+LODES_RAC_SE02_JT03 = "lodes/rac/se02/jt03"
+
+LODES_RAC_SE02_JT04 = "lodes/rac/se02/jt04"
+
+LODES_RAC_SE02_JT05 = "lodes/rac/se02/jt05"
+
+LODES_RAC_SE03_JT00 = "lodes/rac/se03/jt00"
+
+LODES_RAC_SE03_JT01 = "lodes/rac/se03/jt01"
+
+LODES_RAC_SE03_JT02 = "lodes/rac/se03/jt02"
+
+LODES_RAC_SE03_JT03 = "lodes/rac/se03/jt03"
+
+LODES_RAC_SE03_JT04 = "lodes/rac/se03/jt04"
+
+LODES_RAC_SE03_JT05 = "lodes/rac/se03/jt05"
+
+LODES_RAC_SI01_JT00 = "lodes/rac/si01/jt00"
+
+LODES_RAC_SI01_JT01 = "lodes/rac/si01/jt01"
+
+LODES_RAC_SI01_JT02 = "lodes/rac/si01/jt02"
+
+LODES_RAC_SI01_JT03 = "lodes/rac/si01/jt03"
+
+LODES_RAC_SI01_JT04 = "lodes/rac/si01/jt04"
+
+LODES_RAC_SI01_JT05 = "lodes/rac/si01/jt05"
+
+LODES_RAC_SI02_JT00 = "lodes/rac/si02/jt00"
+
+LODES_RAC_SI02_JT01 = "lodes/rac/si02/jt01"
+
+LODES_RAC_SI02_JT02 = "lodes/rac/si02/jt02"
+
+LODES_RAC_SI02_JT03 = "lodes/rac/si02/jt03"
+
+LODES_RAC_SI02_JT04 = "lodes/rac/si02/jt04"
+
+LODES_RAC_SI02_JT05 = "lodes/rac/si02/jt05"
+
+LODES_RAC_SI03_JT00 = "lodes/rac/si03/jt00"
+
+LODES_RAC_SI03_JT01 = "lodes/rac/si03/jt01"
+
+LODES_RAC_SI03_JT02 = "lodes/rac/si03/jt02"
+
+LODES_RAC_SI03_JT03 = "lodes/rac/si03/jt03"
+
+LODES_RAC_SI03_JT04 = "lodes/rac/si03/jt04"
+
+LODES_RAC_SI03_JT05 = "lodes/rac/si03/jt05"
+
+LODES_WAC_S000_JT00 = "lodes/wac/s000/jt00"
+
+LODES_WAC_S000_JT01 = "lodes/wac/s000/jt01"
+
+LODES_WAC_S000_JT02 = "lodes/wac/s000/jt02"
+
+LODES_WAC_S000_JT03 = "lodes/wac/s000/jt03"
+
+LODES_WAC_S000_JT04 = "lodes/wac/s000/jt04"
+
+LODES_WAC_S000_JT05 = "lodes/wac/s000/jt05"
+
+LODES_WAC_SA01_JT00 = "lodes/wac/sa01/jt00"
+
+LODES_WAC_SA01_JT01 = "lodes/wac/sa01/jt01"
+
+LODES_WAC_SA01_JT02 = "lodes/wac/sa01/jt02"
+
+LODES_WAC_SA01_JT03 = "lodes/wac/sa01/jt03"
+
+LODES_WAC_SA01_JT04 = "lodes/wac/sa01/jt04"
+
+LODES_WAC_SA01_JT05 = "lodes/wac/sa01/jt05"
+
+LODES_WAC_SA02_JT00 = "lodes/wac/sa02/jt00"
+
+LODES_WAC_SA02_JT01 = "lodes/wac/sa02/jt01"
+
+LODES_WAC_SA02_JT02 = "lodes/wac/sa02/jt02"
+
+LODES_WAC_SA02_JT03 = "lodes/wac/sa02/jt03"
+
+LODES_WAC_SA02_JT04 = "lodes/wac/sa02/jt04"
+
+LODES_WAC_SA02_JT05 = "lodes/wac/sa02/jt05"
+
+LODES_WAC_SA03_JT00 = "lodes/wac/sa03/jt00"
+
+LODES_WAC_SA03_JT01 = "lodes/wac/sa03/jt01"
+
+LODES_WAC_SA03_JT02 = "lodes/wac/sa03/jt02"
+
+LODES_WAC_SA03_JT03 = "lodes/wac/sa03/jt03"
+
+LODES_WAC_SA03_JT04 = "lodes/wac/sa03/jt04"
+
+LODES_WAC_SA03_JT05 = "lodes/wac/sa03/jt05"
+
+LODES_WAC_SE01_JT00 = "lodes/wac/se01/jt00"
+
+LODES_WAC_SE01_JT01 = "lodes/wac/se01/jt01"
+
+LODES_WAC_SE01_JT02 = "lodes/wac/se01/jt02"
+
+LODES_WAC_SE01_JT03 = "lodes/wac/se01/jt03"
+
+LODES_WAC_SE01_JT04 = "lodes/wac/se01/jt04"
+
+LODES_WAC_SE01_JT05 = "lodes/wac/se01/jt05"
+
+LODES_WAC_SE02_JT00 = "lodes/wac/se02/jt00"
+
+LODES_WAC_SE02_JT01 = "lodes/wac/se02/jt01"
+
+LODES_WAC_SE02_JT02 = "lodes/wac/se02/jt02"
+
+LODES_WAC_SE02_JT03 = "lodes/wac/se02/jt03"
+
+LODES_WAC_SE02_JT04 = "lodes/wac/se02/jt04"
+
+LODES_WAC_SE02_JT05 = "lodes/wac/se02/jt05"
+
+LODES_WAC_SE03_JT00 = "lodes/wac/se03/jt00"
+
+LODES_WAC_SE03_JT01 = "lodes/wac/se03/jt01"
+
+LODES_WAC_SE03_JT02 = "lodes/wac/se03/jt02"
+
+LODES_WAC_SE03_JT03 = "lodes/wac/se03/jt03"
+
+LODES_WAC_SE03_JT04 = "lodes/wac/se03/jt04"
+
+LODES_WAC_SE03_JT05 = "lodes/wac/se03/jt05"
+
+LODES_WAC_SI01_JT00 = "lodes/wac/si01/jt00"
+
+LODES_WAC_SI01_JT01 = "lodes/wac/si01/jt01"
+
+LODES_WAC_SI01_JT02 = "lodes/wac/si01/jt02"
+
+LODES_WAC_SI01_JT03 = "lodes/wac/si01/jt03"
+
+LODES_WAC_SI01_JT04 = "lodes/wac/si01/jt04"
+
+LODES_WAC_SI01_JT05 = "lodes/wac/si01/jt05"
+
+LODES_WAC_SI02_JT00 = "lodes/wac/si02/jt00"
+
+LODES_WAC_SI02_JT01 = "lodes/wac/si02/jt01"
+
+LODES_WAC_SI02_JT02 = "lodes/wac/si02/jt02"
+
+LODES_WAC_SI02_JT03 = "lodes/wac/si02/jt03"
+
+LODES_WAC_SI02_JT04 = "lodes/wac/si02/jt04"
+
+LODES_WAC_SI02_JT05 = "lodes/wac/si02/jt05"
+
+LODES_WAC_SI03_JT00 = "lodes/wac/si03/jt00"
+
+LODES_WAC_SI03_JT01 = "lodes/wac/si03/jt01"
+
+LODES_WAC_SI03_JT02 = "lodes/wac/si03/jt02"
+
+LODES_WAC_SI03_JT03 = "lodes/wac/si03/jt03"
+
+LODES_WAC_SI03_JT04 = "lodes/wac/si03/jt04"
+
+LODES_WAC_SI03_JT05 = "lodes/wac/si03/jt05"
+
+
+ALL_LODES_DATA_SETS = [
+    LODES_OD_MAIN_JT00,
+    LODES_OD_MAIN_JT01,
+    LODES_OD_MAIN_JT02,
+    LODES_OD_MAIN_JT03,
+    LODES_OD_MAIN_JT04,
+    LODES_OD_MAIN_JT05,
+    LODES_OD_AUX_JT00,
+    LODES_OD_AUX_JT01,
+    LODES_OD_AUX_JT02,
+    LODES_OD_AUX_JT03,
+    LODES_OD_AUX_JT04,
+    LODES_OD_AUX_JT05,
+    LODES_RAC_S000_JT00,
+    LODES_RAC_S000_JT01,
+    LODES_RAC_S000_JT02,
+    LODES_RAC_S000_JT03,
+    LODES_RAC_S000_JT04,
+    LODES_RAC_S000_JT05,
+    LODES_RAC_SA01_JT00,
+    LODES_RAC_SA01_JT01,
+    LODES_RAC_SA01_JT02,
+    LODES_RAC_SA01_JT03,
+    LODES_RAC_SA01_JT04,
+    LODES_RAC_SA01_JT05,
+    LODES_RAC_SA02_JT00,
+    LODES_RAC_SA02_JT01,
+    LODES_RAC_SA02_JT02,
+    LODES_RAC_SA02_JT03,
+    LODES_RAC_SA02_JT04,
+    LODES_RAC_SA02_JT05,
+    LODES_RAC_SA03_JT00,
+    LODES_RAC_SA03_JT01,
+    LODES_RAC_SA03_JT02,
+    LODES_RAC_SA03_JT03,
+    LODES_RAC_SA03_JT04,
+    LODES_RAC_SA03_JT05,
+    LODES_RAC_SE01_JT00,
+    LODES_RAC_SE01_JT01,
+    LODES_RAC_SE01_JT02,
+    LODES_RAC_SE01_JT03,
+    LODES_RAC_SE01_JT04,
+    LODES_RAC_SE01_JT05,
+    LODES_RAC_SE02_JT00,
+    LODES_RAC_SE02_JT01,
+    LODES_RAC_SE02_JT02,
+    LODES_RAC_SE02_JT03,
+    LODES_RAC_SE02_JT04,
+    LODES_RAC_SE02_JT05,
+    LODES_RAC_SE03_JT00,
+    LODES_RAC_SE03_JT01,
+    LODES_RAC_SE03_JT02,
+    LODES_RAC_SE03_JT03,
+    LODES_RAC_SE03_JT04,
+    LODES_RAC_SE03_JT05,
+    LODES_RAC_SI01_JT00,
+    LODES_RAC_SI01_JT01,
+    LODES_RAC_SI01_JT02,
+    LODES_RAC_SI01_JT03,
+    LODES_RAC_SI01_JT04,
+    LODES_RAC_SI01_JT05,
+    LODES_RAC_SI02_JT00,
+    LODES_RAC_SI02_JT01,
+    LODES_RAC_SI02_JT02,
+    LODES_RAC_SI02_JT03,
+    LODES_RAC_SI02_JT04,
+    LODES_RAC_SI02_JT05,
+    LODES_RAC_SI03_JT00,
+    LODES_RAC_SI03_JT01,
+    LODES_RAC_SI03_JT02,
+    LODES_RAC_SI03_JT03,
+    LODES_RAC_SI03_JT04,
+    LODES_RAC_SI03_JT05,
+    LODES_WAC_S000_JT00,
+    LODES_WAC_S000_JT01,
+    LODES_WAC_S000_JT02,
+    LODES_WAC_S000_JT03,
+    LODES_WAC_S000_JT04,
+    LODES_WAC_S000_JT05,
+    LODES_WAC_SA01_JT00,
+    LODES_WAC_SA01_JT01,
+    LODES_WAC_SA01_JT02,
+    LODES_WAC_SA01_JT03,
+    LODES_WAC_SA01_JT04,
+    LODES_WAC_SA01_JT05,
+    LODES_WAC_SA02_JT00,
+    LODES_WAC_SA02_JT01,
+    LODES_WAC_SA02_JT02,
+    LODES_WAC_SA02_JT03,
+    LODES_WAC_SA02_JT04,
+    LODES_WAC_SA02_JT05,
+    LODES_WAC_SA03_JT00,
+    LODES_WAC_SA03_JT01,
+    LODES_WAC_SA03_JT02,
+    LODES_WAC_SA03_JT03,
+    LODES_WAC_SA03_JT04,
+    LODES_WAC_SA03_JT05,
+    LODES_WAC_SE01_JT00,
+    LODES_WAC_SE01_JT01,
+    LODES_WAC_SE01_JT02,
+    LODES_WAC_SE01_JT03,
+    LODES_WAC_SE01_JT04,
+    LODES_WAC_SE01_JT05,
+    LODES_WAC_SE02_JT00,
+    LODES_WAC_SE02_JT01,
+    LODES_WAC_SE02_JT02,
+    LODES_WAC_SE02_JT03,
+    LODES_WAC_SE02_JT04,
+    LODES_WAC_SE02_JT05,
+    LODES_WAC_SE03_JT00,
+    LODES_WAC_SE03_JT01,
+    LODES_WAC_SE03_JT02,
+    LODES_WAC_SE03_JT03,
+    LODES_WAC_SE03_JT04,
+    LODES_WAC_SE03_JT05,
+    LODES_WAC_SI01_JT00,
+    LODES_WAC_SI01_JT01,
+    LODES_WAC_SI01_JT02,
+    LODES_WAC_SI01_JT03,
+    LODES_WAC_SI01_JT04,
+    LODES_WAC_SI01_JT05,
+    LODES_WAC_SI02_JT00,
+    LODES_WAC_SI02_JT01,
+    LODES_WAC_SI02_JT02,
+    LODES_WAC_SI02_JT03,
+    LODES_WAC_SI02_JT04,
+    LODES_WAC_SI02_JT05,
+    LODES_WAC_SI03_JT00,
+    LODES_WAC_SI03_JT01,
+    LODES_WAC_SI03_JT02,
+    LODES_WAC_SI03_JT03,
+    LODES_WAC_SI03_JT04,
+    LODES_WAC_SI03_JT05,
+]

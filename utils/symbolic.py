@@ -150,6 +150,53 @@ But you can always use raw strings. For example, even for `ACS5` you can use
                 destfile.write("    %s: %s,\n" % (key, value))
             destfile.write("}\n")
 
+            # Write LODES
+            destfile.write(
+                """
+# LODES are special data sets with their own base URL.
+
+"""
+            )
+
+            lodes_symbols = []
+
+            # LODES OD
+            for part in ["main", "aux"]:
+                for job_type in [f"JT0{ii}" for ii in range(6)]:
+                    symbol = f"LODES_OD_{part.upper()}_{job_type}"
+                    destfile.write(
+                        f'{symbol} = "lodes/od/{part}/{job_type.lower()}"\n\n'
+                    )
+                    lodes_symbols.append(symbol)
+
+            # LODES RAC and WAC
+            for dataset_kind in ["rac", "wac"]:
+                for segment in [
+                    "S000",
+                    "SA01",
+                    "SA02",
+                    "SA03",
+                    "SE01",
+                    "SE02",
+                    "SE03",
+                    "SI01",
+                    "SI02",
+                    "SI03",
+                ]:
+                    for job_type in [f"JT0{ii}" for ii in range(6)]:
+                        symbol = (
+                            f"LODES_{dataset_kind.upper()}_{segment.upper()}_{job_type}"
+                        )
+                        destfile.write(
+                            f'{symbol} = "lodes/{dataset_kind}/{segment.lower()}/{job_type.lower()}"\n\n'
+                        )
+                        lodes_symbols.append(symbol)
+
+            destfile.write("\nALL_LODES_DATA_SETS = [\n")
+            for symbol in lodes_symbols:
+                destfile.write(f"    {symbol},\n")
+            destfile.write("]\n")
+
 
 def main():  # pragma: no cover
     """Generate a new version of datasets.py."""

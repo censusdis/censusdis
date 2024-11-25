@@ -18,6 +18,10 @@ from typing import (
     Union,
 )
 
+import io
+import requests
+import gzip
+
 import geopandas as gpd
 import numpy as np
 import pandas as pd
@@ -37,6 +41,7 @@ from censusdis.impl.varsource.base import VintageType
 from censusdis.impl.varsource.censusapi import CensusApiVariableSource
 from censusdis.values import ALL_SPECIAL_VALUES
 from censusdis.datasets import ACS5, DECENNIAL_PUBLIC_LAW_94_171
+from censusdis.states import ABBREVIATIONS_FROM_IDS
 
 import censusdis.impl.fetch
 
@@ -389,6 +394,198 @@ def _download_multiple(
     return df_data
 
 
+def download_lodes(
+    dataset: str,
+    vintage: VintageType,
+    download_variables: Optional[Union[str, Iterable[str]]] = None,
+    version: Optional[str] = None,
+    home_geography: Optional[Union[bool, Dict[str, str]]] = None,
+    with_geometry: bool = False,
+    with_geometry_columns: bool = False,
+    tiger_shapefiles_only: bool = False,
+    remove_water: bool = False,
+    **kwargs: cgeo.InSpecType,
+) -> Union[pd.DataFrame, gpd.GeoDataFrame]:
+    """
+    Download LODES data from the US Census API.
+
+    This is typically not called directly, but instead LODES data
+    is obtained by calling :py:func:`~download`, which then calls
+    this as needed for LODES data sets.
+
+    Parameters
+    ----------
+    dataset
+        The dataset to download from. For example `"acs/acs5"`,
+        `"dec/pl"`, or `"timeseries/poverty/saipe/schdist"`. There are
+        symbolic names for datasets, like `ACS5` for `"acs/acs5"
+        in :py:module:`censusdis.datasets`.
+    vintage
+        The vintage to download data for. For most data sets this is
+        an integer year, for example, `2020`. But for
+        a timeseries data set, pass the string `'timeseries'`.
+    download_variables
+        The census variables to download, for example `["NAME", "B01001_001E"]`.
+    with_geometry
+        If `True` a :py:class:`gpd.GeoDataFrame` will be returned and each row
+        will have a geometry that is a cartographic boundary suitable for platting
+        a map. See https://www.census.gov/geographies/mapping-files/time-series/geo/cartographic-boundary.2020.html
+        for details of the shapefiles that will be downloaded on your behalf to
+        generate these boundaries.
+    with_geometry_columns
+        If `True` keep all the additional columns that come with shapefiles
+        downloaded to get geometry information.
+    tiger_shapefiles_only
+        If `True` only look for TIGER shapefiles. If `False`, first look
+        for CB shapefiles
+        (https://www.census.gov/geographies/mapping-files/time-series/geo/carto-boundary-file.html),
+        which are more suitable for plotting maps, then fall back on the full
+        TIGER files
+        (https://www.census.gov/geographies/mapping-files/time-series/geo/tiger-line-file.html)
+        only if CB is not available. This is mainly set to `True` only
+        when `with_geometry_columns` is also set to `True`. The reason
+        is that the additional columns in the shapefiles are different
+        in the CB files than in the TIGER files.
+    remove_water
+        If `True` and if with_geometry=True, will query TIGER for AREAWATER shapefiles and
+        remove water areas from returned geometry.
+    """
+    if version is None:
+        version = "LODES8"
+
+    if isinstance(home_geography, bool):
+        if home_geography:
+            home_geography = dict(**kwargs)
+        else:
+            home_geography = None
+
+    bound_path = cgeo.PathSpec.partial_prefix_match(dataset, vintage, **kwargs)
+    geo_bindings = bound_path.bindings
+
+    state = geo_bindings["state"]
+
+    if state == "*":
+        # TODO - we could just concatenate them all.
+        raise ValueError("Wildcards not supported for state LODES data.")
+
+    if state not in ABBREVIATIONS_FROM_IDS:
+        raise ValueError(f"Unknown state id {state}")
+
+    state_name = ABBREVIATIONS_FROM_IDS[state].lower()
+
+    _, data_set_type, part_or_segment, job_type = dataset.split("/")
+
+    if data_set_type in ["rac", "wac"]:
+        part_or_segment = part_or_segment.upper()
+
+    url = (
+        f"https://lehd.ces.census.gov/data/lodes/{version}/{state_name}/{data_set_type}/{state_name}_{data_set_type}_"
+        f"{part_or_segment}_{job_type.upper()}_{vintage}.csv.gz"
+    )
+
+    logger.info(f"Downloading LODES data from {url}")
+
+    results = requests.get(url)
+    if results.status_code != requests.status_codes.codes.OK:
+        raise CensusApiException(
+            f"Unable to get LODES data. Attempted to fetch from {url}. "
+            f"Status: {results.status_code}; {results.reason}"
+        )
+
+    gz_content = requests.get(url).content
+    content = gzip.decompress(gz_content)
+    df_lodes = pd.read_csv(
+        io.StringIO(content.decode("utf-8")), dtype={"w_geocode": str, "h_geocode": str}
+    )
+
+    # We don't need the date.
+    df_lodes = df_lodes.drop("createdate", axis="columns")
+
+    # Map the geographies to the conventions censusdis uses.
+
+    def map_geo_cols(*, from_prefix: str, to_suffix: str = ""):
+        df_lodes[f"STATE{to_suffix}"] = df_lodes[f"{from_prefix}geocode"].str[:2]
+        df_lodes[f"COUNTY{to_suffix}"] = df_lodes[f"{from_prefix}geocode"].str[2:5]
+        df_lodes[f"TRACT{to_suffix}"] = df_lodes[f"{from_prefix}geocode"].str[5:11]
+        df_lodes[f"BLOCK{to_suffix}"] = df_lodes[f"{from_prefix}geocode"].str[11:15]
+
+    if data_set_type in ["od", "wac"]:
+        map_geo_cols(from_prefix="w_")
+    else:
+        map_geo_cols(from_prefix="h_")
+
+    if data_set_type == "od":
+        map_geo_cols(from_prefix="h_", to_suffix="_H")
+
+    for geocode_col in ["w_geocode", "h_geocode"]:
+        if geocode_col in df_lodes.columns:
+            df_lodes.drop(geocode_col, axis="columns")
+
+    group_keys = []
+    selectors = {}
+
+    for geo, binding in geo_bindings.items():
+        group_keys.append(f"{geo.upper()}")
+        if binding != "*":
+            selectors[f"{geo.upper()}"] = binding
+
+    if data_set_type == "od":
+        if home_geography is None:
+            for col in df_lodes.columns:
+                if col.endswith("_H"):
+                    group_keys.append(col)
+        else:
+            # There is more grouping to do.
+            home_bound_path = cgeo.PathSpec.partial_prefix_match(
+                dataset, vintage, **home_geography
+            )
+            home_geo_bindings = home_bound_path.bindings
+
+            for geo, binding in home_geo_bindings.items():
+                group_keys.append(f"{geo.upper()}_H")
+                if binding != "*":
+                    selectors[f"{geo.upper()}_H"] = binding
+
+    # Filter down based on fixed bindings.
+    if selectors:
+        criteria = None
+        for col, binding in selectors.items():
+            if criteria is None:
+                criteria = df_lodes[col] == binding
+            else:
+                criteria = criteria & (df_lodes[col] == binding)
+        df_lodes = df_lodes[criteria]
+
+    if download_variables is None:
+        download_variables = [
+            col for col in df_lodes.columns if df_lodes[col].dtype != object
+        ]
+
+    # Group based on group keys.
+    df_lodes = df_lodes.groupby(group_keys)[download_variables].sum().reset_index()
+
+    if with_geometry:
+        # We need to get the geometry and merge it in.
+        geo_level = bound_path.path_spec.path[-1]
+        shapefile_scope = bound_path.bindings[bound_path.path_spec.path[0]]
+
+        gdf_data = add_geography(
+            df_lodes,
+            vintage,
+            shapefile_scope,
+            geo_level,
+            with_geometry_columns=with_geometry_columns,
+            tiger_shapefiles_only=tiger_shapefiles_only,
+        )
+
+        if remove_water:
+            gdf_data = clip_water(gdf_data, vintage)
+
+        return gdf_data
+
+    return df_lodes
+
+
 def download(
     dataset: str,
     vintage: VintageType,
@@ -522,6 +719,25 @@ def download(
     -------
         A :py:class:`~pd.DataFrame` or `~gpd.GeoDataFrame` containing the requested US Census data.
     """
+    if dataset.startswith("lodes/"):
+        # Special case for the LODES data sets, which go down a completely
+        # different path.
+        if download_contained_within is not None:
+            raise ValueError(
+                "`download_contained_within` not supported for LODES data sets."
+            )
+
+        return download_lodes(
+            dataset,
+            vintage,
+            download_variables,
+            with_geometry=with_geometry,
+            with_geometry_columns=with_geometry_columns,
+            tiger_shapefiles_only=tiger_shapefiles_only,
+            remove_water=remove_water,
+            **kwargs,
+        )
+
     if download_contained_within is not None:
         # Put the contained_within context around it.
         return contained_within(

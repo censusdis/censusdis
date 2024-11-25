@@ -4,6 +4,7 @@ import unittest
 from typing import Mapping, Optional, Tuple
 
 from censusdis.geography import CensusGeographyQuerySpec, PathSpec
+from censusdis.datasets import LODES_OD_MAIN_JT00
 
 
 class CanonicalGeometryTestCase(unittest.TestCase):
@@ -324,6 +325,49 @@ class CensusGeographyQuerySpecTestCase(unittest.TestCase):
                 {"for": "tract:001802", "get": "NAME", "in": "state:36 county:001"},
             ),
             query_spec.table_url(),
+        )
+
+
+class LodesGeographyTestCase(unittest.TestCase):
+    """Test geometry for LODES data sets."""
+
+    def setUp(self) -> None:
+        """Set up before each test."""
+        self.dataset = LODES_OD_MAIN_JT00
+        self.vintage = 2020
+
+    def test_lodes_geography(self):
+        """Test geometry for LODES data."""
+        path_specs = PathSpec.get_path_specs(self.dataset, self.vintage)
+
+        self.assertEqual(5, len(path_specs))
+
+    def test_bound_path(self):
+        """Test path binding for LODES."""
+        # State
+        bound_path = PathSpec.partial_prefix_match(
+            self.dataset, self.vintage, state="34"
+        )
+        bindings = bound_path.bindings
+
+        self.assertEqual({"state": "34"}, bindings)
+
+        # Wildcart counties.
+        bound_path = PathSpec.partial_prefix_match(
+            self.dataset, self.vintage, state="34", county="*"
+        )
+        bindings = bound_path.bindings
+
+        self.assertEqual({"state": "34", "county": "*"}, bindings)
+
+        # Wildcard blocks in county. Infer tract wildcard.
+        bound_path = PathSpec.partial_prefix_match(
+            self.dataset, self.vintage, state="34", county="013", block="*"
+        )
+        bindings = bound_path.bindings
+
+        self.assertEqual(
+            {"state": "34", "county": "013", "tract": "*", "block": "*"}, bindings
         )
 
 
