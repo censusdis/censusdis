@@ -1706,16 +1706,18 @@ def add_inferred_geography(
             )
 
         return gpd.GeoDataFrame(
-            df_data.groupby("YEAR", group_keys=False)
+            df_data.groupby("YEAR", group_keys=True)
             .apply(
                 lambda df_group: add_inferred_geography(
                     df_group,
                     df_group.name,
                     with_geometry_columns=with_geometry_columns,
                     tiger_shapefiles_only=tiger_shapefiles_only,
-                )
-            )
-            .reset_index(drop=True)
+                ),
+                include_groups=False)
+            .sort_index(level=1)
+            .reset_index(level=1, drop=True)
+            .reset_index(drop=False)
         )
 
     geo_level = infer_geo_level(year, df_data)
