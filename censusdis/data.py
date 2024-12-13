@@ -1706,7 +1706,7 @@ def add_inferred_geography(
             )
 
         return gpd.GeoDataFrame(
-            df_data.groupby("YEAR", group_keys=True)
+            df_data.groupby("YEAR", group_keys=True, sort=False)
             .apply(
                 lambda df_group: add_inferred_geography(
                     df_group,
@@ -1715,7 +1715,6 @@ def add_inferred_geography(
                     tiger_shapefiles_only=tiger_shapefiles_only,
                 ),
                 include_groups=False)
-            .sort_index(level=1)
             .reset_index(level=1, drop=True)
             .reset_index(drop=False)
         )
