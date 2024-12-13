@@ -1714,7 +1714,8 @@ def add_inferred_geography(
                     with_geometry_columns=with_geometry_columns,
                     tiger_shapefiles_only=tiger_shapefiles_only,
                 ),
-                include_groups=False)
+                include_groups=False,
+            )
             .reset_index(level=1, drop=True)
             .reset_index(drop=False)
         )
