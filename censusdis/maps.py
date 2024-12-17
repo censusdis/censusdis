@@ -789,8 +789,14 @@ def relocate_ak_hi_pr(gdf: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
         else:
             group_column = "STATE"
 
-        gdf = gdf.groupby(gdf[group_column], group_keys=False).apply(
-            _relocate_ak_hi_pr_group
+        gdf = (
+            gdf.groupby(gdf[group_column], group_keys=True, sort=False)
+            .apply(
+                _relocate_ak_hi_pr_group,
+                include_groups=False,
+            )
+            .reset_index(level=1, drop=True)
+            .reset_index(drop=False)
         )
     else:
         # There is no column indicating the state of each geometry. This
