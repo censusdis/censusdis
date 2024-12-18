@@ -662,7 +662,7 @@ def _water_difference(
     # Combining polygons speeds up the overlay operation
     geo_combined_water = gdf_water[
         gdf_water["AWATER"] >= minimum_area_sq_meters
-    ].unary_union
+    ].union_all()
     gdf_combined_water = gpd.GeoDataFrame(geometry=[geo_combined_water])
     gdf_combined_water = gdf_combined_water.set_crs(gdf_water.crs)
 
