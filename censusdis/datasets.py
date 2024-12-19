@@ -640,10 +640,10 @@ ZBP = "zbp"
 
 
 DATASET_REFERENCE_URLS = {
-    ABS_CB: "http://api.census.gov/data/2021/abscb",
-    ABS_CBO: "http://api.census.gov/data/2021/abscbo",
-    ABS_CS: "http://api.census.gov/data/2021/abscs",
-    ABS_MCB: "http://api.census.gov/data/2021/absmcb",
+    ABS_CB: "http://api.census.gov/data/2022/abscb",
+    ABS_CBO: "http://api.census.gov/data/2022/abscbo",
+    ABS_CS: "http://api.census.gov/data/2022/abscs",
+    ABS_MCB: "http://api.census.gov/data/2022/absmcb",
     ABS_NESD: "http://api.census.gov/data/2021/absnesd",
     ABS_NESDO: "http://api.census.gov/data/2021/absnesdo",
     ABS_TCB: "http://api.census.gov/data/2018/abstcb",
@@ -864,7 +864,7 @@ DATASET_REFERENCE_URLS = {
     ECN_SOCIAL: "http://api.census.gov/data/2017/ecnsocial",
     ECN_TYPE: "http://api.census.gov/data/2022/ecntype",
     ECN_TYPEPAYER: "http://api.census.gov/data/2017/ecntypepayer",
-    ECN_TYPOP: "http://api.census.gov/data/2017/ecntypop",
+    ECN_TYPOP: "http://api.census.gov/data/2022/ecntypop",
     ECN_VALCON: "http://api.census.gov/data/2017/ecnvalcon",
     EWKS: "http://api.census.gov/data/2012/ewks",
     GEOINFO: "http://api.census.gov/data/2023/geoinfo",
