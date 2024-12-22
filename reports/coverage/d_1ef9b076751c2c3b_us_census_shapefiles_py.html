@@ -65,7 +65,7 @@
             <a id="nextFileLink" class="nav" href="d_1ef9b076751c2c3b_varcache_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io">coverage.py v6.5.0</a>,
-            created at 2024-12-21 05:42 +0000
+            created at 2024-12-22 05:37 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"/>
@@ -744,7 +744,7 @@
     <p class="pln"><span class="n"><a id="t662" href="#t662">662</a></span><span class="t">    <span class="com"># Combining polygons speeds up the overlay operation</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t663" href="#t663">663</a></span><span class="t">    <span class="nam">geo_combined_water</span> <span class="op">=</span> <span class="nam">gdf_water</span><span class="op">[</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t664" href="#t664">664</a></span><span class="t">        <span class="nam">gdf_water</span><span class="op">[</span><span class="str">"AWATER"</span><span class="op">]</span> <span class="op">>=</span> <span class="nam">minimum_area_sq_meters</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t665" href="#t665">665</a></span><span class="t">    <span class="op">]</span><span class="op">.</span><span class="nam">unary_union</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t665" href="#t665">665</a></span><span class="t">    <span class="op">]</span><span class="op">.</span><span class="nam">union_all</span><span class="op">(</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t666" href="#t666">666</a></span><span class="t">    <span class="nam">gdf_combined_water</span> <span class="op">=</span> <span class="nam">gpd</span><span class="op">.</span><span class="nam">GeoDataFrame</span><span class="op">(</span><span class="nam">geometry</span><span class="op">=</span><span class="op">[</span><span class="nam">geo_combined_water</span><span class="op">]</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t667" href="#t667">667</a></span><span class="t">    <span class="nam">gdf_combined_water</span> <span class="op">=</span> <span class="nam">gdf_combined_water</span><span class="op">.</span><span class="nam">set_crs</span><span class="op">(</span><span class="nam">gdf_water</span><span class="op">.</span><span class="nam">crs</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t668" href="#t668">668</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
@@ -762,7 +762,7 @@
             <a id="nextFileLink" class="nav" href="d_1ef9b076751c2c3b_varcache_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io">coverage.py v6.5.0</a>,
-            created at 2024-12-21 05:42 +0000
+            created at 2024-12-22 05:37 +0000
         </p>
     </div>
 </footer>
