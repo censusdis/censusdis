@@ -4647,4 +4647,4 @@ jupyterlab = ["ipywidgets", "jupyterlab"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "2cbc16d23f8a6916af4776373878797cdc514ae6d2cca338dcc0adda8953dcbc"
+content-hash = "4e173c72fba7ada1b24e99343de844ec8b913a7060ccc1368351bb138c370389"
