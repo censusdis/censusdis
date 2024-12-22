@@ -1706,16 +1706,18 @@ def add_inferred_geography(
             )
 
         return gpd.GeoDataFrame(
-            df_data.groupby("YEAR", group_keys=False)
+            df_data.groupby("YEAR", group_keys=True, sort=False)
             .apply(
                 lambda df_group: add_inferred_geography(
                     df_group,
                     df_group.name,
                     with_geometry_columns=with_geometry_columns,
                     tiger_shapefiles_only=tiger_shapefiles_only,
-                )
+                ),
+                include_groups=False,
             )
-            .reset_index(drop=True)
+            .reset_index(level=1, drop=True)
+            .reset_index(drop=False)
         )
 
     geo_level = infer_geo_level(year, df_data)
@@ -1745,7 +1747,8 @@ def add_inferred_geography(
     shapefile_scope_column = shapefile_scope_columns[0]
 
     df_with_geo = (
-        df_data.groupby(shapefile_scope_column, group_keys=False)
+        df_data.set_index(shapefile_scope_column)
+        .groupby(level=shapefile_scope_column, group_keys=True, sort=False)
         .apply(
             lambda g: add_geography(
                 g,
@@ -1756,7 +1759,8 @@ def add_inferred_geography(
                 tiger_shapefiles_only=tiger_shapefiles_only,
             )
         )
-        .reset_index(drop=True)
+        .reset_index(level=1, drop=True)
+        .reset_index(drop=False)
     )
 
     gdf = gpd.GeoDataFrame(df_with_geo)
