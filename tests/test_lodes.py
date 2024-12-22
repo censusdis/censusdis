@@ -1,6 +1,7 @@
 # Copyright (c) 2023 Darren Erik Vengroff
 """Test LODES data."""
 import unittest
+import sys
 
 import censusdis.data as ced
 from censusdis.datasets import (
@@ -13,6 +14,10 @@ from censusdis.states import NJ, NY
 from censusdis.counties.new_jersey import ESSEX
 
 
+@unittest.skipIf(
+    sys.platform.startswith("win"),
+    reason="Skip on windows for now. Lots of timeouts on GitHub Win machines.",
+)
 class LodesTestCase(unittest.TestCase):
     """Test downloading LODES data."""
 
