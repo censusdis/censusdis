@@ -13,8 +13,10 @@ import unittest
 from pandas.testing import assert_frame_equal
 
 import censusdis.data as ced
-from censusdis.datasets import CBP, EWKS
+from censusdis.datasets import CBP, EWKS, ACS1
 from censusdis.states import NJ
+
+from censusdis.impl.exceptions import CensusApiException
 
 
 class QueryFilterTestCase(unittest.TestCase):
@@ -101,6 +103,39 @@ class NoGeographyTestCase(unittest.TestCase):
         )
 
         self.assertEqual(len(variables), df_ts.shape[1])
+
+
+class BadApiKeyTestCase(unittest.TestCase):
+    """Test with an invalid API key that still gets a 200."""
+
+    def test_no_api_key(self):
+        """
+        Test with no API key.
+
+        This version should work fine assuming we don't hit 500 calls a day.
+        """
+        df = ced.download(
+            dataset=ACS1,
+            vintage=2023,
+            download_variables=["NAME"],
+            state=NJ,
+            api_key=None,
+        )
+
+        self.assertEqual((1, 2), df.shape)
+
+    def test_bad_api_key(self):
+        """Test with a bad API key."""
+        with self.assertRaises(CensusApiException) as context:
+            ced.download(
+                dataset=ACS1,
+                vintage=2023,
+                download_variables=["NAME"],
+                state=NJ,
+                api_key="BOGUS API KEY",
+            )
+
+        self.assertIn("failed because your key is invalid.", str(context.exception))
 
 
 if __name__ == "__main__":
