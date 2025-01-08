@@ -44,6 +44,8 @@ ACS1_PUMS = "acs/acs1/pums"
 
 ACS1_PUMSPR = "acs/acs1/pumspr"
 
+ACS1_SDATAPROFILE_CD119 = "acs/acs1/sdataprofile/cd119"
+
 ACS1_SPP = "acs/acs1/spp"
 
 ACS1_SUBJECT = "acs/acs1/subject"
@@ -654,6 +656,7 @@ DATASET_REFERENCE_URLS = {
     ACS1_PROFILE: "http://api.census.gov/data/2023/acs/acs1/profile",
     ACS1_PUMS: "http://api.census.gov/data/2023/acs/acs1/pums",
     ACS1_PUMSPR: "http://api.census.gov/data/2023/acs/acs1/pumspr",
+    ACS1_SDATAPROFILE_CD119: "http://api.census.gov/data/2023/acs/acs1/sdataprofile/cd119",
     ACS1_SPP: "http://api.census.gov/data/2023/acs/acs1/spp",
     ACS1_SUBJECT: "http://api.census.gov/data/2023/acs/acs1/subject",
     ACS3: "http://api.census.gov/data/2013/acs/acs3",
