@@ -634,7 +634,7 @@ def download(
     dataset
         The dataset to download from. For example `"acs/acs5"`,
         `"dec/pl"`, or `"timeseries/poverty/saipe/schdist"`. There are
-        symbolic names for datasets, like `ACS5` for `"acs/acs5"
+        symbolic names for datasets, like `ACS5` for `"acs/acs5"`
         in :py:module:`censusdis.datasets`.
     vintage
         The vintage to download data for. For most data sets this is
