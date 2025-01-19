@@ -1231,8 +1231,27 @@ def _bind_path_if_possible(dataset, vintage, **kwargs):
     bound_path = cgeo.PathSpec.partial_prefix_match(dataset, vintage, **kwargs)
     if bound_path is None:
         if kwargs:
+            path_specs = cgeo.geo_path_snake_specs(dataset, vintage)
+            possible_path_spec_keys = set(
+                geo for path_name in path_specs.values() for geo in path_name
+            )
+
+            non_geo_kwargs = [
+                k for k in kwargs.keys() if k not in possible_path_spec_keys
+            ]
+
+            if non_geo_kwargs:
+                msg = (
+                    "The following args are not recognized as non-geographic arguments or "
+                    "goegraphic arguments for the dataset "
+                    f"{dataset} in vintage {vintage}: {', '.join(non_geo_kwargs)}.\n"
+                    "Sometimes this can be due to spelling errors in argument names.\n"
+                )
+            else:
+                msg = f"Unable to match the geography specification {kwargs}.\n"
+
             raise CensusApiException(
-                f"Unable to match the geography specification {kwargs}.\n"
+                f"{msg}"
                 f"Supported geographies for dataset='{dataset}' in year={vintage} are:\n"
                 + "\n".join(
                     f"{path_spec}"

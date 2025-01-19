@@ -14,7 +14,7 @@ from pandas.testing import assert_frame_equal
 
 import censusdis.data as ced
 from censusdis.datasets import CBP, EWKS, ACS1
-from censusdis.states import NJ
+from censusdis.states import NJ, ALL_STATES_AND_DC
 
 from censusdis.impl.exceptions import CensusApiException
 
@@ -136,6 +136,49 @@ class BadApiKeyTestCase(unittest.TestCase):
             )
 
         self.assertIn("failed because your key is invalid.", str(context.exception))
+
+
+class MispelledKeywordTestCase(unittest.TestCase):
+    """
+    Test that we get a good exception when we test a misspelled keyword.
+
+    We don't want it to get confused for being a geo keyword.
+    """
+
+    def test_variable(self):
+        """Test with variable= instead of download_variable=."""
+        with self.assertRaises(CensusApiException) as ctx:
+            ced.download(
+                dataset=ACS1,
+                vintage=2023,
+                variables=["B25003_001E", "B25003_002E", "B25003_003E"],
+                state=ALL_STATES_AND_DC,
+            )
+        self.assertTrue(
+            str(ctx.exception).startswith(
+                "The following args are not recognized as non-geographic arguments or "
+                "goegraphic arguments for the dataset "
+            )
+        )
+        self.assertIn("Supported geographies for dataset", str(ctx.exception))
+
+    def test_bad_geo(self):
+        """Test with variable= instead of download_variable=."""
+        with self.assertRaises(CensusApiException) as ctx:
+            ced.download(
+                dataset=ACS1,
+                vintage=2023,
+                download_variables=["B25003_001E", "B25003_002E", "B25003_003E"],
+                state=NJ,
+                place="*",
+                county="*",
+            )
+        self.assertTrue(
+            str(ctx.exception).startswith(
+                "Unable to match the geography specification {'state': '34', 'place': '*', 'county': '*'}."
+            )
+        )
+        self.assertIn("Supported geographies for dataset", str(ctx.exception))
 
 
 if __name__ == "__main__":
