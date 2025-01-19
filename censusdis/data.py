@@ -1253,7 +1253,10 @@ There are two reasons why this might happen:
 
 """
             else:
-                msg = f"\nUnable to match the geography specification {kwargs}.\n\n"
+                msg = f"""
+Unable to match the geography specification {kwargs}.
+
+"""
 
             raise CensusApiException(
                 f"{msg}"
