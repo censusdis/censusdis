@@ -1248,7 +1248,7 @@ def _bind_path_if_possible(dataset, vintage, **kwargs):
                     "Sometimes this can be due to spelling errors in argument names.\n"
                 )
             else:
-                msg = "Unable to match the geography specification {kwargs}.\n"
+                msg = f"Unable to match the geography specification {kwargs}.\n"
 
             raise CensusApiException(
                 f"{msg}"
