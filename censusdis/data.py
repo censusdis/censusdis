@@ -1241,14 +1241,19 @@ def _bind_path_if_possible(dataset, vintage, **kwargs):
             ]
 
             if non_geo_kwargs:
-                msg = (
-                    "The following args are not recognized as non-geographic arguments or "
-                    "goegraphic arguments for the dataset "
-                    f"{dataset} in vintage {vintage}: {', '.join(non_geo_kwargs)}.\n"
-                    "Sometimes this can be due to spelling errors in argument names.\n"
-                )
+                msg = f"""
+The following arguments are not recognized as non-geographic arguments or goegraphic arguments
+for the dataset {dataset} in vintage {vintage}: '{"', '".join(non_geo_kwargs)}'.
+
+There are two reasons why this might happen:
+
+1. The arg(s) mentioned above are mispelled versions of named or geopgrahic arguments.
+2. The arg(s) mentioned above are valid geographic arguments for some data sets and
+   vintages, but not for {dataset} in vintage {vintage}.
+
+"""
             else:
-                msg = f"Unable to match the geography specification {kwargs}.\n"
+                msg = f"\nUnable to match the geography specification {kwargs}.\n\n"
 
             raise CensusApiException(
                 f"{msg}"

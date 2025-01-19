@@ -156,8 +156,8 @@ class MispelledKeywordTestCase(unittest.TestCase):
             )
         self.assertTrue(
             str(ctx.exception).startswith(
-                "The following args are not recognized as non-geographic arguments or "
-                "goegraphic arguments for the dataset "
+                "\nThe following arguments are not recognized as non-geographic arguments "
+                "or goegraphic arguments"
             )
         )
         self.assertIn("Supported geographies for dataset", str(ctx.exception))
@@ -175,7 +175,7 @@ class MispelledKeywordTestCase(unittest.TestCase):
             )
         self.assertTrue(
             str(ctx.exception).startswith(
-                "Unable to match the geography specification {'state': '34', 'place': '*', 'county': '*'}."
+                "\nUnable to match the geography specification {'state': '34', 'place': '*', 'county': '*'}."
             )
         )
         self.assertIn("Supported geographies for dataset", str(ctx.exception))
