@@ -362,6 +362,8 @@ ECN_DIRPREM = "ecndirprem"
 
 ECN_DISSMED = "ecndissmed"
 
+ECN_ECOMM = "ecnecomm"
+
 ECN_ELMENU = "ecnelmenu"
 
 ECN_EMPFUNC = "ecnempfunc"
@@ -670,8 +672,8 @@ DATASET_REFERENCE_URLS = {
     ACS5_CPROFILE: "http://api.census.gov/data/2023/acs/acs5/cprofile",
     ACS5_EEO: "http://api.census.gov/data/2018/acs/acs5/eeo",
     ACS5_PROFILE: "http://api.census.gov/data/2023/acs/acs5/profile",
-    ACS5_PUMS: "http://api.census.gov/data/2022/acs/acs5/pums",
-    ACS5_PUMSPR: "http://api.census.gov/data/2022/acs/acs5/pumspr",
+    ACS5_PUMS: "http://api.census.gov/data/2023/acs/acs5/pums",
+    ACS5_PUMSPR: "http://api.census.gov/data/2023/acs/acs5/pumspr",
     ACS5_SPT: "http://api.census.gov/data/2021/acs/acs5/spt",
     ACS5_SPTPROFILE: "http://api.census.gov/data/2021/acs/acs5/sptprofile",
     ACS5_SUBJECT: "http://api.census.gov/data/2023/acs/acs5/subject",
@@ -815,6 +817,7 @@ DATASET_REFERENCE_URLS = {
     ECN_CRFIN: "http://api.census.gov/data/2017/ecncrfin",
     ECN_DIRPREM: "http://api.census.gov/data/2017/ecndirprem",
     ECN_DISSMED: "http://api.census.gov/data/2017/ecndissmed",
+    ECN_ECOMM: "http://api.census.gov/data/2022/ecnecomm",
     ECN_ELMENU: "http://api.census.gov/data/2017/ecnelmenu",
     ECN_EMPFUNC: "http://api.census.gov/data/2017/ecnempfunc",
     ECN_ENTSUP: "http://api.census.gov/data/2017/ecnentsup",
