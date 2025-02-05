@@ -34,6 +34,16 @@ jobs:
       fail-fast: false
     steps:
       #----------------------------------------------
+      # clone the repo with all the cached shapefiles we need
+      # We hope this is temporary and that the U.S. Census
+      # bureau will make their repository of shapefiles 
+      # available again.  
+      #----------------------------------------------
+      - name: Clone shapefile cache
+        run: |
+          mkdir -p ~/.censusdis
+          git clone https://github.com/censusdis/shapefile-cache.git ~/.censusdis/data
+      #----------------------------------------------
       #       check out repo
       #----------------------------------------------
       - name: Check out repository
