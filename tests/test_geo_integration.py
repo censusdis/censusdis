@@ -56,6 +56,9 @@ class _GeometryTypeRecorder:
         )
 
 
+@unittest.skip(
+    "U.S. Census geographic shapefiles are not currently available."
+)
 class DownloadWithGeometryTestCase(unittest.TestCase):
     """
     Test downloading with geometry at many different geo levels.
@@ -1106,6 +1109,9 @@ class TestWideMergeWithGeometry(unittest.TestCase):
             )
 
 
+@unittest.skip(
+    "U.S. Census geographic shapefiles are not currently available."
+)
 class ShapefileTestCase(unittest.TestCase):
     """Test shapefile functionality."""
 
@@ -1170,6 +1176,9 @@ class ShapefileTestCase(unittest.TestCase):
         self.assertEqual((3221, 7), gdf_counties.shape)
 
 
+@unittest.skip(
+    "U.S. Census geographic shapefiles are not currently available."
+)
 class AddInferredGeographyTestCase(unittest.TestCase):
     """Test our ability to add inferred geometry."""
 
@@ -1493,10 +1502,6 @@ class RemoveWaterTestCase(unittest.TestCase):
         )
 
 
-if __name__ == "__main__":
-    unittest.main()
-
-
 class UsNationTestCase(unittest.TestCase):
     """Unit tests for downloading data and maps at the national level."""
 
@@ -1517,3 +1522,7 @@ class UsNationTestCase(unittest.TestCase):
         self.assertIn("geometry", gdf.columns)
 
         self.assertTrue((gdf["US"] == "1").all())
+
+
+if __name__ == "__main__":
+    unittest.main()
