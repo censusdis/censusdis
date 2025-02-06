@@ -56,9 +56,7 @@ class _GeometryTypeRecorder:
         )
 
 
-@unittest.skip(
-    "U.S. Census geographic shapefiles are not currently available."
-)
+@unittest.skip("U.S. Census geographic shapefiles are not currently available.")
 class DownloadWithGeometryTestCase(unittest.TestCase):
     """
     Test downloading with geometry at many different geo levels.
@@ -1109,9 +1107,7 @@ class TestWideMergeWithGeometry(unittest.TestCase):
             )
 
 
-@unittest.skip(
-    "U.S. Census geographic shapefiles are not currently available."
-)
+@unittest.skip("U.S. Census geographic shapefiles are not currently available.")
 class ShapefileTestCase(unittest.TestCase):
     """Test shapefile functionality."""
 
@@ -1176,9 +1172,7 @@ class ShapefileTestCase(unittest.TestCase):
         self.assertEqual((3221, 7), gdf_counties.shape)
 
 
-@unittest.skip(
-    "U.S. Census geographic shapefiles are not currently available."
-)
+@unittest.skip("U.S. Census geographic shapefiles are not currently available.")
 class AddInferredGeographyTestCase(unittest.TestCase):
     """Test our ability to add inferred geometry."""
 

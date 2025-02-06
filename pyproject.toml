@@ -70,7 +70,7 @@ scikit-image = "^0.24.0"
 [tool.poetry.group.lint.dependencies]
 ruff = "^0.1.14"
 flake8 = "^7.0.0"
-black = {extras = ["jupyter"], version = "^24.1.0"}
+black = {extras = ["jupyter"], version = "^25.1.0"}
 isort = "^5.10.1"
 pylint = "^2.15.2"
 mypy = "^0.971"
