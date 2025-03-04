@@ -9,7 +9,7 @@ from shapely import MultiPolygon, Polygon
 
 
 def isoperimetric_quotient(
-    geo: Union[gpd.GeoDataFrame, gpd.GeoSeries, Polygon]
+    geo: Union[gpd.GeoDataFrame, gpd.GeoSeries, Polygon],
 ) -> float:
     """
     Compute the isoperimetric quotient of a shape or collection of shapes.
