@@ -1,4 +1,4 @@
-"""Utility functions for downloading, graphing and analyzing multiple years of 
+"""Utility functions for downloading, graphing and analyzing multiple years of
 ACS data with a single line of code."""
 
 from collections import defaultdict
@@ -102,7 +102,8 @@ class VariableMistmatchOverTime(Exception):
 def warn_variable_changes(df, dataset, vintages, download_variables, group, prompt):
     """
     In the ACS, Sometimes the same variable is used for different things in different years.
-    For an example see https://arilamstein.com/blog/2024/05/28/creating-time-series-data-from-the-american-community-survey-acs/
+    For example in 2005 `B08006_017E` was used for "Estimate!!Total!!Motorcycle". But in 2006 it
+    changed to "Estimate!!Total!!Worked at home" and in 2019 it changed to "Estimate!!Total:!!Worked from home".
     This code alerts users of any variables which have had different labels over time.
 
     This function always emits a warning if it encounters that situation. If prompt is True
@@ -159,8 +160,8 @@ def download_multiyear(
     drop_cols
         If True, drop cols that do not contain variables or the year (ex. geography columns).
     prompt
-        This function emits a warning each time a downloaded variable has had multiple labels over time. If True, prompt the user
-        whether they want to continue downloading the dataset despite the differences.
+        This function emits a warning each time a downloaded variable has had multiple labels over time.
+        If True, prompt the user whether they want to continue downloading the dataset despite the differences.
     **kwargs
         Geography parameters passed directly to `ced.download`.
 
