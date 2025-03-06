@@ -1,7 +1,11 @@
+"""Utility functions for downloading, graphing and analyzing multiple years of 
+ACS data with a single line of code."""
+
 from collections import defaultdict
 import pandas as pd
 
 import censusdis.data as ced
+from censusdis.datasets import ACS1, ACS3, ACS5
 
 import plotly.graph_objects as go
 import plotly.io as pio
@@ -141,7 +145,7 @@ def download_multiyear(
     Parameters
     ----------
     dataset
-        Assumed to be `censusdis.datasets.ACS1` or `censusdis.datasets.ACS5`.
+        Must be one of `censusdis.datasets.ACS1`, `censudis.datasets.ACS3` or `censusdis.datasets.ACS5`.
     vintages
         A list of years to download data for.
     download_variables
@@ -186,6 +190,11 @@ def download_multiyear(
         drop_cols=True,
     )
     """
+    if dataset not in [ACS1, ACS3, ACS5]:
+        raise ValueError(
+            "Dataset must be one of `censusdis.datasets.ACS1`, `censusdis.datasets.ACS3` or `censusdis.datasets.ACS5`"
+        )
+
     if (download_variables is None and group is None) or (
         download_variables is not None and group is not None
     ):
@@ -298,6 +307,8 @@ def graph_multiyear(df, title, yaxis_title, y_cols=None, set_pio_default_rendere
         "#0072B2",
         "#D55E00",
         "#CC79A7",
+        "#999999",
+        "#E41A1C",
     ]
 
     fig = go.Figure()
