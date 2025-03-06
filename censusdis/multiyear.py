@@ -11,8 +11,14 @@ import plotly.io as pio
 
 import re
 
+from typing import List, Optional, Union, Iterable, Callable, Dict
 
-def is_variable_column(col, download_variables, group):
+
+def is_variable_column(
+    col: str,
+    download_variables: Optional[Union[str, Iterable[str]]],
+    group: Optional[str],
+) -> bool:
     """
     Determine whether a column is a Census variable.
 
@@ -33,10 +39,15 @@ def is_variable_column(col, download_variables, group):
 
 # This function is based on the notebook linked to in this github issue:
 # https://github.com/censusdis/censusdis/issues/325
-def name_mapper(dataset, vintage, download_variables, group):
+def name_mapper(
+    dataset: str,
+    vintage: int,
+    download_variables: Optional[Union[str, Iterable[str]]],
+    group: Optional[str],
+) -> Callable[[str], str]:
     """Return a function that converts an ACS variable to its label."""
 
-    def inner(variable):
+    def inner(variable: str) -> str:
         """Map from the variables we got back to their labels."""
         if is_variable_column(variable, download_variables, group):
             # Look up details of the particular variable:
@@ -60,7 +71,9 @@ def name_mapper(dataset, vintage, download_variables, group):
     return inner
 
 
-def get_unique_labels_for_variable(acs, variable, years):
+def get_unique_labels_for_variable(
+    acs: str, variable: str, years: List[int]
+) -> Dict[str, List[int]]:
     """
     Return all labels the ACS has used for a given variable.
 
@@ -104,7 +117,14 @@ class VariableMistmatchOverTimeError(Exception):
     pass
 
 
-def warn_variable_changes(df, dataset, vintages, download_variables, group, prompt):
+def warn_variable_changes(
+    df: pd.DataFrame,
+    dataset: str,
+    vintages: List[int],
+    download_variables: Optional[Union[str, Iterable[str]]],
+    group: Optional[str],
+    prompt: bool,
+) -> None:
     """
     Issue a warning when an ACS variable has had multiple labels over the years.
 
@@ -136,16 +156,16 @@ def warn_variable_changes(df, dataset, vintages, download_variables, group, prom
 
 
 def download_multiyear(
-    dataset,
-    vintages,
-    download_variables=None,
+    dataset: str,
+    vintages: List[int],
+    download_variables: Optional[Union[str, Iterable[str]]] = None,
     *,
-    group=None,
-    rename_vars=True,
-    drop_cols=True,
-    prompt=True,
+    group: Optional[str] = None,
+    rename_vars: bool = True,
+    drop_cols: bool = True,
+    prompt: bool = True,
     **kwargs,
-):
+) -> pd.DataFrame:
     """
     Download multiple years of ACS data into a single dataframe.
 
@@ -254,7 +274,13 @@ def download_multiyear(
     return df
 
 
-def graph_multiyear(df, title, yaxis_title, y_cols=None, set_pio_default_renderer=True):
+def graph_multiyear(
+    df: pd.DataFrame,
+    title: str,
+    yaxis_title: str,
+    y_cols: Optional[Iterable[str]] = None,
+    set_pio_default_renderer: bool = True,
+) -> None:
     """
     Create a (multi-line) graph of time series data using plotly.
 
@@ -349,7 +375,7 @@ def graph_multiyear(df, title, yaxis_title, y_cols=None, set_pio_default_rendere
     fig.show()
 
 
-def pct_change_multiyear(df):
+def pct_change_multiyear(df: pd.DataFrame) -> pd.DataFrame:
     """
     Convert a multi-year dataframe from raw counts to percent change.
 
