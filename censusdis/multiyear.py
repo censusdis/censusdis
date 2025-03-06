@@ -1,5 +1,4 @@
-"""Utility functions for downloading, graphing and analyzing multiple years of
-ACS data with a single line of code."""
+"""Utility functions for downloading, graphing and analyzing multiple years of ACS data."""
 
 from collections import defaultdict
 import pandas as pd
@@ -35,6 +34,8 @@ def is_variable_column(col, download_variables, group):
 # This function is based on the notebook linked to in this github issue:
 # https://github.com/censusdis/censusdis/issues/325
 def name_mapper(dataset, vintage, download_variables, group):
+    """Return a function that converts an ACS variable to its label."""
+
     def inner(variable):
         """Map from the variables we got back to their labels."""
         if is_variable_column(variable, download_variables, group):
@@ -74,12 +75,14 @@ def get_unique_labels_for_variable(acs, variable, years):
     inconsistently capitalized over the years). Also, all ":" are removed prior to comparison so that
     "estimate!!total:!!native" is the same as "estimate!!total!!native".
 
-    Parameters:
+    Parameters
+    ----------
     - acs: The ACS to use. Ex. censusdis.datasets.ACS1
     - variable: The variable in question. Ex. 'B01001_001E'
     - years: An iterable of years to use. Ex. [2005, 2006, 2007]
 
-    Returns:
+    Returns
+    -------
     - A dict where each key is a label, and each value is a list of years that key has been used.
 
     Note: If the dict returned is of length 1, then the variable has only ever had 1 label.
@@ -95,12 +98,16 @@ def get_unique_labels_for_variable(acs, variable, years):
     return labels
 
 
-class VariableMistmatchOverTime(Exception):
+class VariableMistmatchOverTimeError(Exception):
+    """Raised when an ACS variable has had multiple labels over time."""
+
     pass
 
 
 def warn_variable_changes(df, dataset, vintages, download_variables, group, prompt):
     """
+    Issue a warning when an ACS variable has had multiple labels over the years.
+
     In the ACS, Sometimes the same variable is used for different things in different years.
     For example in 2005 `B08006_017E` was used for "Estimate!!Total!!Motorcycle". But in 2006 it
     changed to "Estimate!!Total!!Worked at home" and in 2019 it changed to "Estimate!!Total:!!Worked from home".
@@ -125,7 +132,7 @@ def warn_variable_changes(df, dataset, vintages, download_variables, group, prom
                 print(f"\t'{label}' in {years}")
             if prompt:
                 if input("Continue downloading dataset (y/n)?") != "y":
-                    raise VariableMistmatchOverTime()
+                    raise VariableMistmatchOverTimeError()
 
 
 def download_multiyear(
@@ -140,8 +147,9 @@ def download_multiyear(
     **kwargs,
 ):
     """
-    Download multiple years of ACS data into a single dataframe. Variables can be specified
-    individually by `download_variables` or as a table by `group`.
+    Download multiple years of ACS data into a single dataframe.
+
+    Variables can be specified individually by `download_variables` or as a table by `group`.
 
     Parameters
     ----------
@@ -290,7 +298,6 @@ def graph_multiyear(df, title, yaxis_title, y_cols=None, set_pio_default_rendere
         ["Total", "Native", "Foreign-Born"],
     )
     """
-
     # By default plotly graphs are interactive. While this is great locally, they do not render
     # on github. This allows static version of the graphs to appear on github in addition to seeing
     # interactive versions locally. See https://github.com/plotly/plotly.py/issues/931#issuecomment-2098209279
@@ -378,7 +385,6 @@ def pct_change_multiyear(df):
 
     print(df)
     """
-
     years = df["Year"]
 
     df = df.pct_change() * 100
