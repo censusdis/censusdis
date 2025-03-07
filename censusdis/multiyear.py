@@ -277,8 +277,8 @@ def download_multiyear(
 
 def graph_multiyear(
     df: pd.DataFrame,
-    title: str,
-    yaxis_title: str,
+    title: str = "",
+    yaxis_title: str = "",
     y_cols: Optional[Iterable[str]] = None,
     set_pio_default_renderer: bool = True,
 ) -> None:
