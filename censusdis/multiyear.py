@@ -271,6 +271,7 @@ def download_multiyear(
             )
         )
 
+    df = df.reset_index(drop=True)
     return df
 
 
