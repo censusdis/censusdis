@@ -115,17 +115,17 @@ the main branch of the code, go back to the
 and click the code coverage
 icon at the top of the README.md file.
 
-## Flake8 and Black
+## Flake8, Black and Ruff
 
 Before you commit your code, we recommend you run
-[flake8](https://flake8.pycqa.org/en/latest/)
-and 
-[black](https://black.readthedocs.io/en/stable/)
+[flake8](https://flake8.pycqa.org/en/latest/), 
+[black](https://black.readthedocs.io/en/stable/) and [ruff](https://docs.astral.sh/ruff/)
 as follows:
 
 ```shell
 poetry run flake8 .
 poetry run black .
+poetry run ruff check .
 ```
 
 and correct any errors that are found. If you submit
