@@ -279,7 +279,7 @@ def graph_multiyear(
     df: pd.DataFrame,
     title: str = "",
     yaxis_title: str = "",
-    y_cols: Optional[Iterable[str]] = None
+    y_cols: Optional[Iterable[str]] = None,
 ) -> None:
     """
     Create a (multi-line) graph of time series data using plotly.
@@ -318,6 +318,7 @@ def graph_multiyear(
         ["Total", "Native", "Foreign-Born"],
     )
     """
+
     # Define a function to format the y-axis with commas
     def format_yaxis(value, tick_position):
         return f"{value:,.0f}"
@@ -325,16 +326,37 @@ def graph_multiyear(
     if not y_cols:
         y_cols = [col for col in df.columns if col != "Year"]
 
-    for col in y_cols:
-        plt.plot(df['Year'], df[col], label=col, marker='o')
+    colorblind_palette = [
+        "#E69F00",
+        "#56B4E9",
+        "#009E73",
+        "#F0E442",
+        "#0072B2",
+        "#D55E00",
+        "#CC79A7",
+        "#999999",
+        "#E41A1C",
+    ]
+
+    for idx, y_col in enumerate(y_cols):
+        plt.plot(
+            df["Year"],
+            df[y_col],
+            label=y_col,
+            marker="o",
+            color=colorblind_palette[idx],
+        )
 
     # Explicitly set the x-axis ticks to match the actual years in the data
-    plt.xticks(ticks=df['Year'], labels=df['Year'])
+    plt.xticks(ticks=df["Year"], labels=df["Year"], rotation=-45)
 
-    plt.xlabel('Year')
+    # Apply comma formatting to the y-axis
+    plt.gca().yaxis.set_major_formatter(FuncFormatter(format_yaxis))
+
+    plt.xlabel("Year")
     plt.ylabel(yaxis_title)
     plt.title(title)
-    plt.legend(loc='center left', bbox_to_anchor=(1, 0.5))
+    plt.legend(loc="center left", bbox_to_anchor=(1, 0.5))
     plt.show()
 
 
