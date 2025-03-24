@@ -3,11 +3,11 @@
 from collections import defaultdict
 import pandas as pd
 
+import matplotlib.pyplot as plt
+from matplotlib.ticker import FuncFormatter
+
 import censusdis.data as ced
 from censusdis.datasets import ACS1, ACS3, ACS5
-
-import plotly.graph_objects as go
-import plotly.io as pio
 
 import re
 
@@ -279,8 +279,7 @@ def graph_multiyear(
     df: pd.DataFrame,
     title: str = "",
     yaxis_title: str = "",
-    y_cols: Optional[Iterable[str]] = None,
-    set_pio_default_renderer: bool = True,
+    y_cols: Optional[Iterable[str]] = None
 ) -> None:
     """
     Create a (multi-line) graph of time series data using plotly.
@@ -296,12 +295,6 @@ def graph_multiyear(
     y_cols
         A list of columns in `df` to create lines for. If None then will graph all
         columns except "Year".
-    set_pio_default_renderer
-        By default plotly generates interactive graphs. Unfortunately, these graphs
-        do not render when notebooks are viewed on github. Setting this option to
-        True (the default) sets plotlyio.renderers.default="vscode+png", which also
-        generates png versions of the plots. This allows notebooks which use this
-        function to have their graphs viewable on github.
 
     Returns
     -------
@@ -325,55 +318,24 @@ def graph_multiyear(
         ["Total", "Native", "Foreign-Born"],
     )
     """
-    # By default plotly graphs are interactive. While this is great locally, they do not render
-    # on github. This allows static version of the graphs to appear on github in addition to seeing
-    # interactive versions locally. See https://github.com/plotly/plotly.py/issues/931#issuecomment-2098209279
-    if set_pio_default_renderer:
-        pio.renderers.default = "vscode+png"
+    # Define a function to format the y-axis with commas
+    def format_yaxis(value, tick_position):
+        return f"{value:,.0f}"
 
     if not y_cols:
         y_cols = [col for col in df.columns if col != "Year"]
 
-    colorblind_palette = [
-        "#E69F00",
-        "#56B4E9",
-        "#009E73",
-        "#F0E442",
-        "#0072B2",
-        "#D55E00",
-        "#CC79A7",
-        "#999999",
-        "#E41A1C",
-    ]
+    for col in y_cols:
+        plt.plot(df['Year'], df[col], label=col, marker='o')
 
-    fig = go.Figure()
+    # Explicitly set the x-axis ticks to match the actual years in the data
+    plt.xticks(ticks=df['Year'], labels=df['Year'])
 
-    for idx, y_col in enumerate(y_cols):
-        color = "black" if y_col == "Total" else colorblind_palette[idx]
-        fig.add_trace(
-            go.Scatter(
-                x=df["Year"],
-                y=df[y_col],
-                mode="lines+markers",
-                name=y_col,
-                line=dict(color=color),
-                hovertemplate="Year: %{x}<br>" + y_col + ": %{y:,}<extra></extra>",
-            )
-        )
-
-    # Update layout
-    fig.update_layout(
-        title=title,
-        xaxis_title="Year",
-        yaxis_title=yaxis_title,
-        xaxis=dict(
-            tickmode="array",
-            tickvals=df["Year"],
-            ticktext=[str(year) for year in df["Year"]],
-        ),
-    )
-
-    fig.show()
+    plt.xlabel('Year')
+    plt.ylabel(yaxis_title)
+    plt.title(title)
+    plt.legend(loc='center left', bbox_to_anchor=(1, 0.5))
+    plt.show()
 
 
 def pct_change_multiyear(df: pd.DataFrame) -> pd.DataFrame:
