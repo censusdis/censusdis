@@ -199,8 +199,12 @@ def download_multiyear(
 
     Examples
     --------
-    import pandas as pd
+    # Download the population by nativity in Great Neck School District, NY.
+    from censusdis.multiyear import download_multiyear
+    from censusdis.datasets import ACS5
+    from censusdis.states import NY
 
+    # Download the entire table.
     df = download_multiyear(
         dataset=ACS5,
         vintages=[2009, 2014, 2019],
@@ -210,6 +214,7 @@ def download_multiyear(
         school_district_unified="12510",
     )
 
+    # Downloaded selected variables.
     df = download_multiyear(
         dataset=ACS5,
         vintages=[2009, 2014, 2019],
@@ -302,7 +307,10 @@ def graph_multiyear(
 
     Examples
     --------
-    import pandas as pd
+    # Graph the population by nativity in Great Neck School District, NY.
+    from censusdis.multiyear import download_multiyear, graph_multiyear
+    from censusdis.datasets import ACS5
+    from censusdis.states import NY
 
     df = download_multiyear(
         dataset=ACS5,
@@ -361,7 +369,7 @@ def graph_multiyear(
 
 
 def pct_change_multiyear(df: pd.DataFrame) -> pd.DataFrame:
-    """
+    r"""
     Convert a multi-year dataframe from raw counts to percent change.
 
     Essentially runs pd.DataFrame.pct_change on all columns of the dataframe except the "Year" column.
@@ -378,10 +386,14 @@ def pct_change_multiyear(df: pd.DataFrame) -> pd.DataFrame:
 
     Examples
     --------
+    # Graph the percent change in the population by nativity in Great Neck School District, NY.
+    from censusdis.multiyear import (
+        download_multiyear,
+        pct_change_multiyear,
+        graph_multiyear,
+    )
     from censusdis.datasets import ACS5
     from censusdis.states import NY
-
-    from utils import download_multiyear, pct_change_multiyear, graph_multiyear
 
     df = download_multiyear(
         dataset=ACS5,
@@ -393,8 +405,13 @@ def pct_change_multiyear(df: pd.DataFrame) -> pd.DataFrame:
     )
 
     df = pct_change_multiyear(df)
-
     print(df)
+
+    graph_multiyear(
+        df,
+        "Percent Change in Population by Nativity\nGreat Neck School District, NY",
+        "Percent Change",
+    )
     """
     years = df["Year"]
 
