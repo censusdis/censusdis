@@ -287,7 +287,7 @@ def graph_multiyear(
     y_cols: Optional[Iterable[str]] = None,
 ) -> None:
     """
-    Create a (multi-line) graph of time series data using plotly.
+    Create a (multi-line) graph of time series data.
 
     Parameters
     ----------
