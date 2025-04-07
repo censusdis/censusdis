@@ -158,10 +158,15 @@ you need not worry about this. If you would, then use the values you would pass 
 """
 
 
-def json_from_url(url: str, params: Optional[Mapping[str, str]] = None) -> Any:
+def json_from_url(
+        url: str, 
+        params: Optional[Mapping[str, str]] = None,
+        *,
+        timeout: Optional[Union[float, Tuple[float, float]]] = None,
+) -> Any:
     """Get json from a URL."""
     request = requests.get(
-        url, params=params, cert=certificates.data_cert, verify=certificates.data_verify
+        url, params=params, cert=certificates.data_cert, verify=certificates.data_verify, timeout=timeout
     )
 
     if request.status_code == 200:
