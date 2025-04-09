@@ -11,13 +11,14 @@ import shutil
 from logging import getLogger
 from pathlib import Path
 from typing import Dict, Optional, Tuple, Union, Any
+import urllib.error
 from zipfile import BadZipFile, ZipFile
 
 import contextily as cx
 import geopandas as gpd
 import matplotlib.pyplot as plt
 import pandas as pd
-import requests
+import urllib
 import shapely.affinity
 from haversine import haversine
 from shapely.geometry import MultiPolygon, Point, Polygon
@@ -25,7 +26,6 @@ from shapely.geometry.base import BaseGeometry
 import matplotlib.patheffects as pe
 
 from censusdis.impl.exceptions import CensusApiException
-from censusdis.impl.fetch import certificates
 from censusdis.states import AK, HI, NAMES_FROM_IDS, PR
 
 logger = getLogger(__name__)
@@ -468,32 +468,50 @@ class ShapeReader:
         # url = self._url_for_file(name)
         zip_url = f"{base_url}/{name}.zip"
 
-        # Fetch the zip file and write it.
-        response = requests.get(
-            zip_url,
-            timeout=timeout,
-            cert=certificates.map_cert,
-            verify=certificates.map_verify,
-        )
+        headers = {
+            "Accept": (
+                "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,"
+                "image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7"
+            ),
+            "Accept-Language": "en-US,en;q=0.9",
+            "Cache-Control": "max-age=0",
+            "Priority": "u=0, i",
+            # "sec-ch-ua": '"Not(A:Brand";v="99", "Google Chrome";v="133", "Chromium";v="133"',
+            # "sec-ch-ua-mobile": "?0",
+            # "sec-ch-ua-platform": '"macOS"',
+            # "sec-fetch-dest": "document",
+            # "sec-fetch-mode": "navigate",
+            # "sec-fetch-site": "none",
+            # "sec-fetch-user": "?1",
+            "Upgrade-Insecure-Requests": "1",
+            "User-Agent": (
+                "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) "
+                "Chrome/133.0.0.0 Safari/537.36"
+            ),
+        }
 
-        if response.status_code == 404:
-            raise MapException(
-                f"{zip_url} was not found. "
-                "The Census Bureau may not publish the shapefile you are looking for for the given year. "
-                "Or the file you are looking for may be from a year where a naming convention that censusdis "
-                "does not recognize was used."
-            )
+        # Use urllib as advised at https://stackoverflow.com/questions/74446830
 
-        headers = response.headers
-        content_type = headers.get("Content-Type", None)
+        request = urllib.request.Request(zip_url)
+        for k, v in headers.items():
+            request.add_header(k, v)
 
-        if content_type != "application/zip":
-            raise MapException(
-                f"Expected content type application/zip' from {zip_url}, but got '{content_type}' instead."
-            )
+        try:
+            response = urllib.request.urlopen(request)
+        except urllib.error.HTTPError as e:
+            if e.code == 404:
+                raise MapException(
+                    f"{zip_url} was not found. "
+                    "The Census Bureau may not publish the shapefile you are looking for for the given year. "
+                    "Or the file you are looking for may be from a year where a naming convention that censusdis "
+                    "does not recognize was used."
+                )
+            else:
+                raise MapException(f"Error status {e.code} loading {zip_url}") from e
 
-        with zip_path.open("wb") as file:
-            file.write(response.content)
+        data = response.read()
+        with open(zip_path, "wb") as file:
+            file.write(data)
 
         # Unzip the file and extract all contents.
         try:
