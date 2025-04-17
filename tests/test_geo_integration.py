@@ -1493,8 +1493,35 @@ class RemoveWaterTestCase(unittest.TestCase):
         )
 
 
-if __name__ == "__main__":
-    unittest.main()
+class MapBug2025_04TestCase(unittest.TestCase):
+    """Test based on the sample code filed in issue #336."""
+
+    def test_sample_code(self):
+        """Test based on the sample code filed in issue #336."""
+        MEDIAN_HOUSEHOLD_INCOME_VARIABLE = "B19013_001E"
+
+        gdf_all_states = ced.download(
+            dataset=ACS5,
+            vintage=2020,
+            download_variables=["NAME", MEDIAN_HOUSEHOLD_INCOME_VARIABLE],
+            state="*",
+            # We want the geometry of the states too:
+            with_geometry=True,
+        )
+
+        self.assertIn("geometry", gdf_all_states.columns)
+
+        self.assertFalse(gdf_all_states.geometry.isnull().any())
+
+        ax = cem.plot_us(
+            gdf_all_states,
+            MEDIAN_HOUSEHOLD_INCOME_VARIABLE,
+            # The **kwargs here are standard Matplotlib **kwargs
+            legend=True,
+            figsize=(12, 6),
+        )
+
+        self.assertIsNotNone(ax)
 
 
 class UsNationTestCase(unittest.TestCase):
@@ -1517,3 +1544,7 @@ class UsNationTestCase(unittest.TestCase):
         self.assertIn("geometry", gdf.columns)
 
         self.assertTrue((gdf["US"] == "1").all())
+
+
+if __name__ == "__main__":
+    unittest.main()
