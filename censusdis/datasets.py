@@ -246,6 +246,8 @@ DECENNIAL_CD118 = "dec/cd118"
 
 DECENNIAL_CD119 = "dec/cd119"
 
+DECENNIAL_CD119BETA = "dec/cd119beta"
+
 DECENNIAL_CQR = "dec/cqr"
 
 DECENNIAL_CROSSTABAS = "dec/crosstabas"
@@ -757,6 +759,7 @@ DATASET_REFERENCE_URLS = {
     DECENNIAL_CD116: "http://api.census.gov/data/2010/dec/cd116",
     DECENNIAL_CD118: "http://api.census.gov/data/2020/dec/cd118",
     DECENNIAL_CD119: "http://api.census.gov/data/2020/dec/cd119",
+    DECENNIAL_CD119BETA: "http://api.census.gov/data/2020/dec/cd119beta",
     DECENNIAL_CQR: "http://api.census.gov/data/2000/dec/cqr",
     DECENNIAL_CROSSTABAS: "http://api.census.gov/data/2020/dec/crosstabas",
     DECENNIAL_CROSSTABGU: "http://api.census.gov/data/2020/dec/crosstabgu",
