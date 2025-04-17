@@ -1521,6 +1521,8 @@ class MapBug2025_04TestCase(unittest.TestCase):
             figsize=(12, 6),
         )
 
+        self.assertIsNotNone(ax)
+
 
 class UsNationTestCase(unittest.TestCase):
     """Unit tests for downloading data and maps at the national level."""
