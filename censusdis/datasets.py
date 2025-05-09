@@ -498,6 +498,8 @@ PEP_CHARAGE = "pep/charage"
 
 PEP_CHARAGEGROUPS = "pep/charagegroups"
 
+PEP_CHARV = "pep/charv"
+
 PEP_COCHAR5 = "pep/cochar5"
 
 PEP_COCHAR6 = "pep/cochar6"
@@ -646,8 +648,8 @@ DATASET_REFERENCE_URLS = {
     ABS_CBO: "http://api.census.gov/data/2022/abscbo",
     ABS_CS: "http://api.census.gov/data/2022/abscs",
     ABS_MCB: "http://api.census.gov/data/2022/absmcb",
-    ABS_NESD: "http://api.census.gov/data/2021/absnesd",
-    ABS_NESDO: "http://api.census.gov/data/2021/absnesdo",
+    ABS_NESD: "http://api.census.gov/data/2022/absnesd",
+    ABS_NESDO: "http://api.census.gov/data/2022/absnesdo",
     ABS_TCB: "http://api.census.gov/data/2018/abstcb",
     ACS1: "http://api.census.gov/data/2023/acs/acs1",
     ACS1_CD113: "http://api.census.gov/data/2011/acs1/cd113",
@@ -846,7 +848,7 @@ DATASET_REFERENCE_URLS = {
     ECN_LOCMFG: "http://api.census.gov/data/2017/ecnlocmfg",
     ECN_LOCMINE: "http://api.census.gov/data/2017/ecnlocmine",
     ECN_MARGIN: "http://api.census.gov/data/2017/ecnmargin",
-    ECN_MATFUEL: "http://api.census.gov/data/2017/ecnmatfuel",
+    ECN_MATFUEL: "http://api.census.gov/data/2022/ecnmatfuel",
     ECN_MEALCOST: "http://api.census.gov/data/2012/ecnmealcost",
     ECN_MENUTYPE: "http://api.census.gov/data/2012/ecnmenutype",
     ECN_NAPCSIND: "http://api.census.gov/data/2017/ecnnapcsind",
@@ -883,6 +885,7 @@ DATASET_REFERENCE_URLS = {
     PEP_AGESPECIALPR: "http://api.census.gov/data/2014/pep/agespecialpr",
     PEP_CHARAGE: "http://api.census.gov/data/2019/pep/charage",
     PEP_CHARAGEGROUPS: "http://api.census.gov/data/2019/pep/charagegroups",
+    PEP_CHARV: "http://api.census.gov/data/2023/pep/charv",
     PEP_COCHAR5: "http://api.census.gov/data/2014/pep/cochar5",
     PEP_COCHAR6: "http://api.census.gov/data/2014/pep/cochar6",
     PEP_COMPONENTS: "http://api.census.gov/data/2019/pep/components",
