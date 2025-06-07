@@ -8,6 +8,7 @@ which it downloads as needed and caches locally.
 
 import importlib.resources
 import shutil
+import time
 from logging import getLogger
 from pathlib import Path
 from typing import Dict, Optional, Tuple, Union, Any
@@ -33,6 +34,14 @@ logger = getLogger(__name__)
 
 class MapException(CensusApiException):
     """An exception generated from `censusdis.maps` code."""
+
+
+class ShapefileCorruptedException(MapException):
+    """An exception raised when a downloaded shapefile is corrupted or incomplete."""
+
+
+class ShapefileNotFoundException(MapException):
+    """An exception raised when a shapefile cannot be found on the Census servers."""
 
 
 class ShapeReader:
@@ -78,15 +87,49 @@ class ShapeReader:
     def _read_shapefile(
         self, base_name: str, base_url: str, crs, timeout: int
     ) -> gpd.GeoDataFrame:
-        """Read a shapefile."""
+        """Read a shapefile with corruption detection and retry."""
         self._auto_fetch_file(base_name, base_url, timeout=timeout)
 
         path = self._shapefile_full_path(base_name)
 
-        gdf = gpd.read_file(path)
-        if crs is not None:
-            gdf.to_crs(crs, inplace=True)
-        return gdf
+        try:
+            gdf = gpd.read_file(path)
+            if crs is not None:
+                gdf.to_crs(crs, inplace=True)
+            return gdf
+        except Exception as e:
+            # Handle various corruption errors that can occur during reading
+            error_indicators = [
+                "DataSourceError", "FeatureError", "fread", "failed on DBF file",
+                "Unable to open", ".shx", "EOFError", "BadZipFile"
+            ]
+            
+            error_str = str(e)
+            if any(indicator in error_str for indicator in error_indicators):
+                logger.warning(f"Detected corrupted shapefile {base_name}: {e}")
+                
+                # Remove the corrupted directory
+                dir_path = self._shapefile_root / base_name
+                if dir_path.exists():
+                    logger.info(f"Removing corrupted shapefile directory: {dir_path}")
+                    shutil.rmtree(dir_path)
+                
+                # Try to re-download once
+                logger.info(f"Attempting to re-download {base_name}")
+                self._auto_fetch_file(base_name, base_url, timeout=timeout)
+                
+                try:
+                    gdf = gpd.read_file(path)
+                    if crs is not None:
+                        gdf.to_crs(crs, inplace=True)
+                    return gdf
+                except Exception as retry_error:
+                    raise ShapefileCorruptedException(
+                        f"Shapefile {base_name} is corrupted and re-download failed: {retry_error}"
+                    ) from retry_error
+            else:
+                # Re-raise non-corruption related errors
+                raise
 
     def _shapefile_full_path(self, basename: str) -> Path:
         """Construct the full path to a shapefile."""
@@ -445,65 +488,181 @@ class ShapeReader:
         dir_path = self._shapefile_root / name
 
         if dir_path.is_dir():
-            # Does it have the .shp file? If not maybe something
-            # random went wrong in the previous attempt, or someone
-            # deleted some stuff by mistake. So delete it and
-            # reload.
-            shp_path = dir_path / f"{name}.shp"
-            if shp_path.is_file():
-                # Looks like the shapefile is there.
+            # Check if we have a complete shapefile
+            if self._validate_shapefile(dir_path, name):
                 return
 
-            # No shapefile so remove the whole directory and
-            # hope for the best when we recreate it.
+            # Incomplete or corrupted shapefile, remove and re-download
+            logger.warning(f"Removing incomplete/corrupted shapefile directory: {dir_path}")
             shutil.rmtree(dir_path)
 
-        # Make the directory
-        dir_path.mkdir()
+        # Make the directory with exist_ok=True to handle race conditions
+        dir_path.mkdir(exist_ok=True)
 
         # We will put the zip file in the dir we just created.
         zip_path = dir_path / f"{name}.zip"
 
         # Construct the URL to get the zip file.
-        # url = self._url_for_file(name)
         zip_url = f"{base_url}/{name}.zip"
 
-        # Fetch the zip file and write it.
-        response = requests.get(
-            zip_url,
-            timeout=timeout,
-            cert=certificates.map_cert,
-            verify=certificates.map_verify,
-        )
+        # Download with retry logic
+        self._download_with_retry(zip_url, zip_path, timeout)
 
-        if response.status_code == 404:
-            raise MapException(
-                f"{zip_url} was not found. "
-                "The Census Bureau may not publish the shapefile you are looking for for the given year. "
-                "Or the file you are looking for may be from a year where a naming convention that censusdis "
-                "does not recognize was used."
-            )
+        # Unzip and validate the file
+        self._extract_and_validate_shapefile(zip_path, dir_path, zip_url)
 
-        headers = response.headers
-        content_type = headers.get("Content-Type", None)
+    def _validate_shapefile(self, dir_path: Path, name: str) -> bool:
+        """Validate that a shapefile directory contains all required files."""
+        required_extensions = ['.shp', '.shx', '.dbf']
+        for ext in required_extensions:
+            file_path = dir_path / f"{name}{ext}"
+            if not file_path.is_file() or file_path.stat().st_size == 0:
+                return False
+        return True
 
-        if content_type != "application/zip":
-            raise MapException(
-                f"Expected content type application/zip' from {zip_url}, but got '{content_type}' instead."
-            )
+    def _download_with_retry(self, url: str, zip_path: Path, timeout: int, max_retries: int = 3) -> None:
+        """Download a file with exponential backoff retry logic."""
+        last_exception = None
+        
+        for attempt in range(max_retries):
+            try:
+                logger.debug(f"Downloading {url} (attempt {attempt + 1}/{max_retries})")
+                
+                response = requests.get(
+                    url,
+                    timeout=timeout,
+                    cert=certificates.map_cert,
+                    verify=certificates.map_verify,
+                )
 
-        with zip_path.open("wb") as file:
-            file.write(response.content)
+                if response.status_code == 404:
+                    raise ShapefileNotFoundException(
+                        f"{url} was not found. "
+                        "The Census Bureau may not publish the shapefile you are looking for for the given year. "
+                        "Or the file you are looking for may be from a year where a naming convention that censusdis "
+                        "does not recognize was used."
+                    )
 
-        # Unzip the file and extract all contents.
+                response.raise_for_status()  # Raise for other HTTP errors
+
+                headers = response.headers
+                content_type = headers.get("Content-Type", None)
+
+                if content_type and content_type != "application/zip":
+                    raise MapException(
+                        f"Expected content type 'application/zip' from {url}, but got '{content_type}' instead."
+                    )
+
+                # Write the file
+                with zip_path.open("wb") as file:
+                    file.write(response.content)
+                
+                # Verify the downloaded file has reasonable size
+                if zip_path.stat().st_size == 0:
+                    raise ShapefileCorruptedException(f"Downloaded zero-byte file from {url}")
+                
+                return  # Success!
+                
+            except (requests.exceptions.Timeout, requests.exceptions.ConnectionError) as e:
+                last_exception = e
+                if attempt < max_retries - 1:
+                    wait_time = 2 ** attempt  # Exponential backoff: 1, 2, 4 seconds
+                    logger.warning(f"Network error downloading {url}: {e}. Retrying in {wait_time} seconds...")
+                    time.sleep(wait_time)
+                    continue
+                else:
+                    logger.error(f"Failed to download {url} after {max_retries} attempts")
+                    raise MapException(f"Failed to download {url} after {max_retries} attempts: {e}") from e
+            except (ShapefileNotFoundException, MapException):
+                # Don't retry for these specific errors
+                raise
+            except Exception as e:
+                last_exception = e
+                if attempt < max_retries - 1:
+                    wait_time = 2 ** attempt
+                    logger.warning(f"Error downloading {url}: {e}. Retrying in {wait_time} seconds...")
+                    time.sleep(wait_time)
+                    continue
+                else:
+                    logger.error(f"Failed to download {url} after {max_retries} attempts")
+                    raise MapException(f"Failed to download {url} after {max_retries} attempts: {e}") from e
+
+    def _extract_and_validate_shapefile(self, zip_path: Path, dir_path: Path, zip_url: str) -> None:
+        """Extract and validate a shapefile zip archive."""
         try:
+            # First, verify the zip file integrity
             with ZipFile(zip_path) as zip_file:
+                # Test the zip file first
+                bad_file = zip_file.testzip()
+                if bad_file:
+                    raise ShapefileCorruptedException(f"Corrupted file {bad_file} in zip archive from {zip_url}")
+                
+                # Extract all contents
                 zip_file.extractall(dir_path)
+                
         except BadZipFile as exc:
-            raise MapException(f"Bad zip file retrieved from {zip_url}") from exc
+            # Clean up the corrupted directory
+            if dir_path.exists():
+                shutil.rmtree(dir_path)
+            raise ShapefileCorruptedException(f"Bad zip file retrieved from {zip_url}") from exc
+        except Exception as exc:
+            # Clean up on any extraction error
+            if dir_path.exists():
+                shutil.rmtree(dir_path)
+            raise ShapefileCorruptedException(f"Failed to extract shapefile from {zip_url}: {exc}") from exc
         finally:
-            # We don't need the zipfile anymore.
-            zip_path.unlink()
+            # Always clean up the zip file
+            if zip_path.exists():
+                zip_path.unlink()
+
+        # Validate that we have the essential shapefile components
+        shapefile_name = zip_path.stem  # Remove .zip extension
+        if not self._validate_shapefile(dir_path, shapefile_name):
+            # Clean up incomplete extraction
+            shutil.rmtree(dir_path)
+            raise ShapefileCorruptedException(
+                f"Incomplete shapefile extracted from {zip_url}. Missing required files (.shp, .shx, .dbf)."
+            )
+
+    def clear_corrupted_cache(self, name_pattern: str = None) -> int:
+        """
+        Clear corrupted or incomplete shapefiles from the cache.
+        
+        Parameters
+        ----------
+        name_pattern : str, optional
+            If provided, only clear cache entries whose names contain this pattern.
+            If None, checks all cache entries.
+            
+        Returns
+        -------
+        int
+            Number of corrupted entries removed.
+        """
+        removed_count = 0
+        
+        if not self._shapefile_root.exists():
+            return removed_count
+            
+        for dir_path in self._shapefile_root.iterdir():
+            if not dir_path.is_dir():
+                continue
+                
+            dir_name = dir_path.name
+            
+            # Skip if pattern doesn't match
+            if name_pattern and name_pattern not in dir_name:
+                continue
+                
+            # Check if this directory contains a valid shapefile
+            if not self._validate_shapefile(dir_path, dir_name):
+                logger.info(f"Removing corrupted/incomplete shapefile cache: {dir_path}")
+                shutil.rmtree(dir_path)
+                removed_count += 1
+                
+        return removed_count
+
+    # ...existing code...
 
 
 def clip_to_states(gdf, gdf_bounds):
@@ -960,7 +1119,7 @@ def _add_plot_map_geo_labels(
     gdf
         The geographic data frame we are plotting.
     geo_label
-        The column in `gdf` that contains the labels to add to the plot.
+        The column in `gdf` that has labels for each geometry.
     geo_label_text_kwargs
         kwargs to pass for label text, e.g. `{"color": "333". "size": 9}`
 
