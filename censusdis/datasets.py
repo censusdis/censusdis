@@ -700,7 +700,7 @@ DATASET_REFERENCE_URLS = {
     CPS_BASIC_JUL: "http://api.census.gov/data/2024/cps/basic/jul",
     CPS_BASIC_JUN: "http://api.census.gov/data/2024/cps/basic/jun",
     CPS_BASIC_MAR: "http://api.census.gov/data/2025/cps/basic/mar",
-    CPS_BASIC_MAY: "http://api.census.gov/data/2024/cps/basic/may",
+    CPS_BASIC_MAY: "http://api.census.gov/data/2025/cps/basic/may",
     CPS_BASIC_NOV: "http://api.census.gov/data/2024/cps/basic/nov",
     CPS_BASIC_OCT: "http://api.census.gov/data/2024/cps/basic/oct",
     CPS_BASIC_SEP: "http://api.census.gov/data/2024/cps/basic/sep",
