@@ -100,7 +100,7 @@ jobs:
       #              archive test artifacts
       #----------------------------------------------
       - name: Archive test artifacts
-        if: ${{ hashFiles('tests/_test_artifacts') != '' }}
+        if: ${{ !cancelled() && hashFiles('tests/_test_artifacts') != '' }}
         uses: actions/upload-artifact@v4
         with:
           name: test_artifacts-${{ matrix.test }}
