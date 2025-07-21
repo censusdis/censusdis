@@ -55,6 +55,9 @@ jupyterlab = { version = "^4.2.3", optional = true }
 ipywidgets = { version = "^8.1.3", optional = true }
 numpy = "^2.0.0"
 
+# Deal with a certificate issue. See https://uscensusbureau.slack.com/archives/CC7DYQ8PM/p1752773503093109
+certifi = "==2025.01.31"
+
 [tool.poetry.extras]
 explore = ["mapclassify", "ipyleaflet", "folium"]
 docs = ["Sphinx", "sphinx-rtd-theme", "sphinx-copybutton", "sphinxcontrib-napoleon", "toml"]
