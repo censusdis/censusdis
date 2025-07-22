@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "censusdis"
-version = "1.4.0"
+version = "1.4.1"
 description = "US Census utilities for a variety of data loading, analysis, and mapping purposes."
 license = "HL3-CL-ECO-EXTR-FFD-LAW-MIL-SV"
 authors = ["Darren Vengroff"]
@@ -54,6 +54,9 @@ jinja2 = ">=3.1.4"
 jupyterlab = { version = "^4.2.3", optional = true }
 ipywidgets = { version = "^8.1.3", optional = true }
 numpy = "^2.0.0"
+
+# Deal with a certificate issue. See https://uscensusbureau.slack.com/archives/CC7DYQ8PM/p1752773503093109
+certifi = "==2025.01.31"
 
 [tool.poetry.extras]
 explore = ["mapclassify", "ipyleaflet", "folium"]
