@@ -386,6 +386,8 @@ ECN_FRAN = "ecnfran"
 
 ECN_GRANT = "ecngrant"
 
+ECN_GRMARGPROF = "ecngrmargprof"
+
 ECN_GUEST = "ecnguest"
 
 ECN_GUESTSIZE = "ecnguestsize"
@@ -599,6 +601,8 @@ SIPP_TOPICALEDEX = "sipp/topicaledex/1993panel/wave8"
 SIPP_TOPICALEX = "sipp/topicalex/1993panel/wave3"
 
 SIPP_TOPICALRES = "sipp/topicalres/2001panel/wave8"
+
+TIMESERIES_AIES = "timeseries/aies/basic"
 
 TIMESERIES_ASM = "timeseries/asm/value2017"
 
@@ -820,7 +824,7 @@ DATASET_REFERENCE_URLS = {
     ECN_ELMENU: "http://api.census.gov/data/2017/ecnelmenu",
     ECN_EMPFUNC: "http://api.census.gov/data/2022/ecnempfunc",
     ECN_ENTSUP: "http://api.census.gov/data/2017/ecnentsup",
-    ECN_EOYINV: "http://api.census.gov/data/2017/ecneoyinv",
+    ECN_EOYINV: "http://api.census.gov/data/2022/ecneoyinv",
     ECN_EOYINVWH: "http://api.census.gov/data/2017/ecneoyinvwh",
     ECN_EQUIP: "http://api.census.gov/data/2012/ecnequip",
     ECN_EXPNRG: "http://api.census.gov/data/2017/ecnexpnrg",
@@ -829,6 +833,7 @@ DATASET_REFERENCE_URLS = {
     ECN_FOODSVC: "http://api.census.gov/data/2017/ecnfoodsvc",
     ECN_FRAN: "http://api.census.gov/data/2017/ecnfran",
     ECN_GRANT: "http://api.census.gov/data/2017/ecngrant",
+    ECN_GRMARGPROF: "http://api.census.gov/data/2022/ecngrmargprof",
     ECN_GUEST: "http://api.census.gov/data/2012/ecnguest",
     ECN_GUESTSIZE: "http://api.census.gov/data/2012/ecnguestsize",
     ECN_HOSP: "http://api.census.gov/data/2017/ecnhosp",
@@ -936,6 +941,7 @@ DATASET_REFERENCE_URLS = {
     SIPP_TOPICALEDEX: "http://api.census.gov/data/1993/sipp/topicaledex/1993panel/wave8",
     SIPP_TOPICALEX: "http://api.census.gov/data/1993/sipp/topicalex/1993panel/wave3",
     SIPP_TOPICALRES: "http://api.census.gov/data/2001/sipp/topicalres/2001panel/wave8",
+    TIMESERIES_AIES: "http://api.census.gov/data/timeseries/aies/basic",
     TIMESERIES_ASM: "http://api.census.gov/data/timeseries/asm/value2017",
     TIMESERIES_BDS: "http://api.census.gov/data/timeseries/bds",
     TIMESERIES_EITS: "http://api.census.gov/data/timeseries/eits/vip",
