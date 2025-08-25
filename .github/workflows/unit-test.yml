@@ -22,7 +22,7 @@ jobs:
     outputs:
       matrix: ${{ steps.test-matrix.outputs.matrix }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - id: test-matrix
         run: echo "matrix=$(find tests -name "*.py" | sed -e s/^tests\\/// | jq -R -s -c 'split("\n")[:-1]')" >> $GITHUB_OUTPUT
   unit-test:
@@ -37,7 +37,7 @@ jobs:
       #       check out repo
       #----------------------------------------------
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           ssh-key:
             ${{secrets.DEPLOY_ACTION_SECRET}}
