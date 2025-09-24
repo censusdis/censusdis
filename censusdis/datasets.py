@@ -933,7 +933,7 @@ DATASET_REFERENCE_URLS = {
     SBO_CS: "http://api.census.gov/data/2012/sbo/cs",
     SBO_CSCB: "http://api.census.gov/data/2012/sbo/cscb",
     SBO_CSCBO: "http://api.census.gov/data/2012/sbo/cscbo",
-    SIPP: "http://api.census.gov/data/2023/sipp",
+    SIPP: "http://api.census.gov/data/2024/sipp",
     SIPP_BENEFIT: "http://api.census.gov/data/1991/sipp/benefit/1991panel",
     SIPP_CORE: "http://api.census.gov/data/2008/sipp/core/2008panel/wave9",
     SIPP_TOPICAL: "http://api.census.gov/data/2008/sipp/topical/2008panel/wave9",
