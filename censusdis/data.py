@@ -605,6 +605,7 @@ def download(
     api_key: Optional[str] = None,
     variable_cache: Optional["VariableCache"] = None,
     row_keys: Optional[Union[str, Iterable[str]]] = None,
+    denominator: Optional[Union[bool, str]] = False,
     **kwargs: cgeo.InSpecType,
 ) -> Union[pd.DataFrame, gpd.GeoDataFrame]:
     """
@@ -710,6 +711,13 @@ def download(
         An optional set of identifier keys to help merge together requests for more than the census API limit of
         50 variables per query. These keys are useful for census datasets such as the Current Population Survey
         where the geographic identifiers do not uniquely identify each row.
+    denominator
+        The denominator to divide by when constructing fractional variables.
+        If `False` then no fractional variables are added. If the name of a
+        variable, that variable will be downloaded and used as a denominator
+        to compute fractional versions of all of the other variables. If
+        `True` then the denominator will be computed as the sum of all the
+        other variables.
     kwargs
         A specification of the geometry that we want data for. For example,
         `state = "*", county = "*"` will download county-level data for
@@ -726,6 +734,8 @@ def download(
             raise ValueError(
                 "`download_contained_within` not supported for LODES data sets."
             )
+        if denominator:
+            raise ValueError("`denominator` not supported for LODES data sets.")
 
         return download_lodes(
             dataset,
@@ -758,6 +768,7 @@ def download(
             api_key=api_key,
             variable_cache=variable_cache,
             row_keys=row_keys,
+            denominator=denominator,
             **kwargs,
         )
 
@@ -789,6 +800,7 @@ def download(
         leaves_of_group=leaves_of_group,
         skip_annotations=skip_annotations,
         variable_cache=variable_cache,
+        denominator=denominator,
     )
 
     if len(download_variables) <= _MAX_VARIABLES_PER_DOWNLOAD and row_keys:
@@ -800,6 +812,12 @@ def download(
         )
     # Special case if we are trying to get too many fields.
     if len(download_variables) > _MAX_VARIABLES_PER_DOWNLOAD:
+        if denominator:
+            # Seems unlikley someone would want to use a denominator with a large number of variables.
+            raise ValueError(
+                f"`denominator` not supported for queries with greater than {_MAX_VARIABLES_PER_DOWNLOAD} variables."
+            )
+
         return _download_multiple(
             dataset,
             vintage,
@@ -837,6 +855,7 @@ def download(
         remove_water=remove_water,
         api_key=api_key,
         variable_cache=variable_cache,
+        denominator=denominator,
         **string_kwargs,
     )
 
@@ -854,6 +873,7 @@ def _download_remote(
     remove_water: bool,
     api_key: Optional[str],
     variable_cache: "VariableCache",
+    denominator: Optional[Union[bool, str]] = False,
     **kwargs,
 ) -> Union[pd.DataFrame, gpd.GeoDataFrame]:
     """
@@ -912,6 +932,13 @@ def _download_remote(
         of calls you can make will be limited.
     variable_cache
         A cache of metadata about variables.
+    denominator
+        The denominator to divide by when constructing fractional variables.
+        If `False` then no fractional variables are added. If the name of a
+        variable, that variable will be downloaded and used as a denominator
+        to compute fractional versions of all of the other variables. If
+        `True` then the denominator will be computed as the sum of all the
+        other variables.
     kwargs
         A specification of the geometry that we want data for.
 
@@ -928,6 +955,7 @@ def _download_remote(
         api_key=api_key,
         **kwargs,
     )
+
     df_data = data_from_url(url, params)
 
     # Coerce the types based on metadata about the variables.
@@ -942,6 +970,10 @@ def _download_remote(
         [col for col in df_data.columns if col not in download_variables_upper]
         + download_variables_upper
     ]
+
+    # Calculate fractional varaibles based on denominator if requested
+    if denominator:
+        df_data = _calculate_fractions(df_data, denominator, download_variables)
 
     # NaN out as requested.
     if set_to_nan is True:
@@ -1056,7 +1088,6 @@ def _prefetch_variable_types(
         The vintage to download data for. For most data sets this is
         an integer year, for example, `2020`. But for
         a timeseries data set, pass the string `'timeseries'`.
-
     download_variables
         The census variables to download, for example `["NAME", "B01001_001E"]`.
     variable_cache
@@ -1090,6 +1121,7 @@ def _parse_download_variables(
     leaves_of_group: Optional[Union[str, Iterable[str]]] = None,
     skip_annotations: bool = True,
     variable_cache: Optional["VariableCache"] = None,
+    denominator: Optional[Union[bool, str]] = False,
 ) -> List[str]:
     """
     Parse out the full set of download variables.
@@ -1124,6 +1156,13 @@ def _parse_download_variables(
         affected by this flag.
     variable_cache
         A cache of metadata about variables.
+    denominator
+        The denominator to divide by when constructing fractional variables.
+        If `False` then no fractional variables are added. If the name of a
+        variable, that variable will be downloaded and used as a denominator
+        to compute fractional versions of all of the other variables. If
+        `True` then the denominator will be computed as the sum of all the
+        other variables.
 
     Returns
     -------
@@ -1147,6 +1186,11 @@ def _parse_download_variables(
     elif isinstance(leaves_of_group, str):
         leaves_of_group = [leaves_of_group]
 
+    if isinstance(denominator, bool):
+        denominator_variable = []
+    elif isinstance(denominator, str):
+        denominator_variable = [denominator]
+
     # Add group variables and leaves as appropriate.
     group_variables: List[str] = []
     for group_name in group:
@@ -1160,7 +1204,12 @@ def _parse_download_variables(
         )
 
     # Concatenate them all.
-    download_variables = download_variables + group_variables + group_leaf_variables
+    download_variables = (
+        download_variables
+        + group_variables
+        + group_leaf_variables
+        + denominator_variable
+    )
 
     # Dedup and maintain order.
     download_variables = list(dict.fromkeys(download_variables))
@@ -1493,6 +1542,7 @@ class ContainedWithin:
         api_key: Optional[str] = None,
         variable_cache: Optional["VariableCache"] = None,
         row_keys: Optional[Union[str, Iterable[str]]] = None,
+        denominator: Optional[Union[bool, str]] = False,
         **kwargs: cgeo.InSpecType,
     ) -> Union[pd.DataFrame, gpd.GeoDataFrame]:
         """
@@ -1572,6 +1622,13 @@ class ContainedWithin:
             An optional set of identifier keys to help merge together requests for more than the census API limit of
             50 variables per query. These keys are useful for census datasets such as the Current Population Survey
             where the geographic identifiers do not uniquely identify each row.
+        denominator
+            The denominator to divide by when constructing fractional variables.
+            If `False` then no fractional variables are added. If the name of a
+            variable, that variable will be downloaded and used as a denominator
+            to compute fractional versions of all of the other variables. If
+            `True` then the denominator will be computed as the sum of all the
+            other variables.
         kwargs
             A specification of the geometry that we want data for. For example,
             `state = "*", county = "*"` will download county-level data for
@@ -1601,6 +1658,7 @@ class ContainedWithin:
             api_key=api_key,
             variable_cache=variable_cache,
             row_keys=row_keys,
+            denominator=denominator,
             **geos_kwargs,
         )
 
@@ -1796,3 +1854,63 @@ def add_inferred_geography(
 
 
 certificates = censusdis.impl.fetch.certificates
+
+
+def _calculate_fractions(
+    data_df: pd.DataFrame,
+    denominator: Union[bool, str],
+    download_variables: list,
+    keep_original_variables: bool = False,
+) -> pd.DataFrame:
+    """
+    Calculate fraction.
+
+    If no denominator variable is provided, then sum of
+    all variables will be used as the denominator.
+
+    Parameters
+    ----------
+    data_df
+        A dataframe containing the download_variables,
+        including the denominator variable if provided.
+    denominator
+        The denominator to divide by when constructing fractional variables.
+        If `False` then no fractional variables are added. If the name of a
+        variable, that variable will be downloaded and used as a denominator
+        to compute fractional versions of all of the other variables. If
+        `True` then the denominator will be computed as the sum of all the
+        other variables.
+    download_variables
+        The census variables downloaded, for example `["NAME", "B01001_001E"]`.
+    keep_original_variables
+        If `True` dataframe will return with both the original and fractional
+        variables. If `False` dataframe will be return without the unchanged variables
+        and with the fractional variables.
+
+    Returns
+    -------
+        A dataframe with the values as fractions of the provided denominator
+        or a sum of the variable values.
+    """
+    # No reason to include denominator column in output because it is always equal to 1.
+    numeric_variables = [
+        dv
+        for dv in download_variables
+        if (pd.api.types.is_numeric_dtype(data_df[dv])) & (dv != denominator)
+    ]
+
+    if denominator is True:
+        denominator_variable = []
+        data_df[["FRAC_" + col for col in numeric_variables]] = data_df[
+            numeric_variables
+        ].div(data_df[numeric_variables].sum(axis=1), axis=0)
+    elif isinstance(denominator, str):
+        denominator_variable = [denominator]
+        data_df[["FRAC_" + nv for nv in numeric_variables]] = data_df[
+            numeric_variables
+        ].div(data_df[denominator], axis=0)
+
+    if keep_original_variables:
+        return data_df
+
+    return data_df.drop(numeric_variables + denominator_variable, axis=1)
