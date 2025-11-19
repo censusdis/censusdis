@@ -319,6 +319,47 @@ class DownloadTestCase(unittest.TestCase):
             .all()
         )
 
+    def test_denominator(self):
+        """Test download when denominator is not False."""
+        denominator_sum = ced.download(
+            self._dataset,
+            self._year,
+            ["NAME", self._name],
+            state=states.NJ,
+            denominator=True,
+            county="*",
+        )
+
+        denominator_var = ced.download(
+            self._dataset,
+            self._year,
+            ["NAME", self._name, "B19001_002E"],
+            state=states.NJ,
+            denominator="B19001_002E",
+            county="*",
+        )
+
+        denominator_other_var = ced.download(
+            self._dataset,
+            self._year,
+            ["NAME", self._name],
+            state=states.NJ,
+            denominator="B19001_002E",
+            county="*",
+        )
+
+        for df in [denominator_sum, denominator_var, denominator_other_var]:
+            self.assertEqual((21, 4), df.shape)
+            self.assertEqual(
+                ["STATE", "COUNTY", "NAME", "FRAC_B19001_001E"], list(df.columns)
+            )
+
+        self.assertEqual(1.0, denominator_sum.loc[0, "FRAC_B19001_001E"])
+        self.assertAlmostEqual(
+            denominator_other_var.loc[0, "FRAC_B19001_001E"],
+            denominator_var.loc[0, "FRAC_B19001_001E"],
+        )
+
 
 class DownloadWideTestCase(unittest.TestCase):
     """
