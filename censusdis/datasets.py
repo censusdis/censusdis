@@ -648,12 +648,12 @@ ZBP = "zbp"
 
 
 DATASET_REFERENCE_URLS = {
-    ABS_CB: "http://api.census.gov/data/2022/abscb",
-    ABS_CBO: "http://api.census.gov/data/2022/abscbo",
-    ABS_CS: "http://api.census.gov/data/2022/abscs",
-    ABS_MCB: "http://api.census.gov/data/2022/absmcb",
-    ABS_NESD: "http://api.census.gov/data/2022/absnesd",
-    ABS_NESDO: "http://api.census.gov/data/2022/absnesdo",
+    ABS_CB: "http://api.census.gov/data/2023/abscb",
+    ABS_CBO: "http://api.census.gov/data/2023/abscbo",
+    ABS_CS: "http://api.census.gov/data/2023/abscs",
+    ABS_MCB: "http://api.census.gov/data/2023/absmcb",
+    ABS_NESD: "http://api.census.gov/data/2023/absnesd",
+    ABS_NESDO: "http://api.census.gov/data/2023/absnesdo",
     ABS_TCB: "http://api.census.gov/data/2018/abstcb",
     ACS1: "http://api.census.gov/data/2024/acs/acs1",
     ACS1_CD113: "http://api.census.gov/data/2011/acs1/cd113",
