@@ -1,4 +1,4 @@
-# Copyright (c) 2025 Darren Erik Vengroff
+# Copyright (c) 2026 Darren Erik Vengroff
 """
 Auto-generated module. It should not be edited directly.
 
