@@ -929,7 +929,7 @@ DATASET_REFERENCE_URLS = {
     POPPROJ_NAT: "http://api.census.gov/data/2017/popproj/nat",
     POPPROJ_NIM: "http://api.census.gov/data/2017/popproj/nim",
     PUBLIC_PK12_EDUCATION_FINANCE: "http://api.census.gov/data/2012/pubschlfin",
-    RHFS: "http://api.census.gov/data/2021/rhfs",
+    RHFS: "http://api.census.gov/data/2024/rhfs",
     SBO_CS: "http://api.census.gov/data/2012/sbo/cs",
     SBO_CSCB: "http://api.census.gov/data/2012/sbo/cscb",
     SBO_CSCBO: "http://api.census.gov/data/2012/sbo/cscbo",
