@@ -86,6 +86,8 @@ ACSSE = "acs/acsse"
 
 ACS_FLOWS = "acs/flows"
 
+AIESNONEMP = "aiesnonemp"
+
 ASE_CSA = "ase/csa"
 
 ASE_CSCB = "ase/cscb"
@@ -602,7 +604,7 @@ SIPP_TOPICALEX = "sipp/topicalex/1993panel/wave3"
 
 SIPP_TOPICALRES = "sipp/topicalres/2001panel/wave8"
 
-TIMESERIES_AIES = "timeseries/aies/basic"
+TIMESERIES_AIES = "timeseries/aies/miscsector"
 
 TIMESERIES_ASM = "timeseries/asm/value2017"
 
@@ -683,6 +685,7 @@ DATASET_REFERENCE_URLS = {
     ACS5_SUBJECT: "http://api.census.gov/data/2024/acs/acs5/subject",
     ACSSE: "http://api.census.gov/data/2024/acs/acsse",
     ACS_FLOWS: "http://api.census.gov/data/2022/acs/flows",
+    AIESNONEMP: "http://api.census.gov/data/2023/aiesnonemp",
     ASE_CSA: "http://api.census.gov/data/2016/ase/csa",
     ASE_CSCB: "http://api.census.gov/data/2016/ase/cscb",
     ASE_CSCBO: "http://api.census.gov/data/2016/ase/cscbo",
@@ -941,7 +944,7 @@ DATASET_REFERENCE_URLS = {
     SIPP_TOPICALEDEX: "http://api.census.gov/data/1993/sipp/topicaledex/1993panel/wave8",
     SIPP_TOPICALEX: "http://api.census.gov/data/1993/sipp/topicalex/1993panel/wave3",
     SIPP_TOPICALRES: "http://api.census.gov/data/2001/sipp/topicalres/2001panel/wave8",
-    TIMESERIES_AIES: "http://api.census.gov/data/timeseries/aies/basic",
+    TIMESERIES_AIES: "http://api.census.gov/data/timeseries/aies/miscsector",
     TIMESERIES_ASM: "http://api.census.gov/data/timeseries/asm/value2017",
     TIMESERIES_BDS: "http://api.census.gov/data/timeseries/bds",
     TIMESERIES_EITS: "http://api.census.gov/data/timeseries/eits/vip",
