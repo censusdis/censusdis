@@ -614,6 +614,8 @@ TIMESERIES_EITS = "timeseries/eits/vip"
 
 TIMESERIES_GOVS = "timeseries/govs"
 
+TIMESERIES_GOVSSTATEFIN = "timeseries/govsstatefin"
+
 TIMESERIES_HEALTHINS = "timeseries/healthins/sahie"
 
 TIMESERIES_HHPULSE = "timeseries/hhpulse"
@@ -678,8 +680,8 @@ DATASET_REFERENCE_URLS = {
     ACS5_CPROFILE: "http://api.census.gov/data/2024/acs/acs5/cprofile",
     ACS5_EEO: "http://api.census.gov/data/2018/acs/acs5/eeo",
     ACS5_PROFILE: "http://api.census.gov/data/2024/acs/acs5/profile",
-    ACS5_PUMS: "http://api.census.gov/data/2023/acs/acs5/pums",
-    ACS5_PUMSPR: "http://api.census.gov/data/2023/acs/acs5/pumspr",
+    ACS5_PUMS: "http://api.census.gov/data/2024/acs/acs5/pums",
+    ACS5_PUMSPR: "http://api.census.gov/data/2024/acs/acs5/pumspr",
     ACS5_SPT: "http://api.census.gov/data/2021/acs/acs5/spt",
     ACS5_SPTPROFILE: "http://api.census.gov/data/2021/acs/acs5/sptprofile",
     ACS5_SUBJECT: "http://api.census.gov/data/2024/acs/acs5/subject",
@@ -949,6 +951,7 @@ DATASET_REFERENCE_URLS = {
     TIMESERIES_BDS: "http://api.census.gov/data/timeseries/bds",
     TIMESERIES_EITS: "http://api.census.gov/data/timeseries/eits/vip",
     TIMESERIES_GOVS: "http://api.census.gov/data/timeseries/govs",
+    TIMESERIES_GOVSSTATEFIN: "http://api.census.gov/data/timeseries/govsstatefin",
     TIMESERIES_HEALTHINS: "http://api.census.gov/data/timeseries/healthins/sahie",
     TIMESERIES_HHPULSE: "http://api.census.gov/data/timeseries/hhpulse",
     TIMESERIES_HPS: "http://api.census.gov/data/timeseries/hps",
