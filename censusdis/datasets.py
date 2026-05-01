@@ -348,6 +348,8 @@ ECN_CCARD = "ecnccard"
 
 ECN_CLCUST = "ecnclcust"
 
+ECN_CLIENTORG = "ecnclientorg"
+
 ECN_COMM = "ecncomm"
 
 ECN_COMP = "ecncomp"
@@ -467,6 +469,8 @@ ECN_SEAT = "ecnseat"
 ECN_SIZE = "ecnsize"
 
 ECN_SOCIAL = "ecnsocial"
+
+ECN_TELEMEDS = "ecntelemeds"
 
 ECN_TYPE = "ecntype"
 
@@ -619,6 +623,8 @@ TIMESERIES_GOVS = "timeseries/govs"
 TIMESERIES_GOVSEMP = "timeseries/govsemp"
 
 TIMESERIES_GOVSSTATEFIN = "timeseries/govsstatefin"
+
+TIMESERIES_GOVSSTATETAX = "timeseries/govsstatetax"
 
 TIMESERIES_HEALTHINS = "timeseries/healthins/sahie"
 
@@ -822,6 +828,7 @@ DATASET_REFERENCE_URLS = {
     ECN_CASHADV: "http://api.census.gov/data/2012/ecncashadv",
     ECN_CCARD: "http://api.census.gov/data/2022/ecnccard",
     ECN_CLCUST: "http://api.census.gov/data/2022/ecnclcust",
+    ECN_CLIENTORG: "http://api.census.gov/data/2022/ecnclientorg",
     ECN_COMM: "http://api.census.gov/data/2022/ecncomm",
     ECN_COMP: "http://api.census.gov/data/2022/ecncomp",
     ECN_CONACT: "http://api.census.gov/data/2022/ecnconact",
@@ -882,6 +889,7 @@ DATASET_REFERENCE_URLS = {
     ECN_SEAT: "http://api.census.gov/data/2012/ecnseat",
     ECN_SIZE: "http://api.census.gov/data/2022/ecnsize",
     ECN_SOCIAL: "http://api.census.gov/data/2017/ecnsocial",
+    ECN_TELEMEDS: "http://api.census.gov/data/2022/ecntelemeds",
     ECN_TYPE: "http://api.census.gov/data/2022/ecntype",
     ECN_TYPEPAYER: "http://api.census.gov/data/2022/ecntypepayer",
     ECN_TYPOP: "http://api.census.gov/data/2022/ecntypop",
@@ -958,6 +966,7 @@ DATASET_REFERENCE_URLS = {
     TIMESERIES_GOVS: "http://api.census.gov/data/timeseries/govs",
     TIMESERIES_GOVSEMP: "http://api.census.gov/data/timeseries/govsemp",
     TIMESERIES_GOVSSTATEFIN: "http://api.census.gov/data/timeseries/govsstatefin",
+    TIMESERIES_GOVSSTATETAX: "http://api.census.gov/data/timeseries/govsstatetax",
     TIMESERIES_HEALTHINS: "http://api.census.gov/data/timeseries/healthins/sahie",
     TIMESERIES_HHPULSE: "http://api.census.gov/data/timeseries/hhpulse",
     TIMESERIES_HPS: "http://api.census.gov/data/timeseries/hps",
