@@ -1,7 +1,6 @@
 # Copyright (c) 2023 Darren Erik Vengroff
 """Places in Wyoming."""
 
-
 AFTON_TOWN = "00245"
 ALBANY_CDP = "00680"
 ALBIN_TOWN = "00825"

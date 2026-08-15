@@ -1,4 +1,4 @@
-# Run various link checks, like flake8 and black, to make sure
+# Run various lint and formatting checks to make sure
 # our code remains in good shape, avoids common bugs, and follows
 # common coding  conventions.
 name: lint
@@ -18,14 +18,14 @@ jobs:
       #----------------------------------------------
       #       check-out repo and set-up python
       #----------------------------------------------
-      - uses: actions/checkout@v5
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v6
         with:
           python-version: 3.12
       #----------------------------------------------
       #        load pip cache if cache exists
       #----------------------------------------------
-      - uses: actions/cache@v4
+      - uses: actions/cache@v6
         with:
           path: ~/.cache/pip
           key: ${{ runner.os }}-pip
@@ -33,12 +33,10 @@ jobs:
       #----------------------------------------------
       #          run linters
       #----------------------------------------------
-      - run: python -m pip install black[jupyter] flake8 isort pylint ruff
+      - run: python -m pip install flake8 pylint ruff
       - run: |
           flake8 --show-source .
       - run: |
-          black . --check
-      - run: |
-          isort --profile black .
-      - run: |
           ruff check .
+      - run: |
+          ruff format --check .

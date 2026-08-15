@@ -1,7 +1,6 @@
 # Copyright (c) 2023 Darren Erik Vengroff
 """Places in North Carolina."""
 
-
 ABERDEEN_TOWN = "00160"
 ADVANCE_CDP = "00440"
 AHOSKIE_TOWN = "00500"

@@ -1,7 +1,6 @@
 # Copyright (c) 2023 Darren Erik Vengroff
 """Places in Kentucky."""
 
-
 ADAIRVILLE_CITY = "00298"
 AGES_CDP = "00514"
 ALBANY_CITY = "00694"

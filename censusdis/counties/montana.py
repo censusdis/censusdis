@@ -1,7 +1,6 @@
 # Copyright (c) 2023 Darren Erik Vengroff
 """Counties in Montana."""
 
-
 BEAVERHEAD = "001"
 BIG_HORN = "003"
 BLAINE = "005"

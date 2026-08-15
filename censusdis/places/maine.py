@@ -1,7 +1,6 @@
 # Copyright (c) 2023 Darren Erik Vengroff
 """Places in Maine."""
 
-
 ALFRED_CDP = "00695"
 ANSON_CDP = "01360"
 ASHLAND_CDP = "01675"

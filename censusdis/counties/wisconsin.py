@@ -1,7 +1,6 @@
 # Copyright (c) 2023 Darren Erik Vengroff
 """Counties in Wisconsin."""
 
-
 ADAMS = "001"
 ASHLAND = "003"
 BARRON = "005"

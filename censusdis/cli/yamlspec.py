@@ -1,20 +1,20 @@
 # Copyright (c) 2023 Darren Erik Vengroff
 """Classes that are loaded from YAML config files for the CLI."""
-from abc import ABC
+
 import itertools
+from abc import ABC
 from importlib import import_module
 from pathlib import Path
-from typing import Any, Dict, Iterable, List, Optional, Tuple, Union, ClassVar
+from typing import Any, ClassVar, Dict, Iterable, List, Optional, Tuple, Union
 
 import geopandas as gpd
 import pandas as pd
 import yaml
-
 from matplotlib.ticker import StrMethodFormatter
 
 import censusdis.data as ced
-import censusdis.maps as cem
 import censusdis.datasets
+import censusdis.maps as cem
 import censusdis.states
 from censusdis.geography import InSpecType
 from censusdis.impl.varsource.base import VintageType

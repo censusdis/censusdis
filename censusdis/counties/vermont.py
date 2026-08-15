@@ -1,7 +1,6 @@
 # Copyright (c) 2023 Darren Erik Vengroff
 """Counties in Vermont."""
 
-
 ADDISON = "001"
 BENNINGTON = "003"
 CALEDONIA = "005"

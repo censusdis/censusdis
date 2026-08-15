@@ -1,17 +1,15 @@
 """Utility functions for downloading, graphing and analyzing multiple years of ACS data."""
 
+import re
 from collections import defaultdict
-import pandas as pd
+from typing import Callable, Dict, Iterable, List, Optional, Union
 
 import matplotlib.pyplot as plt
+import pandas as pd
 from matplotlib.ticker import FuncFormatter
 
 import censusdis.data as ced
 from censusdis.datasets import ACS1, ACS3, ACS5
-
-import re
-
-from typing import List, Optional, Union, Iterable, Callable, Dict
 
 
 def is_variable_column(

@@ -1,10 +1,10 @@
 # Copyright (c) 2023 Darren Erik Vengroff
 """These are integration tests that test the code behind with_geometry=True."""
+
 import tempfile
 import unittest
 from pathlib import Path
-
-from typing import Dict, Iterable, Optional, List
+from typing import Dict, Iterable, List, Optional
 
 import geopandas
 import geopandas as gpd
@@ -14,8 +14,10 @@ import censusdis.counties.new_jersey
 import censusdis.counties.puerto_rico
 import censusdis.data
 import censusdis.impl
-from censusdis import data as ced, states, maps as cem
-from censusdis.datasets import DECENNIAL_PUBLIC_LAW_94_171, ACS5
+from censusdis import data as ced
+from censusdis import maps as cem
+from censusdis import states
+from censusdis.datasets import ACS5, DECENNIAL_PUBLIC_LAW_94_171
 from censusdis.states import NJ
 
 

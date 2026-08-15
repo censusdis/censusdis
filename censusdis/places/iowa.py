@@ -1,7 +1,6 @@
 # Copyright (c) 2023 Darren Erik Vengroff
 """Places in Iowa."""
 
-
 ACKLEY_CITY = "00190"
 ACKWORTH_CITY = "00235"
 ADAIR_CITY = "00370"

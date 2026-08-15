@@ -9,14 +9,15 @@ immediately around those calls.
 This file is split off from test_integration.py so that we can do more testing
 in parallel.
 """
+
 import unittest
+
 from pandas.testing import assert_frame_equal
 
 import censusdis.data as ced
-from censusdis.datasets import CBP, EWKS, ACS1
-from censusdis.states import NJ, ALL_STATES_AND_DC
-
+from censusdis.datasets import ACS1, CBP, EWKS
 from censusdis.impl.exceptions import CensusApiException
+from censusdis.states import ALL_STATES_AND_DC, NJ
 
 
 class QueryFilterTestCase(unittest.TestCase):

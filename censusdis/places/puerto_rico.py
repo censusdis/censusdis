@@ -1,7 +1,6 @@
 # Copyright (c) 2023 Darren Erik Vengroff
 """Places in Puerto Rico."""
 
-
 ACEITUNAS_COMUNIDAD = "00186"
 ADJUNTAS_ZONA_URBANA = "00358"
 AGUADA_ZONA_URBANA = "00616"

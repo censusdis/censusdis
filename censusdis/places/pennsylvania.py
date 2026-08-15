@@ -1,7 +1,6 @@
 # Copyright (c) 2023 Darren Erik Vengroff
 """Places in Pennsylvania."""
 
-
 AARONSBURG_CDP_CENTRE_COUNTY = "00100"
 AARONSBURG_CDP_WASHINGTON_COUNTY = "00104"
 ABBOTTSTOWN_BOROUGH = "00116"

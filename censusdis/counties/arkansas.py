@@ -1,7 +1,6 @@
 # Copyright (c) 2023 Darren Erik Vengroff
 """Counties in Arkansas."""
 
-
 ARKANSAS = "001"
 ASHLEY = "003"
 BAXTER = "005"

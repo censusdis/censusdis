@@ -1,5 +1,6 @@
 # Copyright (c) 2023 Darren Erik Vengroff
 """Tests for `censusdis.data`."""
+
 import unittest
 
 import pandas as pd

@@ -1,7 +1,6 @@
 # Copyright (c) 2023 Darren Erik Vengroff
 """Places in Kansas."""
 
-
 ABBYVILLE_CITY = "00100"
 ABILENE_CITY = "00125"
 ADA_CDP = "00225"

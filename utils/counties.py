@@ -5,6 +5,7 @@ A utility to generate the symbolic names of all the counties.
 This should be a one-time thing. But we are retaining this code
 here in utils for reference.
 """
+
 from pathlib import Path
 
 import censusdis.data as ced
@@ -34,8 +35,7 @@ def main():
     test_file = Path(__file__).parent.parent / "tests" / "test_counties.py"
 
     with open(test_file, "w") as tf:
-        tf.write(
-            """# Copyright (c) 2023 Darren Erik Vengroff
+        tf.write("""# Copyright (c) 2023 Darren Erik Vengroff
 \"\"\"Tests for county symbols.\"\"\"
 
 import unittest
@@ -43,8 +43,7 @@ import unittest
 
 class CountyTestCase(unittest.TestCase):
     \"\"\"Tests for county symbols.\"\"\"
-"""
-        )
+""")
 
         for state, df_state in df_county_names.groupby("STATE"):
             state_name = NAMES_FROM_IDS[state]
@@ -52,8 +51,7 @@ class CountyTestCase(unittest.TestCase):
 
             print(f"Processing {state_name}/{state_symbol} ({state})")
 
-            tf.write(
-                f"""
+            tf.write(f"""
     def test_{state_symbol}(self):
         \"\"\"Test {state_name}.\"\"\"
         import censusdis.counties.{state_symbol}
@@ -66,8 +64,7 @@ class CountyTestCase(unittest.TestCase):
         sym_count = len(symbols)
 
         self.assertEqual({len(df_state.index)}, sym_count)
-"""
-            )
+""")
 
             state_file = target_dir / f"{state_symbol}.py"
 

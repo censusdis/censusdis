@@ -1,7 +1,6 @@
 # Copyright (c) 2023 Darren Erik Vengroff
 """Places in New Jersey."""
 
-
 ABSECON_HIGHLANDS_CDP = "00160"
 ABSECON_CITY = "00100"
 ALLAMUCHY_CDP = "00640"

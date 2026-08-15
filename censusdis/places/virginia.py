@@ -1,7 +1,6 @@
 # Copyright (c) 2023 Darren Erik Vengroff
 """Places in Virginia."""
 
-
 ABBS_VALLEY_CDP = "00110"
 ABINGDON_TOWN = "00148"
 ACCOMAC_TOWN = "00180"

@@ -1,7 +1,6 @@
 # Copyright (c) 2023 Darren Erik Vengroff
 """Counties in Ohio."""
 
-
 ADAMS = "001"
 ALLEN = "003"
 ASHLAND = "005"

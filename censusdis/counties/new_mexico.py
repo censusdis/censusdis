@@ -1,7 +1,6 @@
 # Copyright (c) 2023 Darren Erik Vengroff
 """Counties in New Mexico."""
 
-
 BERNALILLO = "001"
 CATRON = "003"
 CHAVES = "005"

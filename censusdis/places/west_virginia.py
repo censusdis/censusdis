@@ -1,7 +1,6 @@
 # Copyright (c) 2023 Darren Erik Vengroff
 """Places in West Virginia."""
 
-
 ACCOVILLE_CDP = "00196"
 ADDISON_WEBSTER_SPRINGS_TOWN = "00364"
 ADRIAN_CDP = "00460"

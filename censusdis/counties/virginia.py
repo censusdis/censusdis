@@ -1,7 +1,6 @@
 # Copyright (c) 2023 Darren Erik Vengroff
 """Counties in Virginia."""
 
-
 ACCOMACK = "001"
 ALBEMARLE = "003"
 ALEXANDRIA_CITY = "510"

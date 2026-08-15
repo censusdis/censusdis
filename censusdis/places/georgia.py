@@ -1,7 +1,6 @@
 # Copyright (c) 2023 Darren Erik Vengroff
 """Places in Georgia."""
 
-
 ABBEVILLE_CITY = "00184"
 ACWORTH_CITY = "00408"
 ADAIRSVILLE_CITY = "00436"

@@ -1,7 +1,6 @@
 # Copyright (c) 2023 Darren Erik Vengroff
 """Counties in Florida."""
 
-
 ALACHUA = "001"
 BAKER = "003"
 BAY = "005"
