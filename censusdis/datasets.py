@@ -901,7 +901,7 @@ DATASET_REFERENCE_URLS = {
     ECN_TYPOP: "http://api.census.gov/data/2022/ecntypop",
     ECN_VALCON: "http://api.census.gov/data/2022/ecnvalcon",
     EWKS: "http://api.census.gov/data/2012/ewks",
-    GEOINFO: "http://api.census.gov/data/2024/geoinfo",
+    GEOINFO: "http://api.census.gov/data/2025/geoinfo",
     INTLTRADE_IMP_EXP: "http://api.census.gov/data/2018/intltrade/imp_exp",
     LANGUAGE: "http://api.census.gov/data/2013/language",
     NONEMP: "http://api.census.gov/data/2023/nonemp",
