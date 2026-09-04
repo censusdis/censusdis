@@ -6,6 +6,8 @@ This module relies on the US Census API, which
 it wraps in a pythonic manner.
 """
 
+import gzip
+import io
 import warnings
 from logging import getLogger
 from typing import (
@@ -18,33 +20,28 @@ from typing import (
     Union,
 )
 
-import io
-import requests
-import gzip
-
 import geopandas as gpd
 import numpy as np
 import pandas as pd
+import requests
 
 import censusdis.geography as cgeo
+import censusdis.impl.fetch
 import censusdis.maps as cmap
+from censusdis.datasets import ACS5, DECENNIAL_PUBLIC_LAW_94_171
 from censusdis.impl.exceptions import CensusApiException
 from censusdis.impl.fetch import data_from_url
 from censusdis.impl.us_census_shapefiles import (
     add_geography,
     clip_water,
-    infer_geo_level,
     geo_query_from_data_query_inner_geo,
+    infer_geo_level,
 )
 from censusdis.impl.varcache import VariableCache
 from censusdis.impl.varsource.base import VintageType
 from censusdis.impl.varsource.censusapi import CensusApiVariableSource
-from censusdis.values import ALL_SPECIAL_VALUES
-from censusdis.datasets import ACS5, DECENNIAL_PUBLIC_LAW_94_171
 from censusdis.states import ABBREVIATIONS_FROM_IDS
-
-import censusdis.impl.fetch
-
+from censusdis.values import ALL_SPECIAL_VALUES
 
 logger = getLogger(__name__)
 
@@ -197,26 +194,24 @@ def _download_multiple(
     if row_keys:
         chunk_size = _MAX_VARIABLES_PER_DOWNLOAD - len(row_keys)
         variable_groups = [
-            # black and flake8 disagree about the whitespace before ':' here...
+            # Ruff and flake8 disagree about the whitespace before ':' here...
             # We need to drop duplicates in each chunk of variables
             # since the row_key variables might already be present in one of the chunks
             [
                 item
-                for item in row_keys
-                + download_variables[start : start + chunk_size]  # noqa: E203
+                for item in row_keys + download_variables[start : start + chunk_size]  # noqa: E203
                 if item not in row_keys
                 or row_keys.index(item)
                 == (
-                    row_keys
-                    + download_variables[start : start + chunk_size]  # noqa: E203
+                    row_keys + download_variables[start : start + chunk_size]  # noqa: E203
                 ).index(item)
             ]
             for start in range(0, len(download_variables), chunk_size)
         ]
     else:
         variable_groups = [
-            # black and flake8 disagree about the whitespace before ':' here...
-            download_variables[start : start + _MAX_VARIABLES_PER_DOWNLOAD]  # noqa: 203
+            # Ruff and flake8 disagree about the whitespace before ':' here...
+            download_variables[start : start + _MAX_VARIABLES_PER_DOWNLOAD]  # noqa: E203
             for start in range(0, len(download_variables), _MAX_VARIABLES_PER_DOWNLOAD)
         ]
 

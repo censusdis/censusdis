@@ -1,7 +1,6 @@
 # Copyright (c) 2023 Darren Erik Vengroff
 """Places in Texas."""
 
-
 ABBOTT_CITY = "00100"
 ABERNATHY_CITY = "00160"
 ABILENE_CITY = "01000"

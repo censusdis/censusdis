@@ -1,7 +1,6 @@
 # Copyright (c) 2023 Darren Erik Vengroff
 """Counties in Georgia."""
 
-
 APPLING = "001"
 ATKINSON = "003"
 BACON = "005"

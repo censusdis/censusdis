@@ -1,7 +1,6 @@
 # Copyright (c) 2023 Darren Erik Vengroff
 """Places in Rhode Island."""
 
-
 ASHAWAY_CDP = "03520"
 BRADFORD_CDP = "08020"
 CAROLINA_CDP = "12340"

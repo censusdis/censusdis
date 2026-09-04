@@ -1,7 +1,6 @@
 # Copyright (c) 2023 Darren Erik Vengroff
 """Counties in Texas."""
 
-
 ANDERSON = "001"
 ANDREWS = "003"
 ANGELINA = "005"

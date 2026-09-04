@@ -1,7 +1,6 @@
 # Copyright (c) 2023 Darren Erik Vengroff
 """Counties in Illinois."""
 
-
 ADAMS = "001"
 ALEXANDER = "003"
 BOND = "005"

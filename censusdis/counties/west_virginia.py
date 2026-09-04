@@ -1,7 +1,6 @@
 # Copyright (c) 2023 Darren Erik Vengroff
 """Counties in West Virginia."""
 
-
 BARBOUR = "001"
 BERKELEY = "003"
 BOONE = "005"

@@ -1,7 +1,6 @@
 # Copyright (c) 2023 Darren Erik Vengroff
 """Counties in Utah."""
 
-
 BEAVER = "001"
 BOX_ELDER = "003"
 CACHE = "005"

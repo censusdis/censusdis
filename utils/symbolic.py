@@ -8,8 +8,8 @@ and their respective symbolic names for
 documentation purposes.
 """
 
-from datetime import datetime
 import argparse
+from datetime import datetime
 from pathlib import Path
 
 import censusdis.data as ced
@@ -151,12 +151,10 @@ But you can always use raw strings. For example, even for `ACS5` you can use
             destfile.write("}\n")
 
             # Write LODES
-            destfile.write(
-                """
+            destfile.write("""
 # LODES are special data sets with their own base URL.
 
-"""
-            )
+""")
 
             lodes_symbols = []
 

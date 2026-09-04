@@ -7,17 +7,17 @@ for water clipping.
 """
 
 from dataclasses import dataclass
-from pathlib import Path
-from typing import Dict, Callable, Tuple, Optional, List, Generator, Union
 from logging import getLogger
+from pathlib import Path
+from typing import Callable, Dict, Generator, List, Optional, Tuple, Union
 
 import geopandas as gpd
 import pandas as pd
 
-from censusdis import CensusApiException, maps as cmap
+from censusdis import CensusApiException
+from censusdis import maps as cmap
 from censusdis.impl.geometry import drop_slivers_from_gdf
 from censusdis.impl.varsource.base import VintageType
-
 
 logger = getLogger(__name__)
 

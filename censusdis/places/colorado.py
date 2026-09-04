@@ -1,7 +1,6 @@
 # Copyright (c) 2023 Darren Erik Vengroff
 """Places in Colorado."""
 
-
 ACRES_GREEN_CDP = "00320"
 AETNA_ESTATES_CDP = "00620"
 AGUILAR_TOWN = "00760"

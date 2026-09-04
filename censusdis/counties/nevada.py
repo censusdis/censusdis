@@ -1,7 +1,6 @@
 # Copyright (c) 2023 Darren Erik Vengroff
 """Counties in Nevada."""
 
-
 CARSON_CITY = "510"
 CHURCHILL = "001"
 CLARK = "003"

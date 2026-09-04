@@ -1,7 +1,6 @@
 # Copyright (c) 2023 Darren Erik Vengroff
 """Places in New Hampshire."""
 
-
 ALTON_CDP = "00980"
 AMHERST_CDP = "01220"
 ANTRIM_CDP = "01620"

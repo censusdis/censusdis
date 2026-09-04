@@ -1,7 +1,6 @@
 # Copyright (c) 2023 Darren Erik Vengroff
 """Counties in New York."""
 
-
 ALBANY = "001"
 ALLEGANY = "003"
 BRONX = "005"

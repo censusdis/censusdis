@@ -1,7 +1,6 @@
 # Copyright (c) 2023 Darren Erik Vengroff
 """Counties in Tennessee."""
 
-
 ANDERSON = "001"
 BEDFORD = "003"
 BENTON = "005"

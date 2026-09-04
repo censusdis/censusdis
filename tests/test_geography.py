@@ -1,10 +1,11 @@
 # Copyright (c) 2023 Darren Erik Vengroff
 """Test for geography functionality."""
+
 import unittest
 from typing import Mapping, Optional, Tuple
 
-from censusdis.geography import CensusGeographyQuerySpec, PathSpec
 from censusdis.datasets import LODES_OD_MAIN_JT00
+from censusdis.geography import CensusGeographyQuerySpec, PathSpec
 
 
 class CanonicalGeometryTestCase(unittest.TestCase):

@@ -1,7 +1,6 @@
 # Copyright (c) 2023 Darren Erik Vengroff
 """Counties in Puerto Rico."""
 
-
 ADJUNTAS = "001"
 AGUADA = "003"
 AGUADILLA = "005"

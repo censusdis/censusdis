@@ -10,11 +10,12 @@ import importlib.resources
 import shutil
 from logging import getLogger
 from pathlib import Path
-from typing import Dict, Optional, Tuple, Union, Any
+from typing import Any, Dict, Optional, Tuple, Union
 from zipfile import BadZipFile, ZipFile
 
 import contextily as cx
 import geopandas as gpd
+import matplotlib.patheffects as pe
 import matplotlib.pyplot as plt
 import pandas as pd
 import requests
@@ -22,7 +23,6 @@ import shapely.affinity
 from haversine import haversine
 from shapely.geometry import MultiPolygon, Point, Polygon
 from shapely.geometry.base import BaseGeometry
-import matplotlib.patheffects as pe
 
 from censusdis.impl.exceptions import CensusApiException
 from censusdis.impl.fetch import certificates

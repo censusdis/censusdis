@@ -1,7 +1,6 @@
 # Copyright (c) 2023 Darren Erik Vengroff
 """Places in Arkansas."""
 
-
 ACORN_CDP = "00190"
 ADONA_CITY = "00250"
 ALEXANDER_CITY = "00580"

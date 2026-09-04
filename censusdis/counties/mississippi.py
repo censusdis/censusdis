@@ -1,7 +1,6 @@
 # Copyright (c) 2023 Darren Erik Vengroff
 """Counties in Mississippi."""
 
-
 ADAMS = "001"
 ALCORN = "003"
 AMITE = "005"

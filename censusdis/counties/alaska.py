@@ -1,7 +1,6 @@
 # Copyright (c) 2023 Darren Erik Vengroff
 """Counties in Alaska."""
 
-
 ALEUTIANS_EAST_BOROUGH = "013"
 ALEUTIANS_WEST_CENSUS_AREA = "016"
 ANCHORAGE_MUNICIPALITY = "020"

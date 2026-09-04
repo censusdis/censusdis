@@ -1,7 +1,6 @@
 # Copyright (c) 2023 Darren Erik Vengroff
 """Counties in North Dakota."""
 
-
 ADAMS = "001"
 BARNES = "003"
 BENSON = "005"

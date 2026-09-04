@@ -1,7 +1,6 @@
 # Copyright (c) 2023 Darren Erik Vengroff
 """Places in Delaware."""
 
-
 ARDEN_VILLAGE = "01400"
 ARDENCROFT_VILLAGE = "01530"
 ARDENTOWN_VILLAGE = "01660"
