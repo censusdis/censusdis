@@ -622,6 +622,8 @@ SIPP_TOPICALEX = "sipp/topicalex/1993panel/wave3"
 
 SIPP_TOPICALRES = "sipp/topicalres/2001panel/wave8"
 
+TIMESERIES_AIES = "timeseries/aies/historical"
+
 TIMESERIES_ASM = "timeseries/asm/value2017"
 
 TIMESERIES_BDS = "timeseries/bds"
@@ -734,7 +736,7 @@ DATASET_REFERENCE_URLS = {
     CPS_ARTS_FEB: "http://api.census.gov/data/2025/cps/arts/feb",
     CPS_ASEC_MAR: "http://api.census.gov/data/2025/cps/asec/mar",
     CPS_BASIC_APR: "http://api.census.gov/data/2026/cps/basic/apr",
-    CPS_BASIC_AUG: "http://api.census.gov/data/2025/cps/basic/aug",
+    CPS_BASIC_AUG: "http://api.census.gov/data/2026/cps/basic/aug",
     CPS_BASIC_DEC: "http://api.census.gov/data/2025/cps/basic/dec",
     CPS_BASIC_FEB: "http://api.census.gov/data/2026/cps/basic/feb",
     CPS_BASIC_JAN: "http://api.census.gov/data/2026/cps/basic/jan",
@@ -981,6 +983,7 @@ DATASET_REFERENCE_URLS = {
     SIPP_TOPICALEDEX: "http://api.census.gov/data/1993/sipp/topicaledex/1993panel/wave8",
     SIPP_TOPICALEX: "http://api.census.gov/data/1993/sipp/topicalex/1993panel/wave3",
     SIPP_TOPICALRES: "http://api.census.gov/data/2001/sipp/topicalres/2001panel/wave8",
+    TIMESERIES_AIES: "http://api.census.gov/data/timeseries/aies/historical",
     TIMESERIES_ASM: "http://api.census.gov/data/timeseries/asm/value2017",
     TIMESERIES_BDS: "http://api.census.gov/data/timeseries/bds",
     TIMESERIES_EITS: "http://api.census.gov/data/timeseries/eits/vip",
