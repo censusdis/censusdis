@@ -630,11 +630,11 @@ TIMESERIES_BDS = "timeseries/bds"
 
 TIMESERIES_EITS = "timeseries/eits/vip"
 
-TIMESERIES_GOVS = "timeseries/govs"
-
 TIMESERIES_GOVSEMP = "timeseries/govsemp"
 
 TIMESERIES_GOVSLOCALFIN = "timeseries/govslocalfin"
+
+TIMESERIES_GOVSORG = "timeseries/govsorg"
 
 TIMESERIES_GOVSPENSION = "timeseries/govspension"
 
@@ -987,9 +987,9 @@ DATASET_REFERENCE_URLS = {
     TIMESERIES_ASM: "http://api.census.gov/data/timeseries/asm/value2017",
     TIMESERIES_BDS: "http://api.census.gov/data/timeseries/bds",
     TIMESERIES_EITS: "http://api.census.gov/data/timeseries/eits/vip",
-    TIMESERIES_GOVS: "http://api.census.gov/data/timeseries/govs",
     TIMESERIES_GOVSEMP: "http://api.census.gov/data/timeseries/govsemp",
     TIMESERIES_GOVSLOCALFIN: "http://api.census.gov/data/timeseries/govslocalfin",
+    TIMESERIES_GOVSORG: "http://api.census.gov/data/timeseries/govsorg",
     TIMESERIES_GOVSPENSION: "http://api.census.gov/data/timeseries/govspension",
     TIMESERIES_GOVSSCHFIN: "http://api.census.gov/data/timeseries/govsschfin",
     TIMESERIES_GOVSSTATEFIN: "http://api.census.gov/data/timeseries/govsstatefin",
