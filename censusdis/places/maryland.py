@@ -1,7 +1,6 @@
 # Copyright (c) 2023 Darren Erik Vengroff
 """Places in Maryland."""
 
-
 ABERDEEN_PROVING_GROUND_CDP = "00175"
 ABERDEEN_CITY = "00125"
 ABINGDON_CDP = "00200"

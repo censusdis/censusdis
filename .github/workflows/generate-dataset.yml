@@ -28,7 +28,7 @@ jobs:
       #       check out repo
       #----------------------------------------------
       - name: Check out repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v7
         with:
           ssh-key:
             ${{secrets.DEPLOY_ACTION_SECRET}}
@@ -37,7 +37,7 @@ jobs:
       #----------------------------------------------
       - name: Set up python
         id: setup-python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: 3.12
       #----------------------------------------------
@@ -46,6 +46,7 @@ jobs:
       - name: Install Poetry
         uses: snok/install-poetry@v1
         with:
+          version: 2.4.1
           virtualenvs-create: true
           virtualenvs-in-project: true
           installer-parallel: true
@@ -54,7 +55,7 @@ jobs:
       #----------------------------------------------
       - name: Load cached venv
         id: cached-poetry-dependencies
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: .venv
           key: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/poetry.lock') }}

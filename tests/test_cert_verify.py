@@ -16,7 +16,7 @@ probably fail as we filter them out before making the actual call.
 
 import unittest
 from contextlib import contextmanager
-from typing import Union, Optional, Tuple
+from typing import Optional, Tuple, Union
 from unittest import mock
 
 import geopandas as gpd

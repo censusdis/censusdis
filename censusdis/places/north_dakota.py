@@ -1,7 +1,6 @@
 # Copyright (c) 2023 Darren Erik Vengroff
 """Places in North Dakota."""
 
-
 ABERCROMBIE_CITY = "00100"
 ADAMS_CITY = "00340"
 ALAMO_CITY = "00940"

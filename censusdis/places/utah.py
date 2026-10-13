@@ -1,7 +1,6 @@
 # Copyright (c) 2023 Darren Erik Vengroff
 """Places in Utah."""
 
-
 ALPINE_CITY = "00540"
 ALTA_TOWN = "00650"
 ALTAMONT_TOWN = "00760"

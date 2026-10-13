@@ -1,7 +1,6 @@
 # Copyright (c) 2023 Darren Erik Vengroff
 """Places in Vermont."""
 
-
 ALBANY_VILLAGE = "00400"
 ALBURGH_VILLAGE = "00850"
 ALGIERS_CDP = "01035"

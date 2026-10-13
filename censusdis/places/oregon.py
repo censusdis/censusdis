@@ -1,7 +1,6 @@
 # Copyright (c) 2023 Darren Erik Vengroff
 """Places in Oregon."""
 
-
 ADAIR_VILLAGE_CITY = "00275"
 ADAMS_CITY = "00350"
 ADRIAN_CITY = "00500"

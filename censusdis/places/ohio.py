@@ -1,7 +1,6 @@
 # Copyright (c) 2023 Darren Erik Vengroff
 """Places in Ohio."""
 
-
 ABERDEEN_VILLAGE = "00142"
 ADA_VILLAGE = "00198"
 ADAMSVILLE_VILLAGE = "00380"

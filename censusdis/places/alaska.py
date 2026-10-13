@@ -1,7 +1,6 @@
 # Copyright (c) 2023 Darren Erik Vengroff
 """Places in Alaska."""
 
-
 ADAK_CITY = "00065"
 AKHIOK_CITY = "00650"
 AKIACHAK_CDP = "00760"

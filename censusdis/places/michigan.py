@@ -1,7 +1,6 @@
 # Copyright (c) 2023 Darren Erik Vengroff
 """Places in Michigan."""
 
-
 ADDISON_VILLAGE = "00380"
 ADRIAN_CITY = "00440"
 ADVANCE_CDP = "00480"

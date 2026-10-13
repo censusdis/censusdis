@@ -1,7 +1,6 @@
 # Copyright (c) 2023 Darren Erik Vengroff
 """Counties in California."""
 
-
 ALAMEDA = "001"
 ALPINE = "003"
 AMADOR = "005"

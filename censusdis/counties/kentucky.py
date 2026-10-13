@@ -1,7 +1,6 @@
 # Copyright (c) 2023 Darren Erik Vengroff
 """Counties in Kentucky."""
 
-
 ADAIR = "001"
 ALLEN = "003"
 ANDERSON = "005"

@@ -1,7 +1,6 @@
 # Copyright (c) 2023 Darren Erik Vengroff
 """Divisions."""
 
-
 EAST_NORTH_CENTRAL_DIVISION = "3"
 EAST_SOUTH_CENTRAL_DIVISION = "6"
 MIDDLE_ATLANTIC_DIVISION = "2"

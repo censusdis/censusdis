@@ -1,5 +1,6 @@
 # Copyright (c) 2023 Darren Erik Vengroff
 """Test geometry."""
+
 import math
 import unittest
 

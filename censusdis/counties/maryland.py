@@ -1,7 +1,6 @@
 # Copyright (c) 2023 Darren Erik Vengroff
 """Counties in Maryland."""
 
-
 ALLEGANY = "001"
 ANNE_ARUNDEL = "003"
 BALTIMORE = "005"

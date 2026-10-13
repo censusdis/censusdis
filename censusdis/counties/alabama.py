@@ -1,7 +1,6 @@
 # Copyright (c) 2023 Darren Erik Vengroff
 """Counties in Alabama."""
 
-
 AUTAUGA = "001"
 BALDWIN = "003"
 BARBOUR = "005"

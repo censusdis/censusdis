@@ -1,7 +1,6 @@
 # Copyright (c) 2023 Darren Erik Vengroff
 """Counties in Missouri."""
 
-
 ADAIR = "001"
 ANDREW = "003"
 ATCHISON = "005"

@@ -12,17 +12,16 @@ A useful resource for tracking down the names is
 https://www2.census.gov/geo/tiger/GENZ2020/2020_file_name_def.pdf?#
 """
 
-from typing import Iterable
-import requests
 import re
 from logging import getLogger
+from typing import Iterable
 
+import requests
 from logargparser import LoggingArgumentParser
 
 from censusdis.impl.us_census_shapefiles import (
     _geo_query_from_data_query_inner_geo_items,
 )
-
 
 logger = getLogger(__name__)
 

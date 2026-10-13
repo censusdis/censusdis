@@ -1,7 +1,6 @@
 # Copyright (c) 2023 Darren Erik Vengroff
 """Counties in Colorado."""
 
-
 ADAMS = "001"
 ALAMOSA = "003"
 ARAPAHOE = "005"

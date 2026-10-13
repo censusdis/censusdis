@@ -1,7 +1,6 @@
 # Copyright (c) 2023 Darren Erik Vengroff
 """Counties in Arizona."""
 
-
 APACHE = "001"
 COCHISE = "003"
 COCONINO = "005"

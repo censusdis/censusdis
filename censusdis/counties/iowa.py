@@ -1,7 +1,6 @@
 # Copyright (c) 2023 Darren Erik Vengroff
 """Counties in Iowa."""
 
-
 ADAIR = "001"
 ADAMS = "003"
 ALLAMAKEE = "005"

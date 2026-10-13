@@ -1,7 +1,6 @@
 # Copyright (c) 2023 Darren Erik Vengroff
 """Places in Arizona."""
 
-
 AGUILA_CDP = "00730"
 AJO_CDP = "00870"
 AK_CHIN_CDP = "00940"

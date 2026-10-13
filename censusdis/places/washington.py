@@ -1,7 +1,6 @@
 # Copyright (c) 2023 Darren Erik Vengroff
 """Places in Washington."""
 
-
 ABERDEEN_GARDENS_CDP = "00135"
 ABERDEEN_CITY = "00100"
 ACME_CDP = "00275"

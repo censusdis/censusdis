@@ -1,7 +1,6 @@
 # Copyright (c) 2023 Darren Erik Vengroff
 """Places in Mississippi."""
 
-
 ABBEVILLE_TOWN = "00100"
 ABERDEEN_CITY = "00180"
 ACKERMAN_TOWN = "00300"

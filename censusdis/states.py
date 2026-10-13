@@ -50,7 +50,6 @@ And finally, ``ALL_STATES_AND_DC_AND_PR`` includes
 Puerto Rico as well.
 """
 
-
 AL = "01"
 """Alabama"""
 

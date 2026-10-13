@@ -5,6 +5,7 @@ A utility to generate the symbolic names of a variety of top-level geos.
 This should be a one-time thing. But we are retaining this code
 here in utils for reference.
 """
+
 from pathlib import Path
 
 import censusdis.data as ced
@@ -42,9 +43,8 @@ def generate_for_geo(geo: str, short_geo: str):
     # Test file to import them all.
     test_file = Path(__file__).parent.parent / "tests" / f"test_{short_geo}.py"
     with open(test_file, "w") as tf:
-        tf.write(
-            f"""# Copyright (c) 2023 Darren Erik Vengroff
-\"\"\"Tests for {geo.replace('_', ' ').title()} symbols.\"\"\"
+        tf.write(f"""# Copyright (c) 2023 Darren Erik Vengroff
+\"\"\"Tests for {geo.replace("_", " ").title()} symbols.\"\"\"
 
 import unittest
 
@@ -52,7 +52,7 @@ import censusdis.{short_geo}
 
 
 class {short_geo.title()}TestCase(unittest.TestCase):
-    \"\"\"Tests for {geo.replace('_', ' ').title()} symbols.\"\"\"
+    \"\"\"Tests for {geo.replace("_", " ").title()} symbols.\"\"\"
 
     def test_{geo}s(self):
         \"\"\"Test {geo}.\"\"\"
@@ -64,8 +64,7 @@ class {short_geo.title()}TestCase(unittest.TestCase):
         sym_count = len(symbols)
 
         self.assertEqual({len(df_geos.index)}, sym_count)
-"""
-        )
+""")
 
         geo_file = target_dir / f"{short_geo}.py"
 

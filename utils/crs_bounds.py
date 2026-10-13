@@ -62,14 +62,17 @@ def epsg_bounds_rect(
                 area_of_use.west if area_of_use.west < 0 else area_of_use.west - 360.0
             )
 
-            yield epsg, Polygon(
-                [
-                    (east, area_of_use.north),
-                    (east, area_of_use.south),
-                    (west, area_of_use.south),
-                    (west, area_of_use.north),
-                    (east, area_of_use.north),
-                ]
+            yield (
+                epsg,
+                Polygon(
+                    [
+                        (east, area_of_use.north),
+                        (east, area_of_use.south),
+                        (west, area_of_use.south),
+                        (west, area_of_use.north),
+                        (east, area_of_use.north),
+                    ]
+                ),
             )
         except pyproj.exceptions.CRSError:
             if verbose:

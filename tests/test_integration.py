@@ -6,6 +6,8 @@ Most of the functionality can be unit tested elsewhere or with mocks, but
 these tests actually call the census API itself to cover the bits of code
 immediately around those calls.
 """
+
+import logging
 import os
 import unittest
 
@@ -13,18 +15,15 @@ import geopandas as gpd
 import numpy as np
 import pandas as pd
 
-import logging
-
+import censusdis.counties.new_jersey
 import censusdis.data as ced
 import censusdis.impl.exceptions
 import censusdis.impl.varsource.censusapi
-import utils.symbolic as sym
 import censusdis.values as cev
+import utils.symbolic as sym
 from censusdis import states
-import censusdis.counties.new_jersey
 from censusdis.datasets import ACS3, ACS5
-from censusdis.states import WA, NY, NJ, CT, PA
-
+from censusdis.states import CT, NJ, NY, PA, WA
 
 # Set to DEBUG logging to help diagnose test issues.
 # Set to WARNING for normal low-volume output.

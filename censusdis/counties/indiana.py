@@ -1,7 +1,6 @@
 # Copyright (c) 2023 Darren Erik Vengroff
 """Counties in Indiana."""
 
-
 ADAMS = "001"
 ALLEN = "003"
 BARTHOLOMEW = "005"

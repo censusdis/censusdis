@@ -1,7 +1,6 @@
 # Copyright (c) 2023 Darren Erik Vengroff
 """Places in Alabama."""
 
-
 ABANDA_CDP = "00100"
 ABBEVILLE_CITY = "00124"
 ADAMSVILLE_CITY = "00460"

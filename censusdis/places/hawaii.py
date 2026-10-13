@@ -1,7 +1,6 @@
 # Copyright (c) 2023 Darren Erik Vengroff
 """Places in Hawaii."""
 
-
 AHUIMANU_CDP = "00400"
 AIEA_CDP = "00550"
 AINALOA_CDP = "01085"

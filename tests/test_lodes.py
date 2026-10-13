@@ -1,17 +1,18 @@
 # Copyright (c) 2023 Darren Erik Vengroff
 """Test LODES data."""
-import unittest
+
 import sys
+import unittest
 
 import censusdis.data as ced
+from censusdis.counties.new_jersey import ESSEX
 from censusdis.datasets import (
-    LODES_OD_MAIN_JT00,
     LODES_OD_AUX_JT00,
-    LODES_WAC_S000_JT05,
+    LODES_OD_MAIN_JT00,
     LODES_RAC_SI03_JT03,
+    LODES_WAC_S000_JT05,
 )
 from censusdis.states import NJ, NY
-from censusdis.counties.new_jersey import ESSEX
 
 
 @unittest.skipIf(

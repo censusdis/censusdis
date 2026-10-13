@@ -1,7 +1,6 @@
 # Copyright (c) 2023 Darren Erik Vengroff
 """Counties in Pennsylvania."""
 
-
 ADAMS = "001"
 ALLEGHENY = "003"
 ARMSTRONG = "005"

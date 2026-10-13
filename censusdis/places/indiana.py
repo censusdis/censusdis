@@ -1,7 +1,6 @@
 # Copyright (c) 2023 Darren Erik Vengroff
 """Places in Indiana."""
 
-
 ABERDEEN_CDP = "00140"
 ABINGTON_CDP = "00154"
 ADAMS_CDP = "00352"
