@@ -753,7 +753,7 @@ DATASET_REFERENCE_URLS = {
     CPS_DISABILITY_JUL: "http://api.census.gov/data/2021/cps/disability/jul",
     CPS_DISABILITY_MAY: "http://api.census.gov/data/2012/cps/disability/may",
     CPS_DWJT_FEB: "http://api.census.gov/data/2000/cps/dwjt/feb",
-    CPS_DWJT_JAN: "http://api.census.gov/data/2024/cps/dwjt/jan",
+    CPS_DWJT_JAN: "http://api.census.gov/data/2026/cps/dwjt/jan",
     CPS_FERTILITY_JUN: "http://api.census.gov/data/2024/cps/fertility/jun",
     CPS_FOODSEC_APR: "http://api.census.gov/data/2001/cps/foodsec/apr",
     CPS_FOODSEC_AUG: "http://api.census.gov/data/1998/cps/foodsec/aug",
