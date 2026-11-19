@@ -652,7 +652,7 @@ TIMESERIES_HPS = "timeseries/hps"
 
 TIMESERIES_IDB = "timeseries/idb/5year"
 
-TIMESERIES_INTLTRADE = "timeseries/intltrade/imports/usdaimport"
+TIMESERIES_INTLTRADE = "timeseries/intltrade/imports/usda"
 
 TIMESERIES_POVERTY = "timeseries/poverty/saipe/schdist"
 
@@ -745,7 +745,7 @@ DATASET_REFERENCE_URLS = {
     CPS_BASIC_MAR: "https://api.census.gov/data/2026/cps/basic/mar",
     CPS_BASIC_MAY: "https://api.census.gov/data/2026/cps/basic/may",
     CPS_BASIC_NOV: "https://api.census.gov/data/2025/cps/basic/nov",
-    CPS_BASIC_OCT: "https://api.census.gov/data/2024/cps/basic/oct",
+    CPS_BASIC_OCT: "https://api.census.gov/data/2026/cps/basic/oct",
     CPS_BASIC_SEP: "https://api.census.gov/data/2026/cps/basic/sep",
     CPS_CIVIC_NOV: "https://api.census.gov/data/2013/cps/civic/nov",
     CPS_CONTWORKER_FEB: "https://api.census.gov/data/2005/cps/contworker/feb",
@@ -998,7 +998,7 @@ DATASET_REFERENCE_URLS = {
     TIMESERIES_HHPULSE: "https://api.census.gov/data/timeseries/hhpulse",
     TIMESERIES_HPS: "https://api.census.gov/data/timeseries/hps",
     TIMESERIES_IDB: "https://api.census.gov/data/timeseries/idb/5year",
-    TIMESERIES_INTLTRADE: "https://api.census.gov/data/timeseries/intltrade/imports/usdaimport",
+    TIMESERIES_INTLTRADE: "https://api.census.gov/data/timeseries/intltrade/imports/usda",
     TIMESERIES_POVERTY: "https://api.census.gov/data/timeseries/poverty/saipe/schdist",
     TIMESERIES_PSEO: "https://api.census.gov/data/timeseries/pseo/flows",
     TIMESERIES_QWI: "https://api.census.gov/data/timeseries/qwi/se",
