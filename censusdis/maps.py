@@ -924,7 +924,11 @@ def plot_map(
     ax = gdf.plot(*args, **kwargs)
 
     if geo_label is not None:
-        _add_plot_map_geo_labels(ax, gdf, geo_label, geo_label_text_kwargs)
+        headers = {"User-Agent": "censusdis"}
+
+        _add_plot_map_geo_labels(
+            ax, gdf, geo_label, geo_label_text_kwargs, headers=headers
+        )
 
     ax.tick_params(
         left=False,
