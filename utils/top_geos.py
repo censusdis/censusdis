@@ -69,14 +69,12 @@ class {short_geo.title()}TestCase(unittest.TestCase):
         geo_file = target_dir / f"{short_geo}.py"
 
         with open(geo_file, "w") as sf:
-            sf.writelines(
-                [
-                    "# Copyright (c) 2023 Darren Erik Vengroff\n",
-                    f'"""{geo.replace("_", " ").title()}s."""\n',
-                    "\n",
-                    "\n",
-                ]
-            )
+            sf.writelines([
+                "# Copyright (c) 2023 Darren Erik Vengroff\n",
+                f'"""{geo.replace("_", " ").title()}s."""\n',
+                "\n",
+                "\n",
+            ])
             for _, row in df_geos.sort_values(by="NAME").iterrows():
                 geo_value = row[f"{geo.upper()}"]
 

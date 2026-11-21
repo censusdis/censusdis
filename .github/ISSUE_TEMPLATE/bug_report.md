@@ -29,6 +29,7 @@ Or, even better, structure your code sample as a test that fails. Something like
 import unittest
 import censusdis.data as ced
 
+
 class TestMyBug(unittest.TestCase):
     def test_bug(self):
         result = ced.something(arg0, arg1, optional_arg=True)
@@ -49,12 +50,14 @@ If applicable, add screenshots to help explain your problem.
  - Python Version and platform; output of:
 ```python
 import sys
+
 print(sys.version)
 print(sys.platform)
 ```
  - Censusdis Version; output of:
 ```python
 import censusdis
+
 print(censusdis.version)
 ```
 

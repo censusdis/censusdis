@@ -69,14 +69,12 @@ class CountyTestCase(unittest.TestCase):
             state_file = target_dir / f"{state_symbol}.py"
 
             with open(state_file, "w") as sf:
-                sf.writelines(
-                    [
-                        "# Copyright (c) 2023 Darren Erik Vengroff\n",
-                        f'"""Counties in {state_name}."""\n',
-                        "\n",
-                        "\n",
-                    ]
-                )
+                sf.writelines([
+                    "# Copyright (c) 2023 Darren Erik Vengroff\n",
+                    f'"""Counties in {state_name}."""\n',
+                    "\n",
+                    "\n",
+                ])
                 for _, row in df_state.sort_values(by="NAME").iterrows():
                     county = row["COUNTY"]
 
