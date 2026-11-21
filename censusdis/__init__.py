@@ -10,8 +10,6 @@ Both Python and CLI interfaces are available.
 from .impl.exceptions import CensusApiException
 from usingversion import getattr_with_version
 
-from .impl.exceptions import CensusApiException
-
 __all__ = ("CensusApiException",)
 
 # Generate a version number.
