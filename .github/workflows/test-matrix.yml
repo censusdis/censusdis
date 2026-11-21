@@ -52,6 +52,8 @@ jobs:
           source $VENV
           python -c "import censusdis; print(f'censusdis version: {censusdis.version}')"
       - name: Run tests
+        env:
+          US_CENSUS_API_KEY: ${{ secrets.US_CENSUS_API_KEY }}
         run: |
           source $VENV
           python -m pytest tests
