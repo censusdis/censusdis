@@ -1,7 +1,6 @@
 # Copyright (c) 2023 Darren Erik Vengroff
 """Counties in Nebraska."""
 
-
 ADAMS = "001"
 ANTELOPE = "003"
 ARTHUR = "005"

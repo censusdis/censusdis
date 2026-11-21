@@ -1,7 +1,6 @@
 # Copyright (c) 2023 Darren Erik Vengroff
 """Places in Nevada."""
 
-
 ALAMO_CDP = "00500"
 AMARGOSA_VALLEY_CDP = "01000"
 AUSTIN_CDP = "03700"

@@ -1,7 +1,6 @@
 # Copyright (c) 2023 Darren Erik Vengroff
 """Counties in Massachusetts."""
 
-
 BARNSTABLE = "001"
 BERKSHIRE = "003"
 BRISTOL = "005"

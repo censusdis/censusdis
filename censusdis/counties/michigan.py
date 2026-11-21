@@ -1,7 +1,6 @@
 # Copyright (c) 2023 Darren Erik Vengroff
 """Counties in Michigan."""
 
-
 ALCONA = "001"
 ALGER = "003"
 ALLEGAN = "005"

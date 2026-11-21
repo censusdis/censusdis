@@ -1,7 +1,6 @@
 # Copyright (c) 2023 Darren Erik Vengroff
 """Metropolitan Statistical Area Micropolitan Statistical Areas."""
 
-
 ABERDEEN_SD_MICRO_AREA = "10100"
 ABERDEEN_WA_MICRO_AREA = "10140"
 ABILENE_TX_METRO_AREA = "10180"

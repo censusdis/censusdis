@@ -1,7 +1,6 @@
 # Copyright (c) 2023 Darren Erik Vengroff
 """Places in Florida."""
 
-
 ACACIA_VILLAS_CDP = "00075"
 ALACHUA_CITY = "00375"
 ALAFAYA_CDP = "00410"

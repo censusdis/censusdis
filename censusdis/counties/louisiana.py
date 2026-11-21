@@ -1,7 +1,6 @@
 # Copyright (c) 2023 Darren Erik Vengroff
 """Counties in Louisiana."""
 
-
 ACADIA = "001"
 ALLEN = "003"
 ASCENSION = "005"

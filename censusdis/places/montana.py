@@ -1,7 +1,6 @@
 # Copyright (c) 2023 Darren Erik Vengroff
 """Places in Montana."""
 
-
 ABSAROKEE_CDP = "00175"
 ACTON_CDP = "00400"
 ALBERTON_TOWN = "00700"

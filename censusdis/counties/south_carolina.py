@@ -1,7 +1,6 @@
 # Copyright (c) 2023 Darren Erik Vengroff
 """Counties in South Carolina."""
 
-
 ABBEVILLE = "001"
 AIKEN = "003"
 ALLENDALE = "005"

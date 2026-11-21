@@ -1,7 +1,6 @@
 # Copyright (c) 2023 Darren Erik Vengroff
 """Places in Oklahoma."""
 
-
 ACHILLE_TOWN = "00100"
 ADA_CITY = "00200"
 ADAIR_TOWN = "00250"

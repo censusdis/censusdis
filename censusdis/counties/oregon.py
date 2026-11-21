@@ -1,7 +1,6 @@
 # Copyright (c) 2023 Darren Erik Vengroff
 """Counties in Oregon."""
 
-
 BAKER = "001"
 BENTON = "003"
 CLACKAMAS = "005"

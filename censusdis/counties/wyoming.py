@@ -1,7 +1,6 @@
 # Copyright (c) 2023 Darren Erik Vengroff
 """Counties in Wyoming."""
 
-
 ALBANY = "001"
 BIG_HORN = "003"
 CAMPBELL = "005"

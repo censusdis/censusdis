@@ -1,19 +1,17 @@
 # Copyright (c) 2023 Darren Erik Vengroff
 """Test plot specifications for the CLI."""
-import unittest
-
-from typing import Any
 
 import sys
+import unittest
 from pathlib import Path
 from shutil import rmtree
+from typing import Any
 
 import matplotlib.pyplot as plt
-
 import skimage.io
 from skimage.metrics import structural_similarity as ssim
 
-from censusdis.cli.yamlspec import PlotSpec, DataSpec
+from censusdis.cli.yamlspec import DataSpec, PlotSpec
 
 
 class PlotSpecTestCase(unittest.TestCase):

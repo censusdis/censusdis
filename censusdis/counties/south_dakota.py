@@ -1,7 +1,6 @@
 # Copyright (c) 2023 Darren Erik Vengroff
 """Counties in South Dakota."""
 
-
 AURORA = "003"
 BEADLE = "005"
 BENNETT = "007"

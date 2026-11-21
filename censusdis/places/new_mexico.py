@@ -1,7 +1,6 @@
 # Copyright (c) 2023 Darren Erik Vengroff
 """Places in New Mexico."""
 
-
 ABEYTAS_CDP = "00240"
 ABIQUIU_CDP = "00310"
 ACOMITA_LAKE_CDP = "00765"

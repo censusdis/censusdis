@@ -1,7 +1,6 @@
 # Copyright (c) 2023 Darren Erik Vengroff
 """Places in Connecticut."""
 
-
 ANSONIA_CITY = "01150"
 BALL_POND_CDP = "02480"
 BALTIC_CDP = "02550"

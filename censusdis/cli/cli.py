@@ -1,14 +1,14 @@
 # Copyright (c) 2023 Darren Erik Vengroff
 """Main module for the command line interface to censusdis."""
-from typing import Optional
+
 import argparse
 import logging
 import sys
 from logging import getLogger
+from typing import Optional
 
 import geopandas as gpd
 import matplotlib.pyplot as plt
-
 from logargparser import LoggingArgumentParser
 
 from censusdis.cli.yamlspec import DataSpec, PlotSpec

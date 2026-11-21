@@ -1,7 +1,6 @@
 # Copyright (c) 2023 Darren Erik Vengroff
 """Counties in New Hampshire."""
 
-
 BELKNAP = "001"
 CARROLL = "003"
 CHESHIRE = "005"

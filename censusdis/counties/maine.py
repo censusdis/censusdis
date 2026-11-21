@@ -1,7 +1,6 @@
 # Copyright (c) 2023 Darren Erik Vengroff
 """Counties in Maine."""
 
-
 ANDROSCOGGIN = "001"
 AROOSTOOK = "003"
 CUMBERLAND = "005"

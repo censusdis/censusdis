@@ -1,7 +1,6 @@
 # Copyright (c) 2023 Darren Erik Vengroff
 """Counties in New Jersey."""
 
-
 ATLANTIC = "001"
 BERGEN = "003"
 BURLINGTON = "005"

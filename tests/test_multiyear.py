@@ -2,19 +2,18 @@
 
 import unittest
 
-import pandas as pd
 import numpy as np
+import pandas as pd
+import pytest
 
-from censusdis.multiyear import (
-    download_multiyear,
-    pct_change_multiyear,
-    graph_multiyear,
-)
-from censusdis.states import NY
 from censusdis.counties.new_york import NASSAU
 from censusdis.datasets import ACS1, ACS5
-
-import pytest
+from censusdis.multiyear import (
+    download_multiyear,
+    graph_multiyear,
+    pct_change_multiyear,
+)
+from censusdis.states import NY
 
 
 class TestDownloadMultiyear:

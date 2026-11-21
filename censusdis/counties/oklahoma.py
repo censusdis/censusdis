@@ -1,7 +1,6 @@
 # Copyright (c) 2023 Darren Erik Vengroff
 """Counties in Oklahoma."""
 
-
 ADAIR = "001"
 ALFALFA = "003"
 ATOKA = "005"

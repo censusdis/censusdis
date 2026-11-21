@@ -1,7 +1,6 @@
 # Copyright (c) 2023 Darren Erik Vengroff
 """Places in Illinois."""
 
-
 ABINGDON_CITY = "00113"
 ADAIR_CDP = "00178"
 ADAMS_CDP = "00191"

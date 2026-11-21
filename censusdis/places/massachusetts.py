@@ -1,7 +1,6 @@
 # Copyright (c) 2023 Darren Erik Vengroff
 """Places in Massachusetts."""
 
-
 ABINGTON_CDP = "00135"
 ACUSHNET_CENTER_CDP = "00530"
 ADAMS_CDP = "00590"

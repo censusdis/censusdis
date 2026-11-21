@@ -1,7 +1,6 @@
 # Copyright (c) 2023 Darren Erik Vengroff
 """Places in Idaho."""
 
-
 ABERDEEN_CITY = "00100"
 ACEQUIA_CITY = "00280"
 ALBION_CITY = "01000"

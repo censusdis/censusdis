@@ -1,5 +1,6 @@
 # Copyright (c) 2023 Darren Erik Vengroff
 """Tests for the fetch implementation."""
+
 import unittest
 
 import pandas as pd

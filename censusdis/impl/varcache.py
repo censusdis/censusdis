@@ -1,6 +1,7 @@
 # Copyright (c) 2022 Darren Erik Vengroff
 """Variable cache code to cache metatada about variables locally."""
 
+import re
 from collections import defaultdict
 from logging import getLogger
 from typing import (
@@ -18,14 +19,10 @@ from typing import (
 import numpy as np
 import pandas as pd
 
+import censusdis.datasets
 from censusdis import CensusApiException
 from censusdis.impl.varsource.base import VariableSource
 from censusdis.impl.varsource.censusapi import CensusApiVariableSource
-
-import censusdis.datasets
-
-import re
-
 
 logger = getLogger(__name__)
 

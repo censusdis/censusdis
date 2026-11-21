@@ -1,7 +1,6 @@
 # Copyright (c) 2023 Darren Erik Vengroff
 """Combined Statistical Areas."""
 
-
 ALBANY_SCHENECTADY_NY_CSA = "104"
 ALBUQUERQUE_SANTA_FE_LAS_VEGAS_NM_CSA = "106"
 ALTOONA_HUNTINGDON_PA_CSA = "107"

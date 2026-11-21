@@ -1,7 +1,6 @@
 # Copyright (c) 2023 Darren Erik Vengroff
 """Places in Wisconsin."""
 
-
 ABBOTSFORD_CITY = "00100"
 ABRAMS_CDP = "00150"
 ADAMS_CITY = "00275"

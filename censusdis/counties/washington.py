@@ -1,7 +1,6 @@
 # Copyright (c) 2023 Darren Erik Vengroff
 """Counties in Washington."""
 
-
 ADAMS = "001"
 ASOTIN = "003"
 BENTON = "005"

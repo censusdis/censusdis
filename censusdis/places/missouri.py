@@ -1,7 +1,6 @@
 # Copyright (c) 2023 Darren Erik Vengroff
 """Places in Missouri."""
 
-
 ADRIAN_CITY = "00244"
 ADVANCE_CITY = "00262"
 AFFTON_CDP = "00280"

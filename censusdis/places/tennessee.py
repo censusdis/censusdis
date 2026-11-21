@@ -1,7 +1,6 @@
 # Copyright (c) 2023 Darren Erik Vengroff
 """Places in Tennessee."""
 
-
 ADAMS_CITY = "00200"
 ADAMSVILLE_TOWN = "00240"
 ALAMO_TOWN = "00440"

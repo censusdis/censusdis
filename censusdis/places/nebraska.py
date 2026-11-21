@@ -1,7 +1,6 @@
 # Copyright (c) 2023 Darren Erik Vengroff
 """Places in Nebraska."""
 
-
 ABIE_VILLAGE = "00205"
 ADAMS_VILLAGE = "00240"
 AGNEW_CDP = "00380"

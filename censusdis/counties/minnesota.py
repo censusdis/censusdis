@@ -1,7 +1,6 @@
 # Copyright (c) 2023 Darren Erik Vengroff
 """Counties in Minnesota."""
 
-
 AITKIN = "001"
 ANOKA = "003"
 BECKER = "005"

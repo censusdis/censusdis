@@ -1,7 +1,6 @@
 # Copyright (c) 2023 Darren Erik Vengroff
 """Places in Louisiana."""
 
-
 ABBEVILLE_CITY = "00100"
 ABITA_SPRINGS_TOWN = "00240"
 ADDIS_TOWN = "00415"

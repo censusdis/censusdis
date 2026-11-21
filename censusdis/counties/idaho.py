@@ -1,7 +1,6 @@
 # Copyright (c) 2023 Darren Erik Vengroff
 """Counties in Idaho."""
 
-
 ADA = "001"
 ADAMS = "003"
 BANNOCK = "005"

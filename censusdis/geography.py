@@ -23,7 +23,6 @@ import requests
 from .impl.exceptions import CensusApiException
 from .impl.fetch import certificates
 
-
 InSpecType = Union[str, Iterable[str]]
 
 

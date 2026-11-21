@@ -1,7 +1,6 @@
 # Copyright (c) 2023 Darren Erik Vengroff
 """Places in Minnesota."""
 
-
 ADA_CITY = "00172"
 ADAMS_CITY = "00190"
 ADRIAN_CITY = "00262"

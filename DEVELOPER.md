@@ -115,17 +115,16 @@ the main branch of the code, go back to the
 and click the code coverage
 icon at the top of the README.md file.
 
-## Flake8, Black and Ruff
+## Flake8 and Ruff
 
 Before you commit your code, we recommend you run
-[flake8](https://flake8.pycqa.org/en/latest/), 
-[black](https://black.readthedocs.io/en/stable/) and [ruff](https://docs.astral.sh/ruff/)
+[flake8](https://flake8.pycqa.org/en/latest/) and [ruff](https://docs.astral.sh/ruff/)
 as follows:
 
 ```shell
 poetry run flake8 .
-poetry run black .
-poetry run ruff check .
+poetry run ruff check --fix .
+poetry run ruff format .
 ```
 
 and correct any errors that are found. If you submit
@@ -134,7 +133,7 @@ set up to lint the code will fail and it will not be
 possible to merge your pull request. Please do not
 add `# noqa` comments to the code unless they are 
 absolutely necessary, e.g. because you stumbled upon
-one of the rare cases where `flake8` and `black`
+one of the rare cases where `flake8` and Ruff's formatter
 disagree.
 
 ## Maintaining `datasets.py`

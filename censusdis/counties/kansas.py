@@ -1,7 +1,6 @@
 # Copyright (c) 2023 Darren Erik Vengroff
 """Counties in Kansas."""
 
-
 ALLEN = "001"
 ANDERSON = "003"
 ATCHISON = "005"

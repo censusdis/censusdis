@@ -1,7 +1,6 @@
 # Copyright (c) 2023 Darren Erik Vengroff
 """Places in New York."""
 
-
 ACCORD_CDP = "00155"
 ADAMS_CENTER_CDP = "00232"
 ADAMS_VILLAGE = "00199"

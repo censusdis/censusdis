@@ -1,7 +1,6 @@
 # Copyright (c) 2023 Darren Erik Vengroff
 """Places in South Carolina."""
 
-
 ABBEVILLE_CITY = "00100"
 ABNEY_CROSSROADS_CDP = "00165"
 ADAMS_RUN_CDP = "00370"

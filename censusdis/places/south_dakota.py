@@ -1,7 +1,6 @@
 # Copyright (c) 2023 Darren Erik Vengroff
 """Places in South Dakota."""
 
-
 ABERDEEN_CITY = "00100"
 AGAR_TOWN = "00460"
 AGENCY_VILLAGE_CDP = "00520"

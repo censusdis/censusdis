@@ -1,7 +1,6 @@
 # Copyright (c) 2023 Darren Erik Vengroff
 """Places in California."""
 
-
 ACALANES_RIDGE_CDP = "00135"
 ACAMPO_CDP = "00156"
 ACTON_CDP = "00212"
