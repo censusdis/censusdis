@@ -15,7 +15,6 @@ import geopandas as gpd
 import numpy as np
 import pandas as pd
 
-import censusdis.counties.new_jersey
 import censusdis.data as ced
 import censusdis.impl.exceptions
 import censusdis.impl.varsource.censusapi
@@ -23,7 +22,11 @@ import censusdis.values as cev
 import utils.symbolic as sym
 from censusdis import states
 from censusdis.datasets import ACS3, ACS5
+<<<<<<< HEAD
 from censusdis.states import CT, NJ, NY, PA, WA
+=======
+from censusdis.states import WA, NY, NJ, CT, PA
+>>>>>>> 55a996b54 (back fixes.)
 
 # Set to DEBUG logging to help diagnose test issues.
 # Set to WARNING for normal low-volume output.
