@@ -55,16 +55,13 @@ from censusdis import states
 df_median_income = ced.download(
     # Data set: American Community Survey 5-Year
     dataset=ACS5,
-    
     # Vintage: 2022
-    vintage=2022, 
-    
+    vintage=2022,
     # Variable: median household income
-    download_variables=['NAME', 'B19013_001E'], 
-    
+    download_variables=["NAME", "B19013_001E"],
     # Geography: All counties in New Jersey.
     state=states.NJ,
-    county='*'
+    county="*",
 )
 ```
 

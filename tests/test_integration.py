@@ -15,7 +15,6 @@ import geopandas as gpd
 import numpy as np
 import pandas as pd
 
-import censusdis.counties.new_jersey
 import censusdis.data as ced
 import censusdis.impl.exceptions
 import censusdis.impl.varsource.censusapi

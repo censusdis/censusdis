@@ -937,7 +937,9 @@ def plot_map(
     if with_background:
         provider = cx.providers.OpenStreetMap.Mapnik
 
-        cx.add_basemap(ax, crs=gdf.crs.to_string(), source=provider)
+        headers = {"User-Agent": "censusdis"}
+
+        cx.add_basemap(ax, crs=gdf.crs.to_string(), source=provider, headers=headers)
 
     return ax
 
@@ -1067,7 +1069,9 @@ def plot_us(
     if with_background:
         provider = cx.providers.OpenStreetMap.Mapnik
 
-        cx.add_basemap(ax, crs=gdf.crs.to_string(), source=provider)
+        headers = {"User-Agent": "censusdis"}
+
+        cx.add_basemap(ax, crs=gdf.crs.to_string(), source=provider, headers=headers)
 
     ax.tick_params(
         left=False,
@@ -1145,7 +1149,9 @@ def plot_us_boundary(
     if with_background:
         provider = cx.providers.OpenStreetMap.Mapnik
 
-        cx.add_basemap(ax, crs=gdf.crs.to_string(), source=provider)
+        headers = {"User-Agent": "censusdis"}
+
+        cx.add_basemap(ax, crs=gdf.crs.to_string(), source=provider, headers=headers)
 
     return ax
 

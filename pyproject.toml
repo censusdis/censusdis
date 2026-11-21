@@ -1,6 +1,6 @@
 [project]
 name = "censusdis"
-version = "1.4.2"
+version = "1.5.0"
 description = "US Census utilities for a variety of data loading, analysis, and mapping purposes."
 license = "LicenseRef-HL3-CL-ECO-EXTR-FFD-LAW-MIL-SV"
 license-files = ["LICENSE.md"]
@@ -82,7 +82,7 @@ pytest = ">=7.1.3,<10.0.0"
 coverage = {extras = ["toml"], version = "^6.5.0"}
 pytest-cov = "^3.0.0"
 nbmake = "^1.3.5"
-scikit-image = "^0.24.0"
+scikit-image = "^0.25.0"
 
 [tool.poetry.group.lint.dependencies]
 ruff = "^0.15.21"
