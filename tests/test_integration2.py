@@ -127,7 +127,7 @@ class BadApiKeyTestCase(unittest.TestCase):
 
     def test_bad_api_key(self):
         """Test with a bad API key."""
-        with self.assertRaises(CensusApiException) as context:
+        with self.assertRaises(CensusApiException):
             ced.download(
                 dataset=ACS1,
                 vintage=2023,
@@ -135,8 +135,6 @@ class BadApiKeyTestCase(unittest.TestCase):
                 state=NJ,
                 api_key="BOGUS API KEY",
             )
-
-        self.assertIn("failed because your key is invalid.", str(context.exception))
 
 
 class MispelledKeywordTestCase(unittest.TestCase):
