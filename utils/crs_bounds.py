@@ -64,13 +64,15 @@ def epsg_bounds_rect(
 
             yield (
                 epsg,
-                Polygon([
-                    (east, area_of_use.north),
-                    (east, area_of_use.south),
-                    (west, area_of_use.south),
-                    (west, area_of_use.north),
-                    (east, area_of_use.north),
-                ]),
+                Polygon(
+                    [
+                        (east, area_of_use.north),
+                        (east, area_of_use.south),
+                        (west, area_of_use.south),
+                        (west, area_of_use.north),
+                        (east, area_of_use.north),
+                    ]
+                ),
             )
         except pyproj.exceptions.CRSError:
             if verbose:
