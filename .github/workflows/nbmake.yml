@@ -72,6 +72,8 @@ jobs:
       #              test run notebooks
       #----------------------------------------------
       - name: Test run notebook
+        env:
+          US_CENSUS_API_KEY: ${{ secrets.US_CENSUS_API_KEY }}
         run: |
           source .venv/bin/activate
           # pytest --junitxml=reports/nbmake/${{matrix.notebook-type}}/junit.xml --nbmake ${{matrix.notebook-dir}}/*.ipynb
