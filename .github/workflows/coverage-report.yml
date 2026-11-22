@@ -71,6 +71,8 @@ jobs:
       #----------------------------------------------
       - name: Run tests with coverage
         id: runTests
+        env:
+          US_CENSUS_API_KEY: ${{ secrets.US_CENSUS_API_KEY }}
         run: |
           source .venv/bin/activate
           coverage run -m pytest --junitxml=reports/junit/junit.xml
@@ -88,8 +90,6 @@ jobs:
       #              generate coverage
       #----------------------------------------------
       - name: Generate coverage reports and badges
-        env:
-          US_CENSUS_API_KEY: ${{ secrets.US_CENSUS_API_KEY }}
         run: |
           source .venv/bin/activate
           coverage report 
