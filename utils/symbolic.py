@@ -134,7 +134,6 @@ But you can always use raw strings. For example, even for `ACS5` you can use
         """
         with open(destination_file, "w") as destfile:
             destfile.write(self.module_message)
-            destfile.write("\n")
 
             for key in sorted(self.dictionary.keys()):
                 destfile.write("\n")
