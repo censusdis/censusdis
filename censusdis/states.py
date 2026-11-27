@@ -345,7 +345,7 @@ For example ``IDS_FROM_ABBREVIATIONS['New Jersey']``
 is ``34``, which is the value of``NJ``.
 """
 
-ALL_STATES = [state for state in NAMES_FROM_IDS if state != DC and state != DC]
+ALL_STATES = [state for state in NAMES_FROM_IDS if state != DC and state != PR]
 """
 All the state FIPS codes.
 
